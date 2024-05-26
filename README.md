@@ -5,35 +5,15 @@
 Tailwaggr is a Flutter-based mobile application that aims to connect pet owners with veterinarians, pet keepers, and a supportive community of fellow pet enthusiasts. Our app provides a platform for creating profiles, finding professional pet care, engaging in discussions, and reuniting lost pets with their owners.
 
 ## The Team
-### Timothy Whitaker
-![Timothy Whitaker](assets/team/Timothy_Whitaker.jpg)
-**Role:** Project Manager  
-**Description:**  
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/johndoe)
+## Team
 
-### Scott Bebington
-![Scott Bebington](assets/team/Scott_Bebington.jpg)
-**Role:**
-**Description:**
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/janesmith)
-
-### Bob Johnson
-![Bob Johnson](assets/team/bob_johnson.jpg)
-**Role:**
-**Description:**
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/bobjohnson)
-
-### Alice Williams
-![Alice Williams](assets/team/alice_williams.jpg)
-**Role:**
-**Description:**
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/alicewilliams)
-
-### Michael Brown
-![Michael Brown](assets/team/michael_brown.jpg)
-**Role:**
-**Description:**
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/michaelbrown)
+| Name             | Role            | Description                                                                                                | LinkedIn                                                                                         |
+|------------------|-----------------|------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| Timothy Whitaker| Project Manager | Insert Timothy's description here                                                                            | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/timothywhitaker) |
+| Scott Bebington  |                 | Insert Scott's description here                                                                             | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/scottbebington) |
+| Bob Johnson      |                 | Insert Bob's description here                                                                               | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/bobjohnson) |
+| Alice Williams  |                 | Insert Alice's description here                                                                             | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/alicewilliams) |
+| Michael Brown    |                 | Insert Michael's description here  
 
 ## Core Features
 
