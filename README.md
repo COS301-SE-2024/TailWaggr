@@ -1,5 +1,6 @@
 # Tailwaggr
 ![Flutter](https://img.shields.io/badge/Flutter-Framework-blue?logo=flutter)
+![Firebase](https://img.shields.io/badge/Firebase-Platform-yellow?logo=firebase)
 
 Tailwaggr is a Flutter-based mobile application that aims to connect pet owners with veterinarians, pet keepers, and a supportive community of fellow pet enthusiasts. Our app provides a platform for creating profiles, finding professional pet care, engaging in discussions, and reuniting lost pets with their owners.
 
@@ -24,6 +25,10 @@ Tailwaggr is a Flutter-based mobile application that aims to connect pet owners 
 5. **Lost and Found Database**
    - Report lost pets and search for found pets in the area.
    - Facilitate reunions between lost pets and their owners.
+  
+## Firebase Integration
+
+Tailwaggr uses Firebase for backend services, including authentication, database management, and cloud storage. Ensure you have a Firebase project set up and configured with your Flutter app.
 
 ## Getting Started
 
