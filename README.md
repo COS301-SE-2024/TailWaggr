@@ -41,7 +41,7 @@ Tailwaggr uses Firebase for backend services, including authentication, database
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/tailwaggr.git
+   git clone https://github.com/COS301-SE-2024/TailWaggr.git 
    cd tailwaggr
 
 2. **Install Dependencies:**
