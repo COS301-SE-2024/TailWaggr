@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "72589797723",
+    "project_id": "tailwaggr",
+    "storage_bucket": "tailwaggr.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:72589797723:android:43f0065be1d6490a2cd27e",
+        "android_client_info": {
+          "package_name": "com.example.cos301_capstone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTXlY4MJkNqsgesUf15kZcxMZ5qMwXzRw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
