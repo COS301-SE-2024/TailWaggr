@@ -7,13 +7,15 @@ Tailwaggr is a Flutter-based mobile application that aims to connect pet owners 
 ## The Team
 ## Team
 
-| Name             | Role            | Description                                                                                                | LinkedIn                                                                                         |
-|------------------|-----------------|------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| Timothy Whitaker| Project Manager | Insert Timothy's description here                                                                            | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/timothywhitaker) |
-| Scott Bebington  |                 | Insert Scott's description here                                                                             | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/scottbebington) |
-| Bob Johnson      |                 | Insert Bob's description here                                                                               | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/bobjohnson) |
-| Alice Williams  |                 | Insert Alice's description here                                                                             | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/alicewilliams) |
-| Michael Brown    |                 | Insert Michael's description here  
+## Team
+
+| Name             | Role            | Description                                                                                                | Photo                                       | LinkedIn                                                                                         |
+|------------------|-----------------|------------------------------------------------------------------------------------------------------------|---------------------------------------------|--------------------------------------------------------------------------------------------------|
+| Timothy Whitaker| Project Manager | Insert Timothy's description here                                                                            | ![Timothy Whitaker](assets/team/Timothy_Whitaker.jpg) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/timothywhitaker) |
+| Scott Bebington  |                 | Insert Scott's description here                                                                             | ![Scott Bebington](assets/team/Scott_Bebington.jpg)   | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/scottbebington) |
+| Bob Johnson      |                 | Insert Bob's description here                                                                               | ![Bob Johnson](assets/team/bob_johnson.jpg)           | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/bobjohnson) |
+| Alice Williams  |                 | Insert Alice's description here                                                                             | ![Alice Williams](assets/team/alice_williams.jpg)     | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/alicewilliams) |
+| Michael Brown    |                 | Insert Michael's description here                                                                           | ![Michael Brown](assets/team/michael_brown.jpg)       | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/michaelbrown) |
 
 ## Core Features
 
