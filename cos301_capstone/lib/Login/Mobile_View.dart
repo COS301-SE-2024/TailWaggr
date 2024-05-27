@@ -1,0 +1,260 @@
+// ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, camel_case_types
+
+import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+
+class Mobile_View extends StatefulWidget {
+  const Mobile_View({super.key});
+
+  @override
+  State<Mobile_View> createState() => _Mobile_ViewState();
+}
+
+class _Mobile_ViewState extends State<Mobile_View> {
+  bool Password_Visible = false;
+  bool ErrorTextVisible = false;
+  String errorText = '';
+
+  // Sign In controllers
+  late TextEditingController signInEmailController;
+  late TextEditingController signInPasswordController;
+
+  @override
+  void initState() {
+    super.initState();
+    signInEmailController = TextEditingController();
+    signInPasswordController = TextEditingController();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        // Half circle at the bottom left of the screen
+        Positioned(
+          bottom: 0,
+          left: 0, // Adjusted to the left edge
+          child: Container(
+            height: MediaQuery.of(context).size.width * 0.15, // Adjust the height as needed
+            width: MediaQuery.of(context).size.width * 0.15, // Adjust the width as needed
+            decoration: BoxDecoration(
+              color: Tertiary_Colour, // Same color as the background with 25% opacity
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(250), // Half of the height
+              ),
+            ),
+          ),
+        ),
+        // Half circle at the bottom left of the screen
+        Positioned(
+          bottom: 0,
+          left: 0, // Adjusted to the left edge
+          child: Container(
+            height: MediaQuery.of(context).size.width * 0.12, // Adjust the height as needed
+            width: MediaQuery.of(context).size.width * 0.12, // Adjust the width as needed
+            decoration: BoxDecoration(
+              color: Colors.white, // Same color as the background
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(200), // Half of the height
+              ),
+            ),
+          ),
+        ),
+        // Half circle at the top right of the screen
+        Positioned(
+          top: 0,
+          right: 0, // Adjusted to the left edge
+          child: Container(
+            height: MediaQuery.of(context).size.width * 0.1, // Adjust the height as needed
+            width: MediaQuery.of(context).size.width * 0.1, // Adjust the width as needed
+            decoration: BoxDecoration(
+              color: Secondary_Colour,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(250), // Half of the height
+              ),
+            ),
+          ),
+        ),
+
+        Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: MediaQuery.of(context).size.height * 0.8,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10), // Adjust the border radius as needed
+              boxShadow: [
+                BoxShadow(
+                  color: Primary_Colour.withOpacity(0.5), // Adjust the shadow color and opacity as needed
+                  spreadRadius: 1, // Adjust the spread radius as needed
+                  blurRadius: 10, // Adjust the blur radius as needed
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 50),
+                Text(
+                  "Welcome!",
+                  style: TextStyle(
+                    fontSize: Title_Text_Size,
+                    fontWeight: FontWeight.bold,
+                    color: Primary_Colour,
+                  ),
+                ),
+                //
+                Spacer(),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  child: TextField(
+                    controller: signInEmailController,
+                    decoration: InputDecoration(
+                      labelText: "Email",
+                      labelStyle: TextStyle(
+                        color: Primary_Colour,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Primary_Colour,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Primary_Colour,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  child: TextField(
+                    controller: signInPasswordController,
+                    obscureText: !Password_Visible,
+                    obscuringCharacter: "*",
+                    decoration: InputDecoration(
+                      labelText: "Password",
+                      labelStyle: TextStyle(
+                        color: Primary_Colour,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Primary_Colour,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Primary_Colour,
+                        ),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          Password_Visible ? Icons.visibility : Icons.visibility_off,
+                          color: Primary_Colour,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            Password_Visible = !Password_Visible;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  alignment: Alignment.centerRight,
+                  child: GestureDetector(
+                    onTap: () {
+                      // Add your logic here for when the "Forgot Password?" text is clicked
+                    },
+                    child: Text(
+                      "Forgot Password?",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                          email: signInEmailController.text,
+                          password: signInPasswordController.text,
+                        );
+                      } on Exception catch (e) {
+                        print(e);
+                        setState(() {
+                          ErrorTextVisible = true;
+                          if (e.toString().contains('[firebase_auth/channel-error] Unable to establish connection on channel.')) {
+                            errorText = 'Please make sure your Email and Password fields are filled in';
+                          } else if (e.toString().contains('[firebase_auth/invalid-email] The email address is badly formatted.')) {
+                            errorText = 'Please make sure Email is correct';
+                          } else if (e.toString().contains('[firebase_auth/invalid-credential] The supplied auth credential is incorrect, malformed or has expired.')) {
+                            errorText = 'Your Email or Password is incorrect';
+                          } else if (e.toString().contains('[firebase_auth/network-request-failed]')) {
+                            errorText = 'Please make sure you are connected to the internet';
+                          } else {
+                            errorText = e.toString();
+                          }
+                        });
+                      }
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Primary_Colour),
+                    ),
+                    child: Text(
+                      "Login",
+                      style: TextStyle(
+                        fontSize: Body_Text_Size,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                // Error text
+                Visibility(
+                  visible: ErrorTextVisible,
+                  child: Text(
+                    errorText,
+                    style: TextStyle(
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Don't have an account?"),
+                    TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        "Sign Up",
+                        style: TextStyle(
+                          color: Primary_Colour,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Spacer(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
