@@ -17,5 +17,9 @@ jobs:
     - uses: subosito/flutter-action@v1
       with:
         flutter-version: '2.x'
-    - run: flutter pub get
-    - run: flutter analyze
+    - name: Fetch dependencies
+      run: flutter pub get
+      working-directory: cos301_capstone
+    - name: Run linting
+      run: flutter analyze
+      working-directory: cos301_capstone
