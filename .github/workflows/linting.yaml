@@ -2,7 +2,7 @@ name: Flutter Lint
 
 on:
   push:
-    branches: [ dev, feat/Linting ]
+    branches: [ dev ]
   pull_request:
     branches: [ dev, master ]
 
