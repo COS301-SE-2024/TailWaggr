@@ -24,7 +24,7 @@ class _LoginState extends State<Login> {
         } 
         else if (constraints.maxWidth > 800) {
           return const Scaffold(
-            body: Tablet_View(),
+            body: TabletLogin(),
           );
         }
         else {

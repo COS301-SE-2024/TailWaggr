@@ -35,7 +35,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
         child: IntrinsicWidth(
           child: IntrinsicHeight(
             child: Container(
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.all(30),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -75,7 +75,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
                           ),
                         ],
                       ),
-                      SizedBox(width: 30),
+                      SizedBox(width: 50),
                       Text(
                         "Login",
                         style: TextStyle(
@@ -96,7 +96,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
                           height: MediaQuery.of(context).size.width * 0.2,
                         ),
                       ),
-                      SizedBox(width: 30),
+                      SizedBox(width: 50),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
