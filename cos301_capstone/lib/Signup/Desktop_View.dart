@@ -224,8 +224,8 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                             print(signInEmailController.text);
                             print(signInPasswordController.text);
                             await FirebaseAuth.instance.signInWithEmailAndPassword(
-                              email: "scottbebington@gmail.com",
-                              password: "Scott25121!",
+                              email: signInEmailController.text,
+                              password: signInPasswordController.text,
                             );
                           } on Exception catch (e) {
                             print(e);
