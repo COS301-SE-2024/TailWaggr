@@ -1,10 +1,9 @@
-// ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, prefer_interpolation_to_compose_strings
+// ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names
 
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Signup/Signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class DesktopLogin extends StatefulWidget {
   const DesktopLogin({super.key});
@@ -17,7 +16,6 @@ class _DesktopLoginState extends State<DesktopLogin> {
   bool Password_Visible = false;
   bool ErrorTextVisible = false;
   String errorText = '';
-  String LoginText = "Login";
 
   // Sign In controllers
   late TextEditingController signInEmailController;
@@ -184,14 +182,10 @@ class _DesktopLoginState extends State<DesktopLogin> {
                             child: ElevatedButton(
                               onPressed: () async {
                                 try {
-                                  setState(() {
-                                    LoginText = "Logging in...";
-                                  });
                                   await FirebaseAuth.instance.signInWithEmailAndPassword(
                                     email: signInEmailController.text,
                                     password: signInPasswordController.text,
                                   );
-                                  // signUserIn(signInEmailController.text, signInPasswordController.text);
                                 } on Exception catch (e) {
                                   print(e);
                                   setState(() {
@@ -207,7 +201,6 @@ class _DesktopLoginState extends State<DesktopLogin> {
                                     } else {
                                       errorText = e.toString();
                                     }
-                                    LoginText = "Login";
                                   });
                                 }
                               },
@@ -215,7 +208,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
                                 backgroundColor: MaterialStateProperty.all(Primary_Colour),
                               ),
                               child: Text(
-                                LoginText,
+                                "Login",
                                 style: TextStyle(
                                   fontSize: Body_Text_Size,
                                   color: Colors.white,

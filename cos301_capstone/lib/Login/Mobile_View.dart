@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, camel_case_types
 
 import 'package:cos301_capstone/Global_Variables.dart';
-import 'package:cos301_capstone/Signup/Signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +15,6 @@ class _Mobile_ViewState extends State<Mobile_View> {
   bool Password_Visible = false;
   bool ErrorTextVisible = false;
   String errorText = '';
-  String LoginText = "Login";
 
   // Sign In controllers
   late TextEditingController signInEmailController;
@@ -51,7 +49,7 @@ class _Mobile_ViewState extends State<Mobile_View> {
           children: [
             SizedBox(height: 50),
             Text(
-              "Login",
+              "Welcome!",
               style: TextStyle(
                 fontSize: Title_Text_Size,
                 fontWeight: FontWeight.bold,
@@ -136,16 +134,13 @@ class _Mobile_ViewState extends State<Mobile_View> {
               ),
             ),
             SizedBox(height: 20),
-
+    
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.75,
               height: 50,
               child: ElevatedButton(
                 onPressed: () async {
                   try {
-                    setState(() {
-                      LoginText = "Logging in...";
-                    });
                     await FirebaseAuth.instance.signInWithEmailAndPassword(
                       email: signInEmailController.text,
                       password: signInPasswordController.text,
@@ -165,7 +160,6 @@ class _Mobile_ViewState extends State<Mobile_View> {
                       } else {
                         errorText = e.toString();
                       }
-                      LoginText = "Login";
                     });
                   }
                 },
@@ -173,7 +167,7 @@ class _Mobile_ViewState extends State<Mobile_View> {
                   backgroundColor: MaterialStateProperty.all(Primary_Colour),
                 ),
                 child: Text(
-                  LoginText,
+                  "Login",
                   style: TextStyle(
                     fontSize: Body_Text_Size,
                     color: Colors.white,
@@ -197,12 +191,7 @@ class _Mobile_ViewState extends State<Mobile_View> {
               children: [
                 Text("Don't have an account?"),
                 TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Signup()),
-                    );
-                  },
+                  onPressed: () {},
                   child: Text(
                     "Sign Up",
                     style: TextStyle(

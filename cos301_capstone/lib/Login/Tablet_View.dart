@@ -16,7 +16,6 @@ class _TabletLoginState extends State<TabletLogin> {
   bool Password_Visible = false;
   bool ErrorTextVisible = false;
   String errorText = '';
-  String LoginText = "Login";
 
   // Sign In controllers
   late TextEditingController signInEmailController;
@@ -183,9 +182,6 @@ class _TabletLoginState extends State<TabletLogin> {
                             child: ElevatedButton(
                               onPressed: () async {
                                 try {
-                                  setState(() {
-                                    LoginText = "Logging in...";
-                                  });
                                   await FirebaseAuth.instance.signInWithEmailAndPassword(
                                     email: signInEmailController.text,
                                     password: signInPasswordController.text,
@@ -205,7 +201,6 @@ class _TabletLoginState extends State<TabletLogin> {
                                     } else {
                                       errorText = e.toString();
                                     }
-                                    LoginText = "Login";
                                   });
                                 }
                               },
@@ -213,7 +208,7 @@ class _TabletLoginState extends State<TabletLogin> {
                                 backgroundColor: MaterialStateProperty.all(Primary_Colour),
                               ),
                               child: Text(
-                                LoginText,
+                                "Login",
                                 style: TextStyle(
                                   fontSize: Body_Text_Size,
                                   color: Colors.white,
@@ -240,6 +235,7 @@ class _TabletLoginState extends State<TabletLogin> {
                               Text("Don't have an account?"),
                               TextButton(
                                 onPressed: () {
+                                  print("Navigating to Sign Up");
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) => Signup()),

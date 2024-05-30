@@ -50,6 +50,8 @@ class SignupMethods {
       return false;
     } else if (signupVariables.signUpLastNameController.text.isEmpty) {
       return false;
+    } else if (signupVariables.signUpBioController.text.isEmpty) {
+      return false;
     }
     return true;
   }
