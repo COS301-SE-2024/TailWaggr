@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:cos301_capstone/Login/Login.dart';
-// import 'package:cos301_capstone/Signup/Signup.dart';
+import 'package:cos301_capstone/Signup/Signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
