@@ -1,6 +1,7 @@
 // ignore_for_file: camel_case_types, prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
+import 'package:cos301_capstone/Navbar/Tablet_View.dart';
 import 'package:flutter/material.dart';
 
 class Navbar extends StatefulWidget {
@@ -26,7 +27,7 @@ class _NavbarState extends State<Navbar> {
         } 
         else if (constraints.maxWidth > 800) {
           return const Scaffold(
-            body: Text("Tablet View"),
+            body: TabletNavbar(),
           );
         }
         else {

@@ -192,7 +192,13 @@ class _AbouMeContainerState extends State<AbouMeContainer> {
                     children: [
                       Icon(Icons.email_outlined, color: themeSettings.Text_Colour.withOpacity(0.5)),
                       SizedBox(width: 10),
-                      Text(profileDetails.Email, style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                      Flexible(
+                        child: Text(
+                          profileDetails.Email,
+                          style: TextStyle(fontSize: Sub_Body_Text_Size),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -207,7 +213,13 @@ class _AbouMeContainerState extends State<AbouMeContainer> {
                     children: [
                       Icon(Icons.phone, color: themeSettings.Text_Colour.withOpacity(0.5)),
                       SizedBox(width: 10),
-                      Text(profileDetails.Phone, style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                      Flexible(
+                        child: Text(
+                          profileDetails.Phone,
+                          style: TextStyle(fontSize: Sub_Body_Text_Size),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -222,7 +234,13 @@ class _AbouMeContainerState extends State<AbouMeContainer> {
                     children: [
                       Icon(Icons.calendar_month, color: themeSettings.Text_Colour.withOpacity(0.5)),
                       SizedBox(width: 10),
-                      Text(profileDetails.Birthdate, style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                      Flexible(
+                        child: Text(
+                          profileDetails.Birthdate,
+                          style: TextStyle(fontSize: Sub_Body_Text_Size),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                   ),
                 ),
