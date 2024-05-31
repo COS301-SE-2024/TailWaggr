@@ -19,21 +19,22 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
         color: themeSettings.Text_Colour,
       ),
       child: Expanded(
-        child: Column(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AbouMeContainer(),
-            SizedBox(height: 20),
-            // Divider(),
-            Flexible(
+            Expanded(
               flex: 1,
-              child: Row(
+              child: AbouMeContainer(),
+            ),
+            SizedBox(width: 20),
+            // Divider(),
+            Expanded(
+              flex: 3,
+              child: Column(
                 children: [
-                  // Container taking up 1/3rd of the width
                   MyPetsContainer(),
-                  SizedBox(width: 20),
-                  // Container taking up 2/3rds of the width
+                  SizedBox(height: 20),
                   PostsContainer(),
                 ],
               ),
@@ -71,26 +72,13 @@ class _PostsContainerState extends State<PostsContainer> {
           ],
         ),
         child: DefaultTabController(
-          length: 3,
+          length: 2,
           child: Column(
             children: [
               TabBar(
                 dividerColor: Colors.transparent,
                 tabs: [
-                  Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.person_outline),
-                        SizedBox(width: 10),
-                        Text(
-                          "Personal Details",
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                        ),
-                      ],
-                    ),
-                  ),
+            
                   Tab(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -117,7 +105,6 @@ class _PostsContainerState extends State<PostsContainer> {
               Expanded(
                 child: TabBarView(
                   children: [
-                    PersonalDetails(),
                     Icon(Icons.add_box_outlined),
                     Icon(Icons.calendar_month),
                   ],
@@ -126,16 +113,6 @@ class _PostsContainerState extends State<PostsContainer> {
             ],
           ),
         ),
-        // SingleChildScrollView(
-        //   scrollDirection: Axis.vertical,
-        //   child: Column(
-        //     mainAxisAlignment: MainAxisAlignment.start,
-        //     crossAxisAlignment: CrossAxisAlignment.start,
-        //     children: [
-
-        //     ],
-        //   ),
-        // ),
       ),
     );
   }
@@ -163,43 +140,167 @@ class _AbouMeContainerState extends State<AbouMeContainer> {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 100,
-            backgroundImage: NetworkImage(profileDetails.ProfilePicture),
-          ),
-          SizedBox(width: 20),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "About Me",
-                style: TextStyle(
-                  fontSize: Subtitle_Text_Size,
-                  color: themeSettings.Primary_Colour,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 100,
+              backgroundImage: NetworkImage(profileDetails.ProfilePicture),
+            ),
+            SizedBox(width: 20),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Text(
+                //   "About Me",
+                //   style: TextStyle(
+                //     fontSize: Subtitle_Text_Size,
+                //     color: themeSettings.Primary_Colour,
+                //   ),
+                // ),
+                // SizedBox(height: 20),
+                Column(
+                  children: [
+                    Text(profileDetails.Name, style: TextStyle(fontSize: Sub_Heading_Text_Size)),
+                    Text(profileDetails.Bio, style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                  ],
                 ),
-              ),
-              SizedBox(height: 20),
-              Column(
-                children: [
-                  Text(profileDetails.Name, style: TextStyle(fontSize: Sub_Heading_Text_Size)),
-                  Text(profileDetails.Bio, style: TextStyle(fontSize: Sub_Body_Text_Size)),
-                ],
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  // Edit Profile
-                },
-                child: Text("Edit Profile", style: TextStyle(color: themeSettings.Text_Colour)),
-              ),
-            ],
-          )
-        ],
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    // Edit Profile
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: themeSettings.Primary_Colour,
+                  ),
+                  child: Text("Edit Profile", style: TextStyle(color: Colors.white)),
+                ),
+                SizedBox(height: 20),
+                Text("Profile Details", style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Primary_Colour)),
+                Divider(),
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: themeSettings.Card_Colour,
+                    borderRadius: BorderRadius.circular(10),
+                    // border: Border.all(color: themeSettings.Primary_Colour),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.email_outlined, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                      SizedBox(width: 10),
+                      Text(profileDetails.Email, style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: themeSettings.Card_Colour,
+                    borderRadius: BorderRadius.circular(10),
+                    // border: Border.all(color: themeSettings.Primary_Colour),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.phone, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                      SizedBox(width: 10),
+                      Text(profileDetails.Phone, style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: themeSettings.Card_Colour,
+                    borderRadius: BorderRadius.circular(10),
+                    // border: Border.all(color: themeSettings.Primary_Colour),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.calendar_month, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                      SizedBox(width: 10),
+                      Text(profileDetails.Birthdate, style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: themeSettings.Card_Colour,
+                    borderRadius: BorderRadius.circular(10),
+                    // border: Border.all(color: themeSettings.Primary_Colour),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.home, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                      SizedBox(width: 10),
+                      Flexible(
+                        child: Text(
+                          profileDetails.Location,
+                          style: TextStyle(fontSize: Sub_Body_Text_Size),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                Text("User type", style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Primary_Colour)),
+                Divider(),
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: themeSettings.Card_Colour,
+                    borderRadius: BorderRadius.circular(10),
+                    // border: Border.all(color: themeSettings.Primary_Colour),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.pets, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                      SizedBox(width: 10),
+                      Text("Pet enthusiast", style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                    ],
+                  ),
+                ),
+                if (profileDetails.UserType == "Veterinarian")
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: themeSettings.Card_Colour,
+                      borderRadius: BorderRadius.circular(10),
+                      // border: Border.all(color: themeSettings.Primary_Colour),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.medical_services, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                        SizedBox(width: 10),
+                        Text("Veterinarian", style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                      ],
+                    ),
+                  ),
+                if (profileDetails.UserType == "PetKeeper")
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: themeSettings.Card_Colour,
+                      borderRadius: BorderRadius.circular(10),
+                      // border: Border.all(color: themeSettings.Primary_Colour),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.medical_services, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                        SizedBox(width: 10),
+                        Text("Pet sitter", style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                      ],
+                    ),
+                  ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -216,7 +317,7 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      flex: 1, // This sets the flex to 1/3rd
+      flex: 2, // This sets the flex to 1/3rd
       child: Container(
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -238,7 +339,7 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
               Text(
                 "My Pets",
                 style: TextStyle(
-                  fontSize: Subtitle_Text_Size,
+                  fontSize: Sub_Heading_Text_Size,
                   color: themeSettings.Primary_Colour,
                 ),
               ),
@@ -272,152 +373,33 @@ class PetProfileButton extends StatefulWidget {
 class _PetProfileButtonState extends State<PetProfileButton> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 300,
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 35,
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 35,
+        ),
+        SizedBox(width: 20),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.petName,
+                style: TextStyle(fontSize: Sub_Heading_Text_Size),
+                overflow: TextOverflow.ellipsis,
+              ),
+              // SizedBox(height: 8),
+              Text(
+                widget.petBio,
+                style: TextStyle(fontSize: Sub_Body_Text_Size),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+            ],
           ),
-          SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.petName,
-                  style: TextStyle(fontSize: Sub_Heading_Text_Size),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                // SizedBox(height: 8),
-                Text(
-                  widget.petBio,
-                  style: TextStyle(fontSize: Sub_Body_Text_Size),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class PersonalDetails extends StatefulWidget {
-  const PersonalDetails({super.key});
-
-  @override
-  State<PersonalDetails> createState() => _PersonalDetailsState();
-}
-
-class _PersonalDetailsState extends State<PersonalDetails> {
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Column(
-        children: [
-          SizedBox(height: 5),
-          Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: themeSettings.Card_Colour,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: themeSettings.Primary_Colour),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.email_outlined, color: themeSettings.Text_Colour.withOpacity(0.5)),
-                SizedBox(width: 10),
-                Text(profileDetails.Email),
-              ],
-            ),
-          ),
-          SizedBox(height: 5),
-          Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: themeSettings.Card_Colour,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: themeSettings.Primary_Colour),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.email_outlined, color: themeSettings.Text_Colour.withOpacity(0.5)),
-                SizedBox(width: 10),
-                Text(profileDetails.Email),
-              ],
-            ),
-          ),
-          SizedBox(height: 5),
-          Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: themeSettings.Card_Colour,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: themeSettings.Primary_Colour),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.email_outlined, color: themeSettings.Text_Colour.withOpacity(0.5)),
-                SizedBox(width: 10),
-                Text(profileDetails.Email),
-              ],
-            ),
-          ),
-          SizedBox(height: 5),
-          Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: themeSettings.Card_Colour,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: themeSettings.Primary_Colour),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.email_outlined, color: themeSettings.Text_Colour.withOpacity(0.5)),
-                SizedBox(width: 10),
-                Text(profileDetails.Email),
-              ],
-            ),
-          ),
-          SizedBox(height: 5),
-          Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: themeSettings.Card_Colour,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: themeSettings.Primary_Colour),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.email_outlined, color: themeSettings.Text_Colour.withOpacity(0.5)),
-                SizedBox(width: 10),
-                Text(profileDetails.Email),
-              ],
-            ),
-          ),
-          SizedBox(height: 5),
-          Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: themeSettings.Card_Colour,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: themeSettings.Primary_Colour),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.email_outlined, color: themeSettings.Text_Colour.withOpacity(0.5)),
-                SizedBox(width: 10),
-                Text(profileDetails.Email),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

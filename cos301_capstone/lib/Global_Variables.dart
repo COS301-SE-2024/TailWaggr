@@ -43,7 +43,11 @@ class ProfileDetails {
   String Name = "John Doe";
   String Bio = "This is my bio";
   String Email = "johndoe@gmail.com";
+  String Phone = "012 345 6789";
+  String Location = "1234 Street Name, City, Country";
+  String Birthdate = "January 1, 2000";
   String ProfilePicture = "https://st3.depositphotos.com/4060975/17707/v/450/depositphotos_177073010-stock-illustration-male-vector-icon.jpg";
+  String UserType = "Veterinarian";
 
   List pets = [
     {
