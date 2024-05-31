@@ -106,18 +106,11 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
             ],
           ),
         ),
-        Expanded(
-          child: Container(
-            color: themeSettings.Background_Colour,
-            padding: EdgeInsets.all(30),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ProfileDesktop(),
-              ],
-            ),
-          ),
+        Container(
+          width: MediaQuery.of(context).size.width - 250,
+          color: themeSettings.Background_Colour,
+          padding: EdgeInsets.all(20),
+          child: ProfileDesktop(),
         ),
       ],
     );

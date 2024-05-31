@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
-import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/User_Auth/Auth_Gate.dart';
 import 'package:cos301_capstone/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
