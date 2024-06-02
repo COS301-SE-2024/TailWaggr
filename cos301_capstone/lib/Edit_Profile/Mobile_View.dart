@@ -81,25 +81,19 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
                     ),
                   ),
                   SizedBox(width: 20),
-                  SizedBox(
-                    width: 370,
-                    child: TextField(
-                      controller: EditProfileVariables.nameController,
-                      decoration: InputDecoration(
-                        labelText: "Name",
-                        border: OutlineInputBorder(),
-                      ),
+                  TextField(
+                    controller: EditProfileVariables.nameController,
+                    decoration: InputDecoration(
+                      labelText: "Name",
+                      border: OutlineInputBorder(),
                     ),
                   ),
                   SizedBox(height: 20),
-                  SizedBox(
-                    width: 370,
-                    child: TextField(
-                      controller: EditProfileVariables.surnameController,
-                      decoration: InputDecoration(
-                        labelText: "Surname",
-                        border: OutlineInputBorder(),
-                      ),
+                  TextField(
+                    controller: EditProfileVariables.surnameController,
+                    decoration: InputDecoration(
+                      labelText: "Surname",
+                      border: OutlineInputBorder(),
                     ),
                   ),
                 ],
