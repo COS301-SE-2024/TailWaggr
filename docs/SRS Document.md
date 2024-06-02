@@ -31,3 +31,11 @@
 6. **As a returning user,** I want to log in to my account so that I can access my profile and pets' information.
 7. **As a returning user,** I want to reset my password if I forget it so that I can regain access to my account.
 8. **As a user,** I want to log in with my email and password so that I can access my account securely.
+
+### Profile Subsystem
+
+1. **As a user,** I want to edit my profile photo so that I can personalise my account.
+2. **As a user,** I want to edit my username so that I can update my display name.
+3. **As a user,** I want to edit my personal details so that my profile information is up-to-date.
+4. **As a user,** I want to add a pet profile so that I can keep track of my pets' information.
+5. **As a user,** I want to add my pet's details so that the profile is complete.
