@@ -49,7 +49,7 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                   style: TextStyle(
                     fontSize: Title_Text_Size,
                     fontWeight: FontWeight.bold,
-                    color: Primary_Colour,
+                    color: ThemeSettings.Primary_Colour,
                   ),
                 ),
                 SizedBox(height: 20),
@@ -62,18 +62,18 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                         decoration: InputDecoration(
                           labelText: "First Name",
                           labelStyle: TextStyle(
-                            color: Primary_Colour,
+                            color: ThemeSettings.Primary_Colour,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
-                              color: Primary_Colour,
+                              color: ThemeSettings.Primary_Colour,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
-                              color: Primary_Colour,
+                              color: ThemeSettings.Primary_Colour,
                             ),
                           ),
                         ),
@@ -87,18 +87,18 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                         decoration: InputDecoration(
                           labelText: "Last Name",
                           labelStyle: TextStyle(
-                            color: Primary_Colour,
+                            color: ThemeSettings.Primary_Colour,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
-                              color: Primary_Colour,
+                              color: ThemeSettings.Primary_Colour,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
-                              color: Primary_Colour,
+                              color: ThemeSettings.Primary_Colour,
                             ),
                           ),
                         ),
@@ -112,18 +112,18 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                   decoration: InputDecoration(
                     labelText: "Email",
                     labelStyle: TextStyle(
-                      color: Primary_Colour,
+                      color: ThemeSettings.Primary_Colour,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: Primary_Colour,
+                        color: ThemeSettings.Primary_Colour,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: Primary_Colour,
+                        color: ThemeSettings.Primary_Colour,
                       ),
                     ),
                   ),
@@ -140,24 +140,24 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                         decoration: InputDecoration(
                           labelText: "Password",
                           labelStyle: TextStyle(
-                            color: Primary_Colour,
+                            color: ThemeSettings.Primary_Colour,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
-                              color: Primary_Colour,
+                              color: ThemeSettings.Primary_Colour,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
-                              color: Primary_Colour,
+                              color: ThemeSettings.Primary_Colour,
                             ),
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(
                               Password_Visible ? Icons.visibility : Icons.visibility_off,
-                              color: Primary_Colour,
+                              color: ThemeSettings.Primary_Colour,
                             ),
                             onPressed: () {
                               setState(() {
@@ -178,24 +178,24 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                         decoration: InputDecoration(
                           labelText: "Confirm Password",
                           labelStyle: TextStyle(
-                            color: Primary_Colour,
+                            color: ThemeSettings.Primary_Colour,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
-                              color: Primary_Colour,
+                              color: ThemeSettings.Primary_Colour,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
-                              color: Primary_Colour,
+                              color: ThemeSettings.Primary_Colour,
                             ),
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(
                               Confirm_Password_Visible ? Icons.visibility : Icons.visibility_off,
-                              color: Primary_Colour,
+                              color: ThemeSettings.Primary_Colour,
                             ),
                             onPressed: () {
                               setState(() {
@@ -294,7 +294,7 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                       });
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Primary_Colour),
+                      backgroundColor: MaterialStateProperty.all(ThemeSettings.Primary_Colour),
                     ),
                     child: Text(
                       SignupButtonText,
@@ -330,7 +330,7 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                       child: Text(
                         "Sign In",
                         style: TextStyle(
-                          color: Primary_Colour,
+                          color: ThemeSettings.Primary_Colour,
                         ),
                       ),
                     ),
