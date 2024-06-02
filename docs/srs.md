@@ -26,11 +26,11 @@ Future iterations may consider expanding the scope to include features like:
 * Online pet stores or marketplaces.
 * Integration with wearable pet trackers.
 
-## Class diagram**
+## Class diagram
 ![Use Case Diagram](doc_images/CDiagrams.png)
 
 
-## User stories/user characteristics**:
+## User stories/user characteristics:
 User Characteristics:
 
 Normal User:
@@ -104,72 +104,69 @@ Pet Caretaker User:
 4. As a pet caretaker , I want to receive notifications for upcoming appointments with pet owners so that I don't miss them.
 5. As a user, I want to edit my notification settings so that I can control what notifications I receive.
 
-## Functional requirements**
-
+## Functional requirements
 1. User Accounts subsystem:
-    1.1.  User must be able to Sign up:
-        1.1.1. Enter their name
-        1.1.2. User must be able to enter their valid password
-        1.1.3. User must be able to enter their valid email address
-
-1.3.  User must be able to login:
-        1.3.1. User must be able to reset their password
-        1.3.2. User must be able to login with email
-        1.3.3. User must be able to login with their password
-
-2.       Profile subsystem:
-    2.1.  User must be able to edit their profile:
-        2.1.1. 	User must be able to edit their profile photo
-        2.1.2.     User must be able to edit their personal details
-    2.2.  User must be able to add a pet profile:
-        2.2.1.     User must be able to add pet details
-        2.2.2.   User must be able to upload pet photos to gallery
-    2.3.  User  must be able to delete their profile:
-        2.3.1. 	User must be prompted to confirm profile deletion
-        2.3.2.     User should be deleted from the database
-    2.4.  User must be able to delete a pet profile
-        2.4.1. 	User must be prompted to confirm profile deletion
-        2.4.2.     User should be deleted from the database
-    2.5.  User must be able to edit a pet profile:
-        2.5.1.    User must be able to edit pet details
-        2.5.2.  User must be able to edit pet gallery
-	2.6. Vet must be able to become registered
-		2.6.1  Vet must be able to upload proof of qualification
-		2.6.2  Vet must be able to provide contact details
-		2.6.3  Vet must be able to share clinic location
-    2.7. Pet Caretaker must be able to become registered
-		2.7.1  Caretaker must be able to provide contact details
-		2.7.2  Caretaker must be able to share location
+    1.  User must be able to Sign up:
+        1. Enter their name
+        2. User must be able to enter their valid password
+        3. User must be able to enter their valid email address
+    2.  User must be able to login:
+        1. User must be able to reset their password
+        2. User must be able to login with email
+        3. User must be able to login with their password
+2. Profile subsystem:
+    1.  User must be able to edit their profile:
+        1. User must be able to edit their profile photo
+        2. User must be able to edit their personal details
+    2.  User must be able to add a pet profile:
+        1. User must be able to add pet details
+        2. User must be able to upload pet photos to gallery
+    3.  User must be able to delete their profile:
+        1. User must be prompted to confirm profile deletion
+        2. User should be deleted from the database
+    4.  User must be able to delete a pet profile
+        1. User must be prompted to confirm profile deletion
+        2. User should be deleted from the database
+    5.  User must be able to edit a pet profile:
+        1. User must be able to edit pet details
+        2. User must be able to edit pet gallery
+	6. Vet must be able to become registered
+		1. Vet must be able to upload proof of qualification
+		2. Vet must be able to provide contact details
+		3. Vet must be able to share clinic location
+    7. Pet Caretaker must be able to become registered
+		1. Caretaker must be able to provide contact details
+		2. Caretaker must be able to share location
 3. Location subsystem:
-    3.1.  User must be able to search for found pets:
-        3.1.1. 	User must be able to enter a pet name
-        3.1.2.     The user must be able to view search results
-    3.2.  User must to able to find Veterinarians around their area:
-        3.2.1. 	Users must be able to see the location of the vet clinic
-        3.2.2.     Users must be able to see the vet details
-    3.3.  Users must be able to find a pet caretaker:
-        3.3.1. 	Users must be see pet caretaker details
-        3.3.2.     User must be able to see the pet caretaker location
-4.       Forums subsystem:
-    4.1.  Users must be able to create forum
-        4.1.1.     Users must be able to create forums
-        4.1.2.     Users must be able to create forum posts
-    4.1.3.     Users must be able to select or create relevant tags to categorise the forum
-    4.2.  Users must be able to interact with posts
-        4.2.1.     Users must be able to like a post
-        4.2.2.     Users must be able to share a post
-        4.2.3.     Users must be able to comment on a post
+    1.  User must be able to search for found pets:
+        1. User must be able to enter a pet name
+        2. The user must be able to view search results
+    2.  User must to able to find Veterinarians around their area:
+        1. Users must be able to see the location of the vet clinic
+        2. Users must be able to see the vet details
+    3.  Users must be able to find a pet caretaker:
+        1. Users must be see pet caretaker details
+        2. User must be able to see the pet caretaker location
+4. Forums subsystem:
+    1.  Users must be able to create forum
+        1. Users must be able to create forums
+        2. Users must be able to create forum posts
+        3. Users must be able to select or create relevant tags to categorise the forum
+    2.  Users must be able to interact with posts
+        1. Users must be able to like a post
+        2. Users must be able to share a post
+        3. Users must be able to comment on a post
 5. Notifications subsystem:
-	5.1. Users must be able to receive notifications from their forum posts
-		5.1.1. Users must receive notifications if they receive a like on their forum posts
-		5.1.2. User must receive notifications if they receive a comment on their forum posts
-		5.1.3. Users must receive notifications if their forum post is shared
-    5.2. Users must be able to receive notifications from followed forums
-        5.2.1. Users must be able to receive notifications about new comments on forums they follow
-        5.2.2 Users must be able to receive notifications for replies on their comments on forums
-    5.3 Pet caretakers must receive notifications of users interested in their services
-    	5.3.1  Pet caretakers must receive notifications of users requesting their service
-    	5.3.2  Pet caretakers must receive notifications of upcoming appointments for their pets
+	1. Users must be able to receive notifications from their forum posts
+		1. Users must receive notifications if they receive a like on their forum posts
+		2. User must receive notifications if they receive a comment on their forum posts
+		3. Users must receive notifications if their forum post is shared
+    2. Users must be able to receive notifications from followed forums
+        1. Users must be able to receive notifications about new comments on forums they follow
+        2. Users must be able to receive notifications for replies on their comments on forums
+    3. Pet caretakers must receive notifications of users interested in their services
+    	1.  Pet caretakers must receive notifications of users requesting their service
+    	2.  Pet caretakers must receive notifications of upcoming appointments for their pets
 
-## Use Case diagrams:**
+## Use Case diagrams:
 ![Use Case Diagram](doc_images/UCDiagrams.jpg)
