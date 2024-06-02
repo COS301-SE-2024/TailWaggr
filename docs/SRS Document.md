@@ -49,3 +49,10 @@
 13. **As a user,** I want to edit my pet's profile photo so that it is personalised.
 14. **As a vet,** I want to edit my profile to include my vet clinic’s details.
 15. **As a pet caretaker,** I want to add my details so that pet owners can find and contact me.
+
+### Location Subsystem
+
+1. **As a user,** I want to search for found pets so that I can find my lost pet.
+2. **As a user,** I want to enter a pet name during the search so that I can find specific pets.
+3. **As a user,** I want to view search results so that I can see the found pets' information.
+4. **As a user,** I want to find veterinarians around my area so that I can get medical care for my pet.
