@@ -27,4 +27,7 @@
 2. **As a user,** I want to enter my username during sign-up so that I can create a unique identity.
 3. **As a user,** I want to enter my password during sign-up so that my account is secure.
 4. **As a user,** I want to enter my email address during sign-up so that I can receive notifications and account-related information.
-
+5. **As a user,** I want to fill in my personal details during sign-up so that my profile is complete.
+6. **As a returning user,** I want to log in to my account so that I can access my profile and pets' information.
+7. **As a returning user,** I want to reset my password if I forget it so that I can regain access to my account.
+8. **As a user,** I want to log in with my email and password so that I can access my account securely.
