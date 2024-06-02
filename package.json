@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "coveralls-next": "^4.2.1"
+  }
+}
