@@ -34,7 +34,7 @@ jobs:
 
     - name: Convert coverage to lcov
       run: |
-        dart run coverage:format_coverage --lcov --in=cos301_capstone/coverage --out=cos301_capstone/coverage/lcov.info --packages=cos301_capstone/.dart_tool/package_config.json --report-on=lib
+        dart run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --package=.
       working-directory: cos301_capstone
 
     - name: Upload coverage to Coveralls
