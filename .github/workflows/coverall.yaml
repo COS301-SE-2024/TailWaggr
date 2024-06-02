@@ -23,7 +23,6 @@ jobs:
       working-directory: cos301_capstone
     - run: flutter test --coverage || true
       working-directory: cos301_capstone
-    - run: ls -la ./cos301_capstone/coverage
     - run: cat ./cos301_capstone/coverage/lcov.info
     - name: Coveralls
       uses: coverallsapp/github-action@master
