@@ -1,8 +1,8 @@
-name: Flutter Coverage
+name: Flutter Testing
 
 on:
   push:
-    branches: [ dev, feat/badges ]
+    branches: [ dev ]
   pull_request:
     branches: [ dev, master ]
 
