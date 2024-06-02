@@ -18,7 +18,7 @@ jobs:
         java-version: '12.x'
     - uses: subosito/flutter-action@v1
       with:
-        flutter-version: '2.x'
+        flutter-version: '3.x'
     - run: flutter pub get
       working-directory: cos301_capstone
     - run: flutter test --coverage
