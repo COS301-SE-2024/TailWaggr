@@ -66,4 +66,6 @@
 2. **As a user,** I want to like a forum post so that I can show my appreciation for the content.
 3. **As a user,** I want to share a forum post so that I can spread useful information.
 4. **As a user,** I want to comment on a forum post so that I can participate in the discussion.
-
+5. **As a user,** I want to create forum posts about lost pets.
+6. **As a vet,** I want to post news and events about my clinic.
+7. **As a vet,** I want to create forums about taking care of pets and my clinic.
