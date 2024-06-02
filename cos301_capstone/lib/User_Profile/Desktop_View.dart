@@ -2,6 +2,7 @@
 
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:flutter/material.dart';
+import 'package:animations/animations.dart';
 
 class ProfileDesktop extends StatefulWidget {
   const ProfileDesktop({Key? key}) : super(key: key);
@@ -78,7 +79,6 @@ class _PostsContainerState extends State<PostsContainer> {
               TabBar(
                 dividerColor: Colors.transparent,
                 tabs: [
-            
                   Tab(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -154,14 +154,6 @@ class _AbouMeContainerState extends State<AbouMeContainer> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Text(
-                //   "About Me",
-                //   style: TextStyle(
-                //     fontSize: Subtitle_Text_Size,
-                //     color: themeSettings.Primary_Colour,
-                //   ),
-                // ),
-                // SizedBox(height: 20),
                 Column(
                   children: [
                     Text(profileDetails.Name, style: TextStyle(fontSize: Sub_Heading_Text_Size)),
@@ -169,15 +161,51 @@ class _AbouMeContainerState extends State<AbouMeContainer> {
                   ],
                 ),
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    // Edit Profile
+                OpenContainer(
+                  transitionDuration: Duration(milliseconds: 300),
+                  closedBuilder: (context, action) {
+                    return Container(
+                      padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                      decoration: BoxDecoration(
+                        color: themeSettings.Primary_Colour,
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Text(
+                        "Edit Profile",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: themeSettings.Primary_Colour,
-                  ),
-                  child: Text("Edit Profile", style: TextStyle(color: Colors.white)),
+                  closedColor: Colors.transparent,
+                  closedElevation: 0,
+                  openBuilder: (context, action) {
+                    return Scaffold(
+                      appBar: AppBar(
+                        title: Text(
+                          'Edit your profile',
+                          style: TextStyle(
+                            color: themeSettings.Primary_Colour,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        iconTheme: IconThemeData(color: themeSettings.Primary_Colour),
+                      ),
+                      body: Container(
+                        width: 450,
+                        height: 450,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text("Edit Profile"),
+                      ),
+                    );
+                  },
                 ),
+
                 SizedBox(height: 20),
                 Text("Profile Details", style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Primary_Colour)),
                 Divider(),

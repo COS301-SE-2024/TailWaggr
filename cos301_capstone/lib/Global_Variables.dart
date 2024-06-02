@@ -8,36 +8,60 @@ const Body_Text_Size = 20.0;
 const Sub_Body_Text_Size = 16.0;
 
 class ThemeSettings {
-  Color Primary_Colour = Color(0xFF7228A0);
-  Color Secondary_Colour = Color(0xFF9C89FF);
-  Color Tertiary_Colour = Color(0xFF99CCED);
-  Color Background_Colour = Colors.white10;
-  Color Text_Colour = Colors.black;
-  Color Card_Colour = Colors.white;
-  var ThemeMode = "Light";
+  static Color _primaryColor = Color(0xFF7228A0);
+  static Color _secondaryColor = Color(0xFF9C89FF);
+  static Color _tertiaryColor = Color(0xFF99CCED);
+  static Color _backgroundColor = Colors.white10;
+  static Color _textColor = Colors.black;
+  static Color _cardColor = Colors.white;
+  static var _themeMode = "Light";
 
-  void ToggleTheme() {
-    if (ThemeMode == "Light") {
-      Primary_Colour = Color(0xFF7228A0);
-      Secondary_Colour = Color.fromARGB(255, 0, 0, 0);
-      Tertiary_Colour = Color.fromARGB(255, 0, 0, 0);
-      Background_Colour = Color.fromARGB(255, 21, 21, 21);
-      Text_Colour = Colors.white;
-      Card_Colour = Color.fromARGB(255, 21, 21, 21);
-      ThemeMode = "Dark";
-    } else if (ThemeMode == "Dark") {
-      Primary_Colour = Color(0xFF7228A0);
-      Secondary_Colour = Color(0xFF9C89FF);
-      Tertiary_Colour = Color(0xFF99CCED);
-      Background_Colour = Colors.white;
-      Text_Colour = Colors.black;
-      Card_Colour = Colors.white;
-      ThemeMode = "Light";
+  static Color get Primary_Colour => _primaryColor;
+  static Color get Secondary_Colour => _secondaryColor;
+  static Color get Tertiary_Colour => _tertiaryColor;
+  static Color get Background_Colour => _backgroundColor;
+  static Color get Text_Colour => _textColor;
+  static Color get Card_Colour => _cardColor;
+  static String get themeMode => _themeMode;
+
+  static void toggleTheme() {
+    if (_themeMode == "Light") {
+      _primaryColor = Color(0xFF7228A0);
+      _secondaryColor = Color.fromARGB(255, 0, 0, 0);
+      _tertiaryColor = Color.fromARGB(255, 0, 0, 0);
+      _backgroundColor = Color.fromARGB(255, 21, 21, 21);
+      _textColor = Colors.white;
+      _cardColor = Color.fromARGB(255, 21, 21, 21);
+      _themeMode = "Dark";
+    } else if (_themeMode == "Dark") {
+      _primaryColor = Color(0xFF7228A0);
+      _secondaryColor = Color(0xFF9C89FF);
+      _tertiaryColor = Color(0xFF99CCED);
+      _backgroundColor = Colors.white;
+      _textColor = Colors.black;
+      _cardColor = Colors.white;
+      _themeMode = "Light";
     }
   }
 }
 
-ThemeSettings themeSettings = ThemeSettings();
+class ThemeSettingsObserver extends ChangeNotifier {
+  Color get Primary_Colour => ThemeSettings.Primary_Colour;
+  Color get Secondary_Color => ThemeSettings.Secondary_Colour;
+  Color get Tertiary_Colour => ThemeSettings.Tertiary_Colour;
+  Color get Background_Colour => ThemeSettings.Background_Colour;
+  Color get Text_Colour => ThemeSettings.Text_Colour;
+  Color get Card_Colour => ThemeSettings.Card_Colour;
+  String get themeMode => ThemeSettings.themeMode;
+
+  void ToggleTheme() {
+    ThemeSettings.toggleTheme();
+    print("Theme Mode: " + themeSettings.themeMode);
+    notifyListeners();
+  }
+}
+
+ThemeSettingsObserver themeSettings = ThemeSettingsObserver();
 
 class ProfileDetails {
   String Name = "John Doe";

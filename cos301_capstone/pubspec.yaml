@@ -39,6 +39,7 @@ dependencies:
   firebase_auth: ^4.17.8
   step_progress_indicator: ^1.0.2
   flutter_switch_dark_light: ^0.0.4
+  animations: ^2.0.11
 
 dev_dependencies:
   flutter_test:

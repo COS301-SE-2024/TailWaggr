@@ -1,6 +1,8 @@
 // ignore_for_file: camel_case_types, prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
+import 'package:cos301_capstone/Navbar/Mobile_View.dart';
 import 'package:cos301_capstone/Navbar/Tablet_View.dart';
 import 'package:flutter/material.dart';
 
@@ -14,25 +16,36 @@ class Navbar extends StatefulWidget {
 class _NavbarState extends State<Navbar> {
   Color containerColor = Colors.transparent;
 
-
-
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth > 1150) {
-          return const Scaffold(
-            body: DesktopNavbar(),
+          return Scaffold(
+            body: ListenableBuilder(
+              listenable: themeSettings,
+              builder: (BuildContext context, Widget? child) {
+                return DesktopNavbar();
+              },
+            ),
           );
-        } 
-        else if (constraints.maxWidth > 800) {
-          return const Scaffold(
-            body: TabletNavbar(),
+        } else if (constraints.maxWidth > 800) {
+          return Scaffold(
+            body: ListenableBuilder(
+              listenable: themeSettings,
+              builder: (BuildContext context, Widget? child) {
+                return TabletNavbar();
+              },
+            ),
           );
-        }
-        else {
-          return const Scaffold(
-            body: Text("Mobile View"),
+        } else {
+          return Scaffold(
+            body: ListenableBuilder(
+              listenable: themeSettings,
+              builder: (BuildContext context, Widget? child) {
+                return MobileNavbar();
+              },
+            ),
           );
         }
       },

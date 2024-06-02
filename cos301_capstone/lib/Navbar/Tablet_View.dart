@@ -22,7 +22,7 @@ class _TabletNavbarState extends State<TabletNavbar> {
         Container(
           width: 250,
           padding: EdgeInsets.all(30),
-          color: themeSettings.Primary_Colour,
+          color: ThemeSettings.Primary_Colour,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,7 +96,7 @@ class _TabletNavbarState extends State<TabletNavbar> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    themeSettings.ToggleTheme();
+                    ThemeSettings.toggleTheme();
                   });
                 },
                 child: Text("Toggle theme"),
@@ -107,7 +107,7 @@ class _TabletNavbarState extends State<TabletNavbar> {
         ),
         Container(
           width: MediaQuery.of(context).size.width - 250,
-          color: themeSettings.Background_Colour,
+          color: ThemeSettings.Background_Colour,
           padding: EdgeInsets.all(20),
           child: ProfileMobile(),
         ),
