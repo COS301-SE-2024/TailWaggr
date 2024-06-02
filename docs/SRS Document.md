@@ -39,3 +39,8 @@
 3. **As a user,** I want to edit my personal details so that my profile information is up-to-date.
 4. **As a user,** I want to add a pet profile so that I can keep track of my pets' information.
 5. **As a user,** I want to add my pet's details so that the profile is complete.
+6. **As a user,** I want to delete my profile so that I can remove my account from the system.
+7. **As a user,** I want to be prompted to confirm profile deletion so that I don't accidentally delete my profile.
+8. **As a user,** I want my profile to be deleted from the database so that my information is removed.
+9. **As a user,** I want to delete a pet profile so that I can remove pets that I no longer own.
+10. **As a user,** I want to be prompted to confirm pet profile deletion so that I don't accidentally delete it.
