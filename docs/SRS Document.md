@@ -59,7 +59,6 @@
 5. **As a user,** I want to see the location of the vet clinic so that I can visit it.
 6. **As a user,** I want to see the vet's details so that I can contact them for an appointment.
 7. **As a user,** I want to find pet caretaker details so that I can find someone to take care of my pet.
-Of course, here is the formatted paragraph in Markdown:
 
 ### Forums Subsystem
 
