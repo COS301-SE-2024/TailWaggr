@@ -20,9 +20,10 @@ jobs:
       with:
         flutter-version: '2.x'
     - run: flutter pub get
+      working-directory: cos301_capstone
     - run: flutter test --coverage
+      working-directory: cos301_capstone
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      working-directory: cos301_capstone
