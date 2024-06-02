@@ -169,4 +169,8 @@ Pet Caretaker User:
     	2.  Pet caretakers must receive notifications of upcoming appointments for their pets
 
 ## Use Case diagrams:
-![Use Case Diagram](doc_images/UCDiagrams.jpg)
+![Use Case Diagram](doc_images/Account.png)
+![Use Case Diagram](doc_images/Profile.png)
+![Use Case Diagram](doc_images/Location.png)
+![Use Case Diagram](doc_images/Forums.png)
+![Use Case Diagram](doc_images/Notifications.png)
