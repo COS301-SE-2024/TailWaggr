@@ -43,6 +43,12 @@ class ThemeSettings {
       _themeMode = "Light";
     }
   }
+
+  static bool _searchVisible = false;
+  static bool get searchVisible => _searchVisible;
+  static void toggleSearchVisible() {
+    _searchVisible = !_searchVisible;
+  }
 }
 
 class ThemeSettingsObserver extends ChangeNotifier {
@@ -57,6 +63,12 @@ class ThemeSettingsObserver extends ChangeNotifier {
   void ToggleTheme() {
     ThemeSettings.toggleTheme();
     print("Theme Mode: " + themeSettings.themeMode);
+    notifyListeners();
+  }
+
+  bool get searchVisible => ThemeSettings.searchVisible;
+  void toggleSearchVisible() {
+    ThemeSettings.toggleSearchVisible();
     notifyListeners();
   }
 }

@@ -2,6 +2,7 @@
 
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
+import 'package:cos301_capstone/Search_Users/Mobile_View.dart';
 import 'package:cos301_capstone/User_Profile/Desktop_View.dart';
 import 'package:cos301_capstone/User_Profile/Mobile_View.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,7 +16,19 @@ class MobileNavbar extends StatefulWidget {
 }
 
 class _MobileNavbarState extends State<MobileNavbar> {
+  List<Widget> pages = [
+    ProfileMobile(),
+    SearchUsersMobile(),
+  ];
+
+  bool isSearchVisible = false;
+
   Color containerColor = Colors.transparent;
+  Color searchColor = Colors.transparent;
+  List<String> users = [];
+
+  TextEditingController searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,10 +42,16 @@ class _MobileNavbarState extends State<MobileNavbar> {
           ),
         ),
       ),
-      body: Container(
-        color: ThemeSettings.Background_Colour,
-        padding: EdgeInsets.all(20),
-        child: ProfileMobile(),
+      body: ListenableBuilder(
+        listenable: navbarIndexObserver,
+        builder: (BuildContext context, Widget? child) {
+          return Container(
+            // width: MediaQuery.of(context).size.width - (isSearchVisible ? 550 : 250),
+            color: ThemeSettings.Background_Colour,
+            padding: EdgeInsets.all(20),
+            child: pages[navbarIndexObserver.index],
+          );
+        },
       ),
     );
   }
@@ -47,6 +66,7 @@ class NavbarDrawer extends StatefulWidget {
 
 class _NavbarDrawerState extends State<NavbarDrawer> {
   Color containerColor = Colors.transparent;
+  Color searchColor = Colors.transparent;
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -81,13 +101,13 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Navbar_Icon(icon: Icons.home, text: "Home"),
-                Navbar_Icon(icon: Icons.search, text: "Search"),
-                Navbar_Icon(icon: Icons.notifications, text: "Notifications"),
-                Navbar_Icon(icon: Icons.calendar_month, text: "Events"),
-                Navbar_Icon(icon: Icons.map_sharp, text: "Locate"),
-                Navbar_Icon(icon: Icons.settings, text: "Forums"),
-                Navbar_Icon(icon: Icons.person_outline, text: "Profile"),
+                // Navbar_Icon(icon: Icons.home, text: "Home", index: 0),
+                Navbar_Icon(icon: Icons.search, text: "Search", page: SearchUsersMobile()),
+                // Navbar_Icon(icon: Icons.notifications, text: "Notifications", index: 0),
+                // Navbar_Icon(icon: Icons.calendar_month, text: "Events", index: 0),
+                // Navbar_Icon(icon: Icons.map_sharp, text: "Locate", index: 0),
+                // Navbar_Icon(icon: Icons.settings, text: "Forums", index: 0),
+                // Navbar_Icon(icon: Icons.person_outline, text: "Profile", index: 0),
               ],
             ),
             GestureDetector(

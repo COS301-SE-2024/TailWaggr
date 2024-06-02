@@ -2,6 +2,8 @@
 
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Navbar/Desktop_View.dart';
+import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 
@@ -14,31 +16,54 @@ class ProfileDesktop extends StatefulWidget {
 
 class _ProfileDesktopState extends State<ProfileDesktop> {
   @override
+  void initState() {
+    print(themeSettings.Card_Colour);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return DefaultTextStyle(
-      style: TextStyle(
-        fontSize: 20,
-        color: themeSettings.Text_Colour,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+      body: Row(
         children: [
-          Expanded(
-            flex: 1,
-            child: AbouMeContainer(),
-          ),
-          SizedBox(width: 20),
-          Expanded(
-            flex: 3,
-            child: Column(
-              children: [
-                MyPetsContainer(),
-                SizedBox(height: 20),
-                PostsContainer(),
-              ],
+          DesktopNavbar(),
+          Container(
+            width: MediaQuery.of(context).size.width - (themeSettings.searchVisible ? 550 : 250),
+            color: ThemeSettings.Background_Colour,
+            padding: EdgeInsets.all(20),
+            child: DefaultTextStyle(
+              style: TextStyle(
+                fontSize: 20,
+                color: themeSettings.Text_Colour,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: ListenableBuilder(
+                      listenable: navbarIndexObserver,
+                      builder: (BuildContext context, Widget? child) {
+                        return AboutMeContainer();
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 20),
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: [
+                        MyPetsContainer(),
+                        SizedBox(height: 20),
+                        PostsContainer(),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -115,14 +140,14 @@ class _PostsContainerState extends State<PostsContainer> {
   }
 }
 
-class AbouMeContainer extends StatefulWidget {
-  const AbouMeContainer({super.key});
+class AboutMeContainer extends StatefulWidget {
+  const AboutMeContainer({super.key});
 
   @override
-  State<AbouMeContainer> createState() => _AbouMeContainerState();
+  State<AboutMeContainer> createState() => _AboutMeContainerState();
 }
 
-class _AbouMeContainerState extends State<AbouMeContainer> {
+class _AboutMeContainerState extends State<AboutMeContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -184,7 +209,6 @@ class _AbouMeContainerState extends State<AbouMeContainer> {
                     );
                   },
                 ),
-
                 SizedBox(height: 20),
                 Text("Profile Details", style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Primary_Colour)),
                 Divider(),

@@ -2,6 +2,8 @@
 
 import 'package:cos301_capstone/Login/Login.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
+import 'package:cos301_capstone/User_Profile/Desktop_View.dart';
+import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 // import 'package:cos301_capstone/Signup/Signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +22,9 @@ class _AuthGateState extends State<AuthGate> {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return Navbar();
+          // return Navbar();
+          // return ProfileDesktop();
+          return User_Profile();
         }
         return Login();
         // return Signup();
