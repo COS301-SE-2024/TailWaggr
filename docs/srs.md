@@ -203,4 +203,18 @@ Pet Caretaker User:
    - Implement asynchronous operations in Flutter to maintain a responsive user experience.
    - Use Cloud Firestore's offline capabilities to allow users to continue working during network outages.
 
+7. **Maintainability:**
+   - Adhere to a modular architecture in Flutter, separating UI, business logic, and data layers.
+   - Use a linter and formatter to enforce coding standards and consistency.
+   - Write unit and integration tests for Flutter components and Firebase Functions to ensure reliability and ease of maintenance.
+
+8. **Extensibility:**
+   - Use Flutter's plugin system to integrate new features and services seamlessly.
+   - Structure Firebase Firestore schema to allow easy addition of new data fields and relationships.
+   - Design backend services in a modular fashion to accommodate future enhancements with minimal changes.
+
+9. **Cost-effectiveness:**
+   - Utilize Firebase's pay-as-you-go model to manage costs effectively, scaling expenses with usage.
+   - Optimize cloud function deployments to minimize execution time and reduce costs.
+   - Use shared components and services in Flutter to reduce development and maintenance costs.
 
