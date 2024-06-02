@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'tailwaggr.appspot.com',
     measurementId: 'G-EC9P4JK52F',
   );
+
 }
