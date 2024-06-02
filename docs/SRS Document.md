@@ -56,3 +56,6 @@
 2. **As a user,** I want to enter a pet name during the search so that I can find specific pets.
 3. **As a user,** I want to view search results so that I can see the found pets' information.
 4. **As a user,** I want to find veterinarians around my area so that I can get medical care for my pet.
+5. **As a user,** I want to see the location of the vet clinic so that I can visit it.
+6. **As a user,** I want to see the vet's details so that I can contact them for an appointment.
+7. **As a user,** I want to find pet caretaker details so that I can find someone to take care of my pet.
