@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:animations/animations.dart';
+import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:flutter/material.dart';
 
@@ -18,23 +20,21 @@ class _ProfileMobileState extends State<ProfileMobile> {
         fontSize: 20,
         color: ThemeSettings.Text_Colour,
       ),
-      child: Expanded(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AbouMeContainer(),
-            SizedBox(height: 20),
-            Expanded(
-              flex: 3,
-              child: Column(
-                children: [
-                  PostsContainer(),
-                ],
-              ),
-            )
-          ],
-        ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AbouMeContainer(),
+          SizedBox(height: 20),
+          Expanded(
+            flex: 3,
+            child: Column(
+              children: [
+                PostsContainer(),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
@@ -79,25 +79,38 @@ class _AbouMeContainerState extends State<AbouMeContainer> {
                 children: [
                   Text(profileDetails.Name, style: TextStyle(fontSize: Sub_Heading_Text_Size)),
                   Text(profileDetails.Bio, style: TextStyle(fontSize: Sub_Body_Text_Size)),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        themeSettings.ToggleTheme();
-                      });
-                    },
-                    child: Text("Switch"),
-                  ),
                 ],
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  // Edit Profile
+              OpenContainer(
+                transitionDuration: Duration(milliseconds: 300),
+                closedBuilder: (context, action) {
+                  return Container(
+                    padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                      color: themeSettings.Primary_Colour,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Text(
+                      "Edit Profile",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  );
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ThemeSettings.Primary_Colour,
-                ),
-                child: Text("Edit Profile", style: TextStyle(color: Colors.white)),
+                closedColor: Colors.transparent,
+                closedElevation: 0,
+                openBuilder: (context, action) {
+                  return Scaffold(
+                    appBar: AppBar(
+                      title: Text(
+                        "Edit Profile",
+                        style: TextStyle(color: themeSettings.Primary_Colour, fontSize: 20),
+                      ),
+                      iconTheme: IconThemeData(color: themeSettings.Primary_Colour),
+                    ),
+                    body: EditProfile(),
+                  );
+                },
               ),
             ],
           )

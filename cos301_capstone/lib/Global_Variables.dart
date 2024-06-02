@@ -64,10 +64,13 @@ class ThemeSettingsObserver extends ChangeNotifier {
 ThemeSettingsObserver themeSettings = ThemeSettingsObserver();
 
 class ProfileDetails {
-  String Name = "John Doe";
+  String Name = "John";
+  String Surname = "Doe";
   String Bio = "This is my bio";
   String Email = "johndoe@gmail.com";
   String Phone = "012 345 6789";
+  String DialCode = "+27";
+  String isoCode = "ZA";
   String Location = "1234 Street Name, City, Country";
   String Birthdate = "January 1, 2000";
   String ProfilePicture = "https://st3.depositphotos.com/4060975/17707/v/450/depositphotos_177073010-stock-illustration-male-vector-icon.jpg";

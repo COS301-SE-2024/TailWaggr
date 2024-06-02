@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
@@ -19,29 +20,26 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
         fontSize: 20,
         color: themeSettings.Text_Colour,
       ),
-      child: Expanded(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              flex: 1,
-              child: AbouMeContainer(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 1,
+            child: AbouMeContainer(),
+          ),
+          SizedBox(width: 20),
+          Expanded(
+            flex: 3,
+            child: Column(
+              children: [
+                MyPetsContainer(),
+                SizedBox(height: 20),
+                PostsContainer(),
+              ],
             ),
-            SizedBox(width: 20),
-            // Divider(),
-            Expanded(
-              flex: 3,
-              child: Column(
-                children: [
-                  MyPetsContainer(),
-                  SizedBox(height: 20),
-                  PostsContainer(),
-                ],
-              ),
-            )
-          ],
-        ),
+          )
+        ],
       ),
     );
   }
@@ -68,7 +66,6 @@ class _PostsContainerState extends State<PostsContainer> {
             BoxShadow(
               color: themeSettings.Text_Colour.withOpacity(0.2),
               blurRadius: 10,
-              offset: Offset(0, 5),
             ),
           ],
         ),
@@ -181,27 +178,9 @@ class _AbouMeContainerState extends State<AbouMeContainer> {
                   openBuilder: (context, action) {
                     return Scaffold(
                       appBar: AppBar(
-                        title: Text(
-                          'Edit your profile',
-                          style: TextStyle(
-                            color: themeSettings.Primary_Colour,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                         iconTheme: IconThemeData(color: themeSettings.Primary_Colour),
                       ),
-                      body: Container(
-                        width: 450,
-                        height: 450,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text("Edit Profile"),
-                      ),
+                      body: EditProfile(),
                     );
                   },
                 ),

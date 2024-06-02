@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  address_search_field
   firebase_auth
   firebase_core
 )
