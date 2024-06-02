@@ -76,3 +76,4 @@
 2. **As a user,** I want to receive notifications for new likes on my forum posts so that I know when others appreciate my content.
 3. **As a user,** I want to receive notifications for new forum posts in categories I'm interested in so that I can stay informed.
 4. **As a pet caretaker,** I want to receive notifications for upcoming appointments with pet owners so that I don't miss them.
+5. **As a user,** I want to edit my notification settings so that I can control what notifications I receive.
