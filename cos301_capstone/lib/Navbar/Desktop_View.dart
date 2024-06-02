@@ -21,8 +21,6 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
     ProfileDesktop(),
   ];
 
-  bool isSearchVisible = false;
-
   Color containerColor = Colors.transparent;
   Color searchColor = Colors.transparent;
   List<String> users = [];
@@ -65,14 +63,12 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Navbar_Icon(icon: Icons.home, text: "Home", index: 0),
+                  // Navbar_Icon(icon: Icons.home, text: "Home", index: 0),
                   // Navbar_Icon(icon: Icons.search, text: "Search", index: 1),
-                  Navbar_Icon(icon: Icons.notifications, text: "Notifications", index: 0),
+                  // Navbar_Icon(icon: Icons.notifications, text: "Notifications", index: 0),
                   GestureDetector(
                     onTap: () {
-                      setState(() {
-                        isSearchVisible = !isSearchVisible;
-                      });
+                      themeSettings.toggleSearchVisible();
                     },
                     child: MouseRegion(
                       cursor: SystemMouseCursors.click,
@@ -102,10 +98,10 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                       ),
                     ),
                   ),
-                  Navbar_Icon(icon: Icons.calendar_month, text: "Events", index: 0),
-                  Navbar_Icon(icon: Icons.map_sharp, text: "Locate", index: 0),
-                  Navbar_Icon(icon: Icons.settings, text: "Forums", index: 0),
-                  Navbar_Icon(icon: Icons.person_outline, text: "Profile", index: 0),
+                  // Navbar_Icon(icon: Icons.calendar_month, text: "Events", index: 0),
+                  // Navbar_Icon(icon: Icons.map_sharp, text: "Locate", index: 0),
+                  // Navbar_Icon(icon: Icons.settings, text: "Forums", index: 0),
+                  // Navbar_Icon(icon: Icons.person_outline, text: "Profile", index: 0),
                 ],
               ),
               GestureDetector(
@@ -152,7 +148,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
             ],
           ),
         ),
-        if (isSearchVisible)
+        if (themeSettings.searchVisible)
           Container(
             width: 300,
             padding: EdgeInsets.all(20),
@@ -177,9 +173,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                     IconButton(
                       icon: Icon(Icons.close),
                       onPressed: () {
-                        setState(() {
-                          isSearchVisible = false;
-                        });
+                        themeSettings.toggleSearchVisible();
                       },
                     ),
                   ],
@@ -243,18 +237,6 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
               ],
             ),
           ).animate(),
-        // ListenableBuilder(
-        //   listenable: navbarIndexObserver,
-        //   builder: (BuildContext context, Widget? child) {
-        //     return Container(
-        //       width: MediaQuery.of(context).size.width - (isSearchVisible ? 550 : 250),
-        //       color: ThemeSettings.Background_Colour,
-        //       padding: EdgeInsets.all(20),
-        //       child: pages[navbarIndexObserver.index],
-        //       // child: ProfileDesktop(),
-        //     );
-        //   },
-        // ),
       ],
     );
   }

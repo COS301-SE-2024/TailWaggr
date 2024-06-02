@@ -3,24 +3,26 @@
 import 'package:animations/animations.dart';
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/Navbar/Mobile_View.dart';
 import 'package:flutter/material.dart';
 
-class ProfileMobile extends StatefulWidget {
-  const ProfileMobile({Key? key}) : super(key: key);
+class ProfileTablet extends StatefulWidget {
+  const ProfileTablet({Key? key}) : super(key: key);
 
   @override
-  State<ProfileMobile> createState() => _ProfileMobileState();
+  State<ProfileTablet> createState() => _ProfileTabletState();
 }
 
-class _ProfileMobileState extends State<ProfileMobile> {
+class _ProfileTabletState extends State<ProfileTablet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Row(
         children: [
+          DesktopNavbar(),
           Container(
-            width: MediaQuery.of(context).size.width,
+            width: MediaQuery.of(context).size.width - (themeSettings.searchVisible ? 550 : 250),
             color: ThemeSettings.Background_Colour,
             padding: EdgeInsets.all(20),
             child: DefaultTextStyle(

@@ -3,7 +3,6 @@
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/Navbar/Mobile_View.dart';
-import 'package:cos301_capstone/Navbar/Tablet_View.dart';
 import 'package:flutter/material.dart';
 import 'package:faker/faker.dart';
 
@@ -44,52 +43,36 @@ class NavbarFunctions {
   }
 }
 
-class NavbarIndex {
+class Navbar {
   static int _index = 0;
   static int get index => _index;
   static void setIndex(int indexIn) {
     _index = indexIn;
   }
+
+  static bool _searchVisible = false;
+  static bool get searchVisible => _searchVisible;
+  static void toggleSearchVisible() {
+    _searchVisible = !_searchVisible;
+  }
 }
 
 class NavbarIndexObserver extends ChangeNotifier {
-  int get index => NavbarIndex.index;
+  int get index => Navbar.index;
   void updateIndex(int index) {
-    NavbarIndex.setIndex(index);
+    Navbar.setIndex(index);
     notifyListeners();
   }
-}
 
-class Navbar extends StatefulWidget {
-  const Navbar({super.key});
-
-  @override
-  State<Navbar> createState() => _NavbarState();
-}
-
-class _NavbarState extends State<Navbar> {
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth > 1150) {
-          return DesktopNavbar();
-        } else if (constraints.maxWidth > 951) {
-          return TabletNavbar();
-        } else {
-          return MobileNavbar();
-        }
-      },
-    );
-  }
+  
 }
 
 class Navbar_Icon extends StatefulWidget {
-  const Navbar_Icon({super.key, required this.icon, required this.text, required this.index});
+  const Navbar_Icon({super.key, required this.icon, required this.text, required this.page});
 
   final IconData icon;
   final String text;
-  final int index;
+  final Widget page;
 
   @override
   State<Navbar_Icon> createState() => _Navbar_IconState();
@@ -101,14 +84,18 @@ class _Navbar_IconState extends State<Navbar_Icon> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        navbarIndexObserver.updateIndex(widget.index);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => widget.page),
+        );
       },
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         onEnter: (event) {
-          setState(() {
-            containerColor = Colors.black.withOpacity(0.1);
-          });
+          // setState(() {
+          //   containerColor = Colors.black.withOpacity(0.1);
+          // });
+          
         },
         onExit: (event) {
           setState(() {

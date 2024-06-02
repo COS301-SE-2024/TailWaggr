@@ -16,7 +16,6 @@ class MobileNavbar extends StatefulWidget {
 }
 
 class _MobileNavbarState extends State<MobileNavbar> {
-
   List<Widget> pages = [
     ProfileMobile(),
     SearchUsersMobile(),
@@ -67,7 +66,7 @@ class NavbarDrawer extends StatefulWidget {
 
 class _NavbarDrawerState extends State<NavbarDrawer> {
   Color containerColor = Colors.transparent;
-
+  Color searchColor = Colors.transparent;
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -102,13 +101,13 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Navbar_Icon(icon: Icons.home, text: "Home", index: 0),
-                Navbar_Icon(icon: Icons.search, text: "Search", index: 1),
-                Navbar_Icon(icon: Icons.notifications, text: "Notifications", index: 0),
-                Navbar_Icon(icon: Icons.calendar_month, text: "Events", index: 0),
-                Navbar_Icon(icon: Icons.map_sharp, text: "Locate", index: 0),
-                Navbar_Icon(icon: Icons.settings, text: "Forums", index: 0),
-                Navbar_Icon(icon: Icons.person_outline, text: "Profile", index: 0),
+                // Navbar_Icon(icon: Icons.home, text: "Home", index: 0),
+                Navbar_Icon(icon: Icons.search, text: "Search", page: SearchUsersMobile()),
+                // Navbar_Icon(icon: Icons.notifications, text: "Notifications", index: 0),
+                // Navbar_Icon(icon: Icons.calendar_month, text: "Events", index: 0),
+                // Navbar_Icon(icon: Icons.map_sharp, text: "Locate", index: 0),
+                // Navbar_Icon(icon: Icons.settings, text: "Forums", index: 0),
+                // Navbar_Icon(icon: Icons.person_outline, text: "Profile", index: 0),
               ],
             ),
             GestureDetector(

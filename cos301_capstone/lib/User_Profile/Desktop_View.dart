@@ -2,6 +2,7 @@
 
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
@@ -23,52 +24,47 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListenableBuilder(
-        listenable: themeSettings,
-        builder: (BuildContext context, Widget? child) {
-          return Row(
-            children: [
-              Navbar(),
-              Container(
-                width: MediaQuery.of(context).size.width - 250,
-                color: ThemeSettings.Background_Colour,
-                padding: EdgeInsets.all(20),
-                child: DefaultTextStyle(
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: themeSettings.Text_Colour,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: ListenableBuilder(
-                          listenable: navbarIndexObserver,
-                          builder: (BuildContext context, Widget? child) {
-                            return AboutMeContainer();
-                          },
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          children: [
-                            MyPetsContainer(),
-                            SizedBox(height: 20),
-                            PostsContainer(),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
+      body: Row(
+        children: [
+          DesktopNavbar(),
+          Container(
+            width: MediaQuery.of(context).size.width - (themeSettings.searchVisible ? 550 : 250),
+            color: ThemeSettings.Background_Colour,
+            padding: EdgeInsets.all(20),
+            child: DefaultTextStyle(
+              style: TextStyle(
+                fontSize: 20,
+                color: themeSettings.Text_Colour,
               ),
-            ],
-          );
-        },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: ListenableBuilder(
+                      listenable: navbarIndexObserver,
+                      builder: (BuildContext context, Widget? child) {
+                        return AboutMeContainer();
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 20),
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: [
+                        MyPetsContainer(),
+                        SizedBox(height: 20),
+                        PostsContainer(),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
