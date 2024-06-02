@@ -47,7 +47,19 @@ You can view our project board [here](https://github.com/orgs/COS301-SE-2024/pro
   
 ## Firebase Integration
 
-Tailwaggr uses Firebase for backend services, including authentication, database management, and cloud storage. Ensure you have a Firebase project set up and configured with your Flutter app.
+Tailwaggr uses Firebase for backend services. Here's a breakdown of how we utilize its different services:
+
+- **Authentication**: Firebase Authentication provides a secure and reliable authentication system. We use it to manage user accounts and handle user sign-in and sign-up processes. It supports various authentication methods, including email and password, Google Sign-In, and Facebook Login.
+
+- **Firestore Database**: We use Firebase's Cloud Firestore to store and sync data in real time. It allows us to store user profiles, pet information, and other relevant data. The data is synced across all clients in real time and remains available when the app goes offline.
+
+- **Cloud Storage**: Firebase Cloud Storage is used to store images and other media. This includes profile pictures and any photos shared by users. It provides secure file uploads and downloads for our Firebase apps, regardless of network quality.
+
+- **Cloud Functions**: We use Firebase Cloud Functions to run backend code in response to events triggered by Firebase features and HTTPS requests. This serverless framework allows us to execute our code in a secure, managed environment.
+
+- **Firebase Hosting**: We use Firebase Hosting to serve our static and dynamic content. It provides fast and secure hosting for our web app, with a simple deployment process.
+
+By integrating Firebase, we can focus on creating a great user experience, knowing that Firebase's secure and scalable infrastructure is powering our backend.
 
 ## Getting Started
 
@@ -61,7 +73,7 @@ Tailwaggr uses Firebase for backend services, including authentication, database
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/COS301-SE-2024/TailWaggr.git 
-   cd tailwaggr
+   cd cos301_capstone
 
 2. **Install Dependencies:**
    ```bash
