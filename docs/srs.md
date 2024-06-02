@@ -188,3 +188,19 @@ Pet Caretaker User:
    - Implement robust error handling and retry mechanisms in Flutter to handle intermittent network issues.
    - Use Firebase Firestore's offline data capabilities to ensure the app remains functional during network disruptions.
 
+4. **Security:**
+   - Use Firebase Authentication to manage user sessions securely.
+   - Implement Firestore Security Rules to control access to database records.
+   - Ensure all data transmitted between the app and backend is encrypted using HTTPS.
+
+5. **Usability:**
+   - Design the user interface in Flutter to follow intuitive navigation patterns.
+   - Provide customization options for users to adjust the interface to their preferences.
+   - Ensure the app is accessible, adhering to WCAG (Web Content Accessibility Guidelines) standards.
+
+6. **Availability:**
+   - Utilize Firebase's global infrastructure to ensure high availability and low latency.
+   - Implement asynchronous operations in Flutter to maintain a responsive user experience.
+   - Use Cloud Firestore's offline capabilities to allow users to continue working during network outages.
+
+
