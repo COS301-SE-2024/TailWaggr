@@ -44,3 +44,8 @@
 8. **As a user,** I want my profile to be deleted from the database so that my information is removed.
 9. **As a user,** I want to delete a pet profile so that I can remove pets that I no longer own.
 10. **As a user,** I want to be prompted to confirm pet profile deletion so that I don't accidentally delete it.
+11. **As a user,** I want my pet profile to be deleted from the database so that the information is removed.
+12. **As a user,** I want to edit my pet's details so that the profile information is up-to-date.
+13. **As a user,** I want to edit my pet's profile photo so that it is personalised.
+14. **As a vet,** I want to edit my profile to include my vet clinic’s details.
+15. **As a pet caretaker,** I want to add my details so that pet owners can find and contact me.
