@@ -21,7 +21,7 @@ jobs:
         flutter-version: '3.x'
     - run: flutter pub get
       working-directory: cos301_capstone
-    - run: flutter test --coverage || true
+    - run: flutter test --coverage
       working-directory: cos301_capstone
     - run: cat ./cos301_capstone/coverage/lcov.info
     - name: Coveralls
