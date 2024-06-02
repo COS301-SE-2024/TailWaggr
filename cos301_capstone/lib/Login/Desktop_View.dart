@@ -63,7 +63,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
                             style: TextStyle(
                               fontSize: Title_Text_Size,
                               fontWeight: FontWeight.bold,
-                              color: Primary_Colour,
+                              color: themeSettings.Primary_Colour,
                             ),
                           ),
                           Text(
@@ -81,7 +81,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
                         style: TextStyle(
                           fontSize: Title_Text_Size,
                           fontWeight: FontWeight.bold,
-                          color: Primary_Colour,
+                          color: themeSettings.Primary_Colour,
                         ),
                       ),
                     ],
@@ -107,18 +107,18 @@ class _DesktopLoginState extends State<DesktopLogin> {
                               decoration: InputDecoration(
                                 labelText: "Email",
                                 labelStyle: TextStyle(
-                                  color: Primary_Colour,
+                                  color: themeSettings.Primary_Colour,
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: Primary_Colour,
+                                    color: themeSettings.Primary_Colour,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: Primary_Colour,
+                                    color: themeSettings.Primary_Colour,
                                   ),
                                 ),
                               ),
@@ -134,24 +134,24 @@ class _DesktopLoginState extends State<DesktopLogin> {
                               decoration: InputDecoration(
                                 labelText: "Password",
                                 labelStyle: TextStyle(
-                                  color: Primary_Colour,
+                                  color: themeSettings.Primary_Colour,
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: Primary_Colour,
+                                    color: themeSettings.Primary_Colour,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: Primary_Colour,
+                                    color: themeSettings.Primary_Colour,
                                   ),
                                 ),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     Password_Visible ? Icons.visibility : Icons.visibility_off,
-                                    color: Primary_Colour,
+                                    color: themeSettings.Primary_Colour,
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -205,7 +205,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
                                 }
                               },
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(Primary_Colour),
+                                backgroundColor: MaterialStateProperty.all(themeSettings.Primary_Colour),
                               ),
                               child: Text(
                                 "Login",
@@ -244,7 +244,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
                                 child: Text(
                                   "Sign Up",
                                   style: TextStyle(
-                                    color: Primary_Colour,
+                                    color: themeSettings.Primary_Colour,
                                   ),
                                 ),
                               ),
