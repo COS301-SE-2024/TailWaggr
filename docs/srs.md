@@ -174,3 +174,50 @@ Pet Caretaker User:
 ![Use Case Diagram](doc_images/Location.png)
 ![Use Case Diagram](doc_images/Forums.png)
 ![Use Case Diagram](doc_images/Notifications.png)
+
+## Quality Attributes
+
+1. **Performance:**
+   - Optimize Firebase queries to ensure efficient data retrieval and usage throughout the application.
+   - Use caching mechanisms in Flutter to minimize unnecessary calls to the backend.
+   - Implement lazy loading for images and data to improve app load times.
+
+2. **Scalability:**
+   - Use Firebase's scalable infrastructure to handle changes in traffic and usage effectively.
+   - Implement Firebase Functions to handle backend logic, allowing the app to scale horizontally.
+   - Design the app architecture to support future enhancements and additional features without significant refactoring.
+
+3. **Reliability:**
+   - Monitor Firebase backend using Firebase Performance Monitoring to ensure system components are operating within safe parameters.
+   - Implement robust error handling and retry mechanisms in Flutter to handle intermittent network issues.
+   - Use Firebase Firestore's offline data capabilities to ensure the app remains functional during network disruptions.
+
+4. **Security:**
+   - Use Firebase Authentication to manage user sessions securely.
+   - Implement Firestore Security Rules to control access to database records.
+   - Ensure all data transmitted between the app and backend is encrypted using HTTPS.
+
+5. **Usability:**
+   - Design the user interface in Flutter to follow intuitive navigation patterns.
+   - Provide customization options for users to adjust the interface to their preferences.
+   - Ensure the app is accessible, adhering to WCAG (Web Content Accessibility Guidelines) standards.
+
+6. **Availability:**
+   - Utilize Firebase's global infrastructure to ensure high availability and low latency.
+   - Implement asynchronous operations in Flutter to maintain a responsive user experience.
+   - Use Cloud Firestore's offline capabilities to allow users to continue working during network outages.
+
+7. **Maintainability:**
+   - Adhere to a modular architecture in Flutter, separating UI, business logic, and data layers.
+   - Use a linter and formatter to enforce coding standards and consistency.
+   - Write unit and integration tests for Flutter components and Firebase Functions to ensure reliability and ease of maintenance.
+
+8. **Extensibility:**
+   - Use Flutter's plugin system to integrate new features and services seamlessly.
+   - Structure Firebase Firestore schema to allow easy addition of new data fields and relationships.
+   - Design backend services in a modular fashion to accommodate future enhancements with minimal changes.
+
+9. **Cost-effectiveness:**
+   - Utilize Firebase's pay-as-you-go model to manage costs effectively, scaling expenses with usage.
+   - Optimize cloud function deployments to minimize execution time and reduce costs.
+   - Use shared components and services in Flutter to reduce development and maintenance costs.
