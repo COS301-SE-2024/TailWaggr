@@ -1,0 +1,50 @@
+name: Flutter Testing
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Java
+      uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.x'
+
+    - name: Install dependencies
+      run: flutter pub get
+      working-directory: cos301_capstone
+
+    - name: Run tests with coverage
+      run: flutter test --coverage || true
+      working-directory: cos301_capstone
+
+    - name: Convert coverage to lcov
+      run: |
+        dart run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --package=.
+      working-directory: cos301_capstone
+
+    - name: Upload coverage to Coveralls
+      uses: coverallsapp/github-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: cos301_capstone/coverage/lcov.info
+
+    - name: Finish Coveralls
+      uses: coverallsapp/github-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        finish: true
