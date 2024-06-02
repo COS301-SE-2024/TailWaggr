@@ -170,3 +170,21 @@ Pet Caretaker User:
 
 ## Use Case diagrams:
 ![Use Case Diagram](doc_images/UCDiagrams.jpg)
+
+## Quality Attributes and Architecture Strategies
+
+1. **Performance:**
+   - Optimize Firebase queries to ensure efficient data retrieval and usage throughout the application.
+   - Use caching mechanisms in Flutter to minimize unnecessary calls to the backend.
+   - Implement lazy loading for images and data to improve app load times.
+
+2. **Scalability:**
+   - Use Firebase's scalable infrastructure to handle changes in traffic and usage effectively.
+   - Implement Firebase Functions to handle backend logic, allowing the app to scale horizontally.
+   - Design the app architecture to support future enhancements and additional features without significant refactoring.
+
+3. **Reliability:**
+   - Monitor Firebase backend using Firebase Performance Monitoring to ensure system components are operating within safe parameters.
+   - Implement robust error handling and retry mechanisms in Flutter to handle intermittent network issues.
+   - Use Firebase Firestore's offline data capabilities to ensure the app remains functional during network disruptions.
+
