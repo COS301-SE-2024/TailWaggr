@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import '.cos301_capstone/test_function.dart';
+import 'test_function.dart';
 
 void main() {
     test('Test add function', () {
