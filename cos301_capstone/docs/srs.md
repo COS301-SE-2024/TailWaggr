@@ -27,10 +27,7 @@ Future iterations may consider expanding the scope to include features like:
 * Integration with wearable pet trackers.
 
 ## Class diagram**
-<p id="gdcalert1" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image1.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert2">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-![alt_text](images/image1.png "image_tooltip")
+![Use Case Diagram](doc_images/CDiagrams.jpg)
 
 
 ## User stories/user characteristics**:
@@ -175,7 +172,4 @@ Pet Caretaker User:
     	5.3.2  Pet caretakers must receive notifications of upcoming appointments for their pets
 
 ## Use Case diagrams:**
-<p id="gdcalert2" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image2.jpg). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert3">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-![alt_text](images/image2.jpg "image_tooltip")
+![Use Case Diagram](doc_images/UCDiagrams.jpg)
