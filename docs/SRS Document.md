@@ -69,3 +69,10 @@
 5. **As a user,** I want to create forum posts about lost pets.
 6. **As a vet,** I want to post news and events about my clinic.
 7. **As a vet,** I want to create forums about taking care of pets and my clinic.
+
+### Notifications Subsystem
+
+1. **As a user,** I want to receive notifications for new comments on my forum posts so that I can stay updated.
+2. **As a user,** I want to receive notifications for new likes on my forum posts so that I know when others appreciate my content.
+3. **As a user,** I want to receive notifications for new forum posts in categories I'm interested in so that I can stay informed.
+4. **As a pet caretaker,** I want to receive notifications for upcoming appointments with pet owners so that I don't miss them.
