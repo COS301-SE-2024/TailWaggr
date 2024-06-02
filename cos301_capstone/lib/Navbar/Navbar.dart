@@ -73,32 +73,11 @@ class _NavbarState extends State<Navbar> {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth > 1150) {
-          return Scaffold(
-            body: ListenableBuilder(
-              listenable: themeSettings,
-              builder: (BuildContext context, Widget? child) {
-                return DesktopNavbar();
-              },
-            ),
-          );
+          return DesktopNavbar();
         } else if (constraints.maxWidth > 951) {
-          return Scaffold(
-            body: ListenableBuilder(
-              listenable: themeSettings,
-              builder: (BuildContext context, Widget? child) {
-                return TabletNavbar();
-              },
-            ),
-          );
+          return TabletNavbar();
         } else {
-          return Scaffold(
-            body: ListenableBuilder(
-              listenable: themeSettings,
-              builder: (BuildContext context, Widget? child) {
-                return MobileNavbar();
-              },
-            ),
-          );
+          return MobileNavbar();
         }
       },
     );

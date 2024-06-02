@@ -42,12 +42,7 @@ class ThemeSettings {
       _cardColor = Colors.white;
       _themeMode = "Light";
     }
-    _themeNotifier.value = !(_themeNotifier.value);
   }
-
-  static final ValueNotifier<bool> _themeNotifier = ValueNotifier<bool>(false);
-
-  static ValueNotifier<bool> get themeNotifier => _themeNotifier;
 }
 
 class ThemeSettingsObserver extends ChangeNotifier {

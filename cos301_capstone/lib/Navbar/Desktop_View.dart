@@ -144,7 +144,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    ThemeSettings.toggleTheme();
+                    themeSettings.ToggleTheme();
                   });
                 },
                 child: Text("Toggle theme"),
@@ -243,19 +243,18 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
               ],
             ),
           ).animate(),
-        ListenableBuilder(
-          listenable: navbarIndexObserver,
-          builder: (BuildContext context, Widget? child) {
-            print("Rerendering page");
-            return Container(
-              width: MediaQuery.of(context).size.width - (isSearchVisible ? 550 : 250),
-              color: ThemeSettings.Background_Colour,
-              padding: EdgeInsets.all(20),
-              child: pages[navbarIndexObserver.index],
-              // child: ProfileDesktop(),
-            );
-          },
-        ),
+        // ListenableBuilder(
+        //   listenable: navbarIndexObserver,
+        //   builder: (BuildContext context, Widget? child) {
+        //     return Container(
+        //       width: MediaQuery.of(context).size.width - (isSearchVisible ? 550 : 250),
+        //       color: ThemeSettings.Background_Colour,
+        //       padding: EdgeInsets.all(20),
+        //       child: pages[navbarIndexObserver.index],
+        //       // child: ProfileDesktop(),
+        //     );
+        //   },
+        // ),
       ],
     );
   }
