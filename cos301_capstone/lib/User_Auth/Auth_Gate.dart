@@ -26,8 +26,8 @@ class _AuthGateState extends State<AuthGate> {
         if (snapshot.hasData) {
           // return Navbar();
           // return ProfileDesktop();
-          // return User_Profile();
-          return Location();
+          return User_Profile();
+          // return Location();
         }
         return Login();
         // return Signup();

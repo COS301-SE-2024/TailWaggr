@@ -180,6 +180,11 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                 OpenContainer(
                   transitionDuration: Duration(milliseconds: 300),
                   closedBuilder: (context, action) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      setState(() {
+                        print("Refreshing the page");
+                      });
+                    });
                     return Container(
                       padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                       decoration: BoxDecoration(
