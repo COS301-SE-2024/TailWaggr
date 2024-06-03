@@ -22,7 +22,8 @@ void main() {
 
     // Build the DesktopNavbar widget.
     await tester.pumpWidget(MaterialApp(home: DesktopNavbar()));
-
+    // Wait for the widget tree to settle.
+    await tester.pumpAndSettle();
     // Verify that the DesktopNavbar widget is displayed.
     expect(find.byType(DesktopNavbar), findsOneWidget);
 
