@@ -23,6 +23,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
   ];
 
   Color containerColor = Colors.transparent;
+  Color themeColor = Colors.transparent;
   Color searchColor = Colors.transparent;
   List<String> users = [];
 
@@ -144,7 +145,34 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                     themeSettings.ToggleTheme();
                   });
                 },
-                child: Text("Toggle theme"),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  onEnter: (event) {
+                    setState(() {
+                      themeColor = Colors.black.withOpacity(0.1);
+                    });
+                  },
+                  onExit: (event) {
+                    setState(() {
+                      themeColor = Colors.transparent;
+                    });
+                  },
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 200),
+                    decoration: BoxDecoration(
+                      color: themeColor,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    padding: EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        Icon(Icons.dark_mode, color: Colors.white),
+                        SizedBox(width: 10),
+                        Text("Toggle theme", style: TextStyle(color: Colors.white, fontSize: 20)),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
