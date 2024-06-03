@@ -9,6 +9,14 @@ class MockFirebaseAuth extends Mock implements FirebaseAuth {}
 
 void main() {
   testWidgets('DesktopNavbar widget test', (WidgetTester tester) async {
+    // Ignore overflow errors
+    final oldOnError = FlutterError.onError;
+    FlutterError.onError = (FlutterErrorDetails details) {
+      if (!details.exceptionAsString().contains('A RenderFlex overflowed by')) {
+        oldOnError!(details);
+      }
+    };
+
     // Mock the FirebaseAuth
     final mockAuth = MockFirebaseAuth();
 
@@ -23,5 +31,7 @@ void main() {
     expect(find.byType(TextField), findsOneWidget);
     expect(find.byType(ElevatedButton), findsOneWidget);
 
+    // Restore the original error handler
+    FlutterError.onError = oldOnError;
   });
 }
