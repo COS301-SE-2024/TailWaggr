@@ -78,6 +78,7 @@ Pet Caretaker User:
 13. As a user, I want to edit my pet's profile photo so that it is personalised.
 14. As a vet, I want to edit my profile to include my vet clinic’s details
 15. As a pet caretaker, I want to add my details so that pet owners can find and contact me
+16. As a user, I want to be able to search for other users
 
 ### Location Subsystem
 1. As a user, I want to search for found pets so that I can find my lost pet.
@@ -137,6 +138,9 @@ Pet Caretaker User:
     7. Pet Caretaker must be able to become registered
 		1. Caretaker must be able to provide contact details
 		2. Caretaker must be able to share location
+    8. User must be able to search for other users
+        1. User must be able to enter other user's name
+        2. User must be able to view matching user search results   
 3. Location subsystem:
     1.  User must be able to search for found pets:
         1. User must be able to enter a pet name
