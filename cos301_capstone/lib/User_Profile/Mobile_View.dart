@@ -32,7 +32,7 @@ class _ProfileMobileState extends State<ProfileMobile> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AbouMeContainer(),
+                  AboutMeContainer(),
                   SizedBox(height: 20),
                   Expanded(
                     flex: 3,
@@ -52,14 +52,14 @@ class _ProfileMobileState extends State<ProfileMobile> {
   }
 }
 
-class AbouMeContainer extends StatefulWidget {
-  const AbouMeContainer({super.key});
+class AboutMeContainer extends StatefulWidget {
+  const AboutMeContainer({super.key});
 
   @override
-  State<AbouMeContainer> createState() => _AbouMeContainerState();
+  State<AboutMeContainer> createState() => _AboutMeContainerState();
 }
 
-class _AbouMeContainerState extends State<AbouMeContainer> {
+class _AboutMeContainerState extends State<AboutMeContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(

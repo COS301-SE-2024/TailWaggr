@@ -34,7 +34,7 @@ class _ProfileTabletState extends State<ProfileTablet> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AbouMeContainer(),
+                  AboutMeContainer(),
                   SizedBox(height: 20),
                   Expanded(
                     flex: 3,
@@ -54,14 +54,14 @@ class _ProfileTabletState extends State<ProfileTablet> {
   }
 }
 
-class AbouMeContainer extends StatefulWidget {
-  const AbouMeContainer({super.key});
+class AboutMeContainer extends StatefulWidget {
+  const AboutMeContainer({super.key});
 
   @override
-  State<AbouMeContainer> createState() => _AbouMeContainerState();
+  State<AboutMeContainer> createState() => _AboutMeContainerState();
 }
 
-class _AbouMeContainerState extends State<AbouMeContainer> {
+class _AboutMeContainerState extends State<AboutMeContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
