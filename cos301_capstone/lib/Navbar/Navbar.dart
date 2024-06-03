@@ -4,7 +4,6 @@ import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/Navbar/Mobile_View.dart';
 import 'package:flutter/material.dart';
-import 'package:faker/faker.dart';
 
 NavbarIndexObserver navbarIndexObserver = NavbarIndexObserver();
 
@@ -92,9 +91,9 @@ class _Navbar_IconState extends State<Navbar_Icon> {
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         onEnter: (event) {
-          // setState(() {
-          //   containerColor = Colors.black.withOpacity(0.1);
-          // });
+          setState(() {
+            containerColor = Colors.black.withOpacity(0.1);
+          });
           
         },
         onExit: (event) {

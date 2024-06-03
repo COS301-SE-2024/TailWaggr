@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class EditProfileDesktop extends StatefulWidget {
@@ -16,25 +15,6 @@ class EditProfileDesktop extends StatefulWidget {
 }
 
 class _EditProfileDesktopState extends State<EditProfileDesktop> {
-  String? _imagePath;
-
-  Future<void> _pickImage() async {
-    try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.image,
-      );
-
-      if (result != null) {
-        setState(() {
-          _imagePath = result.files.single.path;
-        });
-      } else {
-        // User canceled the picker
-      }
-    } catch (e) {
-      print("Error: $e");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,15 +44,7 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
                   GestureDetector(
                     onTap: () async {
                       try {
-                        print("Open File Picker");
-                        FilePickerResult? result = await FilePicker.platform.pickFiles();
-
-                        if (result != null) {
-                          File file = File(result.files.single.path!);
-                        } else {
-                          // User canceled the picker
-                          print("User Canceled");
-                        }
+                        
                       } catch (e) {
                         print("Error: $e");
                       }
