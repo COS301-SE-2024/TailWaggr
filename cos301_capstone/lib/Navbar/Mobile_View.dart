@@ -5,6 +5,7 @@ import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:cos301_capstone/Search_Users/Mobile_View.dart';
 import 'package:cos301_capstone/User_Profile/Desktop_View.dart';
 import 'package:cos301_capstone/User_Profile/Mobile_View.dart';
+import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -107,7 +108,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                 // Navbar_Icon(icon: Icons.calendar_month, text: "Events", index: 0),
                 // Navbar_Icon(icon: Icons.map_sharp, text: "Locate", index: 0),
                 // Navbar_Icon(icon: Icons.settings, text: "Forums", index: 0),
-                // Navbar_Icon(icon: Icons.person_outline, text: "Profile", index: 0),
+                Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile()),
               ],
             ),
             GestureDetector(

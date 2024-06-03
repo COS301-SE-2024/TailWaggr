@@ -16,6 +16,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
   bool Password_Visible = false;
   bool ErrorTextVisible = false;
   String errorText = '';
+  String LoginText = 'Login';
 
   // Sign In controllers
   late TextEditingController signInEmailController;
@@ -182,6 +183,10 @@ class _DesktopLoginState extends State<DesktopLogin> {
                             child: ElevatedButton(
                               onPressed: () async {
                                 try {
+                                  setState(() {
+                                    LoginText = 'Logging in...';
+                                  });
+
                                   await FirebaseAuth.instance.signInWithEmailAndPassword(
                                     email: signInEmailController.text,
                                     password: signInPasswordController.text,
@@ -189,6 +194,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
                                 } on Exception catch (e) {
                                   print(e);
                                   setState(() {
+                                    LoginText = 'Login';
                                     ErrorTextVisible = true;
                                     if (e.toString().contains('[firebase_auth/channel-error] Unable to establish connection on channel.')) {
                                       errorText = 'Please make sure your Email and Password fields are filled in';
@@ -205,10 +211,10 @@ class _DesktopLoginState extends State<DesktopLogin> {
                                 }
                               },
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(themeSettings.Primary_Colour),
+                                backgroundColor: WidgetStateProperty.all(themeSettings.Primary_Colour),
                               ),
                               child: Text(
-                                "Login",
+                                LoginText,
                                 style: TextStyle(
                                   fontSize: Body_Text_Size,
                                   color: Colors.white,

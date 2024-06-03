@@ -29,7 +29,7 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
           DesktopNavbar(),
           Container(
             width: MediaQuery.of(context).size.width - (themeSettings.searchVisible ? 550 : 250),
-            color: ThemeSettings.Background_Colour,
+            color: themeSettings.Background_Colour,
             padding: EdgeInsets.all(20),
             child: DefaultTextStyle(
               style: TextStyle(
@@ -42,12 +42,7 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
                 children: [
                   Expanded(
                     flex: 1,
-                    child: ListenableBuilder(
-                      listenable: navbarIndexObserver,
-                      builder: (BuildContext context, Widget? child) {
-                        return AboutMeContainer();
-                      },
-                    ),
+                    child: AboutMeContainer(),
                   ),
                   SizedBox(width: 20),
                   Expanded(

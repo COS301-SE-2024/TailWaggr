@@ -1,19 +1,17 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_final_fields
-
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class LocationDesktop extends StatefulWidget {
-  const LocationDesktop({super.key});
+class LocationTablet extends StatefulWidget {
+  const LocationTablet({super.key});
 
   @override
-  State<LocationDesktop> createState() => _LocationDesktopState();
+  State<LocationTablet> createState() => _LocationTabletState();
 }
 
-class _LocationDesktopState extends State<LocationDesktop> {
+class _LocationTabletState extends State<LocationTablet> {
   GoogleMapController? _googleMapController;
   final Set<Marker> _markers = {};
   late CameraPosition _initialLocation = CameraPosition(
@@ -89,14 +87,13 @@ class _LocationDesktopState extends State<LocationDesktop> {
   void dispose() {
     try {
       if (_googleMapController != null && mounted) {
-      print("Google Map Controller Disposed");
-      _googleMapController?.dispose();
-    }
-    super.dispose();
+        print("Google Map Controller Disposed");
+        _googleMapController?.dispose();
+      }
+      super.dispose();
     } catch (e) {
       print("Error disposing Google Map Controller: $e");
     }
-    
   }
 
   @override
@@ -111,7 +108,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
             child: Column(
               children: [
                 SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.2,
+                  // width: MediaQuery.of(context).size.width * 0.2,
                   child: TextField(
                     // controller: searchController,
                     decoration: InputDecoration(
@@ -122,20 +119,16 @@ class _LocationDesktopState extends State<LocationDesktop> {
                     style: TextStyle(color: themeSettings.Text_Colour), // Add this line
                   ),
                 ),
+                GoogleMap(
+                  myLocationButtonEnabled: true,
+                  zoomControlsEnabled: true,
+                  onMapCreated: (controller) {
+                    _googleMapController = controller;
+                  },
+                  initialCameraPosition: _initialLocation,
+                  markers: _markers,
+                ),
               ],
-            ),
-          ),
-          Expanded(
-            child: Center(
-              child: GoogleMap(
-                myLocationButtonEnabled: true,
-                zoomControlsEnabled: true,
-                onMapCreated: (controller) {
-                  _googleMapController = controller;
-                },
-                initialCameraPosition: _initialLocation,
-                markers: _markers,
-              ),
             ),
           ),
         ],

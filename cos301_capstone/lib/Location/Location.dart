@@ -1,9 +1,11 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Location/Desktop_View.dart';
+import 'package:cos301_capstone/Location/Tablet_View.dart';
 import 'package:cos301_capstone/Navbar/Mobile_View.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 
 class Location extends StatefulWidget {
   const Location({super.key});
@@ -20,10 +22,18 @@ class _LocationState extends State<Location> {
       builder: (BuildContext context, Widget? child) {
         return LayoutBuilder(
           builder: (context, constraints) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              setState(() {
+                print("Refreshing the page");
+              });
+            });
+
             if (constraints.maxWidth > 1100) {
               return LocationDesktop();
             } else if (constraints.maxWidth > 800) {
-              return Text("Tablet location");
+              return Scaffold(
+                body: LocationTablet(),
+              );
             } else {
               return Scaffold(
                 drawer: NavbarDrawer(),
@@ -38,7 +48,6 @@ class _LocationState extends State<Location> {
                 ),
                 body: Text("Mobile location"),
               );
-              // return ProfileMobile();
             }
           },
         );

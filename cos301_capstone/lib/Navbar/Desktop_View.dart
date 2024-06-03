@@ -5,10 +5,10 @@ import 'package:cos301_capstone/Location/Desktop_View.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:cos301_capstone/Search_Users/Mobile_View.dart';
 import 'package:cos301_capstone/User_Profile/Desktop_View.dart';
+import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:info_popup/info_popup.dart';
 
 class DesktopNavbar extends StatefulWidget {
   const DesktopNavbar({super.key});
@@ -100,13 +100,9 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                     ),
                   ),
                   // Navbar_Icon(icon: Icons.calendar_month, text: "Events", index: 0),
-                  Navbar_Icon(
-                    icon: Icons.map_sharp,
-                    text: "Locate",
-                    page: LocationDesktop(),
-                  ),
+                  Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: LocationDesktop()),
                   // Navbar_Icon(icon: Icons.settings, text: "Forums", index: 0),
-                  // Navbar_Icon(icon: Icons.person_outline, text: "Profile", index: 0),
+                  Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile()),
                 ],
               ),
               GestureDetector(
@@ -159,10 +155,6 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: themeSettings.Card_Colour,
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(10),
-                bottomRight: Radius.circular(10),
-              ),
               boxShadow: [
                 BoxShadow(
                   color: themeSettings.Text_Colour.withOpacity(0.2),
@@ -187,8 +179,10 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   controller: searchController,
                   decoration: InputDecoration(
                     hintText: "Search for a user or pet",
+                    hintStyle: TextStyle(color: themeSettings.Text_Colour.withOpacity(0.5)),
                     prefixIcon: Icon(Icons.search),
                   ),
+                  style: TextStyle(color: themeSettings.Text_Colour), // Add this line
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
