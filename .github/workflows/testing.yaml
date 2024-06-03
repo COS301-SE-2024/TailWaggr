@@ -42,9 +42,11 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: cos301_capstone/coverage/lcov.info
+      continue-on-error: true
 
     - name: Finish Coveralls
       uses: coverallsapp/github-action@v2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         finish: true
+      continue-on-error: true
