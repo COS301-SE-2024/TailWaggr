@@ -17,7 +17,6 @@ class ProfileDesktop extends StatefulWidget {
 class _ProfileDesktopState extends State<ProfileDesktop> {
   @override
   void initState() {
-    print(themeSettings.Card_Colour);
     super.initState();
   }
 
