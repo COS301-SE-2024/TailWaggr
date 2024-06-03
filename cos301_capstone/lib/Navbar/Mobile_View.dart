@@ -70,6 +70,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
   Color containerColor = Colors.transparent;
   Color searchColor = Colors.transparent;
   Color themeColor = Colors.transparent;
+  bool isDarkMode = false;
   
   @override
   Widget build(BuildContext context) {
@@ -151,6 +152,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                 onTap: () {
                   setState(() {
                     themeSettings.ToggleTheme();
+                    isDarkMode = !isDarkMode;
                   });
                 },
                 child: MouseRegion(
@@ -174,7 +176,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                     padding: EdgeInsets.all(10),
                     child: Row(
                       children: [
-                        Icon(Icons.dark_mode, color: Colors.white),
+                        Icon(isDarkMode? Icons.dark_mode : Icons.light_mode, color: Colors.white),
                         SizedBox(width: 10),
                         Text("Toggle theme", style: TextStyle(color: Colors.white, fontSize: 20)),
                       ],
