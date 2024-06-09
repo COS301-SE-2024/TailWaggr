@@ -1,9 +1,12 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:cos301_capstone/Events/Events.dart';
+import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
+import 'package:cos301_capstone/Notifications/Notifications.dart';
 import 'package:cos301_capstone/Search_Users/Mobile_View.dart';
-import 'package:cos301_capstone/User_Profile/Desktop_View.dart';
 import 'package:cos301_capstone/User_Profile/Mobile_View.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -105,12 +108,12 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Navbar_Icon(icon: Icons.home, text: "Home", index: 0),
+                Navbar_Icon(icon: Icons.home, text: "Home", page: Homepage()),
                 Navbar_Icon(icon: Icons.search, text: "Search", page: SearchUsersMobile()),
-                // Navbar_Icon(icon: Icons.notifications, text: "Notifications", index: 0),
-                // Navbar_Icon(icon: Icons.calendar_month, text: "Events", index: 0),
+                Navbar_Icon(icon: Icons.notifications, text: "Notifications", page: Notifications()),
+                Navbar_Icon(icon: Icons.event, text: "Events", page: Events()),
                 // Navbar_Icon(icon: Icons.map_sharp, text: "Locate", index: 0),
-                // Navbar_Icon(icon: Icons.settings, text: "Forums", index: 0),
+                Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                 Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile()),
               ],
             ),

@@ -77,7 +77,7 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                 ),
                 SizedBox(height: 20,),
                 TextField(
-                  controller: signupVariables.signUpFirstNameController,
+                  controller: signupVariables.signUpLastNameController,
                   decoration: InputDecoration(
                     labelText: "Last Name",
                     labelStyle: TextStyle(

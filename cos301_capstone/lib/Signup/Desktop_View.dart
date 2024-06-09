@@ -83,7 +83,7 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                     SizedBox(
                       width: 260,
                       child: TextField(
-                        controller: signupVariables.signUpFirstNameController,
+                        controller: signupVariables.signUpLastNameController,
                         decoration: InputDecoration(
                           labelText: "Last Name",
                           labelStyle: TextStyle(

@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Location/Desktop_View.dart';
 import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/Login/Login.dart';
@@ -27,7 +28,8 @@ class _AuthGateState extends State<AuthGate> {
           // return Navbar();
           // return ProfileDesktop();
           // return User_Profile();
-          return Location();
+          // return Location();
+          return Homepage();
         }
         return Login();
         // return Signup();

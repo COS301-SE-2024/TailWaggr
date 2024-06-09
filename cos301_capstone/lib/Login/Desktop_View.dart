@@ -187,10 +187,14 @@ class _DesktopLoginState extends State<DesktopLogin> {
                                     LoginText = 'Logging in...';
                                   });
 
+                                  print("Signing in with Email and Password");
+                                  print("Email: ${signInEmailController.text}");
+
                                   await FirebaseAuth.instance.signInWithEmailAndPassword(
                                     email: signInEmailController.text,
                                     password: signInPasswordController.text,
                                   );
+                                  
                                 } on Exception catch (e) {
                                   print(e);
                                   setState(() {

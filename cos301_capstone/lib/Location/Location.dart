@@ -22,12 +22,6 @@ class _LocationState extends State<Location> {
       builder: (BuildContext context, Widget? child) {
         return LayoutBuilder(
           builder: (context, constraints) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              setState(() {
-                print("Refreshing the page");
-              });
-            });
-
             if (constraints.maxWidth > 1100) {
               return LocationDesktop();
             } else if (constraints.maxWidth > 800) {
