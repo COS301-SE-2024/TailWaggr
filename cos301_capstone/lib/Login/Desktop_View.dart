@@ -245,7 +245,6 @@ class _DesktopLoginState extends State<DesktopLogin> {
                               Text("Don't have an account?"),
                               TextButton(
                                 onPressed: () {
-                                  print("Navigating to Sign Up");
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) => Signup()),

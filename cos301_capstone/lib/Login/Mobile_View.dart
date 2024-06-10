@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, camel_case_types
 
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Signup/Signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -134,7 +135,7 @@ class _Mobile_ViewState extends State<Mobile_View> {
               ),
             ),
             SizedBox(height: 20),
-    
+
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.75,
               height: 50,
@@ -191,7 +192,12 @@ class _Mobile_ViewState extends State<Mobile_View> {
               children: [
                 Text("Don't have an account?"),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Signup()),
+                    );
+                  },
                   child: Text(
                     "Sign Up",
                     style: TextStyle(
