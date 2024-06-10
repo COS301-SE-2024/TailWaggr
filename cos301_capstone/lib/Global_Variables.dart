@@ -141,6 +141,63 @@ class ProfileDetails {
       "Birthdate": "August 8, 2015"
     }
   ];
+
+  List Notifications = [
+    Notification(DateTime(2024, 1, 2), "Friend Request", "Jane Doe", ""),
+    Notification(DateTime(2024, 1, 1), "Like", "John Smith", ""),
+    Notification(DateTime(2023, 1, 4), "Comment", "Alice Johnson", ""),
+    Notification(DateTime(2023, 1, 3), "Following", "Bob Brown", ""),
+    Notification(DateTime(2022, 1, 2), "Like", "Emily Johnson", ""),
+    Notification(DateTime(2021, 12, 31), "Comment", "Michael Smith", ""),
+    Notification(DateTime(2021, 12, 30), "Friend Request", "Sarah Brown", ""),
+  ];
+}
+
+class Notification {
+  DateTime Date;
+  String Type;
+  String From_User;
+  String Profile_Picture_URL;
+
+  Notification(this.Date, this.Type, this.From_User, this.Profile_Picture_URL);
+
+  String getFormattedDate() {
+    String day = Date.day.toString().padLeft(2, '0');
+    String month = _getMonthAbbreviation(Date.month);
+    String year = Date.year.toString();
+    return '$day $month $year';
+  }
+
+  String _getMonthAbbreviation(int month) {
+    switch (month) {
+      case 1:
+        return 'Jan';
+      case 2:
+        return 'Feb';
+      case 3:
+        return 'Mar';
+      case 4:
+        return 'Apr';
+      case 5:
+        return 'May';
+      case 6:
+        return 'Jun';
+      case 7:
+        return 'Jul';
+      case 8:
+        return 'Aug';
+      case 9:
+        return 'Sep';
+      case 10:
+        return 'Oct';
+      case 11:
+        return 'Nov';
+      case 12:
+        return 'Dec';
+      default:
+        return '';
+    }
+  }
 }
 
 ProfileDetails profileDetails = ProfileDetails();

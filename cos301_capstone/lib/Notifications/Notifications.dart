@@ -23,9 +23,9 @@ class _NotificationsState extends State<Notifications> {
         builder: (BuildContext context, Widget? child) {
           return LayoutBuilder(
             builder: (context, constraints) {
-              if (constraints.maxWidth > 1100) {
+              if (constraints.maxWidth > 1200) {
                 return DesktopNotifications();
-              } else if (constraints.maxWidth > 800) {
+              } else if (constraints.maxWidth > 960) {
                 return TabletNotifications();
               } else {
                 return Scaffold(
