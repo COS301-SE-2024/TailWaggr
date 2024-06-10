@@ -39,4 +39,32 @@ class AuthService {
   Future<void> signOut() async {
     await _auth.signOut();
   }
+
+  Future<Map<String, dynamic>?> getCurrentUser() async {
+    final User? loggedUser = _auth.currentUser;
+
+    if (loggedUser != null) {
+      // User is signed in
+      final String uid = loggedUser.uid;
+      return await getUserByAuthId(uid);
+    } else {
+      // User is signed out
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserByAuthId(String authId) async {
+    try {
+      DocumentSnapshot doc = await _db.collection('users').doc(authId).get();
+      if (doc.exists) {
+        return doc.data() as Map<String, dynamic>;
+      } else {
+        print("No user found for the given authId.");
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+      return null;
+    }
+  }
 }
