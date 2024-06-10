@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   address_search_field
+  cloud_firestore
   firebase_auth
   firebase_core
   geolocator_windows

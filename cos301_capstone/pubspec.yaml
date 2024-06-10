@@ -43,6 +43,7 @@ dependencies:
   flutter_animate: ^4.5.0
   geolocator: ^12.0.0
   google_maps_flutter: ^2.6.1
+  cloud_firestore: ^4.17.5
 
 dev_dependencies:
   flutter_test:
