@@ -102,22 +102,22 @@ class _TabletNotificationsState extends State<TabletNotifications> {
                                         ),
                                         if (profileDetails.Notifications[i].Type == "Friend Request")
                                           Text(
-                                            " has requested to follow you",
+                                            "Requested to follow you",
                                             style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Text_Colour.withOpacity(0.5)),
                                           ),
                                         if (profileDetails.Notifications[i].Type == "Like")
                                           Text(
-                                            " has liked your post",
+                                            "Liked your post",
                                             style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Text_Colour.withOpacity(0.5)),
                                           ),
                                         if (profileDetails.Notifications[i].Type == "Comment")
                                           Text(
-                                            " has commented on your post",
+                                            "Commented on your post",
                                             style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Text_Colour.withOpacity(0.5)),
                                           ),
                                         if (profileDetails.Notifications[i].Type == "Following")
                                           Text(
-                                            " started following you",
+                                            "Started following you",
                                             style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Text_Colour.withOpacity(0.5)),
                                           ),
                                       ],
@@ -151,7 +151,7 @@ class _TabletNotificationsState extends State<TabletNotifications> {
                                         ),
                                         style: ButtonStyle(
                                           backgroundColor: WidgetStateProperty.all(ThemeSettings.Card_Colour),
-                                          side: WidgetStateProperty.all(BorderSide(color: Colors.purple)),
+                                          side: WidgetStateProperty.all(BorderSide(color: themeSettings.Primary_Colour, width: 1)),
                                         ),
                                       ),
                                     ],

@@ -141,7 +141,7 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
                                     ),
                                     style: ButtonStyle(
                                       backgroundColor: WidgetStateProperty.all(ThemeSettings.Card_Colour),
-                                      side: WidgetStateProperty.all(BorderSide(color: Colors.purple)),
+                                      side: WidgetStateProperty.all(BorderSide(color: themeSettings.Primary_Colour, width: 1)),
                                     ),
                                   ),
                                 ],
