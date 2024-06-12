@@ -35,10 +35,14 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
                       height: 125,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(
-                            profileDetails.Notifications[i].getFormattedDate(),
-                            style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                          SizedBox(
+                            width: 115,
+                            child: Text(
+                              profileDetails.Notifications[i].getFormattedDate(),
+                              style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                            ),
                           ),
                           SizedBox(width: 20),
                           Column(
