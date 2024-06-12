@@ -2,10 +2,7 @@ import 'package:cos301_capstone/Location/Desktop_View.dart';
 import 'package:cos301_capstone/Location/Tablet_View.dart';
 import 'package:cos301_capstone/Navbar/Mobile_View.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
-import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 
 class Location extends StatefulWidget {
   const Location({super.key});
@@ -32,7 +29,7 @@ class _LocationState extends State<Location> {
               return Scaffold(
                 drawer: NavbarDrawer(),
                 appBar: AppBar(
-                  backgroundColor: themeSettings.Primary_Colour,
+                  backgroundColor: themeSettings.primaryColor,
                   title: Text(
                     "TailWaggr",
                     style: TextStyle(

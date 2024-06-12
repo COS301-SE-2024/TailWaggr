@@ -31,7 +31,7 @@ class _EventsState extends State<Events> {
                 return Scaffold(
                   drawer: NavbarDrawer(),
                   appBar: AppBar(
-                    backgroundColor: themeSettings.Primary_Colour,
+                    backgroundColor: themeSettings.primaryColor,
                     title: Text(
                       "TailWaggr",
                       style: TextStyle(

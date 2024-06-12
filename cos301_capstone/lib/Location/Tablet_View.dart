@@ -103,7 +103,7 @@ class _LocationTabletState extends State<LocationTablet> {
         children: [
           DesktopNavbar(),
           Container(
-            color: themeSettings.Background_Colour,
+            color: themeSettings.backgroundColor,
             padding: EdgeInsets.all(20),
             child: Column(
               children: [
@@ -113,10 +113,10 @@ class _LocationTabletState extends State<LocationTablet> {
                     // controller: searchController,
                     decoration: InputDecoration(
                       hintText: "Search for a vet clinic",
-                      hintStyle: TextStyle(color: themeSettings.Text_Colour.withOpacity(0.5)),
+                      hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.5)),
                       prefixIcon: Icon(Icons.search),
                     ),
-                    style: TextStyle(color: themeSettings.Text_Colour), // Add this line
+                    style: TextStyle(color: themeSettings.textColor), // Add this line
                   ),
                 ),
                 GoogleMap(

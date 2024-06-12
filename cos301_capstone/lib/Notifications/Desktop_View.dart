@@ -19,7 +19,7 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
         Expanded(
           child: Container(
             height: MediaQuery.of(context).size.height,
-            color: themeSettings.Background_Colour,
+            color: themeSettings.backgroundColor,
             padding: EdgeInsets.all(20),
             child: SingleChildScrollView(
               child: Column(
@@ -28,9 +28,9 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
                 children: [
                   Text(
                     "Notifications",
-                    style: TextStyle(fontSize: Subtitle_Text_Size, color: themeSettings.Primary_Colour),
+                    style: TextStyle(fontSize: subtitleTextSize, color: themeSettings.primaryColor),
                   ),
-                  for (int i = 0; i < profileDetails.Notifications.length; i++)
+                  for (int i = 0; i < profileDetails.notifications.length; i++)
                     SizedBox(
                       height: 125,
                       child: Row(
@@ -40,8 +40,8 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
                           SizedBox(
                             width: 115,
                             child: Text(
-                              profileDetails.Notifications[i].getFormattedDate(),
-                              style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                              profileDetails.notifications[i].getFormattedDate(),
+                              style: TextStyle(fontSize: bodyTextSize, color: themeSettings.textColor.withOpacity(0.5)),
                             ),
                           ),
                           SizedBox(width: 20),
@@ -50,7 +50,7 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
                               Container(
                                 width: 2,
                                 height: 50,
-                                color: i == 0 ? Colors.transparent : Colors.black.withOpacity(0.5),
+                                color: i == 0 ? Colors.transparent : Color.fromARGB(255, 190, 189, 189),
                               ),
                               Container(
                                 width: 25,
@@ -59,7 +59,7 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
                                   color: const Color.fromARGB(255, 190, 189, 189),
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: ThemeSettings.Primary_Colour,
+                                    color: ThemeSettings.primaryColor,
                                     width: 2,
                                   ),
                                 ),
@@ -67,7 +67,7 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
                               Container(
                                 width: 2,
                                 height: 50,
-                                color: i == profileDetails.Notifications.length - 1 ? Colors.transparent : Colors.black.withOpacity(0.5),
+                                color: i == profileDetails.notifications.length - 1 ? Colors.transparent : Color.fromARGB(255, 190, 189, 189),
                               ),
                             ],
                           ),
@@ -77,14 +77,14 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
                             width: MediaQuery.of(context).size.width - (415 + 20 + 25 + 20),
                             padding: EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: themeSettings.Card_Colour,
+                              color: themeSettings.cardColor,
                               borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: themeSettings.Text_Colour.withOpacity(0.2),
-                                  blurRadius: 10,
-                                ),
-                              ],
+                              // boxShadow: [
+                              //   BoxShadow(
+                              //     color: themeSettings.textColor.withOpacity(0.2),
+                              //     blurRadius: 10,
+                              //   ),
+                              // ],
                             ),
                             child: Row(
                               children: [
@@ -93,83 +93,83 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
                                 ),
                                 SizedBox(width: 20),
                                 Text(
-                                  profileDetails.Notifications[i].From_User,
-                                  style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Text_Colour),
+                                  profileDetails.notifications[i].fromUser,
+                                  style: TextStyle(fontSize: bodyTextSize, color: themeSettings.textColor),
                                 ),
-                                if (profileDetails.Notifications[i].Type == "Friend Request")
+                                if (profileDetails.notifications[i].type == "Friend Request")
                                   Text(
                                     " has requested to follow you",
-                                    style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                                    style: TextStyle(fontSize: bodyTextSize, color: themeSettings.textColor.withOpacity(0.5)),
                                   ),
-                                if (profileDetails.Notifications[i].Type == "Like")
+                                if (profileDetails.notifications[i].type == "Like")
                                   Text(
                                     " has liked your post",
-                                    style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                                    style: TextStyle(fontSize: bodyTextSize, color: themeSettings.textColor.withOpacity(0.5)),
                                   ),
-                                if (profileDetails.Notifications[i].Type == "Comment")
+                                if (profileDetails.notifications[i].type == "Comment")
                                   Text(
                                     " has commented on your post",
-                                    style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                                    style: TextStyle(fontSize: bodyTextSize, color: themeSettings.textColor.withOpacity(0.5)),
                                   ),
-                                if (profileDetails.Notifications[i].Type == "Following")
+                                if (profileDetails.notifications[i].type == "Following")
                                   Text(
                                     " started following you",
-                                    style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                                    style: TextStyle(fontSize: bodyTextSize, color: themeSettings.textColor.withOpacity(0.5)),
                                   ),
                                 Spacer(),
-                                if (profileDetails.Notifications[i].Type == "Friend Request") ...[
+                                if (profileDetails.notifications[i].type == "Friend Request") ...[
                                   ElevatedButton(
                                     onPressed: () {
                                       setState(() {
-                                        profileDetails.Notifications[i].Type = "Following";
+                                        profileDetails.notifications[i].type = "Following";
                                       });
                                     },
                                     child: Text(
                                       "Accept",
-                                      style: TextStyle(fontSize: Body_Text_Size, color: Colors.white),
+                                      style: TextStyle(fontSize: subBodyTextSize, color: Colors.white),
                                     ),
                                     style: ButtonStyle(
-                                      backgroundColor: WidgetStateProperty.all(themeSettings.Primary_Colour),
+                                      backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
                                     ),
                                   ),
                                   SizedBox(width: 10),
                                   ElevatedButton(
                                     onPressed: () {
                                       setState(() {
-                                        profileDetails.Notifications.removeAt(i);
+                                        profileDetails.notifications.removeAt(i);
                                       });
                                     },
                                     child: Text(
                                       "Decline",
-                                      style: TextStyle(fontSize: Body_Text_Size, color: ThemeSettings.Text_Colour),
+                                      style: TextStyle(fontSize: subBodyTextSize, color: ThemeSettings.textColor),
                                     ),
                                     style: ButtonStyle(
-                                      backgroundColor: WidgetStateProperty.all(ThemeSettings.Card_Colour),
-                                      side: WidgetStateProperty.all(BorderSide(color: themeSettings.Primary_Colour, width: 1)),
+                                      backgroundColor: WidgetStateProperty.all(ThemeSettings.cardColor),
+                                      side: WidgetStateProperty.all(BorderSide(color: themeSettings.primaryColor, width: 1)),
                                     ),
                                   ),
                                 ],
-                                if (profileDetails.Notifications[i].Type == "Like" || profileDetails.Notifications[i].Type == "Comment") ...[
+                                if (profileDetails.notifications[i].type == "Like" || profileDetails.notifications[i].type == "Comment") ...[
                                   ElevatedButton(
                                     onPressed: () {},
                                     child: Text(
                                       "View Post",
-                                      style: TextStyle(fontSize: Body_Text_Size, color: Colors.white),
+                                      style: TextStyle(fontSize: subBodyTextSize, color: Colors.white),
                                     ),
                                     style: ButtonStyle(
-                                      backgroundColor: WidgetStateProperty.all(themeSettings.Primary_Colour),
+                                      backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
                                     ),
                                   ),
                                 ],
-                                if (profileDetails.Notifications[i].Type == "Following") ...[
+                                if (profileDetails.notifications[i].type == "Following") ...[
                                   ElevatedButton(
                                     onPressed: () {},
                                     child: Text(
                                       "Follow Back",
-                                      style: TextStyle(fontSize: Body_Text_Size, color: Colors.white),
+                                      style: TextStyle(fontSize: subBodyTextSize, color: Colors.white),
                                     ),
                                     style: ButtonStyle(
-                                      backgroundColor: WidgetStateProperty.all(themeSettings.Primary_Colour),
+                                      backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
                                     ),
                                   ),
                                 ],

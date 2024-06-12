@@ -39,7 +39,7 @@ class _MobileNavbarState extends State<MobileNavbar> {
     return Scaffold(
       drawer: NavbarDrawer(),
       appBar: AppBar(
-        backgroundColor: ThemeSettings.Primary_Colour,
+        backgroundColor: ThemeSettings.primaryColor,
         title: Text(
           "TailWaggr",
           style: TextStyle(
@@ -52,7 +52,7 @@ class _MobileNavbarState extends State<MobileNavbar> {
         builder: (BuildContext context, Widget? child) {
           return Container(
             // width: MediaQuery.of(context).size.width - (isSearchVisible ? 550 : 250),
-            color: ThemeSettings.Background_Colour,
+            color: ThemeSettings.backgroundColor,
             padding: EdgeInsets.all(20),
             child: pages[navbarIndexObserver.index],
           );
@@ -77,7 +77,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: ThemeSettings.Primary_Colour,
+      backgroundColor: ThemeSettings.primaryColor,
       child: Container(
         padding: EdgeInsets.all(30),
         child: Column(
@@ -95,7 +95,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      profileDetails.Name,
+                      profileDetails.name,
                       style: TextStyle(
                         fontSize: 20,
                         color: Colors.white,
@@ -153,7 +153,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
             GestureDetector(
                 onTap: () {
                   setState(() {
-                    themeSettings.ToggleTheme();
+                    themeSettings.toggleTheme();
                   });
                 },
                 child: MouseRegion(

@@ -1,6 +1,5 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
 
-import 'dart:io';
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
@@ -49,7 +48,7 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
                     child: CircleAvatar(
                       radius: 75,
                       // backgroundImage: AssetImage("assets/images/profile.jpg"),
-                      backgroundImage: NetworkImage(profileDetails.ProfilePicture),
+                      backgroundImage: NetworkImage(profileDetails.profilePicture),
                     ),
                   ),
                   SizedBox(width: 20),
@@ -104,9 +103,9 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
                 autoValidateMode: AutovalidateMode.disabled,
                 // selectorTextStyle: TextStyle(color: Colors.black),
                 initialValue: PhoneNumber(
-                  dialCode: profileDetails.DialCode,
+                  dialCode: profileDetails.dialCode,
                   isoCode: profileDetails.isoCode,
-                  phoneNumber: profileDetails.Phone,
+                  phoneNumber: profileDetails.phone,
                 ),
                 textFieldController: EditProfileVariables.phoneController,
                 formatInput: true,
@@ -133,12 +132,12 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
               ElevatedButton(
                 onPressed: () async {},
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(themeSettings.Primary_Colour),
+                  backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
                 ),
                 child: Text(
                   "Save Changes",
                   style: TextStyle(
-                    fontSize: Body_Text_Size,
+                    fontSize: bodyTextSize,
                     color: Colors.white,
                   ),
                 ),

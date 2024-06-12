@@ -39,7 +39,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
         Container(
           width: 250,
           padding: EdgeInsets.all(30),
-          color: ThemeSettings.Primary_Colour,
+          color: ThemeSettings.primaryColor,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,7 +55,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        profileDetails.Name,
+                        profileDetails.name,
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.white,
@@ -144,7 +144,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    themeSettings.ToggleTheme();
+                    themeSettings.toggleTheme();
                   });
                 },
                 child: MouseRegion(
@@ -184,10 +184,10 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
             width: 300,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: themeSettings.Card_Colour,
+              color: themeSettings.cardColor,
               boxShadow: [
                 BoxShadow(
-                  color: themeSettings.Text_Colour.withOpacity(0.2),
+                  color: themeSettings.textColor.withOpacity(0.2),
                   blurRadius: 10,
                 ),
               ],
@@ -209,10 +209,10 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   controller: searchController,
                   decoration: InputDecoration(
                     hintText: "Search for a user or pet",
-                    hintStyle: TextStyle(color: themeSettings.Text_Colour.withOpacity(0.5)),
+                    hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.5)),
                     prefixIcon: Icon(Icons.search),
                   ),
-                  style: TextStyle(color: themeSettings.Text_Colour), // Add this line
+                  style: TextStyle(color: themeSettings.textColor), // Add this line
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
@@ -225,7 +225,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                     });
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: themeSettings.Primary_Colour,
+                    backgroundColor: themeSettings.primaryColor,
                     minimumSize: Size(double.infinity, 0),
                   ),
                   child: Padding(

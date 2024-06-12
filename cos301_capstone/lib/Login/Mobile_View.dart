@@ -52,9 +52,9 @@ class _Mobile_ViewState extends State<Mobile_View> {
             Text(
               "Welcome!",
               style: TextStyle(
-                fontSize: Title_Text_Size,
+                fontSize: titleTextSize,
                 fontWeight: FontWeight.bold,
-                color: themeSettings.Primary_Colour,
+                color: themeSettings.primaryColor,
               ),
             ),
             //
@@ -66,18 +66,18 @@ class _Mobile_ViewState extends State<Mobile_View> {
                 decoration: InputDecoration(
                   labelText: "Email",
                   labelStyle: TextStyle(
-                    color: themeSettings.Primary_Colour,
+                    color: themeSettings.primaryColor,
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: themeSettings.Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: themeSettings.Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                   ),
                 ),
@@ -93,24 +93,24 @@ class _Mobile_ViewState extends State<Mobile_View> {
                 decoration: InputDecoration(
                   labelText: "Password",
                   labelStyle: TextStyle(
-                    color: themeSettings.Primary_Colour,
+                    color: themeSettings.primaryColor,
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: themeSettings.Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: themeSettings.Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                   ),
                   suffixIcon: IconButton(
                     icon: Icon(
                       Password_Visible ? Icons.visibility : Icons.visibility_off,
-                      color: themeSettings.Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                     onPressed: () {
                       setState(() {
@@ -165,12 +165,12 @@ class _Mobile_ViewState extends State<Mobile_View> {
                   }
                 },
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(themeSettings.Primary_Colour),
+                  backgroundColor: MaterialStateProperty.all(themeSettings.primaryColor),
                 ),
                 child: Text(
                   "Login",
                   style: TextStyle(
-                    fontSize: Body_Text_Size,
+                    fontSize: bodyTextSize,
                     color: Colors.white,
                   ),
                 ),
@@ -201,7 +201,7 @@ class _Mobile_ViewState extends State<Mobile_View> {
                   child: Text(
                     "Sign Up",
                     style: TextStyle(
-                      color: themeSettings.Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                   ),
                 ),
