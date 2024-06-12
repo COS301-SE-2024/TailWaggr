@@ -28,6 +28,14 @@ class AuthService {
           'email': email,
           'typeUser': 'pet_owner'
         });
+
+        // Add user profile data to the 'profile' collection
+        await _db.collection('profile').doc(user.uid).set({
+          'Bio': '',
+          'DarkMode': false,
+          'ProfileImg': '', 
+          'UserId': _db.collection('users').doc(user.uid) // Reference to the user document
+        });
       }
       return user;
     } catch (e) {
@@ -40,7 +48,7 @@ class AuthService {
     await _auth.signOut();
   }
 
-  Future<Map<String, dynamic>?> getCurrentUser() async {
+  Future<String?> getCurrentUserId() async {
     final User? loggedUser = _auth.currentUser;
 
     if (loggedUser != null) {
@@ -53,18 +61,22 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>?> getUserByAuthId(String authId) async {
-    try {
-      DocumentSnapshot doc = await _db.collection('users').doc(authId).get();
-      if (doc.exists) {
-        return doc.data() as Map<String, dynamic>;
-      } else {
-        print("No user found for the given authId.");
-        return null;
-      }
-    } catch (e) {
-      print("Error fetching user data: $e");
+Future<String?> getUserByAuthId(String authId) async {
+  try {
+    // Query the collection to find a document where the 'authId' field matches the provided authId
+    QuerySnapshot snapshot = await _db.collection('users').where('authId', isEqualTo: authId).get();
+    
+    if (snapshot.docs.isNotEmpty) {
+ // Return the document ID of the first document found
+      return snapshot.docs.first.id;
+    } else {
+      print("No user found for the given authId.");
       return null;
     }
+  } catch (e) {
+    print("Error fetching user data: $e");
+    return null;
   }
+}
+
 }
