@@ -14,7 +14,6 @@ class EditProfileDesktop extends StatefulWidget {
 }
 
 class _EditProfileDesktopState extends State<EditProfileDesktop> {
-
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -42,9 +41,7 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
                 children: [
                   GestureDetector(
                     onTap: () async {
-                      try {
-                        
-                      } catch (e) {
+                      try {} catch (e) {
                         print("Error: $e");
                       }
                     },
@@ -145,7 +142,15 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () async {},
+                onPressed: () async {
+                  setState(() {
+                    profileDetails.Name = EditProfileVariables.nameController.text;
+                    profileDetails.Surname = EditProfileVariables.surnameController.text;
+                    profileDetails.Bio = EditProfileVariables.bioController.text;
+                    profileDetails.Location = EditProfileVariables.addressController.text;
+                  });
+                  Navigator.pop(context);
+                },
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
                 ),

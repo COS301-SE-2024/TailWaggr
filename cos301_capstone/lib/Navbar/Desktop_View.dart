@@ -32,6 +32,8 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
 
   TextEditingController searchController = TextEditingController();
 
+  bool isDarkMode = false;
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -145,6 +147,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                 onTap: () {
                   setState(() {
                     themeSettings.toggleTheme();
+                    isDarkMode = !isDarkMode;
                   });
                 },
                 child: MouseRegion(
@@ -168,7 +171,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                     padding: EdgeInsets.all(10),
                     child: Row(
                       children: [
-                        Icon(Icons.dark_mode, color: Colors.white),
+                        Icon(isDarkMode? Icons.dark_mode : Icons.light_mode, color: Colors.white),
                         SizedBox(width: 10),
                         Text("Toggle theme", style: TextStyle(color: Colors.white, fontSize: 20)),
                       ],
