@@ -144,10 +144,10 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
               ElevatedButton(
                 onPressed: () async {
                   setState(() {
-                    profileDetails.Name = EditProfileVariables.nameController.text;
-                    profileDetails.Surname = EditProfileVariables.surnameController.text;
-                    profileDetails.Bio = EditProfileVariables.bioController.text;
-                    profileDetails.Location = EditProfileVariables.addressController.text;
+                    profileDetails.name = EditProfileVariables.nameController.text;
+                    profileDetails.surname = EditProfileVariables.surnameController.text;
+                    profileDetails.bio = EditProfileVariables.bioController.text;
+                    profileDetails.location = EditProfileVariables.addressController.text;
                   });
                   Navigator.pop(context);
                 },
