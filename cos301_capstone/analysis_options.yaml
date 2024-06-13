@@ -11,7 +11,7 @@ analyzer:
   errors:
     avoid_print: ignore
     p ignorerefer_const_constructors: ignore
-    prefer_const_constructors: ignore ignore ignore ignore ignore
+    prefer_const_constructors: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

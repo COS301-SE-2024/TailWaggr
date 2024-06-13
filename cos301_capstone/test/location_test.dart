@@ -1,5 +1,4 @@
 import 'package:cos301_capstone/Location/Mobile_View.dart';
-import 'package:cos301_capstone/Location/Tablet_View.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cos301_capstone/Location/Desktop_View.dart';

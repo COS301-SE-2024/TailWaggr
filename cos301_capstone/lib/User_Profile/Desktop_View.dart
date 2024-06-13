@@ -3,7 +3,6 @@
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
-import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 
@@ -28,12 +27,12 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
           DesktopNavbar(),
           Container(
             width: MediaQuery.of(context).size.width - (themeSettings.searchVisible ? 550 : 250),
-            color: themeSettings.Background_Colour,
+            color: themeSettings.backgroundColor,
             padding: EdgeInsets.all(20),
             child: DefaultTextStyle(
               style: TextStyle(
                 fontSize: 20,
-                color: themeSettings.Text_Colour,
+                color: themeSettings.textColor,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -79,11 +78,11 @@ class _PostsContainerState extends State<PostsContainer> {
       child: Container(
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: themeSettings.Card_Colour,
+          color: themeSettings.cardColor,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: themeSettings.Text_Colour.withOpacity(0.2),
+              color: themeSettings.textColor.withOpacity(0.2),
               blurRadius: 10,
             ),
           ],
@@ -147,11 +146,11 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: themeSettings.Card_Colour,
+        color: themeSettings.cardColor,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: themeSettings.Text_Colour.withOpacity(0.2),
+            color: themeSettings.textColor.withOpacity(0.2),
             blurRadius: 10,
           ),
         ],
@@ -163,7 +162,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
           children: [
             CircleAvatar(
               radius: 100,
-              backgroundImage: NetworkImage(profileDetails.ProfilePicture),
+              backgroundImage: NetworkImage(profileDetails.profilePicture),
             ),
             SizedBox(width: 20),
             Column(
@@ -172,8 +171,8 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
               children: [
                 Column(
                   children: [
-                    Text(profileDetails.Name, style: TextStyle(fontSize: Sub_Heading_Text_Size)),
-                    Text(profileDetails.Bio, style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                    Text(profileDetails.name, style: TextStyle(fontSize: subHeadingTextSize)),
+                    Text(profileDetails.bio, style: TextStyle(fontSize: subBodyTextSize)),
                   ],
                 ),
                 SizedBox(height: 20),
@@ -188,7 +187,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                     return Container(
                       padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                       decoration: BoxDecoration(
-                        color: themeSettings.Primary_Colour,
+                        color: themeSettings.primaryColor,
                         borderRadius: BorderRadius.circular(100),
                       ),
                       child: Text(
@@ -202,30 +201,30 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                   openBuilder: (context, action) {
                     return Scaffold(
                       appBar: AppBar(
-                        iconTheme: IconThemeData(color: themeSettings.Primary_Colour),
+                        iconTheme: IconThemeData(color: themeSettings.primaryColor),
                       ),
                       body: EditProfile(),
                     );
                   },
                 ),
                 SizedBox(height: 20),
-                Text("Profile Details", style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Primary_Colour)),
+                Text("Profile Details", style: TextStyle(fontSize: bodyTextSize, color: themeSettings.primaryColor)),
                 Divider(),
                 Container(
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: themeSettings.Card_Colour,
+                    color: themeSettings.cardColor,
                     borderRadius: BorderRadius.circular(10),
-                    // border: Border.all(color: themeSettings.Primary_Colour),
+                    // border: Border.all(color: themeSettings.primaryColor),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.email_outlined, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                      Icon(Icons.email_outlined, color: themeSettings.textColor.withOpacity(0.5)),
                       SizedBox(width: 10),
                       Flexible(
                         child: Text(
-                          profileDetails.Email,
-                          style: TextStyle(fontSize: Sub_Body_Text_Size),
+                          profileDetails.email,
+                          style: TextStyle(fontSize: subBodyTextSize),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -235,18 +234,18 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                 Container(
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: themeSettings.Card_Colour,
+                    color: themeSettings.cardColor,
                     borderRadius: BorderRadius.circular(10),
-                    // border: Border.all(color: themeSettings.Primary_Colour),
+                    // border: Border.all(color: themeSettings.primaryColor),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.phone, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                      Icon(Icons.phone, color: themeSettings.textColor.withOpacity(0.5)),
                       SizedBox(width: 10),
                       Flexible(
                         child: Text(
-                          profileDetails.Phone,
-                          style: TextStyle(fontSize: Sub_Body_Text_Size),
+                          profileDetails.phone,
+                          style: TextStyle(fontSize: subBodyTextSize),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -256,18 +255,18 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                 Container(
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: themeSettings.Card_Colour,
+                    color: themeSettings.cardColor,
                     borderRadius: BorderRadius.circular(10),
-                    // border: Border.all(color: themeSettings.Primary_Colour),
+                    // border: Border.all(color: themeSettings.primaryColor),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.calendar_month, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                      Icon(Icons.calendar_month, color: themeSettings.textColor.withOpacity(0.5)),
                       SizedBox(width: 10),
                       Flexible(
                         child: Text(
-                          profileDetails.Birthdate,
-                          style: TextStyle(fontSize: Sub_Body_Text_Size),
+                          profileDetails.birthdate,
+                          style: TextStyle(fontSize: subBodyTextSize),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -277,18 +276,18 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                 Container(
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: themeSettings.Card_Colour,
+                    color: themeSettings.cardColor,
                     borderRadius: BorderRadius.circular(10),
-                    // border: Border.all(color: themeSettings.Primary_Colour),
+                    // border: Border.all(color: themeSettings.primaryColor),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.home, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                      Icon(Icons.home, color: themeSettings.textColor.withOpacity(0.5)),
                       SizedBox(width: 10),
                       Flexible(
                         child: Text(
-                          profileDetails.Location,
-                          style: TextStyle(fontSize: Sub_Body_Text_Size),
+                          profileDetails.location,
+                          style: TextStyle(fontSize: subBodyTextSize),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -296,52 +295,52 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                   ),
                 ),
                 SizedBox(height: 20),
-                Text("User type", style: TextStyle(fontSize: Body_Text_Size, color: themeSettings.Primary_Colour)),
+                Text("User type", style: TextStyle(fontSize: bodyTextSize, color: themeSettings.primaryColor)),
                 Divider(),
                 Container(
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: themeSettings.Card_Colour,
+                    color: themeSettings.cardColor,
                     borderRadius: BorderRadius.circular(10),
-                    // border: Border.all(color: themeSettings.Primary_Colour),
+                    // border: Border.all(color: themeSettings.primaryColor),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.pets, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                      Icon(Icons.pets, color: themeSettings.textColor.withOpacity(0.5)),
                       SizedBox(width: 10),
-                      Text("Pet enthusiast", style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                      Text("Pet enthusiast", style: TextStyle(fontSize: subBodyTextSize)),
                     ],
                   ),
                 ),
-                if (profileDetails.UserType == "Veterinarian")
+                if (profileDetails.userType == "Veterinarian")
                   Container(
                     padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: themeSettings.Card_Colour,
+                      color: themeSettings.cardColor,
                       borderRadius: BorderRadius.circular(10),
-                      // border: Border.all(color: themeSettings.Primary_Colour),
+                      // border: Border.all(color: themeSettings.primaryColor),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.medical_services, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                        Icon(Icons.medical_services, color: themeSettings.textColor.withOpacity(0.5)),
                         SizedBox(width: 10),
-                        Text("Veterinarian", style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                        Text("Veterinarian", style: TextStyle(fontSize: subBodyTextSize)),
                       ],
                     ),
                   ),
-                if (profileDetails.UserType == "PetKeeper")
+                if (profileDetails.userType == "PetKeeper")
                   Container(
                     padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: themeSettings.Card_Colour,
+                      color: themeSettings.cardColor,
                       borderRadius: BorderRadius.circular(10),
-                      // border: Border.all(color: themeSettings.Primary_Colour),
+                      // border: Border.all(color: themeSettings.primaryColor),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.medical_services, color: themeSettings.Text_Colour.withOpacity(0.5)),
+                        Icon(Icons.medical_services, color: themeSettings.textColor.withOpacity(0.5)),
                         SizedBox(width: 10),
-                        Text("Pet sitter", style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                        Text("Pet sitter", style: TextStyle(fontSize: subBodyTextSize)),
                       ],
                     ),
                   ),
@@ -369,11 +368,11 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
       child: Container(
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: themeSettings.Card_Colour,
+          color: themeSettings.cardColor,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: themeSettings.Text_Colour.withOpacity(0.2),
+              color: themeSettings.textColor.withOpacity(0.2),
               blurRadius: 10,
             ),
           ],
@@ -387,8 +386,8 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
               Text(
                 "My Pets",
                 style: TextStyle(
-                  fontSize: Sub_Heading_Text_Size,
-                  color: themeSettings.Primary_Colour,
+                  fontSize: subHeadingTextSize,
+                  color: themeSettings.primaryColor,
                 ),
               ),
               Divider(),
@@ -396,8 +395,8 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: PetProfileButton(
-                    petName: pet["Name"],
-                    petBio: pet["Bio"],
+                    petName: pet["name"],
+                    petBio: pet["bio"],
                   ),
                 ),
             ],
@@ -434,13 +433,13 @@ class _PetProfileButtonState extends State<PetProfileButton> {
             children: [
               Text(
                 widget.petName,
-                style: TextStyle(fontSize: Sub_Heading_Text_Size),
+                style: TextStyle(fontSize: subHeadingTextSize),
                 overflow: TextOverflow.ellipsis,
               ),
               // SizedBox(height: 8),
               Text(
                 widget.petBio,
-                style: TextStyle(fontSize: Sub_Body_Text_Size),
+                style: TextStyle(fontSize: subBodyTextSize),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
               ),

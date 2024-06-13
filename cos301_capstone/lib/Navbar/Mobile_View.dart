@@ -1,9 +1,12 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:cos301_capstone/Events/Events.dart';
+import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
+import 'package:cos301_capstone/Notifications/Notifications.dart';
 import 'package:cos301_capstone/Search_Users/Mobile_View.dart';
-import 'package:cos301_capstone/User_Profile/Desktop_View.dart';
 import 'package:cos301_capstone/User_Profile/Mobile_View.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -36,7 +39,7 @@ class _MobileNavbarState extends State<MobileNavbar> {
     return Scaffold(
       drawer: NavbarDrawer(),
       appBar: AppBar(
-        backgroundColor: ThemeSettings.Primary_Colour,
+        backgroundColor: ThemeSettings.primaryColor,
         title: Text(
           "TailWaggr",
           style: TextStyle(
@@ -49,7 +52,7 @@ class _MobileNavbarState extends State<MobileNavbar> {
         builder: (BuildContext context, Widget? child) {
           return Container(
             // width: MediaQuery.of(context).size.width - (isSearchVisible ? 550 : 250),
-            color: ThemeSettings.Background_Colour,
+            color: ThemeSettings.backgroundColor,
             padding: EdgeInsets.all(20),
             child: pages[navbarIndexObserver.index],
           );
@@ -75,7 +78,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: ThemeSettings.Primary_Colour,
+      backgroundColor: ThemeSettings.primaryColor,
       child: Container(
         padding: EdgeInsets.all(30),
         child: Column(
@@ -93,7 +96,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      profileDetails.Name,
+                      profileDetails.name,
                       style: TextStyle(
                         fontSize: 20,
                         color: Colors.white,
@@ -106,12 +109,12 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Navbar_Icon(icon: Icons.home, text: "Home", index: 0),
+                Navbar_Icon(icon: Icons.home, text: "Home", page: Homepage()),
                 Navbar_Icon(icon: Icons.search, text: "Search", page: SearchUsersMobile()),
-                // Navbar_Icon(icon: Icons.notifications, text: "Notifications", index: 0),
-                // Navbar_Icon(icon: Icons.calendar_month, text: "Events", index: 0),
+                Navbar_Icon(icon: Icons.notifications, text: "Notifications", page: Notifications()),
+                Navbar_Icon(icon: Icons.event, text: "Events", page: Events()),
                 // Navbar_Icon(icon: Icons.map_sharp, text: "Locate", index: 0),
-                // Navbar_Icon(icon: Icons.settings, text: "Forums", index: 0),
+                Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                 Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile()),
               ],
             ),
@@ -151,7 +154,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
             GestureDetector(
                 onTap: () {
                   setState(() {
-                    themeSettings.ToggleTheme();
+                    themeSettings.toggleTheme();
                     isDarkMode = !isDarkMode;
                   });
                 },

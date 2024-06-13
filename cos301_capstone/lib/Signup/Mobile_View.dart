@@ -48,9 +48,9 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                 Text(
                   "Sign up",
                   style: TextStyle(
-                    fontSize: Title_Text_Size,
+                    fontSize: titleTextSize,
                     fontWeight: FontWeight.bold,
-                    color: themeSettings.Primary_Colour,
+                    color: themeSettings.primaryColor,
                   ),
                 ),
                 SizedBox(height: 20),
@@ -59,40 +59,40 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                   decoration: InputDecoration(
                     labelText: "First Name",
                     labelStyle: TextStyle(
-                      color: themeSettings.Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: themeSettings.Primary_Colour,
+                        color: themeSettings.primaryColor,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: themeSettings.Primary_Colour,
+                        color: themeSettings.primaryColor,
                       ),
                     ),
                   ),
                 ),
                 SizedBox(height: 20,),
                 TextField(
-                  controller: signupVariables.signUpFirstNameController,
+                  controller: signupVariables.signUpLastNameController,
                   decoration: InputDecoration(
                     labelText: "Last Name",
                     labelStyle: TextStyle(
-                      color: themeSettings.Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: themeSettings.Primary_Colour,
+                        color: themeSettings.primaryColor,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: themeSettings.Primary_Colour,
+                        color: themeSettings.primaryColor,
                       ),
                     ),
                   ),
@@ -103,18 +103,18 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                   decoration: InputDecoration(
                     labelText: "Email",
                     labelStyle: TextStyle(
-                      color: themeSettings.Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: themeSettings.Primary_Colour,
+                        color: themeSettings.primaryColor,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: themeSettings.Primary_Colour,
+                        color: themeSettings.primaryColor,
                       ),
                     ),
                   ),
@@ -127,24 +127,24 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                   decoration: InputDecoration(
                     labelText: "Password",
                     labelStyle: TextStyle(
-                      color: themeSettings.Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: themeSettings.Primary_Colour,
+                        color: themeSettings.primaryColor,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: themeSettings.Primary_Colour,
+                        color: themeSettings.primaryColor,
                       ),
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         Password_Visible ? Icons.visibility : Icons.visibility_off,
-                        color: themeSettings.Primary_Colour,
+                        color: themeSettings.primaryColor,
                       ),
                       onPressed: () {
                         setState(() {
@@ -162,24 +162,24 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                   decoration: InputDecoration(
                     labelText: "Confirm Password",
                     labelStyle: TextStyle(
-                      color: themeSettings.Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: themeSettings.Primary_Colour,
+                        color: themeSettings.primaryColor,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: themeSettings.Primary_Colour,
+                        color: themeSettings.primaryColor,
                       ),
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         Confirm_Password_Visible ? Icons.visibility : Icons.visibility_off,
-                        color: themeSettings.Primary_Colour,
+                        color: themeSettings.primaryColor,
                       ),
                       onPressed: () {
                         setState(() {
@@ -275,12 +275,12 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                       });
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(themeSettings.Primary_Colour),
+                      backgroundColor: MaterialStateProperty.all(themeSettings.primaryColor),
                     ),
                     child: Text(
                       SignupButtonText,
                       style: TextStyle(
-                        fontSize: Body_Text_Size,
+                        fontSize: bodyTextSize,
                         color: Colors.white,
                       ),
                     ),
@@ -311,7 +311,7 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                       child: Text(
                         "Sign In",
                         style: TextStyle(
-                          color: themeSettings.Primary_Colour,
+                          color: themeSettings.primaryColor,
                         ),
                       ),
                     ),
