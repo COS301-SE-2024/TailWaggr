@@ -2,6 +2,7 @@
 
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Signup/Signup.dart';
+import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,7 @@ class DesktopLogin extends StatefulWidget {
 }
 
 class _DesktopLoginState extends State<DesktopLogin> {
+   final AuthService _authService = AuthService();
   bool Password_Visible = false;
   bool ErrorTextVisible = false;
   String errorText = '';
@@ -168,10 +170,11 @@ class _DesktopLoginState extends State<DesktopLogin> {
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
                               onTap: () {
-                                // Add your logic here for when the "Forgot Password?" text is clicked
+                                // Call signInWithGoogle() here
+                                _authService.signInWithGoogle();
                               },
                               child: Text(
-                                "Forgot Password?",
+                                "Sign in with Google",
                                 style: TextStyle(color: Colors.grey),
                               ),
                             ),
