@@ -1,7 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers, sort_child_properties_last
+import 'dart:math';
+
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class DesktopNotifications extends StatefulWidget {
   const DesktopNotifications({super.key});
@@ -11,6 +15,29 @@ class DesktopNotifications extends StatefulWidget {
 }
 
 class _DesktopNotificationsState extends State<DesktopNotifications> {
+  // String imageURL = "";
+  // Future<String> downloadURLExample() async {
+  //   print("Downloading image");
+  //   try {
+  //     String downloadURL = await FirebaseStorage.instance.ref().child("profile_images/Golden1.jpg").getDownloadURL();
+  //     print(downloadURL);
+  //     setState(() {
+  //       imageURL = downloadURL;
+  //     });
+  //     return downloadURL;
+  //   } catch (e) {
+  //     print("Error downloading image in function 2: $e");
+  //     return "";
+  //   }
+  // }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   imageURL = "";
+  //   downloadURLExample();
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -90,7 +117,20 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
                               children: [
                                 CircleAvatar(
                                   radius: 30,
+                                  backgroundImage: NetworkImage(profileDetails.notifications[i].profilePictureUrl),
+                                  onBackgroundImageError: (exception, stackTrace) {
+                                    print("Error loading image: ${exception.toString()}");
+                                  },
                                 ),
+                                // imageURL.isNotEmpty
+                                //     ? CircleAvatar(
+                                //         radius: 30,
+                                //         backgroundImage: NetworkImage(),
+                                //         onBackgroundImageError: (exception, stackTrace) {
+                                //           print("Error loading image: ${exception.toString()}");
+                                //         },
+                                //       )
+                                //     : CircularProgressIndicator(),
                                 SizedBox(width: 20),
                                 Text(
                                   profileDetails.notifications[i].fromUser,
@@ -173,7 +213,6 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
                                     ),
                                   ),
                                 ],
-                                
                               ],
                             ),
                           ),

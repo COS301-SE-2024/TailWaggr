@@ -91,6 +91,10 @@ class _TabletNotificationsState extends State<TabletNotifications> {
                                   children: [
                                     CircleAvatar(
                                       radius: 30,
+                                      backgroundImage: NetworkImage(profileDetails.notifications[i].profilePictureUrl),
+                                      onBackgroundImageError: (exception, stackTrace) {
+                                        print("Error loading image: ${exception.toString()}");
+                                      },
                                     ),
                                     SizedBox(width: 20),
                                     Column(

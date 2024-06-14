@@ -50,7 +50,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                 children: [
                   CircleAvatar(
                     radius: 20,
-                    // backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!),
+                    backgroundImage: NetworkImage(profileDetails.profilePicture),
                   ),
                   SizedBox(width: 20),
                   Column(

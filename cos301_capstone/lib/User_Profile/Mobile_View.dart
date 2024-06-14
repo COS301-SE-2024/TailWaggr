@@ -20,12 +20,12 @@ class _ProfileMobileState extends State<ProfileMobile> {
         children: [
           Container(
             width: MediaQuery.of(context).size.width,
-            color: ThemeSettings.backgroundColor,
+            color: themeSettings.backgroundColor,
             padding: EdgeInsets.all(20),
             child: DefaultTextStyle(
               style: TextStyle(
                 fontSize: 20,
-                color: ThemeSettings.textColor,
+                color: themeSettings.textColor,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -64,14 +64,14 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: ThemeSettings.cardColor,
+        color: themeSettings.cardColor,
         borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: ThemeSettings.textColor.withOpacity(0.2),
-            blurRadius: 10,
-          ),
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: themeSettings.textColor.withOpacity(0.2),
+        //     blurRadius: 10,
+        //   ),
+        // ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -146,15 +146,15 @@ class _PostsContainerState extends State<PostsContainer> {
       child: Container(
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: ThemeSettings.cardColor,
+          color: themeSettings.cardColor,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: ThemeSettings.textColor.withOpacity(0.2),
-              blurRadius: 10,
-              offset: Offset(0, 5),
-            ),
-          ],
+          // boxShadow: [
+          //   BoxShadow(
+          //     color: themeSettings.textColor.withOpacity(0.2),
+          //     blurRadius: 10,
+          //     offset: Offset(0, 5),
+          //   ),
+          // ],
         ),
         child: DefaultTabController(
           length: 3,
@@ -235,6 +235,7 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
               child: PetProfileButton(
                 petName: pet["name"],
                 petBio: pet["bio"],
+                petImage: pet["profilePicture"],
               ),
             ),
         ],
@@ -244,10 +245,11 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
 }
 
 class PetProfileButton extends StatefulWidget {
-  const PetProfileButton({Key? key, required this.petName, required this.petBio}) : super(key: key);
+  const PetProfileButton({Key? key, required this.petName, required this.petBio, required this.petImage}) : super(key: key);
 
   final String petName;
   final String petBio;
+  final String petImage;
 
   @override
   State<PetProfileButton> createState() => _PetProfileButtonState();
@@ -260,6 +262,7 @@ class _PetProfileButtonState extends State<PetProfileButton> {
       children: [
         CircleAvatar(
           radius: 35,
+          backgroundImage: NetworkImage(widget.petImage),
         ),
         SizedBox(width: 20),
         Expanded(

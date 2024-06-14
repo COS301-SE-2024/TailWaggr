@@ -80,12 +80,12 @@ class _PostsContainerState extends State<PostsContainer> {
         decoration: BoxDecoration(
           color: themeSettings.cardColor,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: themeSettings.textColor.withOpacity(0.2),
-              blurRadius: 10,
-            ),
-          ],
+          // boxShadow: [
+          //   BoxShadow(
+          //     color: themeSettings.textColor.withOpacity(0.2),
+          //     blurRadius: 10,
+          //   ),
+          // ],
         ),
         child: DefaultTabController(
           length: 2,
@@ -148,12 +148,6 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
       decoration: BoxDecoration(
         color: themeSettings.cardColor,
         borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: themeSettings.textColor.withOpacity(0.2),
-            blurRadius: 10,
-          ),
-        ],
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -179,11 +173,6 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                 OpenContainer(
                   transitionDuration: Duration(milliseconds: 300),
                   closedBuilder: (context, action) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      setState(() {
-                        print("Refreshing the page");
-                      });
-                    });
                     return Container(
                       padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                       decoration: BoxDecoration(
@@ -370,12 +359,12 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
         decoration: BoxDecoration(
           color: themeSettings.cardColor,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: themeSettings.textColor.withOpacity(0.2),
-              blurRadius: 10,
-            ),
-          ],
+          // boxShadow: [
+          //   BoxShadow(
+          //     color: themeSettings.textColor.withOpacity(0.2),
+          //     blurRadius: 10,
+          //   ),
+          // ],
         ),
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -397,6 +386,7 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
                   child: PetProfileButton(
                     petName: pet["name"],
                     petBio: pet["bio"],
+                    petImage: pet["profilePicture"],
                   ),
                 ),
             ],
@@ -408,10 +398,11 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
 }
 
 class PetProfileButton extends StatefulWidget {
-  const PetProfileButton({Key? key, required this.petName, required this.petBio}) : super(key: key);
+  const PetProfileButton({Key? key, required this.petName, required this.petBio, required this.petImage}) : super(key: key);
 
   final String petName;
   final String petBio;
+  final String petImage;
 
   @override
   State<PetProfileButton> createState() => _PetProfileButtonState();
@@ -424,6 +415,7 @@ class _PetProfileButtonState extends State<PetProfileButton> {
       children: [
         CircleAvatar(
           radius: 35,
+          backgroundImage: NetworkImage(widget.petImage),
         ),
         SizedBox(width: 20),
         Expanded(

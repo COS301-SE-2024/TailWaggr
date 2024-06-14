@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class MobileNotifications extends StatefulWidget {
@@ -10,6 +11,24 @@ class MobileNotifications extends StatefulWidget {
 }
 
 class _MobileNotificationsState extends State<MobileNotifications> {
+  late String imageURL;
+  Future<String> downloadURLExample() async {
+    String downloadURL = await FirebaseStorage.instance.ref().child("profile_images/Golden1.jpg").getDownloadURL();
+
+    print(downloadURL);
+    setState(() {
+      imageURL = downloadURL;
+    });
+    return downloadURL;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    imageURL = "";
+    downloadURLExample();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -59,8 +78,15 @@ class _MobileNotificationsState extends State<MobileNotifications> {
                       children: [
                         Row(
                           children: [
+                            // CircleAvatar(
+                            //   radius: 30,
+                            // ),
                             CircleAvatar(
                               radius: 30,
+                              backgroundImage: NetworkImage(profileDetails.notifications[i].profilePictureUrl),
+                              onBackgroundImageError: (exception, stackTrace) {
+                                print("Error loading image: ${exception.toString()}");
+                              },
                             ),
                             SizedBox(width: 20),
                             Column(
@@ -107,9 +133,9 @@ class _MobileNotificationsState extends State<MobileNotifications> {
                             )
                           ],
                         ),
-      
+
                         SizedBox(height: 10),
-    
+
                         if (profileDetails.notifications[i].type == "Friend Request") ...[
                           Row(
                             children: [
