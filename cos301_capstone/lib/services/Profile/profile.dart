@@ -20,7 +20,20 @@ class ProfileService {
       return null;
     }
   }
-
+  Future<Map<String, dynamic>?> getPetProfile(String petId) async {
+      try {
+        DocumentSnapshot doc = await _db.collection('pets').doc(petId).get();
+        if (doc.exists) {
+          return doc.data() as Map<String, dynamic>?;
+        } else {
+          print("No pet profile found for the given petId.");
+          return null;
+        }
+      } catch (e) {
+        print("Error fetching pet profile data: $e");
+        return null;
+      }
+    }
   Future<void> updateProfile(String userId, Map<String, dynamic> updatedData) async {
     try {
       await _db.collection('profiles').doc(userId).update(updatedData);
