@@ -138,4 +138,27 @@ class ProfileService {
       print("Error updating pet details: $e");
     }
   }
+  Future<void> addEvent(String userId, Map<String, dynamic> eventData) async {
+    try {
+      // Add a new document with a generated ID
+      await _db.collection('events').add({
+        ...eventData,
+        'userId': '/users/$userId', 
+      });
+      print("Event added successfully.");
+    } catch (e) {
+      print("Error adding event: $e");
+      throw Exception("Failed to add event.");
+    }
+  }
+  Future<void> updateEvent(String eventId, Map<String, dynamic> updatedEventData) async {
+    try {
+      // Update an existing document
+      await _db.collection('events').doc(eventId).update(updatedEventData);
+      print("Event updated successfully.");
+    } catch (e) {
+      print("Error updating event: $e");
+      throw Exception("Failed to update event.");
+    }
+  }
 }
