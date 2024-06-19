@@ -13,13 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: cd cos301_capstone && flutter build web
+      - run: sudo snap install flutter --classic && flutter channel beta && flutter config --enable-web && flutter build web
       - uses: FirebaseExtended/action-hosting-deploy@v0
-    
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TAILWAGGR }}
           projectId: tailwaggr
           entryPoint: cos301_capstone
-        env:
-          FIREBASE_CLI_EXPERIMENTS: webframeworks
