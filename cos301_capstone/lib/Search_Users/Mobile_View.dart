@@ -5,7 +5,6 @@ import 'package:cos301_capstone/Navbar/Mobile_View.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class SearchUsersMobile extends StatefulWidget {
   const SearchUsersMobile({super.key});
@@ -37,7 +36,7 @@ class _SearchUsersMobileState extends State<SearchUsersMobile> {
         return Scaffold(
           drawer: NavbarDrawer(),
           appBar: AppBar(
-            backgroundColor: themeSettings.Primary_Colour,
+            backgroundColor: themeSettings.primaryColor,
             title: Text(
               "TailWaggr",
               style: TextStyle(
@@ -52,10 +51,10 @@ class _SearchUsersMobileState extends State<SearchUsersMobile> {
                 // width: 300,
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: themeSettings.Card_Colour,
+                  color: themeSettings.cardColor,
                   boxShadow: [
                     BoxShadow(
-                      color: themeSettings.Text_Colour.withOpacity(0.2),
+                      color: themeSettings.textColor.withOpacity(0.2),
                       blurRadius: 10,
                     ),
                   ],
@@ -66,10 +65,10 @@ class _SearchUsersMobileState extends State<SearchUsersMobile> {
                       controller: searchController,
                       decoration: InputDecoration(
                         hintText: "Search for a user or pet",
-                        hintStyle: TextStyle(color: themeSettings.Text_Colour.withOpacity(0.5)),
+                        hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.5)),
                         prefixIcon: Icon(Icons.search),
                       ),
-                      style: TextStyle(color: themeSettings.Text_Colour), // Add this line
+                      style: TextStyle(color: themeSettings.textColor), // Add this line
                     ),
                     SizedBox(height: 20),
                     ElevatedButton(
@@ -82,7 +81,7 @@ class _SearchUsersMobileState extends State<SearchUsersMobile> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: themeSettings.Primary_Colour,
+                        backgroundColor: themeSettings.primaryColor,
                         minimumSize: Size(double.infinity, 0),
                       ),
                       child: Padding(
@@ -108,11 +107,11 @@ class _SearchUsersMobileState extends State<SearchUsersMobile> {
                               children: [
                                 Text(
                                   user,
-                                  style: TextStyle(color: themeSettings.Text_Colour),
+                                  style: TextStyle(color: themeSettings.textColor),
                                 ),
                                 Text(
                                   "$user's bio",
-                                  style: TextStyle(color: themeSettings.Text_Colour),
+                                  style: TextStyle(color: themeSettings.textColor),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],

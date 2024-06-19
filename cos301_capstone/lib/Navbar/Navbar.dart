@@ -1,8 +1,5 @@
 // ignore_for_file: camel_case_types, prefer_const_literals_to_create_immutables, prefer_const_constructors, prefer_final_fields
 
-import 'package:cos301_capstone/Global_Variables.dart';
-import 'package:cos301_capstone/Navbar/Desktop_View.dart';
-import 'package:cos301_capstone/Navbar/Mobile_View.dart';
 import 'package:flutter/material.dart';
 
 NavbarIndexObserver navbarIndexObserver = NavbarIndexObserver();

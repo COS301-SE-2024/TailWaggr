@@ -25,12 +25,12 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
-    EditProfileVariables.nameController.text = profileDetails.Name;
-    EditProfileVariables.surnameController.text = profileDetails.Surname;
-    EditProfileVariables.bioController.text = profileDetails.Bio;
-    EditProfileVariables.emailController.text = profileDetails.Email;
-    EditProfileVariables.phoneController.text = profileDetails.Phone;
-    EditProfileVariables.addressController.text = profileDetails.Location;
+    EditProfileVariables.nameController.text = profileDetails.name;
+    EditProfileVariables.surnameController.text = profileDetails.surname;
+    EditProfileVariables.bioController.text = profileDetails.bio;
+    EditProfileVariables.emailController.text = profileDetails.email;
+    EditProfileVariables.phoneController.text = profileDetails.phone;
+    EditProfileVariables.addressController.text = profileDetails.location;
   }
 
   @override

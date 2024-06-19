@@ -64,15 +64,15 @@ class _DesktopLoginState extends State<DesktopLogin> {
                           Text(
                             "TailWaggr",
                             style: TextStyle(
-                              fontSize: Title_Text_Size,
+                              fontSize: titleTextSize,
                               fontWeight: FontWeight.bold,
-                              color: themeSettings.Primary_Colour,
+                              color: themeSettings.primaryColor,
                             ),
                           ),
                           Text(
                             "Share Your Pet's World!",
                             style: TextStyle(
-                              fontSize: Body_Text_Size,
+                              fontSize: bodyTextSize,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -82,9 +82,9 @@ class _DesktopLoginState extends State<DesktopLogin> {
                       Text(
                         "Login",
                         style: TextStyle(
-                          fontSize: Title_Text_Size,
+                          fontSize: titleTextSize,
                           fontWeight: FontWeight.bold,
-                          color: themeSettings.Primary_Colour,
+                          color: themeSettings.primaryColor,
                         ),
                       ),
                     ],
@@ -110,18 +110,18 @@ class _DesktopLoginState extends State<DesktopLogin> {
                               decoration: InputDecoration(
                                 labelText: "Email",
                                 labelStyle: TextStyle(
-                                  color: themeSettings.Primary_Colour,
+                                  color: themeSettings.primaryColor,
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: themeSettings.Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: themeSettings.Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                               ),
@@ -137,24 +137,24 @@ class _DesktopLoginState extends State<DesktopLogin> {
                               decoration: InputDecoration(
                                 labelText: "Password",
                                 labelStyle: TextStyle(
-                                  color: themeSettings.Primary_Colour,
+                                  color: themeSettings.primaryColor,
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: themeSettings.Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: themeSettings.Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     Password_Visible ? Icons.visibility : Icons.visibility_off,
-                                    color: themeSettings.Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -194,6 +194,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
                                     email: signInEmailController.text,
                                     password: signInPasswordController.text,
                                   );
+                                  
                                 } on Exception catch (e) {
                                   print(e);
                                   setState(() {
@@ -214,12 +215,12 @@ class _DesktopLoginState extends State<DesktopLogin> {
                                 }
                               },
                               style: ButtonStyle(
-                                backgroundColor: WidgetStateProperty.all(themeSettings.Primary_Colour),
+                                backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
                               ),
                               child: Text(
                                 LoginText,
                                 style: TextStyle(
-                                  fontSize: Body_Text_Size,
+                                  fontSize: bodyTextSize,
                                   color: Colors.white,
                                 ),
                               ),
@@ -244,7 +245,6 @@ class _DesktopLoginState extends State<DesktopLogin> {
                               Text("Don't have an account?"),
                               TextButton(
                                 onPressed: () {
-                                  print("Navigating to Sign Up");
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) => Signup()),
@@ -253,7 +253,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
                                 child: Text(
                                   "Sign Up",
                                   style: TextStyle(
-                                    color: themeSettings.Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                               ),
