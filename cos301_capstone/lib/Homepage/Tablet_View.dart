@@ -17,12 +17,17 @@ class TabletHomepage extends StatefulWidget {
 class _TabletHomepageState extends State<TabletHomepage> {
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        DesktopNavbar(),
-        PostContainer(),
-        UploadPostContainer(),
-      ],
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      color: themeSettings.backgroundColor,
+      child: Row(
+        children: [
+          DesktopNavbar(),
+          PostContainer(),
+          UploadPostContainer(),
+        ],
+      ),
     );
   }
 }
