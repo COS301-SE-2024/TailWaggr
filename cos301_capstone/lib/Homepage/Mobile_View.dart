@@ -1,4 +1,6 @@
 // ignore_for_file: prefer_const_constructors
+import 'dart:math';
+
 import 'package:animations/animations.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
@@ -18,55 +20,200 @@ class _MobileHomepageState extends State<MobileHomepage> {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
+      padding: EdgeInsets.all(20),
       color: themeSettings.backgroundColor,
-      child: OpenContainer(
-        closedBuilder: (BuildContext context, void Function() action) {
-          return Icon(Icons.add);
-        },
-        openBuilder: (BuildContext context, void Function() action) {
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: themeSettings.primaryColor,
-              iconTheme: IconThemeData(color: Colors.white),
-              title: Text(
-                "Upload Post",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 10),
+                for (int i = 0; i < 10; i++) ...[
+                  Post(),
+                  Divider(),
+                ],
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: OpenContainer(
+              closedBuilder: (BuildContext context, void Function() action) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(Icons.add, color: Colors.white),
+                );
+              },
+              closedColor: themeSettings.primaryColor,
+              closedShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
+              openBuilder: (BuildContext context, void Function() action) {
+                return Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: themeSettings.primaryColor,
+                    iconTheme: IconThemeData(color: Colors.white),
+                    title: Text(
+                      "Upload Post",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  body: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    color: themeSettings.backgroundColor,
+                    padding: EdgeInsets.all(20),
+                    child: UploadPostContainer(),
+                  ),
+                );
+              },
             ),
-            body: Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              color: themeSettings.backgroundColor,
-              padding: EdgeInsets.all(20),
-              child: UploadPostContainer(),
-            ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
 }
 
-class PostContainer extends StatefulWidget {
-  const PostContainer({super.key});
+class Post extends StatefulWidget {
+  const Post({super.key});
 
   @override
-  State<PostContainer> createState() => _PostContainerState();
+  State<Post> createState() => _PostState();
 }
 
-class _PostContainerState extends State<PostContainer> {
+class _PostState extends State<Post> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: (MediaQuery.of(context).size.width - 250) * 0.7,
-      height: MediaQuery.of(context).size.height,
-      padding: const EdgeInsets.all(20),
-      margin: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: themeSettings.cardColor,
-        borderRadius: BorderRadius.all(Radius.circular(20)),
+    return IntrinsicHeight(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundImage: NetworkImage(profileDetails.profilePicture),
+                ),
+                SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      profileDetails.name,
+                      style: TextStyle(
+                        color: themeSettings.textColor,
+                      ),
+                    ),
+                    Text(
+                      "Posted on ${DateTime.now().toString().split(" ")[0]}",
+                      style: TextStyle(
+                        color: themeSettings.textColor.withOpacity(0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                profileDetails.pets[Random().nextInt(9)]["profilePicture"],
+                width: MediaQuery.of(context).size.width,
+                // height: 300,
+                fit: BoxFit.cover,
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+              style: TextStyle(
+                color: themeSettings.textColor,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 4,
+            ),
+            SizedBox(height: 20),
+            if (profileDetails.pets.isNotEmpty) ...[
+              Text(
+                "Pets included in this post: ",
+                style: TextStyle(
+                  color: themeSettings.textColor.withOpacity(0.7),
+                ),
+              ),
+              SizedBox(height: 10),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (var pet in profileDetails.pets) ...[
+                      Container(
+                        margin: EdgeInsets.only(right: 10),
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundImage: NetworkImage(pet["profilePicture"]),
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              pet["name"],
+                              style: TextStyle(color: themeSettings.textColor),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+            SizedBox(height: 20),
+            Row(
+              children: [
+                Tooltip(
+                  message: "Like",
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.favorite_border,
+                      color: Colors.red.withOpacity(0.7),
+                    ),
+                  ),
+                ),
+                Text("0", style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                Spacer(),
+                Tooltip(
+                  message: "Comment",
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.comment,
+                      color: Colors.blue.withOpacity(0.7),
+                    ),
+                  ),
+                ),
+                Text("0", style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                Spacer(),
+                Tooltip(
+                  message: "Views",
+                  child: Icon(
+                    Icons.bar_chart,
+                    color: Colors.green.withOpacity(0.7),
+                  ),
+                ),
+                Text("0", style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -343,19 +490,19 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
               onPressed: () {
                 print("---------------------------------------");
                 print("Post Details: ");
-    
+
                 if (postController.text.isNotEmpty) {
                   print("Post text: ${postController.text}");
                 } else {
                   print("Cannot post without a message");
                 }
-    
+
                 if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
                   print("Image: ${imagePicker.filesNotifier.value![0].name}");
                 } else {
                   print("No image selected");
                 }
-    
+
                 if (petIncludeCounter > 0) {
                   print("Pets included: ");
                   for (int i = 0; i < petIncludeCounter; i++) {
@@ -364,7 +511,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                 } else {
                   print("No pets included");
                 }
-    
+
                 print("---------------------------------------");
 
                 Navigator.pop(context);
