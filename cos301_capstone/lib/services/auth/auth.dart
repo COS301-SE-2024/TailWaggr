@@ -30,7 +30,7 @@ class AuthService {
           'name': name,
           'surname': surname,
           'email': email,
-          'typeUser': 'pet_owner'
+          'userType': 'pet_owner'
         });
 
         // Add user profile data to the 'profile' collection

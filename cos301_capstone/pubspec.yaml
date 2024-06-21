@@ -45,6 +45,7 @@ dependencies:
   google_maps_flutter: ^2.6.1
   cloud_firestore: ^4.17.5
   google_sign_in: ^6.2.1
+  firebase_storage: ^11.7.7
 
 dev_dependencies:
   flutter_test:
