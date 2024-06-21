@@ -233,6 +233,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.5"
+  expansion_widget:
+    dependency: "direct main"
+    description:
+      name: expansion_widget
+      sha256: "9204670970a1c2a836526f4c9bd38f0ae43468e28bca940f1de1432a4feaff6d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   fake_async:
     dependency: transitive
     description:
