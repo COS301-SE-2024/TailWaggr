@@ -20,7 +20,6 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
-  <meta name="google-signin-client_id" content="805031250037-rbml5dierrvd4didg148vg5hpp4l0gje.apps.googleusercontent.com">
 
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -36,7 +35,7 @@
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "3914390436";
+    const serviceWorkerVersion = "2538209922";
   </script>
   <script src="assets/packages/libphonenumber_plugin/js/libphonenumber.js"></script>
   <script src="assets/packages/libphonenumber_plugin/js/stringbuffer.js"></script>
@@ -55,7 +54,9 @@
           serviceWorkerVersion: serviceWorkerVersion,
         },
         onEntrypointLoaded: function (engineInitializer) {
-          engineInitializer.initializeEngine().then(function (appRunner) {
+          engineInitializer.initializeEngine({
+            renderer: "html",
+          }).then(function (appRunner) {
             appRunner.runApp();
           });
         }
