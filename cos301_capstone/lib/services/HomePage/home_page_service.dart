@@ -108,5 +108,19 @@ class HomePageService {
       return false; // Return false if an error occurs
     }
   }
+  Future<List<Map<String, dynamic>>> getPosts() async {
+    try {
+      // Fetch the posts from the "posts" collection
+      final querySnapshot = await _db.collection('posts').get();
 
+      // Convert each document to a map and add it to a list
+      final posts = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+      print("Posts fetched successfully.");
+      return posts; // Return the list of posts
+    } catch (e) {
+      print("Error fetching posts: $e");
+      return []; // Return an empty list if an error occurs
+    }
+  }
 }
