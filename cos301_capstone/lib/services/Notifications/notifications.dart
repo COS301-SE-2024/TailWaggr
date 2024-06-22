@@ -18,13 +18,14 @@ class NotificationsServices {
     }
   }
   /// Fetches notifications for events that are about to happen within the next two days.
-  Future<List<Map<String, dynamic>>?> getEventsNotifications() async {
+  Future<List<Map<String, dynamic>>?> getEventsNotifications(String userId) async {
     try {
       DateTime now = DateTime.now();
       DateTime twoDaysFromNow = now.add(Duration(days: 2));
 
       QuerySnapshot eventsSnapshot = await _db
           .collection('events')
+          .where('UserId', isEqualTo: _db.doc('users/$userId'))
           .where('startTime', isGreaterThanOrEqualTo: now)
           .where('startTime', isLessThanOrEqualTo: twoDaysFromNow)
           .get();
