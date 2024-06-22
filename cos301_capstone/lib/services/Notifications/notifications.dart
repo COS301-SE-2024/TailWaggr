@@ -19,34 +19,41 @@ class NotificationsServices {
   }
   /// Fetches notifications for events that are about to happen within the next two days.
   Future<List<Map<String, dynamic>>?> getEventsNotifications(String userId) async {
-    try {
-      DateTime now = DateTime.now();
-      DateTime twoDaysFromNow = now.add(Duration(days: 2));
+  try {
+    DateTime now = DateTime.now();
+    DateTime twoDaysFromNow = now.add(Duration(days: 2));
 
-      QuerySnapshot eventsSnapshot = await _db
-          .collection('events')
-          .where('UserId', isEqualTo: _db.doc('users/$userId'))
-          .where('startTime', isGreaterThanOrEqualTo: now)
-          .where('startTime', isLessThanOrEqualTo: twoDaysFromNow)
-          .get();
+    QuerySnapshot eventsSnapshot = await _db
+        .collection('events')
+        .where('UserId', isEqualTo: _db.doc('users/$userId'))
+        .where('startTime', isGreaterThanOrEqualTo: now)
+        .where('startTime', isLessThanOrEqualTo: twoDaysFromNow)
+        .get();
 
-      List<Map<String, dynamic>> notifications = [];
-      for (DocumentSnapshot eventDoc in eventsSnapshot.docs) {
-        Map<String, dynamic>? eventData = eventDoc.data() as Map<String, dynamic>?;
+    List<Map<String, dynamic>> notifications = [];
+    for (DocumentSnapshot eventDoc in eventsSnapshot.docs) {
+      Map<String, dynamic>? eventData = eventDoc.data() as Map<String, dynamic>?;
+
+      // Fetch the event details using eventId from eventData
+      DocumentSnapshot eventDetailsSnapshot = await _db.doc(eventData?['eventId']).get();
+      Map<String, dynamic>? eventDetails = eventDetailsSnapshot.data() as Map<String, dynamic>?;
+
+      if (eventDetails != null) {
         notifications.add({
-          'eventId': eventDoc.id,
+          'event': eventDetails,
           ...?eventData,
         });
       }
-
-      return notifications.isNotEmpty ? notifications : null;
-    } catch (e) {
-      print("Error fetching events notifications: $e");
-      return null;
     }
-  }
 
-  /// Fetches notifications for likes on posts.
+    return notifications.isNotEmpty ? notifications : null;
+  } catch (e) {
+    print("Error fetching events notifications: $e");
+    return null;
+  }
+}
+
+/// Fetches notifications for likes on posts.
 Future<List<Map<String, dynamic>>?> getLikesNotifications(String userId) async {
   try {
     QuerySnapshot likesSnapshot = await _db
@@ -58,10 +65,17 @@ Future<List<Map<String, dynamic>>?> getLikesNotifications(String userId) async {
     List<Map<String, dynamic>> notifications = [];
     for (DocumentSnapshot likeDoc in likesSnapshot.docs) {
       Map<String, dynamic>? likeData = likeDoc.data() as Map<String, dynamic>?;
-      notifications.add({
-        'notificationId': likeDoc.id,
-        ...?likeData,
-      });
+
+      // Fetch the post details using postId from likeData
+      DocumentSnapshot postSnapshot = await _db.doc(likeData?['PostId']).get();
+      Map<String, dynamic>? postDetails = postSnapshot.data() as Map<String, dynamic>?;
+
+      if (postDetails != null) {
+        notifications.add({
+          'post': postDetails,
+          ...?likeData,
+        });
+      }
     }
 
     return notifications.isNotEmpty ? notifications : null;
@@ -70,6 +84,7 @@ Future<List<Map<String, dynamic>>?> getLikesNotifications(String userId) async {
     return null;
   }
 }
+
   /// Fetches notifications for replies or comments on posts.
 Future<List<Map<String, dynamic>>?> getReplyNotifications(String userId) async {
   try {
@@ -82,10 +97,17 @@ Future<List<Map<String, dynamic>>?> getReplyNotifications(String userId) async {
     List<Map<String, dynamic>> notifications = [];
     for (DocumentSnapshot replyDoc in repliesSnapshot.docs) {
       Map<String, dynamic>? replyData = replyDoc.data() as Map<String, dynamic>?;
-      notifications.add({
-        'notificationId': replyDoc.id,
-        ...?replyData,
-      });
+
+      // Fetch the post details using ForumId from replyData
+      DocumentSnapshot postSnapshot = await _db.doc(replyData?['ForumId']).get();
+      Map<String, dynamic>? postDetails = postSnapshot.data() as Map<String, dynamic>?;
+
+      if (postDetails != null) {
+        notifications.add({
+          'post': postDetails,
+          ...?replyData,
+        });
+      }
     }
 
     return notifications.isNotEmpty ? notifications : null;
@@ -94,6 +116,7 @@ Future<List<Map<String, dynamic>>?> getReplyNotifications(String userId) async {
     return null;
   }
 }
+
 
   /// Creates a follow notification
   Future<void> createFollowNotification(String followingId, String followedId) async {
