@@ -18,5 +18,21 @@ class HomePageService {
       return []; // Return an empty list if an error occurs
     }
   }
+  Future<Map<String, dynamic>?> getPetById(String userId, String petId) async {
+    try {
+      // Access the specific pet document
+      final docSnapshot = await _db.collection('users').doc(userId).collection('pets').doc(petId).get();
 
+      if (docSnapshot.exists) {
+        print("Pet fetched successfully.");
+        return docSnapshot.data() as Map<String, dynamic>; // Return the pet's data
+      } else {
+        print("Pet not found.");
+        return null; // Return null if the pet does not exist
+      }
+    } catch (e) {
+      print("Error fetching pet: $e");
+      return null; // Return null if an error occurs
+    }
+  }
 }
