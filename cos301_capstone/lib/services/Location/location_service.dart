@@ -35,6 +35,29 @@ class LocationService {
 
     return usersWithinRadius;
   }
+  Future<List<User>> getUsersByName(String name) async {
+    // Adjust the name to search for any name that starts with the given input,
+    // and extends to all possible names that start with the input by appending
+    // a high-value unicode character to cover all cases.
+    String searchLowerBound = name;
+    String searchUpperBound = name + '\uf8ff';
+    var userQuerySnapshot = await _firestore
+        .collection('users')
+        .where('name', isGreaterThanOrEqualTo: searchLowerBound)
+        .where('name', isLessThanOrEqualTo: searchUpperBound)
+        .get();
+    List<User> matchingUsers = [];
+
+    for (var doc in userQuerySnapshot.docs) {
+      User user = User.fromFirestore(doc.data());
+
+      if (user.userType == 'vet' || user.userType == 'pet_keeper') {
+        matchingUsers.add(user); // Add user to the list if they are a vet or pet_keeper
+      }
+    }
+
+    return matchingUsers; // Return the list of matching users
+  }
 }
 
 class User {
