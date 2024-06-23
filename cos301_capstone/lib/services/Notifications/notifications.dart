@@ -266,5 +266,34 @@ Future<void> createReplyNotification(String postId, String userId) async {
     print("Error creating comment notification: $e");
   }
 }
+///fetched an array of all notification types
+Future<List<Map<String, dynamic>>> getAllNotifications(String userId) async {
+    try {
+      // Fetch notifications of all types
+      List<Map<String, dynamic>> followNotifications = await getFollowNotifications(userId);
+      //List<Map<String, dynamic>>? eventNotifications = await getEventsNotifications(userId);
+      List<Map<String, dynamic>>? likeNotifications = await getLikesNotifications(userId);
+      List<Map<String, dynamic>>? replyNotifications = await getReplyNotifications(userId);
+
+      // Combine all notifications
+      List<Map<String, dynamic>> allNotifications = [];
+      allNotifications.addAll(followNotifications);
+      //if (eventNotifications != null) allNotifications.addAll(eventNotifications);
+      if (likeNotifications != null) allNotifications.addAll(likeNotifications);
+      if (replyNotifications != null) allNotifications.addAll(replyNotifications);
+
+      // Sort notifications by CreatedAt in descending order (most recent first)
+      allNotifications.sort((a, b) {
+        Timestamp aTimestamp = a['CreatedAt'] as Timestamp;
+        Timestamp bTimestamp = b['CreatedAt'] as Timestamp;
+        return bTimestamp.compareTo(aTimestamp);
+      });
+
+      return allNotifications;
+    } catch (e) {
+      print('Error fetching all notifications: $e');
+      return [];
+    }
+  }
 
 }
