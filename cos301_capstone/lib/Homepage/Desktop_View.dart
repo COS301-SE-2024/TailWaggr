@@ -85,7 +85,6 @@ class Post extends StatefulWidget {
 }
 
 class _PostState extends State<Post> {
-
   String numLikes = "0";
 
   @override
@@ -229,9 +228,10 @@ class _PostState extends State<Post> {
                     message: "Like",
                     child: IconButton(
                       onPressed: () {
-                        HomePageService().addLikeToPost(widget.postDetails['PostId'], profileDetails.userID);
-                        setState(() {
-                          HomePageService().getLikesCount(widget.postDetails['PostId']).then((value) {
+                        HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
+
+                        HomePageService().getLikesCount(widget.postDetails['PostId']).then((value) {
+                          setState(() {
                             numLikes = value.toString();
                           });
                         });
@@ -242,7 +242,7 @@ class _PostState extends State<Post> {
                       ),
                     ),
                   ),
-                  Text(numLikes as String, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                  Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
                   Spacer(),
                   Tooltip(
                     message: "Comment",
