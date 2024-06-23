@@ -14,7 +14,7 @@ class HomePageService {
     String userId,
     PlatformFile platformFile,
     String content,
-    List<String> petIds,
+    Map<String, dynamic> petIds,
   ) async {
     try {
       print("Gets here 0");
@@ -50,12 +50,22 @@ class HomePageService {
         'CreatedAt': DateTime.now(),
         'ImgUrl': imgUrl, // Use the uploaded photo URL
         'PetIds': petIds,
+        'Likes': 0,
+        'Comments': 0,
       };
+      DocumentReference postRef = await _db.collection('posts').add(postData);
 
       print("Gets here 4");
-
       // Add the post to the "posts" collection
       await _db.collection('posts').add(postData);
+          // Initialize likes and comments subcollections by adding and then deleting a dummy document
+      await postRef.collection('likes').doc('dummyLike').set({'dummy': true});
+      await postRef.collection('likes').doc('dummyLike').delete();
+
+      await postRef.collection('comments').doc('dummyComment').set({'dummy': true});
+      await postRef.collection('comments').doc('dummyComment').delete();
+
+      print("Likes and comments subcollections initialized");
       print("Post added successfully with photo.");
       return true; // Return true if the post is added successfully
     } catch (e) {
@@ -112,5 +122,44 @@ class HomePageService {
       print("Error fetching posts: $e");
       return []; // Return an empty list if an error occurs
     }
+  }
+  Future<void> addLikeToPost(String postId, String userId) async {
+    DocumentReference postRef = _db.collection('posts').doc(postId);
+    await postRef.collection('likes').doc(userId).set({
+      'likedAt': DateTime.now(),
+      // Additional like information can go here
+    });
+  }
+  Future<void> addCommentToPost(String postId, String userId, String comment) async {
+    DocumentReference postRef = _db.collection('posts').doc(postId);
+    await postRef.collection('comments').add({
+      'userId': userId, // Storing the userId of the commenter
+      'comment': comment, // Storing the actual comment text
+      'commentedAt': DateTime.now(), // Storing the timestamp of the comment
+      // Additional comment information can go here
+    });
+  }
+  Future<void> deleteLikeFromPost(String postId, String userId) async {
+    DocumentReference postRef = _db.collection('posts').doc(postId);
+    await postRef.collection('likes').doc(userId).delete();
+  }
+  Future<void> deleteCommentFromPost(String postId, String commentId) async {
+    DocumentReference postRef = _db.collection('posts').doc(postId);
+    await postRef.collection('comments').doc(commentId).delete();
+  }
+  Future<int> getLikesCount(String postId) async {
+    DocumentReference postRef = _db.collection('posts').doc(postId);
+    final querySnapshot = await postRef.collection('likes').get();
+    return querySnapshot.docs.length;
+  }
+  Future<int> getCommentsCount(String postId) async {
+    DocumentReference postRef = _db.collection('posts').doc(postId);
+    final querySnapshot = await postRef.collection('comments').get();
+    return querySnapshot.docs.length;
+  }
+  Future<List<Map<String, dynamic>>> getComments(String postId) async {
+    DocumentReference postRef = _db.collection('posts').doc(postId);
+    final querySnapshot = await postRef.collection('comments').get();
+    return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
   }
 }
