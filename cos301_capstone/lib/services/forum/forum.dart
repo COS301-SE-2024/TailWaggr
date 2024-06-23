@@ -138,7 +138,7 @@ class ForumServices {
       });
 
       // Create Like notification
-      notif.createLikeNotification(messageId, userId);
+      notif.createLikeNotification(forumId,messageId, userId);
 
       return likeRef;
     } catch (e) {
@@ -158,7 +158,7 @@ class ForumServices {
       });
 
       // Create reply notification
-      notif.createReplyNotification(messageId, userId);
+      notif.createReplyNotification(forumId,messageId, userId);
 
       return replyRef;
     } catch (e) {
