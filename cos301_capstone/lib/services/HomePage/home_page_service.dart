@@ -32,9 +32,7 @@ class HomePageService {
         'UserId': userId,
         'Content': content,
         'CreatedAt': createdAt,
-        'ForumId': forumId,
         'ImgUrl': imgUrl, // Use the uploaded photo URL
-        'ParentId': parentId,
         'PetIds': petIds,
       };
 
@@ -44,35 +42,6 @@ class HomePageService {
       return true; // Return true if the post is added successfully
     } catch (e) {
       print("Error adding post with photo: $e");
-      return false; // Return false if an error occurs
-    }
-  }
-
-  Future<bool> addPostWithoutPhoto(
-    String userId,
-    String content,
-    DateTime createdAt,
-    String forumId,
-    String parentId,
-    List<String> petIds,
-  ) async {
-    try {
-      // Create a map for the post data
-      final postData = {
-        'UserId': userId,
-        'Content': content,
-        'CreatedAt': createdAt,
-        'ForumId': forumId,
-        'ParentId': parentId,
-        'PetIds': petIds,
-      };
-
-      // Add the post to the "posts" collection
-      await _db.collection('posts').add(postData);
-      print("Post added successfully without photo.");
-      return true; // Return true if the post is added successfully
-    } catch (e) {
-      print("Error adding post without photo: $e");
       return false; // Return false if an error occurs
     }
   }
