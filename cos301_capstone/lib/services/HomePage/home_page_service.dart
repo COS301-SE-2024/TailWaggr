@@ -125,12 +125,20 @@ class HomePageService {
       return []; // Return an empty list if an error occurs
     }
   }
-  Future<void> addLikeToPost(String postId, String userId) async {
+  Future<void> toggleLikeOnPost(String postId, String userId) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
-    await postRef.collection('likes').doc(userId).set({
-      'likedAt': DateTime.now(),
-      // Additional like information can go here
-    });
+    DocumentSnapshot likeSnapshot = await postRef.collection('likes').doc(userId).get();
+
+    if (likeSnapshot.exists) {
+      // Like exists, so delete it
+      await postRef.collection('likes').doc(userId).delete();
+    } else {
+      // Like does not exist, so add it
+      await postRef.collection('likes').doc(userId).set({
+        'likedAt': DateTime.now(),
+        // Additional like information can go here
+      });
+    }
   }
   Future<void> addCommentToPost(String postId, String userId, String comment) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
@@ -140,10 +148,6 @@ class HomePageService {
       'commentedAt': DateTime.now(), // Storing the timestamp of the comment
       // Additional comment information can go here
     });
-  }
-  Future<void> deleteLikeFromPost(String postId, String userId) async {
-    DocumentReference postRef = _db.collection('posts').doc(postId);
-    await postRef.collection('likes').doc(userId).delete();
   }
   Future<void> deleteCommentFromPost(String postId, String commentId) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
