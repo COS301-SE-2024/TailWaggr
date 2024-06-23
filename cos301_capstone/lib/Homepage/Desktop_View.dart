@@ -1,6 +1,4 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-import 'dart:math';
-
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
@@ -87,6 +85,7 @@ class Post extends StatefulWidget {
 }
 
 class _PostState extends State<Post> {
+
   String getMonthAbbreviation(int month) {
     switch (month) {
       case 1:
@@ -172,7 +171,7 @@ class _PostState extends State<Post> {
                 maxLines: 4,
               ),
               Spacer(),
-              if (widget.postDetails['petIds'].length != 0) ...[
+              if (widget.postDetails['PetIds'].length != 0) ...[
                 Text(
                   "Pets included in this post: ",
                   style: TextStyle(
