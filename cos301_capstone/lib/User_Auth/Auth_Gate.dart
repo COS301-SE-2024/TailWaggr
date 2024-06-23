@@ -12,7 +12,7 @@ import 'package:cos301_capstone/Login/Login.dart';
 // import 'package:cos301_capstone/Signup/Signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cos301_capstone/services/general/general_service.dart';
+import 'package:cos301_capstone/services/Profile/profile.dart';
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -29,7 +29,7 @@ class _AuthGateState extends State<AuthGate> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
 
-          
+          populateUserData();
 
           return Homepage();
         }
@@ -37,5 +37,23 @@ class _AuthGateState extends State<AuthGate> {
       },
     );
   }
+}
+
+void populateUserData() async {
+
+  print("Populating user data...");
+  // print(FirebaseAuth.instance.currentUser!.uid);
+
+  Future<Map<String, dynamic>?> tempDetails = ProfileService().getUserProfile(FirebaseAuth.instance.currentUser!.uid);
+  tempDetails.then((value) {
+    print("User data populated successfully.");
+    print(value);
+    profileDetails.name = value!['name'];
+    profileDetails.surname = value['surname'];
+    profileDetails.email = value['email'];
+    profileDetails.bio = value['bio'];
+    profileDetails.profilePicture = value['profilePictureUrl'];
+
+  });
 }
 

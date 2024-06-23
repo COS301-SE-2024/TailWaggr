@@ -102,10 +102,10 @@ class ThemeSettingsObserver extends ChangeNotifier {
 ThemeSettingsObserver themeSettings = ThemeSettingsObserver();
 
 class ProfileDetails {
-  String name = "John";
-  String surname = "Doe";
+  String name = "";
+  String surname = "";
   String userID = FirebaseAuth.instance.currentUser!.uid;
-  String bio = "This is my bio";
+  String bio = "";
   String email = "johndoe@gmail.com";
   String phone = "012 345 6789";
   String dialCode = "+27";
