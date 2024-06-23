@@ -2,105 +2,92 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotificationsServices {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-    //notificationType : 1 = like,2 = event , 3 = reply ,4 = follow
-    Future<List<Map<String, dynamic>>> getFollowNotifications(String userId) async {
+
+  // Notification types
+  // 1 = like, 2 = event, 3 = reply, 4 = follow
+
+  Future<Map<String, dynamic>?> getFollowNotifications(String userId) async {
     try {
-      DocumentReference userRef = _db.doc('users/$userId');
-      QuerySnapshot notificationsSnapshot = await _db
-          .collection('notifications')
-          .where('UserId', isEqualTo: userRef)
-          .where('NotificationTypeId', isEqualTo: 4)
+      DocumentSnapshot doc = await _db.collection('notifications').doc(userId).get();
+      if (doc.exists) {
+        return doc.data() as Map<String, dynamic>?;
+      } else {
+        print("No follow notifications found for the given userId.");
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching follow notifications data: $e");
+      return null;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>?> getEventsNotifications(String userId) async {
+    try {
+      DateTime now = DateTime.now();
+      DateTime twoDaysFromNow = now.add(Duration(days: 2));
+
+      QuerySnapshot eventsSnapshot = await _db
+          .collection('events')
+          .where('UserId', isEqualTo: userId)
+          .where('startTime', isGreaterThanOrEqualTo: now)
+          .where('startTime', isLessThanOrEqualTo: twoDaysFromNow)
           .get();
 
       List<Map<String, dynamic>> notifications = [];
-      for (DocumentSnapshot doc in notificationsSnapshot.docs) {
-      Map<String, dynamic>? followData = doc.data() as Map<String, dynamic>?;
-      print(followData);
-      // Fetch the post details using ReferenceId from likeData
-      if (followData != null) {
-        DocumentReference postRef = followData['ReferenceId'] as DocumentReference;
-        DocumentSnapshot postSnapshot = await postRef.get();
-        Map<String, dynamic>? postDetails = postSnapshot.data() as Map<String, dynamic>?;
+      for (DocumentSnapshot eventDoc in eventsSnapshot.docs) {
+        Map<String, dynamic>? eventData = eventDoc.data() as Map<String, dynamic>?;
 
-        if (postDetails != null) {
+        DocumentSnapshot eventDetailsSnapshot = await _db.doc(eventData?['eventId']).get();
+        Map<String, dynamic>? eventDetails = eventDetailsSnapshot.data() as Map<String, dynamic>?;
+
+        if (eventDetails != null) {
           notifications.add({
-            'post': postDetails,
-            ...followData,
+            'event': eventDetails,
+            ...?eventData,
           });
         }
       }
-      }
-      return notifications.isNotEmpty ? notifications : [];
+
+      return notifications.isNotEmpty ? notifications : null;
     } catch (e) {
-      print('Error fetching follow notifications: $e');
-      return [];
+      print("Error fetching events notifications: $e");
+      return null;
     }
-}
-
-  /// Fetches notifications for events that are about to happen within the next two days.
-  Future<List<Map<String, dynamic>>?> getEventsNotifications(String userId) async {
-  try {
-    DateTime now = DateTime.now();
-    DateTime twoDaysFromNow = now.add(Duration(days: 2));
-    DocumentReference userRef = _db.doc('users/$userId');
-    QuerySnapshot eventsSnapshot = await _db
-        .collection('events')
-        .where('UserId', isEqualTo: userRef)
-        .where('startTime', isGreaterThanOrEqualTo: now)
-        .where('startTime', isLessThanOrEqualTo: twoDaysFromNow)
-        .get();
-
-    List<Map<String, dynamic>> notifications = [];
-    for (DocumentSnapshot eventDoc in eventsSnapshot.docs) {
-      Map<String, dynamic>? eventData = eventDoc.data() as Map<String, dynamic>?;
-
-      if(eventData!=null){
-      // Fetch the event details using eventId from eventData
-      DocumentSnapshot eventDetailsSnapshot = await _db.doc(eventData['eventId']).get();
-      Map<String, dynamic>? eventDetails = eventDetailsSnapshot.data() as Map<String, dynamic>?;
-
-      if (eventDetails != null) {
-        notifications.add({
-          'event': eventDetails,
-          ...eventData,
-        });
-      }
-    }
-    }
-
-    return notifications.isNotEmpty ? notifications : null;
-  } catch (e) {
-    print("Error fetching events notifications: $e");
-    return null;
   }
-}
 
-/// Fetches notifications for likes on posts.
-Future<List<Map<String, dynamic>>?> getLikesNotifications(String userId) async {
+  Future<List<Map<String, dynamic>>?> getLikesNotifications(String userId) async {
   try {
-    DocumentReference userRef = _db.doc('users/$userId');
     QuerySnapshot likesSnapshot = await _db
         .collection('notifications')
-        .where('UserId', isEqualTo: userRef)
-        .where('NotificationTypeId', isEqualTo: 1) // Assuming NotificationTypeId 1 is for likes
+        .where('UserId', isEqualTo: userId)
+        .where('NotificationTypeId', isEqualTo: 1)
         .get();
 
     List<Map<String, dynamic>> notifications = [];
     for (DocumentSnapshot likeDoc in likesSnapshot.docs) {
       Map<String, dynamic>? likeData = likeDoc.data() as Map<String, dynamic>?;
 
-      // Fetch the post details using ReferenceId from likeData
-      if (likeData != null) {
-        DocumentReference postRef = likeData['ReferenceId'] as DocumentReference;
-        DocumentSnapshot postSnapshot = await postRef.get();
-        Map<String, dynamic>? postDetails = postSnapshot.data() as Map<String, dynamic>?;
+      // Extract forumId and messageId from the ReferenceId field
+      String referenceId = likeData?['ReferenceId'] ?? '';
+      List<String> referenceParts = referenceId.split('/');
+      if (referenceParts.length != 2) continue;
+      String forumId = referenceParts[0];
+      String messageId = referenceParts[1];
 
-        if (postDetails != null) {
-          notifications.add({
-            'post': postDetails,
-            ...likeData,
-          });
-        }
+      // Fetch the message details from the forum
+      DocumentSnapshot messageSnapshot = await _db
+          .collection('forum')
+          .doc(forumId)
+          .collection('messages')
+          .doc(messageId)
+          .get();
+      Map<String, dynamic>? messageDetails = messageSnapshot.data() as Map<String, dynamic>?;
+
+      if (messageDetails != null) {
+        notifications.add({
+          'message': messageDetails,
+          ...?likeData,
+        });
       }
     }
 
@@ -111,32 +98,40 @@ Future<List<Map<String, dynamic>>?> getLikesNotifications(String userId) async {
   }
 }
 
-
-  /// Fetches notifications for replies or comments on posts.
 Future<List<Map<String, dynamic>>?> getReplyNotifications(String userId) async {
   try {
     QuerySnapshot repliesSnapshot = await _db
         .collection('notifications')
-        .where('UserId', isEqualTo: _db.doc('users/$userId'))
-        .where('NotificationTypeId', isEqualTo: 3) // Assuming NotificationTypeId 3 is for replies/comments
+        .where('UserId', isEqualTo: userId)
+        .where('NotificationTypeId', isEqualTo: 3)
         .get();
 
     List<Map<String, dynamic>> notifications = [];
     for (DocumentSnapshot replyDoc in repliesSnapshot.docs) {
       Map<String, dynamic>? replyData = replyDoc.data() as Map<String, dynamic>?;
 
-      if(replyData!=null){ 
-        DocumentReference postRef = replyData['ReferenceId'] as DocumentReference;
-        DocumentSnapshot postSnapshot = await postRef.get();
-        Map<String, dynamic>? postDetails = postSnapshot.data() as Map<String, dynamic>?;
+      // Extract forumId and messageId from the ReferenceId field
+      String referenceId = replyData?['ReferenceId'] ?? '';
+      List<String> referenceParts = referenceId.split('/');
+      if (referenceParts.length != 2) continue;
+      String forumId = referenceParts[0];
+      String messageId = referenceParts[1];
 
-      if (postDetails != null) {
+      // Fetch the message details from the forum
+      DocumentSnapshot messageSnapshot = await _db
+          .collection('forum')
+          .doc(forumId)
+          .collection('messages')
+          .doc(messageId)
+          .get();
+      Map<String, dynamic>? messageDetails = messageSnapshot.data() as Map<String, dynamic>?;
+
+      if (messageDetails != null) {
         notifications.add({
-          'post': postDetails,
-          ...replyData,
+          'message': messageDetails,
+          ...?replyData,
         });
       }
-    }
     }
 
     return notifications.isNotEmpty ? notifications : null;
@@ -146,154 +141,102 @@ Future<List<Map<String, dynamic>>?> getReplyNotifications(String userId) async {
   }
 }
 
+  Future<void> createFollowNotification(String followingId, String followedId) async {
+    try {
+      DocumentSnapshot followingDoc = await _db.collection('users').doc(followingId).get();
+      Map<String, dynamic> followingData = followingDoc.data() as Map<String, dynamic>;
+      String username = followingData['userName'] ?? '';
 
-  /// Creates a follow notification
-Future<void> createFollowNotification(String followingId, String followedId) async {
-  try {
-    // Get the username of the follower
-    DocumentSnapshot followingDoc = await _db.collection('users').doc(followingId).get();
-    if (!followingDoc.exists) throw Exception("Following user not found");
-    Map<String, dynamic> followingData = followingDoc.data() as Map<String, dynamic>;
-    String username = followingData['userName'] ?? '';
+      String content = "$username followed you";
 
-    String content = "$username followed you";
+      QuerySnapshot existingNotifs = await _db.collection('notifications')
+          .where('UserId', isEqualTo: followedId)
+          .where('NotificationTypeId', isEqualTo: 4)
+          .where('Content', isEqualTo: content)
+          .get();
 
-    // Check if the notification already exists
-    QuerySnapshot existingNotifs = await _db.collection('notifications')
-        .where('UserId', isEqualTo: _db.doc('users/$followedId'))
-        .where('NotificationTypeId', isEqualTo: 4)
-        .where('Content', isEqualTo: content)
-        .get();
+      if (existingNotifs.docs.isNotEmpty) {
+        return;
+      }
 
-    if (existingNotifs.docs.isNotEmpty) {
-      // Notification already exists
-      return;
-    }
-
-    // Create a new notification
-    await _db.collection('notifications').add({
-      'UserId': _db.doc('users/$followedId'),
-      'NotificationTypeId': 4,
-      'Content': content,
-      'Read': false,
-      'AvatarUrlId': _db.doc('users/$followingId'),
-      'CreatedAt': Timestamp.now(),
-    });
-  } catch (e) {
-    print("Error creating follow notification: $e");
-  }
-}
-
-  /// Creates a like notification.
-///
-/// Takes the post ID and the user ID who liked the post.
-Future<void> createLikeNotification(String postId, String userId) async {
-  try {
-    // Get the owner of the post
-    DocumentSnapshot postDoc = await _db.collection('posts').doc(postId).get();
-    if (!postDoc.exists) throw Exception("Post not found");
-    Map<String, dynamic> postData = postDoc.data() as Map<String, dynamic>;
-    DocumentReference postOwnerRef = postData['UserId'];
-
-    // Get the username of the user who liked the post
-    DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
-    if (!userDoc.exists) throw Exception("User not found");
-    Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-    String username = userData['userName'] ?? '';
-
-    String content = "$username has liked your post";
-
-    // Check if the notification already exists
-    QuerySnapshot existingNotifs = await _db
-        .collection('notifications')
-        .where('UserId', isEqualTo: postOwnerRef)
-        .where('NotificationTypeId', isEqualTo: 1)
-        .where('Content', isEqualTo: content)
-        .get();
-
-    if (existingNotifs.docs.isNotEmpty) {
-      // Notification already exists, return it
-      return;
-    } else {
-      // Notification doesn't exist, insert a new one
       await _db.collection('notifications').add({
-        'UserId': postOwnerRef,
-        'NotificationTypeId': 1,
+        'UserId': followedId,
+        'NotificationTypeId': 4,
         'Content': content,
         'Read': false,
-        'ReferenceId': _db.doc('posts/$postId'),
-        'AvatarUrlId': _db.doc('users/$userId'),
+        'AvatarUrlId': followingId,
         'CreatedAt': Timestamp.now(),
       });
-    }
-  } catch (e) {
-    print("Error creating like notification: $e");
-  }
-}
-
-
-  
-  /// Creates a comment notification.
-///
-/// Takes the post ID and the user ID who commented on the post.
-Future<void> createReplyNotification(String postId, String userId) async {
-  try {
-    // Get the owner of the post
-    DocumentSnapshot postDoc = await _db.collection('posts').doc(postId).get();
-    if (!postDoc.exists) throw Exception("Post not found");
-    Map<String, dynamic> postData = postDoc.data() as Map<String, dynamic>;
-    DocumentReference postOwnerRef = postData['UserId'];
-
-    // Get the username of the user who commented on the post
-    DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
-    if (!userDoc.exists) throw Exception("User not found");
-    Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-    String username = userData['userName'] ?? '';
-
-    String content = "$username has commented on your post";
-
-    // Insert a new notification
-    await _db.collection('notifications').add({
-      'UserId': postOwnerRef,
-      'NotificationTypeId': 3,
-      'Content': content,
-      'Read': false,
-      'ReferenceId': _db.doc('posts/$postId'),
-      'AvatarUrlId': _db.doc('users/$userId'),
-      'CreatedAt': Timestamp.now(),
-    });
-  } catch (e) {
-    print("Error creating comment notification: $e");
-  }
-}
-///fetched an array of all notification types
-Future<List<Map<String, dynamic>>> getAllNotifications(String userId) async {
-    try {
-      // Fetch notifications of all types
-      List<Map<String, dynamic>> followNotifications = await getFollowNotifications(userId);
-      //List<Map<String, dynamic>>? eventNotifications = await getEventsNotifications(userId);
-      List<Map<String, dynamic>>? likeNotifications = await getLikesNotifications(userId);
-      List<Map<String, dynamic>>? replyNotifications = await getReplyNotifications(userId);
-
-      // Combine all notifications
-      List<Map<String, dynamic>> allNotifications = [];
-      allNotifications.addAll(followNotifications);
-      //if (eventNotifications != null) allNotifications.addAll(eventNotifications);
-      if (likeNotifications != null) allNotifications.addAll(likeNotifications);
-      if (replyNotifications != null) allNotifications.addAll(replyNotifications);
-
-      // Sort notifications by CreatedAt in descending order (most recent first)
-      allNotifications.sort((a, b) {
-        Timestamp aTimestamp = a['CreatedAt'] as Timestamp;
-        Timestamp bTimestamp = b['CreatedAt'] as Timestamp;
-        return bTimestamp.compareTo(aTimestamp);
-      });
-
-      return allNotifications;
     } catch (e) {
-      print('Error fetching all notifications: $e');
-      return [];
+      print("Error creating follow notification: $e");
     }
   }
 
+  Future<void> createLikeNotification(String forumId,String messageId, String userId) async {
+    try {
+      DocumentSnapshot postDoc = await _db.collection('forum').doc(forumId).collection('messages').doc(messageId).get();
+
+      if (!postDoc.exists) throw Exception("Message not found");
+      Map<String, dynamic> postData = postDoc.data() as Map<String, dynamic>;
+      String postOwnerId = postData['UserId'] ?? '';
+
+      DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
+      if (!userDoc.exists) throw Exception("User not found");
+      Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+      String username = userData['userName'] ?? '';
+
+      String content = "$username has liked your message";
+
+      QuerySnapshot existingNotifs = await _db
+          .collection('notifications')
+          .where('UserId', isEqualTo: postOwnerId)
+          .where('NotificationTypeId', isEqualTo: 1)
+          .where('Content', isEqualTo: content)
+          .get();
+
+      if (existingNotifs.docs.isNotEmpty) {
+        return;
+      } else {
+        await _db.collection('notifications').add({
+          'UserId': postOwnerId,
+          'NotificationTypeId': 1,
+          'Content': content,
+          'Read': false,
+          'ReferenceId': '$forumId/$messageId',
+          'AvatarUrlId': userId,
+          'CreatedAt': Timestamp.now(),
+        });
+      }
+    } catch (e) {
+      print("Error creating like notification: $e");
+    }
+  }
+
+  Future<void> createReplyNotification(String forumId,String messageId, String userId) async {
+    try {
+      DocumentSnapshot postDoc = await _db.collection('forum').doc(forumId).collection('messages').doc(messageId).get();
+      if (!postDoc.exists) throw Exception("Message not found");
+      Map<String, dynamic> postData = postDoc.data() as Map<String, dynamic>;
+      String postOwnerId = postData['UserId'] ?? '';
+
+      DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
+      if (!userDoc.exists) throw Exception("User not found");
+      Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+      String username = userData['userName'] ?? '';
+
+      String content = "$username has commented on your message";
+
+      await _db.collection('notifications').add({
+        'UserId': postOwnerId,
+        'NotificationTypeId': 3,
+        'Content': content,
+        'Read': false,
+        'ReferenceId': '$forumId/$messageId',
+        'AvatarUrlId': userId,
+        'CreatedAt': Timestamp.now(),
+      });
+    } catch (e) {
+      print("Error creating comment notification: $e");
+    }
+  }
 }
