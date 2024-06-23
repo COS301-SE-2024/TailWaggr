@@ -8,6 +8,7 @@ import 'package:cos301_capstone/Navbar/Mobile_View.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
+import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -17,6 +18,27 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+
+  @override
+  void initState() {
+    super.initState();
+    
+    void getPosts() async {
+      // profileDetails.posts = (await HomePageService().getPosts()) as Map<String, dynamic>;
+      Future<List<Map<String, dynamic>>> posts = HomePageService().getPosts();
+      posts.then((value) {
+        for (var post in value) {
+          print(post);
+        }
+        setState(() {
+          profileDetails.posts = value;
+        });
+      });
+    }
+
+    getPosts();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

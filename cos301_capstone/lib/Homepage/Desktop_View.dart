@@ -6,6 +6,7 @@ import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:cos301_capstone/Global_Variables.dart';
 
 class DesktopHomepage extends StatefulWidget {
   const DesktopHomepage({super.key});
@@ -54,13 +55,17 @@ class _PostContainerState extends State<PostContainer> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Post(),
-            Divider(),
-            Post(),
-            Divider(),
-            Post(),
-            Divider(),
-            Post(),
+            for (int i = 0; i < profileDetails.posts.length; i++) ... {
+              Post(postDetails: profileDetails.posts[i]),
+              Divider(),
+            },
+            // Post(),
+            // Divider(),
+            // Post(),
+            // Divider(),
+            // Post(),
+            // Divider(),
+            // Post(),
           ],
         ),
       ),
@@ -69,13 +74,62 @@ class _PostContainerState extends State<PostContainer> {
 }
 
 class Post extends StatefulWidget {
-  const Post({super.key});
+  const Post({super.key, required this.postDetails});
+
+  final Map<String, dynamic> postDetails;
 
   @override
   State<Post> createState() => _PostState();
+
+  // {
+  //   CreatedAt: Timestamp(seconds=1718002008, nanoseconds=412000000), 
+  //   ForumId: DocumentReference<Map<String, dynamic>>(forum/EvfTTsu9GjHxL1sZcZcx), 
+  //   ParentId: null, 
+  //   UserId: DocumentReference<Map<String, dynamic>>(users/y2RnaR2jdgeqqbfeG6yP0NLjmiP2), 
+  //   ImgUrl: null, 
+  //   Content: Goldens are so beautiful man 
+  // }
 }
 
 class _PostState extends State<Post> {
+
+  String getMonthAbbreviation(int month) {
+    switch (month) {
+      case 1:
+        return 'Jan';
+      case 2:
+        return 'Feb';
+      case 3:
+        return 'Mar';
+      case 4:
+        return 'Apr';
+      case 5:
+        return 'May';
+      case 6:
+        return 'Jun';
+      case 7:
+        return 'Jul';
+      case 8:
+        return 'Aug';
+      case 9:
+        return 'Sep';
+      case 10:
+        return 'Oct';
+      case 11:
+        return 'Nov';
+      case 12:
+        return 'Dec';
+      default:
+        return '';
+    }
+  }
+
+  String formatDate() {
+    DateTime date = widget.postDetails["CreatedAt"].toDate();
+    String month = getMonthAbbreviation(date.month);
+    return "${date.day} $month ${date.year}";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -105,7 +159,7 @@ class _PostState extends State<Post> {
                         ),
                       ),
                       Text(
-                        "Posted on ${DateTime.now().toString().split(" ")[0]}",
+                        "Posted on ${formatDate()}",
                         style: TextStyle(
                           color: themeSettings.textColor.withOpacity(0.7),
                         ),
@@ -116,7 +170,7 @@ class _PostState extends State<Post> {
               ),
               SizedBox(height: 20),
               Text(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+                widget.postDetails["Content"],
                 style: TextStyle(
                   color: themeSettings.textColor,
                 ),
@@ -517,6 +571,8 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                   }
 
                   print("---------------------------------------");
+
+                  
                 },
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),

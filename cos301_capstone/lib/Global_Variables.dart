@@ -183,6 +183,10 @@ class ProfileDetails {
     Notification(DateTime(2021, 12, 31), "Comment", "Michael Smith", ""),
     Notification(DateTime(2021, 12, 30), "Friend Request", "Sarah Brown", ""),
   ];
+
+  List<Map<String, dynamic>> posts = [];
+
+
 }
 
 class Notification {
@@ -195,12 +199,12 @@ class Notification {
 
   String getFormattedDate() {
     String day = date.day.toString().padLeft(2, '0');
-    String month = _getMonthAbbreviation(date.month);
+    String month = getMonthAbbreviation(date.month);
     String year = date.year.toString();
     return '$day $month $year';
   }
 
-  String _getMonthAbbreviation(int month) {
+  String getMonthAbbreviation(int month) {
     switch (month) {
       case 1:
         return 'Jan';
