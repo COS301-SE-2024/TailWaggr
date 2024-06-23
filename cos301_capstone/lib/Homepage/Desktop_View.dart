@@ -86,6 +86,23 @@ class Post extends StatefulWidget {
 
 class _PostState extends State<Post> {
 
+  String numLikes = "0";
+
+  @override
+  void initState() {
+    super.initState();
+    void getLikes() async {
+      Future<int> likes = HomePageService().getLikesCount(widget.postDetails['PostId']);
+      likes.then((value) {
+        setState(() {
+          numLikes = value.toString();
+        });
+      });
+    }
+
+    getLikes();
+  }
+
   String getMonthAbbreviation(int month) {
     switch (month) {
       case 1:
@@ -212,7 +229,12 @@ class _PostState extends State<Post> {
                     message: "Like",
                     child: IconButton(
                       onPressed: () {
-                        // HomePageService().addLikeToPost(widget.postDetails[], userId)
+                        HomePageService().addLikeToPost(widget.postDetails['PostId'], profileDetails.userID);
+                        setState(() {
+                          HomePageService().getLikesCount(widget.postDetails['PostId']).then((value) {
+                            numLikes = value.toString();
+                          });
+                        });
                       },
                       icon: Icon(
                         Icons.favorite_border,
@@ -220,7 +242,7 @@ class _PostState extends State<Post> {
                       ),
                     ),
                   ),
-                  Text("0", style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                  Text(numLikes as String, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
                   Spacer(),
                   Tooltip(
                     message: "Comment",
