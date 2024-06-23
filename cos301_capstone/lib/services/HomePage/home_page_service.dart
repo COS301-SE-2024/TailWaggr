@@ -14,15 +14,13 @@ class HomePageService {
     String userId,
     PlatformFile platformFile,
     String content,
-    Map<String, dynamic> petIds,
+    List<Map<String, dynamic>> petIds,
   ) async {
     try {
-      print("Gets here 0");
 
       // Generate a unique file name for the photo
       String photoFileName = 'posts/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(platformFile.name)}';
 
-      print("Gets here 1");
 
       // Convert PlatformFile to Uint8List (byte data)
       Uint8List? fileBytes = platformFile.bytes;
@@ -36,12 +34,10 @@ class HomePageService {
       // Upload the photo to Firebase Storage
       TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
 
-      print("Gets here 2");
 
       // Retrieve the photo URL
       String imgUrl = await uploadTask.ref.getDownloadURL();
 
-      print("Gets here 3");
 
       // Create a map for the post data, including the imgUrl
       final postData = {
@@ -55,15 +51,13 @@ class HomePageService {
       };
       DocumentReference postRef = await _db.collection('posts').add(postData);
 
-      print("Gets here 4");
       // Add the post to the "posts" collection
-      await _db.collection('posts').add(postData);
           // Initialize likes and comments subcollections by adding and then deleting a dummy document
       await postRef.collection('likes').doc('dummyLike').set({'dummy': true});
-      await postRef.collection('likes').doc('dummyLike').delete();
+      // await postRef.collection('likes').doc('dummyLike').delete();
 
       await postRef.collection('comments').doc('dummyComment').set({'dummy': true});
-      await postRef.collection('comments').doc('dummyComment').delete();
+      // await postRef.collection('comments').doc('dummyComment').delete();
 
       print("Likes and comments subcollections initialized");
       print("Post added successfully with photo.");

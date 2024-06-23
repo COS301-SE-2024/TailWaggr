@@ -211,7 +211,9 @@ class _PostState extends State<Post> {
                   Tooltip(
                     message: "Like",
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        // HomePageService().addLikeToPost(widget.postDetails[], userId)
+                      },
                       icon: Icon(
                         Icons.favorite_border,
                         color: Colors.red.withOpacity(0.7),
@@ -593,12 +595,12 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     return;
                   }
 
-                  List<String> petIds = [];
+                  List<Map<String, dynamic>> petIds = [];
 
                   if (petIncludeCounter > 0) {
                     print("Pets included: ");
                     for (int i = 0; i < petIncludeCounter; i++) {
-                      petIds.add(petList[i]['petID']);
+                      petIds.add({'petId': petList[i]['petID'], 'name': petList[i]['name'], 'pictureUrl': petList[i]['pictureUrl']});
                     }
                   } else {
                     print("No pets included");
