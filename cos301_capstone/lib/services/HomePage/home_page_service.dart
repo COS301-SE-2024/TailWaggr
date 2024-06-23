@@ -50,15 +50,17 @@ class HomePageService {
         'CreatedAt': DateTime.now(),
         'ImgUrl': imgUrl, // Use the uploaded photo URL
         'PetIds': petIds,
-        'Likes': 0,
-        'Comments': 0,
       };
       DocumentReference postRef = await _db.collection('posts').add(postData);
 
+      // Update postData to include postId
+      postData['PostId'] = postRef.id;
+
+      // Update the document with the new postData including the postId
+      await postRef.set(postData);
       print("Gets here 4");
       // Add the post to the "posts" collection
-      await _db.collection('posts').add(postData);
-          // Initialize likes and comments subcollections by adding and then deleting a dummy document
+      // Initialize likes and comments subcollections by adding and then deleting a dummy document
       await postRef.collection('likes').doc('dummyLike').set({'dummy': true});
       await postRef.collection('likes').doc('dummyLike').delete();
 
