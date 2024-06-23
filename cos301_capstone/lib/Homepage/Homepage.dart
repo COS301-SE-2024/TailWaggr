@@ -18,13 +18,11 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-
   @override
   void initState() {
     super.initState();
-    
+
     void getPosts() async {
-      // profileDetails.posts = (await HomePageService().getPosts()) as Map<String, dynamic>;
       Future<List<Map<String, dynamic>>> posts = HomePageService().getPosts();
       posts.then((value) {
         for (var post in value) {
@@ -77,7 +75,7 @@ class _HomepageState extends State<Homepage> {
 /// Image Picker
 /// This class allows the user to open up their file explorer to choose an image to upload.
 /// The user can also clear the image that they have selected.
-/// 
+///
 /// The image picker class includes the following functions:
 /// - pickFiles: Opens the file explorer to choose an image to upload. The image is stored in the format of a PlatformFile.
 /// - clearCachedFiles: Clears the image that the user has selected.
@@ -139,7 +137,6 @@ class ImagePicker {
 
     filesNotifier.value = null;
   }
-
 
   void logException(String message) {
     print(message);

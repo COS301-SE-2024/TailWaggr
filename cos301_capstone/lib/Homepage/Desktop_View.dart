@@ -4,9 +4,11 @@ import 'dart:math';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
+import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
+import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cos301_capstone/Global_Variables.dart';
 
 class DesktopHomepage extends StatefulWidget {
   const DesktopHomepage({super.key});
@@ -55,17 +57,10 @@ class _PostContainerState extends State<PostContainer> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            for (int i = 0; i < profileDetails.posts.length; i++) ... {
+            for (int i = 0; i < profileDetails.posts.length; i++) ...{
               Post(postDetails: profileDetails.posts[i]),
               Divider(),
             },
-            // Post(),
-            // Divider(),
-            // Post(),
-            // Divider(),
-            // Post(),
-            // Divider(),
-            // Post(),
           ],
         ),
       ),
@@ -82,17 +77,16 @@ class Post extends StatefulWidget {
   State<Post> createState() => _PostState();
 
   // {
-  //   CreatedAt: Timestamp(seconds=1718002008, nanoseconds=412000000), 
-  //   ForumId: DocumentReference<Map<String, dynamic>>(forum/EvfTTsu9GjHxL1sZcZcx), 
-  //   ParentId: null, 
-  //   UserId: DocumentReference<Map<String, dynamic>>(users/y2RnaR2jdgeqqbfeG6yP0NLjmiP2), 
-  //   ImgUrl: null, 
-  //   Content: Goldens are so beautiful man 
+  //   CreatedAt: Timestamp(seconds=1718002008, nanoseconds=412000000),
+  //   ForumId: DocumentReference<Map<String, dynamic>>(forum/EvfTTsu9GjHxL1sZcZcx),
+  //   ParentId: null,
+  //   UserId: DocumentReference<Map<String, dynamic>>(users/y2RnaR2jdgeqqbfeG6yP0NLjmiP2),
+  //   ImgUrl: null,
+  //   Content: Goldens are so beautiful man
   // }
 }
 
 class _PostState extends State<Post> {
-
   String getMonthAbbreviation(int month) {
     switch (month) {
       case 1:
@@ -178,7 +172,7 @@ class _PostState extends State<Post> {
                 maxLines: 4,
               ),
               Spacer(),
-              if (profileDetails.pets.isNotEmpty) ...[
+              if (widget.postDetails['petIds'].length != 0) ...[
                 Text(
                   "Pets included in this post: ",
                   style: TextStyle(
@@ -197,7 +191,7 @@ class _PostState extends State<Post> {
                             children: [
                               CircleAvatar(
                                 radius: 20,
-                                backgroundImage: NetworkImage(pet["profilePicture"]),
+                                backgroundImage: NetworkImage(pet["pictureUrl"]),
                               ),
                               SizedBox(height: 5),
                               Text(
@@ -252,11 +246,12 @@ class _PostState extends State<Post> {
             ],
           ),
         ),
+        Spacer(),
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Image.network(
-            profileDetails.pets[Random().nextInt(9)]["profilePicture"],
-            width: MediaQuery.of(context).size.width * 0.24775,
+            widget.postDetails["ImgUrl"],
+            width: (MediaQuery.of(context).size.width - 400) * 0.3,
             height: 300,
             fit: BoxFit.cover,
           ),
@@ -284,14 +279,30 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
   @override
   void initState() {
     super.initState();
+
+    void getPets() async {
+      Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(FirebaseAuth.instance.currentUser!.uid);
+      pets.then((value) {
+        setState(() {
+          profileDetails.pets = value;
+          print("Pets: ${profileDetails.pets}");
+          for (var _ in profileDetails.pets) {
+            petAdded.add(false);
+          }
+        });
+      });
+    }
+
+    getPets();
+
     imagePicker.filesNotifier.addListener(() {
       setState(() {}); // Rebuild the widget when files are selected
     });
-
-    for (var _ in profileDetails.pets) {
-      petAdded.add(false);
-    }
   }
+
+  String errorText = "";
+  bool errorVisible = false;
+  String postText = "Post";
 
   @override
   Widget build(BuildContext context) {
@@ -449,7 +460,12 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                                               selectingPet = false;
                                               removePet.add(false);
                                               petList.add(
-                                                {'name': profileDetails.pets[i]['name'], 'profilePicture': profileDetails.pets[i]['profilePicture'], 'index': i},
+                                                {
+                                                  'name': profileDetails.pets[i]['name'],
+                                                  'pictureUrl': profileDetails.pets[i]['pictureUrl'],
+                                                  'index': i,
+                                                  'petID': profileDetails.pets[i]['petID'],
+                                                },
                                               );
                                               petAdded[i] = true;
                                             });
@@ -461,7 +477,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                                               children: [
                                                 CircleAvatar(
                                                   radius: 20,
-                                                  backgroundImage: NetworkImage(profileDetails.pets[i]["profilePicture"]),
+                                                  backgroundImage: NetworkImage(profileDetails.pets[i]["pictureUrl"]),
                                                 ),
                                                 SizedBox(width: 10),
                                                 Text(
@@ -500,7 +516,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                               },
                               child: CircleAvatar(
                                 radius: 20,
-                                backgroundImage: NetworkImage(petList[i]["profilePicture"]!),
+                                backgroundImage: NetworkImage(petList[i]["pictureUrl"]!),
                               ),
                             ),
                           ),
@@ -545,7 +561,12 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  setState(() {
+                    errorVisible = false;
+                    postText = "Posting...";
+                  });
+
                   print("---------------------------------------");
                   print("Post Details: ");
 
@@ -553,18 +574,32 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     print("Post text: ${postController.text}");
                   } else {
                     print("Cannot post without a message");
+                    setState(() {
+                      errorText = "Cannot post without a message";
+                      errorVisible = true;
+                      postText = "Post";
+                    });
+                    return;
                   }
 
                   if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
                     print("Image: ${imagePicker.filesNotifier.value![0].name}");
                   } else {
                     print("No image selected");
+                    setState(() {
+                      errorText = "No image selected";
+                      errorVisible = true;
+                      postText = "Post";
+                    });
+                    return;
                   }
+
+                  List<String> petIds = [];
 
                   if (petIncludeCounter > 0) {
                     print("Pets included: ");
                     for (int i = 0; i < petIncludeCounter; i++) {
-                      print("Pet ${i + 1}: ${petList[i]['name']}");
+                      petIds.add(petList[i]['petID']);
                     }
                   } else {
                     print("No pets included");
@@ -572,7 +607,25 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
 
                   print("---------------------------------------");
 
-                  
+                  bool postAdded = await HomePageService().addPost(profileDetails.userID, imagePicker.filesNotifier.value![0], postController.text, petIds);
+
+                  if (postAdded) {
+                    setState(() {
+                      postController.clear();
+                      imagePicker.clearCachedFiles();
+                      petIncludeCounter = 0;
+                      petList.clear();
+                      petAdded.clear();
+                      removePet.clear();
+                      postText = "Post";
+                    });
+                  } else {
+                    setState(() {
+                      errorText = "An error occurred while posting";
+                      errorVisible = true;
+                      postText = "Post";
+                    });
+                  }
                 },
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
@@ -580,12 +633,19 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "Post",
+                    postText,
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
             ),
+            SizedBox(height: 20),
+            if (errorVisible) ...[
+              Text(
+                errorText,
+                style: TextStyle(color: Colors.red),
+              ),
+            ],
           ],
         ),
       ),

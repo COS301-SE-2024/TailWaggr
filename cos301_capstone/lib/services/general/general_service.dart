@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class HomePageService {
+class GeneralService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Future<List<Map<String, dynamic>>> getUserPets(String userId) async {
@@ -18,6 +18,7 @@ class HomePageService {
       return []; // Return an empty list if an error occurs
     }
   }
+
   Future<Map<String, dynamic>?> getPetById(String userId, String petId) async {
     try {
       // Access the specific pet document

@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,31 +12,47 @@ class HomePageService {
 
   Future<bool> addPost(
     String userId,
-    File photo, // Assuming photo is a File object
+    PlatformFile platformFile,
     String content,
-    DateTime createdAt,
-    String forumId,
-    String parentId,
     List<String> petIds,
   ) async {
     try {
+      print("Gets here 0");
+
       // Generate a unique file name for the photo
-      String photoFileName = 'posts/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(photo.path)}';
+      String photoFileName = 'posts/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(platformFile.name)}';
+
+      print("Gets here 1");
+
+      // Convert PlatformFile to Uint8List (byte data)
+      Uint8List? fileBytes = platformFile.bytes;
+      if (fileBytes == null) {
+        throw Exception("File data is null");
+      }
+
+      // Set metadata to force the MIME type to be image/jpeg
+      SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
 
       // Upload the photo to Firebase Storage
-      TaskSnapshot uploadTask = await _storage.ref(photoFileName).putFile(photo);
+      TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
+
+      print("Gets here 2");
 
       // Retrieve the photo URL
       String imgUrl = await uploadTask.ref.getDownloadURL();
+
+      print("Gets here 3");
 
       // Create a map for the post data, including the imgUrl
       final postData = {
         'UserId': userId,
         'Content': content,
-        'CreatedAt': createdAt,
+        'CreatedAt': DateTime.now(),
         'ImgUrl': imgUrl, // Use the uploaded photo URL
         'PetIds': petIds,
       };
+
+      print("Gets here 4");
 
       // Add the post to the "posts" collection
       await _db.collection('posts').add(postData);
@@ -45,6 +63,7 @@ class HomePageService {
       return false; // Return false if an error occurs
     }
   }
+
   Future<bool> updatePost(
     String postId,
     String content,
@@ -66,6 +85,7 @@ class HomePageService {
       return false; // Return false if an error occurs
     }
   }
+
   Future<bool> deletePost(String postId) async {
     try {
       // Delete the post from the "posts" collection
@@ -77,6 +97,7 @@ class HomePageService {
       return false; // Return false if an error occurs
     }
   }
+
   Future<List<Map<String, dynamic>>> getPosts() async {
     try {
       // Fetch the posts from the "posts" collection
