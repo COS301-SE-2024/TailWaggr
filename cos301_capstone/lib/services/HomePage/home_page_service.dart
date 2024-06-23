@@ -55,14 +55,6 @@ class HomePageService {
 
       // Update the document with the new postData including the postId
       await postRef.set(postData);
-      print("Gets here 4");
-      // Add the post to the "posts" collection
-      // Initialize likes and comments subcollections by adding and then deleting a dummy document
-      await postRef.collection('likes').doc('dummyLike').set({'dummy': true});
-      // await postRef.collection('likes').doc('dummyLike').delete();
-
-      await postRef.collection('comments').doc('dummyComment').set({'dummy': true});
-      // await postRef.collection('comments').doc('dummyComment').delete();
 
       print("Likes and comments subcollections initialized");
       print("Post added successfully with photo.");
@@ -146,6 +138,13 @@ class HomePageService {
       // Additional comment information can go here
     });
   }
+  Future<void> addViewToPost(String postId, String userId) async {
+    DocumentReference postRef = _db.collection('posts').doc(postId);
+    await postRef.collection('views').doc(userId).set({
+      'viewedAt': DateTime.now(),
+      // Additional view information can go here
+    });
+  }
   Future<void> deleteCommentFromPost(String postId, String commentId) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
     await postRef.collection('comments').doc(commentId).delete();
@@ -153,11 +152,25 @@ class HomePageService {
   Future<int> getLikesCount(String postId) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
     final querySnapshot = await postRef.collection('likes').get();
+    if (querySnapshot.docs.isEmpty) {
+      return 0;
+    }
     return querySnapshot.docs.length;
   }
   Future<int> getCommentsCount(String postId) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
     final querySnapshot = await postRef.collection('comments').get();
+    if (querySnapshot.docs.isEmpty) {
+      return 0;
+    }
+    return querySnapshot.docs.length;
+  }
+  Future<int> getViewsCount(String postId) async {
+    DocumentReference postRef = _db.collection('posts').doc(postId);
+    final querySnapshot = await postRef.collection('views').get();
+    if (querySnapshot.docs.isEmpty) {
+      return 0;
+    }
     return querySnapshot.docs.length;
   }
   Future<List<Map<String, dynamic>>> getComments(String postId) async {
