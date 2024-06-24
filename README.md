@@ -13,6 +13,9 @@ Tailwaggr is a Flutter-based mobile application that aims to connect pet owners 
 ## Project Board
 You can view our project board [here](https://github.com/orgs/COS301-SE-2024/projects/99/views/1).
 
+## Tech Stack
+You can view our tech stack [Here](https://docs.google.com/document/d/11uUHFuaqj6Mx52eWC4wKD2fOWFQbhcgVURP3L99YpWo/edit)
+
 ## The Team
 
 | Name             | Role            | Description                                                                                                | Photo                                       | LinkedIn                                                                                         |
