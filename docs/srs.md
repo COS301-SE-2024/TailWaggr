@@ -173,13 +173,14 @@ Pet Caretaker User:
     	2.  Pet caretakers must receive notifications of upcoming appointments for their pets
 
 ## Use Case diagrams:
+![Use Case Diagram](doc_images/UCDiagrams.jpg)
 ![Account Diagram](doc_images/Account.png)
 ![Profile Diagram](doc_images/Profile.png)
 ![Location Diagram](doc_images/Location.png)
 ![Forums Diagram](doc_images/Forums.png)
 ![Notifications Diagram](doc_images/Notifications.png)
 
-## Quality Attributes
+## Quality Attributes and Architecture Strategies
 
 1. **Performance:**
    - Optimize Firebase queries to ensure efficient data retrieval and usage throughout the application.
@@ -227,5 +228,4 @@ Pet Caretaker User:
    - Use shared components and services in Flutter to reduce development and maintenance costs.
 
 ## Projected Burndown Chart
-
 ![Burndown Chart](doc_images/burndownChart.png)
