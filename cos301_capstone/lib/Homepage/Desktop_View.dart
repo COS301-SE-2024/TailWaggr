@@ -86,6 +86,7 @@ class Post extends StatefulWidget {
 
 class _PostState extends State<Post> {
   String numLikes = "0";
+  String numViews = "0";
 
   @override
   void initState() {
@@ -100,6 +101,18 @@ class _PostState extends State<Post> {
     }
 
     getLikes();
+
+    void getViews() async {
+      HomePageService().addViewToPost(widget.postDetails['PostId'], profileDetails.userID);
+      Future<int> views = HomePageService().getViewsCount(widget.postDetails['PostId']);
+      views.then((value) {
+        setState(() {
+          numViews = value.toString();
+        });
+      });
+    }
+
+    getViews();
   }
 
   String getMonthAbbreviation(int month) {
@@ -263,7 +276,7 @@ class _PostState extends State<Post> {
                       color: Colors.green.withOpacity(0.7),
                     ),
                   ),
-                  Text("0", style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                  Text(numViews, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
                 ],
               ),
             ],

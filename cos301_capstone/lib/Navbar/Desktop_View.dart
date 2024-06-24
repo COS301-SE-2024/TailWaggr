@@ -42,6 +42,13 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
           width: 250,
           padding: EdgeInsets.all(30),
           color: ThemeSettings.primaryColor,
+          // decoration: BoxDecoration(
+          //   image: DecorationImage(
+          //     image: AssetImage("assets/images/pug.jpg"),
+          //     fit: BoxFit.cover,
+          //     colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
+          //   ),
+          // ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
