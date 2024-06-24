@@ -113,19 +113,7 @@ class ProfileDetails {
   String profilePicture = "https://st3.depositphotos.com/4060975/17707/v/450/depositphotos_177073010-stock-illustration-male-vector-icon.jpg";
   String userType = "Veterinarian";
 
-  List forumsExample = [
-    {
-      "title": "Pet Health Care",
-      "content": "Something something health care",
-      "messages": [{"sender": "jeff", 
-                    "content": "according to all know laws of aviation there is no way a bee should be able to fly"},
-                    {"sender": "maria", 
-                    "content": "no lmao"},
-                  ]
-    }
-  ]
-
-  List pets = [
+   List pets = [
     {
       "name": "Bella",
       "bio": "Bella is a playful Golden Retriever who loves to fetch balls and swim in the lake. She is known for her friendly demeanor and her ability to learn new tricks quickly.",
@@ -190,6 +178,34 @@ class ProfileDetails {
   ];
 }
 
+class Forum{
+  String title;
+  String content;
+  String creator;
+  List messages = [{"sender": "jeff", 
+                    "content": "according to all know laws of aviation there is no way a bee should be able to fly"},
+                    {"sender": "maria", 
+                    "content": "no lmao"},
+                    {"sender": "jeff", 
+                    "content": "Wow rude"},
+                    {"sender": "maria", 
+                    "content": "Shrek is a pretty poggies movie, I like the part where he says \"it's Shreking time and Shreks all over the place. One of the movies ever\""},
+                    ];
+  
+  Forum(this.title, this.content, this.creator);
+  //Forum(this.title, this.content, this.messages);
+}
+
+class ForumList{
+  List forums = [
+    Forum("Shrek Thoughts", "I like Shrek, what do you guys think about Shrek?","Maria"),
+    Forum("Shrek Thoughts", "I like Shrek, what do you guys think about Shrek?","Maria"),
+    Forum("Shrek Thoughts", "I like Shrek, what do you guys think about Shrek?","Maria"),
+    Forum("Shrek Thoughts", "I like Shrek, what do you guys think about Shrek?","Maria"),
+    Forum("Bee Gaming", "I like Shrek, what do you guys think about Shrek?","Maria")
+  ];
+}
+
 class Notification {
   DateTime date;
   String type;
@@ -237,4 +253,5 @@ class Notification {
   }
 }
 
+ForumList forumList = ForumList();
 ProfileDetails profileDetails = ProfileDetails();
