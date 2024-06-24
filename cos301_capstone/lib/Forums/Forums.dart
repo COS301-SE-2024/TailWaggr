@@ -26,7 +26,7 @@ class _ForumsState extends State<Forums> {
               if (constraints.maxWidth > 1100) {
                 return DesktopForums();
               } else if (constraints.maxWidth > 800) {
-                return TabletForums();
+                return DesktopForums();
               } else {
                 return Scaffold(
                   drawer: NavbarDrawer(),
@@ -39,7 +39,7 @@ class _ForumsState extends State<Forums> {
                       ),
                     ),
                   ),
-                  body: MobileForums(),
+                  body: DesktopForums(),
                 );
               }
             },

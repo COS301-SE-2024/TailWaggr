@@ -21,6 +21,20 @@ class ProfileService {
       return null;
     }
   }
+  Future<Map<String, dynamic>?> getUserDetails(String userId) async {
+    try {
+      DocumentSnapshot doc = await _db.collection('users').doc(userId).get();
+      if (doc.exists) {
+        return doc.data() as Map<String, dynamic>?;
+      } else {
+        print("No profile found for the given userId.");
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching profile data: $e");
+      return null;
+    }
+  }
   Future<Map<String, dynamic>?> getPetProfile(String petId) async {
       try {
         DocumentSnapshot doc = await _db.collection('petProfile').doc(petId).get();
@@ -229,11 +243,32 @@ class ProfileService {
   Future<void> updateEvent(String eventId, Map<String, dynamic> updatedEventData) async {
     try {
       // Update an existing document
-      await _db.collection('events').doc(eventId).update(updatedEventData);
+      _db.collection('events').doc(eventId).update(updatedEventData);
       print("Event updated successfully.");
     } catch (e) {
       print("Error updating event: $e");
       throw Exception("Failed to update event.");
+    }
+  }
+  Future<void> followUser(String userId, String followingId) async {
+    try {
+      // Add to follow collection
+      DocumentReference followRef =  await _db.collection('follows').add({
+        'followerId': _db.doc('users/$userId'),
+        'followingId': _db.doc('users/$followingId'),
+        'createdAt': Timestamp.now(),
+      });
+
+      // Add to notifications collection
+      await _db.collection('notifications').add({
+        'UserId': _db.doc('users/$followingId'),
+        'NotificationTypeId': 4,
+        'Read': false,
+        'ReferenceId': _db.doc('notifications/$followRef'),
+        'CreatedAt': Timestamp.now(),
+      });
+    } catch (e) {
+      print("Error following user: $e");
     }
   }
 }
