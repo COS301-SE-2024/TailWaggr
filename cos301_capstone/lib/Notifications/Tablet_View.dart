@@ -89,9 +89,9 @@ class _TabletNotificationsState extends State<TabletNotifications> {
                                 ),
                                 child: Row(
                                   children: [
-                                    CircleAvatar(
-                                      radius: 30,
-                                    ),
+                                    // CircleAvatar(
+                                    //   radius: 30,
+                                    // ),
                                     SizedBox(width: 20),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,

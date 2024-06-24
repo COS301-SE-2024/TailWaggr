@@ -59,9 +59,9 @@ class _MobileNotificationsState extends State<MobileNotifications> {
                       children: [
                         Row(
                           children: [
-                            CircleAvatar(
-                              radius: 30,
-                            ),
+                            // CircleAvatar(
+                            //   radius: 30,
+                            // ),
                             SizedBox(width: 20),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

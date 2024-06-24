@@ -60,7 +60,7 @@ class ThemeSettings {
       // _textColor = Colors.black;
       // _cardColor = Colors.white;
 
-      _primaryColor = Color(0XFFdda15e);
+      _primaryColor = Color(0XFFbc6c25);
       _secondaryColor = Color(0xFF9C89FF);
       _tertiaryColor = Color(0xFF99CCED);
       _backgroundColor = Color(0xFFEFF3FC);
