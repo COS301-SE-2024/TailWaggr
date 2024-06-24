@@ -8,7 +8,8 @@ class ProfileService {
 
   Future<Map<String, dynamic>?> getUserProfile(String userId) async {
     try {
-      DocumentSnapshot doc = await _db.collection('profile').doc(userId).get();
+      print("Fetching profile data for user: $userId");
+      final doc = await _db.collection('users').doc(userId).get();
       if (doc.exists) {
         return doc.data() as Map<String, dynamic>?;
       } else {
