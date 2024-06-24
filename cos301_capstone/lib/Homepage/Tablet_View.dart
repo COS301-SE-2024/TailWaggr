@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+import 'package:animations/animations.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
@@ -25,7 +26,6 @@ class _TabletHomepageState extends State<TabletHomepage> {
         children: [
           DesktopNavbar(),
           PostContainer(),
-          UploadPostContainer(),
         ],
       ),
     );
@@ -51,7 +51,7 @@ class _PostContainerState extends State<PostContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: (MediaQuery.of(context).size.width - 250) * (uploadPostContainerOpen.value ? 0.546 : 0.85),
+      width: (MediaQuery.of(context).size.width - 290),
       height: MediaQuery.of(context).size.height,
       padding: const EdgeInsets.all(20),
       margin: EdgeInsets.all(20),
@@ -59,10 +59,245 @@ class _PostContainerState extends State<PostContainer> {
         color: themeSettings.cardColor,
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
-      child: Text(
-        "Tablet Posts",
-        style: TextStyle(
-          color: themeSettings.textColor,
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 10),
+                for (int i = 0; i < profileDetails.posts.length; i++) ...{
+                  Post(postDetails: profileDetails.posts[i]),
+                  Divider(),
+                },
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: OpenContainer(
+              closedBuilder: (BuildContext context, void Function() action) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(Icons.add, color: Colors.white),
+                );
+              },
+              closedColor: themeSettings.primaryColor,
+              closedShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
+              openBuilder: (BuildContext context, void Function() action) {
+                return Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: themeSettings.primaryColor,
+                    iconTheme: IconThemeData(color: Colors.white),
+                    title: Text(
+                      "Upload Post",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  body: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    color: themeSettings.backgroundColor,
+                    padding: EdgeInsets.all(20),
+                    child: UploadPostContainer(),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class Post extends StatefulWidget {
+  const Post({super.key, required this.postDetails});
+
+  final Map<String, dynamic> postDetails;
+
+  @override
+  State<Post> createState() => _PostState();
+
+  // {
+  //   CreatedAt: Timestamp(seconds=1718002008, nanoseconds=412000000),
+  //   ForumId: DocumentReference<Map<String, dynamic>>(forum/EvfTTsu9GjHxL1sZcZcx),
+  //   ParentId: null,
+  //   UserId: DocumentReference<Map<String, dynamic>>(users/y2RnaR2jdgeqqbfeG6yP0NLjmiP2),
+  //   ImgUrl: null,
+  //   Content: Goldens are so beautiful man
+  // }
+}
+
+class _PostState extends State<Post> {
+  String getMonthAbbreviation(int month) {
+    switch (month) {
+      case 1:
+        return 'Jan';
+      case 2:
+        return 'Feb';
+      case 3:
+        return 'Mar';
+      case 4:
+        return 'Apr';
+      case 5:
+        return 'May';
+      case 6:
+        return 'Jun';
+      case 7:
+        return 'Jul';
+      case 8:
+        return 'Aug';
+      case 9:
+        return 'Sep';
+      case 10:
+        return 'Oct';
+      case 11:
+        return 'Nov';
+      case 12:
+        return 'Dec';
+      default:
+        return '';
+    }
+  }
+
+  String formatDate() {
+    DateTime date = widget.postDetails["CreatedAt"].toDate();
+    String month = getMonthAbbreviation(date.month);
+    return "${date.day} $month ${date.year}";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IntrinsicHeight(
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundImage: NetworkImage(profileDetails.profilePicture),
+                ),
+                SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      profileDetails.name,
+                      style: TextStyle(
+                        color: themeSettings.textColor,
+                      ),
+                    ),
+                    Text(
+                      "Posted on ${formatDate()}",
+                      style: TextStyle(
+                        color: themeSettings.textColor.withOpacity(0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                widget.postDetails["ImgUrl"],
+                width: MediaQuery.of(context).size.width,
+                // height: 300,
+                fit: BoxFit.cover,
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              widget.postDetails["Content"],
+              style: TextStyle(
+                color: themeSettings.textColor,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 4,
+            ),
+            SizedBox(height: 20),
+            if (widget.postDetails['PetIds'].length != 0) ...[
+              Text(
+                "Pets included in this post: ",
+                style: TextStyle(
+                  color: themeSettings.textColor.withOpacity(0.7),
+                ),
+              ),
+              SizedBox(height: 10),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (var pet in profileDetails.pets) ...[
+                      Container(
+                        margin: EdgeInsets.only(right: 10),
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundImage: NetworkImage(pet["pictureUrl"]),
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              pet["name"],
+                              style: TextStyle(color: themeSettings.textColor),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+            SizedBox(height: 20),
+            Row(
+              children: [
+                Tooltip(
+                  message: "Like",
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.favorite_border,
+                      color: Colors.red.withOpacity(0.7),
+                    ),
+                  ),
+                ),
+                Text("0", style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                Spacer(),
+                Tooltip(
+                  message: "Comment",
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.comment,
+                      color: Colors.blue.withOpacity(0.7),
+                    ),
+                  ),
+                ),
+                Text("0", style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                Spacer(),
+                Tooltip(
+                  message: "Views",
+                  child: Icon(
+                    Icons.bar_chart,
+                    color: Colors.green.withOpacity(0.7),
+                  ),
+                ),
+                Text("0", style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+              ],
+            ),
+          ],
         ),
       ),
     );

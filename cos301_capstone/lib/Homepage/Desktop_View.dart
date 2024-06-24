@@ -1,6 +1,4 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-import 'dart:math';
-
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
@@ -87,6 +85,36 @@ class Post extends StatefulWidget {
 }
 
 class _PostState extends State<Post> {
+  String numLikes = "0";
+  String numViews = "0";
+
+  @override
+  void initState() {
+    super.initState();
+    void getLikes() async {
+      Future<int> likes = HomePageService().getLikesCount(widget.postDetails['PostId']);
+      likes.then((value) {
+        setState(() {
+          numLikes = value.toString();
+        });
+      });
+    }
+
+    getLikes();
+
+    void getViews() async {
+      HomePageService().addViewToPost(widget.postDetails['PostId'], profileDetails.userID);
+      Future<int> views = HomePageService().getViewsCount(widget.postDetails['PostId']);
+      views.then((value) {
+        setState(() {
+          numViews = value.toString();
+        });
+      });
+    }
+
+    getViews();
+  }
+
   String getMonthAbbreviation(int month) {
     switch (month) {
       case 1:
@@ -172,7 +200,7 @@ class _PostState extends State<Post> {
                 maxLines: 4,
               ),
               Spacer(),
-              if (widget.postDetails['petIds'].length != 0) ...[
+              if (widget.postDetails['PetIds'].length != 0) ...[
                 Text(
                   "Pets included in this post: ",
                   style: TextStyle(
@@ -212,14 +240,22 @@ class _PostState extends State<Post> {
                   Tooltip(
                     message: "Like",
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
+
+                        HomePageService().getLikesCount(widget.postDetails['PostId']).then((value) {
+                          setState(() {
+                            numLikes = value.toString();
+                          });
+                        });
+                      },
                       icon: Icon(
                         Icons.favorite_border,
                         color: Colors.red.withOpacity(0.7),
                       ),
                     ),
                   ),
-                  Text("0", style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                  Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
                   Spacer(),
                   Tooltip(
                     message: "Comment",
@@ -240,7 +276,7 @@ class _PostState extends State<Post> {
                       color: Colors.green.withOpacity(0.7),
                     ),
                   ),
-                  Text("0", style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                  Text(numViews, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
                 ],
               ),
             ],
@@ -594,12 +630,12 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     return;
                   }
 
-                  List<String> petIds = [];
+                  List<Map<String, dynamic>> petIds = [];
 
                   if (petIncludeCounter > 0) {
                     print("Pets included: ");
                     for (int i = 0; i < petIncludeCounter; i++) {
-                      petIds.add(petList[i]['petID']);
+                      petIds.add({'petId': petList[i]['petID'], 'name': petList[i]['name'], 'pictureUrl': petList[i]['pictureUrl']});
                     }
                   } else {
                     print("No pets included");

@@ -11,14 +11,14 @@ const subBodyTextSize = 16.0;
 const textSize = 14.0;
 
 class ThemeSettings {
-  // static Color _primaryColor = Color(0xFF7228A0);
+  // static Color _primaryColor = Color(0xFF6D2480);
   // static Color _secondaryColor = Color(0xFF9C89FF);
   // static Color _tertiaryColor = Color(0xFF99CCED);
   // static Color _backgroundColor = Colors.white10;
   // static Color _textColor = Colors.black;
   // static Color _cardColor = Colors.white;
 
-  static Color _primaryColor = Color(0xFF6D2480);
+  static Color _primaryColor = Color(0XFFbc6c25);
   static Color _secondaryColor = Color(0xFF9C89FF);
   static Color _tertiaryColor = Color(0xFF99CCED);
   static Color _backgroundColor = Color.fromARGB(255, 246, 247, 251);
@@ -37,14 +37,14 @@ class ThemeSettings {
 
   static void toggleTheme() {
     if (_themeMode == "Light") {
-      // _primaryColor = Color(0xFF7228A0);
-      // _secondaryColor = Color.fromARGB(255, 0, 0, 0);
-      // _tertiaryColor = Color.fromARGB(255, 0, 0, 0);
-      // _backgroundColor = Color.fromARGB(255, 21, 21, 21);
+      // _primaryColor = Color.fromARGB(255, 56, 0, 76);
+      // _secondaryColor = Color(0xFF9C89FF);
+      // _tertiaryColor = Color(0xFF99CCED);
+      // _backgroundColor = Colors.black;
       // _textColor = Colors.white;
-      // _cardColor = Color.fromARGB(255, 21, 21, 21);
+      // _cardColor = Color(0XFF141414);
 
-      _primaryColor = Color.fromARGB(255, 56, 0, 76);
+      _primaryColor = Color(0XFFbc6c25);
       _secondaryColor = Color(0xFF9C89FF);
       _tertiaryColor = Color(0xFF99CCED);
       _backgroundColor = Colors.black;
@@ -53,14 +53,14 @@ class ThemeSettings {
 
       _themeMode = "Dark";
     } else if (_themeMode == "Dark") {
-      // _primaryColor = Color(0xFF7228A0);
+      // _primaryColor = Color(0xFF6D2480);
       // _secondaryColor = Color(0xFF9C89FF);
       // _tertiaryColor = Color(0xFF99CCED);
-      // _backgroundColor = Colors.white;
+      // _backgroundColor = Color(0xFFEFF3FC);
       // _textColor = Colors.black;
       // _cardColor = Colors.white;
 
-      _primaryColor = Color(0xFF6D2480);
+      _primaryColor = Color(0XFFdda15e);
       _secondaryColor = Color(0xFF9C89FF);
       _tertiaryColor = Color(0xFF99CCED);
       _backgroundColor = Color(0xFFEFF3FC);
@@ -102,10 +102,10 @@ class ThemeSettingsObserver extends ChangeNotifier {
 ThemeSettingsObserver themeSettings = ThemeSettingsObserver();
 
 class ProfileDetails {
-  String name = "John";
-  String surname = "Doe";
+  String name = "";
+  String surname = "";
   String userID = FirebaseAuth.instance.currentUser!.uid;
-  String bio = "This is my bio";
+  String bio = "";
   String email = "johndoe@gmail.com";
   String phone = "012 345 6789";
   String dialCode = "+27";
