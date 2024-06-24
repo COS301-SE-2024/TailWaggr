@@ -1,9 +1,18 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Homepage/Homepage.dart';
+// import 'package:cos301_capstone/Location/Desktop_View.dart';
+// import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/Login/Login.dart';
-import 'package:cos301_capstone/Signup/Signup.dart';
+// import 'package:cos301_capstone/Navbar/Navbar.dart';
+// import 'package:cos301_capstone/Notifications/Notifications.dart';
+// import 'package:cos301_capstone/User_Profile/Desktop_View.dart';
+// import 'package:cos301_capstone/User_Profile/User_Profile.dart';
+// import 'package:cos301_capstone/Signup/Signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cos301_capstone/services/Profile/profile.dart';
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -19,38 +28,32 @@ class _AuthGateState extends State<AuthGate> {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text(
-                'Argonauts - TailWaggr',
-                style: TextStyle(color: Colors.white),
-              ),
-              backgroundColor: Colors.blue,
-            ),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Welcome to the COS 301 Capstone project',
-                  ),
-                  const Text(
-                    'Argonauts - TailWaggr',
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      await FirebaseAuth.instance.signOut();
-                    },
-                    child: Text("Logout"),
-                  ),
-                ],
-              ),
-            ),
-          );
+
+          populateUserData();
+
+          return Homepage();
         }
         return Login();
-        // return Signup();
       },
     );
   }
 }
+
+void populateUserData() async {
+
+  print("Populating user data...");
+  // print(FirebaseAuth.instance.currentUser!.uid);
+
+  Future<Map<String, dynamic>?> tempDetails = ProfileService().getUserProfile(FirebaseAuth.instance.currentUser!.uid);
+  tempDetails.then((value) {
+    print("User data populated successfully.");
+    print(value);
+    profileDetails.name = value!['name'];
+    profileDetails.surname = value['surname'];
+    profileDetails.email = value['email'];
+    profileDetails.bio = value['bio'];
+    profileDetails.profilePicture = value['profilePictureUrl'];
+
+  });
+}
+

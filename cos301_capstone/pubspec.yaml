@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  path: ^1.8.0 # Use the latest version available
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -37,8 +38,18 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_core: ^2.27.0
   firebase_auth: ^4.17.8
-  step_progress_indicator: ^1.0.2
-  fluttertoast: ^8.2.5
+  animations: ^2.0.11
+  intl_phone_number_input: ^0.7.4
+  address_search_field: ^5.0.3
+  flutter_animate: ^4.5.0
+  geolocator: ^12.0.0
+  google_maps_flutter: ^2.6.1
+  cloud_firestore: ^4.17.5
+  google_sign_in: ^6.2.1
+  firebase_storage: ^11.7.7
+  file_picker: ^8.0.5
+  dotted_border: ^2.1.0
+  expansion_widget: ^0.1.0
 
 dev_dependencies:
   flutter_test:
@@ -50,6 +61,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  mockito: ^5.0.0
+  covadge: any
+  coverage: ^1.0.0
+  lint: ^1.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

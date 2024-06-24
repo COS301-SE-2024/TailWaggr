@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names, camel_case_types
 
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Signup/Signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -51,9 +52,9 @@ class _Mobile_ViewState extends State<Mobile_View> {
             Text(
               "Welcome!",
               style: TextStyle(
-                fontSize: Title_Text_Size,
+                fontSize: titleTextSize,
                 fontWeight: FontWeight.bold,
-                color: Primary_Colour,
+                color: themeSettings.primaryColor,
               ),
             ),
             //
@@ -65,18 +66,18 @@ class _Mobile_ViewState extends State<Mobile_View> {
                 decoration: InputDecoration(
                   labelText: "Email",
                   labelStyle: TextStyle(
-                    color: Primary_Colour,
+                    color: themeSettings.primaryColor,
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                   ),
                 ),
@@ -92,24 +93,24 @@ class _Mobile_ViewState extends State<Mobile_View> {
                 decoration: InputDecoration(
                   labelText: "Password",
                   labelStyle: TextStyle(
-                    color: Primary_Colour,
+                    color: themeSettings.primaryColor,
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                   ),
                   suffixIcon: IconButton(
                     icon: Icon(
                       Password_Visible ? Icons.visibility : Icons.visibility_off,
-                      color: Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                     onPressed: () {
                       setState(() {
@@ -134,7 +135,7 @@ class _Mobile_ViewState extends State<Mobile_View> {
               ),
             ),
             SizedBox(height: 20),
-    
+
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.75,
               height: 50,
@@ -164,12 +165,12 @@ class _Mobile_ViewState extends State<Mobile_View> {
                   }
                 },
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Primary_Colour),
+                  backgroundColor: MaterialStateProperty.all(themeSettings.primaryColor),
                 ),
                 child: Text(
                   "Login",
                   style: TextStyle(
-                    fontSize: Body_Text_Size,
+                    fontSize: bodyTextSize,
                     color: Colors.white,
                   ),
                 ),
@@ -191,11 +192,16 @@ class _Mobile_ViewState extends State<Mobile_View> {
               children: [
                 Text("Don't have an account?"),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Signup()),
+                    );
+                  },
                   child: Text(
                     "Sign Up",
                     style: TextStyle(
-                      color: Primary_Colour,
+                      color: themeSettings.primaryColor,
                     ),
                   ),
                 ),

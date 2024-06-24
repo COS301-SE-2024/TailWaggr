@@ -61,15 +61,15 @@ class _TabletLoginState extends State<TabletLogin> {
                           Text(
                             "TailWaggr",
                             style: TextStyle(
-                              fontSize: Title_Text_Size,
+                              fontSize: titleTextSize,
                               fontWeight: FontWeight.bold,
-                              color: Primary_Colour,
+                              color: themeSettings.primaryColor,
                             ),
                           ),
                           Text(
                             "Share Your Pet's World!",
                             style: TextStyle(
-                              fontSize: Body_Text_Size,
+                              fontSize: bodyTextSize,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -79,9 +79,9 @@ class _TabletLoginState extends State<TabletLogin> {
                       Text(
                         "Login",
                         style: TextStyle(
-                          fontSize: Title_Text_Size,
+                          fontSize: titleTextSize,
                           fontWeight: FontWeight.bold,
-                          color: Primary_Colour,
+                          color: themeSettings.primaryColor,
                         ),
                       ),
                     ],
@@ -107,18 +107,18 @@ class _TabletLoginState extends State<TabletLogin> {
                               decoration: InputDecoration(
                                 labelText: "Email",
                                 labelStyle: TextStyle(
-                                  color: Primary_Colour,
+                                  color: themeSettings.primaryColor,
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                               ),
@@ -134,24 +134,24 @@ class _TabletLoginState extends State<TabletLogin> {
                               decoration: InputDecoration(
                                 labelText: "Password",
                                 labelStyle: TextStyle(
-                                  color: Primary_Colour,
+                                  color: themeSettings.primaryColor,
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     Password_Visible ? Icons.visibility : Icons.visibility_off,
-                                    color: Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -205,12 +205,12 @@ class _TabletLoginState extends State<TabletLogin> {
                                 }
                               },
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(Primary_Colour),
+                                backgroundColor: MaterialStateProperty.all(themeSettings.primaryColor),
                               ),
                               child: Text(
                                 "Login",
                                 style: TextStyle(
-                                  fontSize: Body_Text_Size,
+                                  fontSize: bodyTextSize,
                                   color: Colors.white,
                                 ),
                               ),
@@ -244,7 +244,7 @@ class _TabletLoginState extends State<TabletLogin> {
                                 child: Text(
                                   "Sign Up",
                                   style: TextStyle(
-                                    color: Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                               ),

@@ -2,6 +2,7 @@
 
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Signup/Signup.dart';
+import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -13,9 +14,11 @@ class DesktopLogin extends StatefulWidget {
 }
 
 class _DesktopLoginState extends State<DesktopLogin> {
+   final AuthService _authService = AuthService();
   bool Password_Visible = false;
   bool ErrorTextVisible = false;
   String errorText = '';
+  String LoginText = 'Login';
 
   // Sign In controllers
   late TextEditingController signInEmailController;
@@ -61,15 +64,15 @@ class _DesktopLoginState extends State<DesktopLogin> {
                           Text(
                             "TailWaggr",
                             style: TextStyle(
-                              fontSize: Title_Text_Size,
+                              fontSize: titleTextSize,
                               fontWeight: FontWeight.bold,
-                              color: Primary_Colour,
+                              color: themeSettings.primaryColor,
                             ),
                           ),
                           Text(
                             "Share Your Pet's World!",
                             style: TextStyle(
-                              fontSize: Body_Text_Size,
+                              fontSize: bodyTextSize,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -79,9 +82,9 @@ class _DesktopLoginState extends State<DesktopLogin> {
                       Text(
                         "Login",
                         style: TextStyle(
-                          fontSize: Title_Text_Size,
+                          fontSize: titleTextSize,
                           fontWeight: FontWeight.bold,
-                          color: Primary_Colour,
+                          color: themeSettings.primaryColor,
                         ),
                       ),
                     ],
@@ -107,18 +110,18 @@ class _DesktopLoginState extends State<DesktopLogin> {
                               decoration: InputDecoration(
                                 labelText: "Email",
                                 labelStyle: TextStyle(
-                                  color: Primary_Colour,
+                                  color: themeSettings.primaryColor,
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                               ),
@@ -134,24 +137,24 @@ class _DesktopLoginState extends State<DesktopLogin> {
                               decoration: InputDecoration(
                                 labelText: "Password",
                                 labelStyle: TextStyle(
-                                  color: Primary_Colour,
+                                  color: themeSettings.primaryColor,
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
-                                    color: Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     Password_Visible ? Icons.visibility : Icons.visibility_off,
-                                    color: Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -167,10 +170,11 @@ class _DesktopLoginState extends State<DesktopLogin> {
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
                               onTap: () {
-                                // Add your logic here for when the "Forgot Password?" text is clicked
+                                // Call signInWithGoogle() here
+                                _authService.signInWithGoogle();
                               },
                               child: Text(
-                                "Forgot Password?",
+                                "Sign in with Google",
                                 style: TextStyle(color: Colors.grey),
                               ),
                             ),
@@ -182,13 +186,19 @@ class _DesktopLoginState extends State<DesktopLogin> {
                             child: ElevatedButton(
                               onPressed: () async {
                                 try {
+                                  setState(() {
+                                    LoginText = 'Logging in...';
+                                  });
+
                                   await FirebaseAuth.instance.signInWithEmailAndPassword(
                                     email: signInEmailController.text,
                                     password: signInPasswordController.text,
                                   );
+                                  
                                 } on Exception catch (e) {
                                   print(e);
                                   setState(() {
+                                    LoginText = 'Login';
                                     ErrorTextVisible = true;
                                     if (e.toString().contains('[firebase_auth/channel-error] Unable to establish connection on channel.')) {
                                       errorText = 'Please make sure your Email and Password fields are filled in';
@@ -205,12 +215,12 @@ class _DesktopLoginState extends State<DesktopLogin> {
                                 }
                               },
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(Primary_Colour),
+                                backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
                               ),
                               child: Text(
-                                "Login",
+                                LoginText,
                                 style: TextStyle(
-                                  fontSize: Body_Text_Size,
+                                  fontSize: bodyTextSize,
                                   color: Colors.white,
                                 ),
                               ),
@@ -235,7 +245,6 @@ class _DesktopLoginState extends State<DesktopLogin> {
                               Text("Don't have an account?"),
                               TextButton(
                                 onPressed: () {
-                                  print("Navigating to Sign Up");
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) => Signup()),
@@ -244,7 +253,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
                                 child: Text(
                                   "Sign Up",
                                   style: TextStyle(
-                                    color: Primary_Colour,
+                                    color: themeSettings.primaryColor,
                                   ),
                                 ),
                               ),
