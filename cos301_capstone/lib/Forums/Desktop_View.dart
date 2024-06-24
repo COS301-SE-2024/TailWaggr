@@ -10,6 +10,10 @@ class DesktopForums extends StatefulWidget {
   State<DesktopForums> createState() => _DesktopForumsState();
 }
 
+Forum currentForum = forumList.forums[0];
+List searchedForums = forumList.forums;
+String searchTerm = "";
+
 class _DesktopForumsState extends State<DesktopForums> {
   TextEditingController forumSearchController = TextEditingController();
   @override
@@ -25,7 +29,7 @@ class _DesktopForumsState extends State<DesktopForums> {
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                // mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
                     "Forums",
@@ -38,6 +42,14 @@ class _DesktopForumsState extends State<DesktopForums> {
                     width: MediaQuery.of(context).size.width * 0.6,
                     child: TextField(
                       controller: forumSearchController,
+                      onChanged: (value) {
+                        setState(() {
+                          searchTerm = value;
+                          searchedForums = forumList.forums.where((forum) => forum.title.contains(searchTerm)).toList();
+                        });
+                        // Execute any other code here
+                        print('User typed: $value');
+                      },
                       decoration: InputDecoration(
                         hintText: "Search for a forum",
                         hintStyle: TextStyle(
@@ -48,53 +60,104 @@ class _DesktopForumsState extends State<DesktopForums> {
                           color: themeSettings.textColor), // Add this line
                     ),
                   ),
-                  for (int i = 0; i < profileDetails.notifications.length; i++)
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          print("AAAAA");
-                        });
-                      },
-                      child: SizedBox(
-                        height: 125,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 100,
-                              width: MediaQuery.of(context).size.width * 0.525,
-                              padding: EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: themeSettings.cardColor,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: themeSettings
-                                      .primaryColor, // Border color
-                                  width: 2.0, // Border width
-                                ),
-                                // boxShadow: [
-                                //   BoxShadow(
-                                //     color: themeSettings.textColor.withOpacity(0.2),
-                                //     blurRadius: 10,
-                                //   ),
-                                // ],
-                              ),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    profileDetails.notifications[i].fromUser,
-                                    style: TextStyle(
-                                        fontSize: bodyTextSize,
-                                        color: themeSettings.textColor),
+                  if (searchTerm != "")
+                    for (int i = 0; i < searchedForums.length; i++)
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            print("A");
+                          });
+                        },
+                        child: SizedBox(
+                          height: 125,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 100,
+                                width:
+                                    MediaQuery.of(context).size.width * 0.525,
+                                padding: EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: themeSettings.cardColor,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: themeSettings
+                                        .primaryColor, // Border color
+                                    width: 2.0, // Border width
                                   ),
-                                ],
+                                  // boxShadow: [
+                                  //   BoxShadow(
+                                  //     color: themeSettings.textColor.withOpacity(0.2),
+                                  //     blurRadius: 10,
+                                  //   ),
+                                  // ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      searchedForums[i].title,
+                                      style: TextStyle(
+                                          fontSize: bodyTextSize,
+                                          color: themeSettings.textColor),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
+                  if (searchTerm == "")
+                    for (int i = 0; i < forumList.forums.length; i++)
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            print("A");
+                          });
+                        },
+                        child: SizedBox(
+                          height: 125,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 100,
+                                width:
+                                    MediaQuery.of(context).size.width * 0.525,
+                                padding: EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: themeSettings.cardColor,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: themeSettings
+                                        .primaryColor, // Border color
+                                    width: 2.0, // Border width
+                                  ),
+                                  // boxShadow: [
+                                  //   BoxShadow(
+                                  //     color: themeSettings.textColor.withOpacity(0.2),
+                                  //     blurRadius: 10,
+                                  //   ),
+                                  // ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      forumList.forums[i].title,
+                                      style: TextStyle(
+                                          fontSize: bodyTextSize,
+                                          color: themeSettings.textColor),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                 ],
               ),
             ),
@@ -117,7 +180,7 @@ class _DesktopForumsState extends State<DesktopForums> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        "Title",
+                        currentForum.title,
                         style: TextStyle(
                             fontSize: subtitleTextSize,
                             color: themeSettings.primaryColor),
@@ -126,7 +189,7 @@ class _DesktopForumsState extends State<DesktopForums> {
                       Container(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
-                          'Lorum IpsumodeeznutsLorum IpsumodeeznutsLorum IpsumodeeznutsLorum IpsumodeeznutsLorum IpsumodeeznutsLorum Ipsumodeeznuts',
+                          currentForum.content,
                           style: TextStyle(
                               fontSize: bodyTextSize,
                               color: themeSettings.textColor),
@@ -146,32 +209,47 @@ class _DesktopForumsState extends State<DesktopForums> {
                         child: SingleChildScrollView(
                           child: Container(
                             child: Column(children: [
-                              for (int i = 0; i < 7; i++)
-                                Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.15,
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: themeSettings.cardColor,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        color: themeSettings
-                                            .primaryColor, // Border color
-                                        width: 2.0, // Border width
+                              for (var message in currentForum.messages)
+                                Column(children: [
+                                  Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.15,
+                                      padding: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: themeSettings.cardColor,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          color: themeSettings
+                                              .primaryColor, // Border color
+                                          width: 2.0, // Border width
+                                        ),
+                                        // boxShadow: [
+                                        //   BoxShadow(
+                                        //     color: themeSettings.textColor.withOpacity(0.2),
+                                        //     blurRadius: 10,
+                                        //   ),
+                                        // ],
                                       ),
-                                      // boxShadow: [
-                                      //   BoxShadow(
-                                      //     color: themeSettings.textColor.withOpacity(0.2),
-                                      //     blurRadius: 10,
-                                      //   ),
-                                      // ],
-                                    ),
-                                    child: Text(
-                                      'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
-                                      style: TextStyle(
-                                          fontSize: subBodyTextSize,
-                                          color: themeSettings.textColor),
-                                    )),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            message["sender"],
+                                            style: TextStyle(
+                                                fontSize: bodyTextSize,
+                                                color: themeSettings.textColor),
+                                          ),
+                                          Text(
+                                            message["content"],
+                                            style: TextStyle(
+                                                fontSize: subBodyTextSize,
+                                                color: themeSettings.textColor),
+                                          ),
+                                        ],
+                                      )),
+                                  SizedBox(height: 15),
+                                ]),
                             ]),
                           ),
                         ),
