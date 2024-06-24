@@ -89,7 +89,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
               children: [
                 CircleAvatar(
                   radius: 40,
-                  // backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!),
+                  backgroundImage: NetworkImage(profileDetails.profilePicture),
                 ),
                 SizedBox(width: 20),
                 Column(
