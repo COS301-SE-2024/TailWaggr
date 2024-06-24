@@ -113,6 +113,18 @@ class ProfileDetails {
   String profilePicture = "https://st3.depositphotos.com/4060975/17707/v/450/depositphotos_177073010-stock-illustration-male-vector-icon.jpg";
   String userType = "Veterinarian";
 
+  List forumsExample = [
+    {
+      "title": "Pet Health Care",
+      "content": "Something something health care",
+      "messages": [{"sender": "jeff", 
+                    "content": "according to all know laws of aviation there is no way a bee should be able to fly"},
+                    {"sender": "maria", 
+                    "content": "no lmao"},
+                  ]
+    }
+  ]
+
   List pets = [
     {
       "name": "Bella",
