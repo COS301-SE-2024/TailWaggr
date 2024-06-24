@@ -48,7 +48,7 @@ class ForumServices {
           });
         }
       }
-      print(forums);
+      //print(forums);
       return forums.isNotEmpty ? forums : null;
     } catch (e) {
       print('Error fetching forums: $e');
@@ -104,7 +104,7 @@ class ForumServices {
           });
         }
       }
-      print(messages);
+      //print(messages);
       return messages.isNotEmpty ? messages : null;
     } catch (e) {
       print('Error fetching messages: $e');
