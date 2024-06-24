@@ -16,6 +16,7 @@ String searchTerm = "";
 
 class _DesktopForumsState extends State<DesktopForums> {
   TextEditingController forumSearchController = TextEditingController();
+  TextEditingController messageController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -45,7 +46,10 @@ class _DesktopForumsState extends State<DesktopForums> {
                       onChanged: (value) {
                         setState(() {
                           searchTerm = value;
-                          searchedForums = forumList.forums.where((forum) => forum.title.contains(searchTerm)).toList();
+                          searchedForums = forumList.forums
+                              .where(
+                                  (forum) => forum.title.contains(searchTerm))
+                              .toList();
                         });
                         // Execute any other code here
                         print('User typed: $value');
@@ -256,6 +260,17 @@ class _DesktopForumsState extends State<DesktopForums> {
                       ),
                       SizedBox(height: 10),
                       TextField(
+                        controller: messageController,
+                        onSubmitted: (value) {
+                          setState(() {
+                                                      Map<String, String> newMessage = {
+                            "sender": profileDetails.name,
+                            "content": value,
+                          };
+                          messageController.clear();
+                          currentForum.messages.add(newMessage);
+                          });
+                        },
                         decoration: InputDecoration(
                           labelText: 'Type a new message',
                           border: OutlineInputBorder(),
