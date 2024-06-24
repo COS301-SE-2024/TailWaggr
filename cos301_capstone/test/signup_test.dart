@@ -33,4 +33,4 @@ void main() {
     // Verify that the "Sign up" text is displayed.
     expect(find.text('Sign up'), findsOneWidget);
   });
-}
+} 
