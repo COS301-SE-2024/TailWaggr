@@ -3,6 +3,7 @@ import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:cos301_capstone/services/forum/forum.dart';
+import 'package:cos301_capstone/services/Profile/profile.dart';
 
 class DesktopForums extends StatefulWidget {
   const DesktopForums({super.key});
@@ -13,6 +14,8 @@ class DesktopForums extends StatefulWidget {
 
 final ForumServices _forumServices = ForumServices();
 final AuthService _authService = AuthService();
+final ProfileService _profileServices = ProfileService();
+
 List<Map<String, dynamic>>? forums;
 List<Map<String, dynamic>>? posts;
 List<Map<String, dynamic>>? searchedForums;
@@ -22,6 +25,7 @@ String? newMessageContent;
 String? newReplyContent;
 String? selectedPostId;
 String? forumName;
+Map<String, dynamic>? userProfile;
 
 class _DesktopForumsState extends State<DesktopForums> {
   TextEditingController forumSearchController = TextEditingController();
@@ -59,16 +63,15 @@ class _DesktopForumsState extends State<DesktopForums> {
     }
   }
 
-void _selectForum(String forumId) {
-  setState(() {
-    selectedForumId = forumId;
-    posts = null;
-    forumName = forums!.firstWhere((forum) => forum['forumId'] == forumId)['Name'];
-    isLoadingPosts = true; // Set loading state true when forum is selected
-  });
-  _fetchPosts(forumId);
-}
-
+  void _selectForum(String forumId) {
+    setState(() {
+      selectedForumId = forumId;
+      posts = null;
+      forumName = forums!.firstWhere((forum) => forum['forumId'] == forumId)['Name'];
+      isLoadingPosts = true; // Set loading state true when forum is selected
+    });
+    _fetchPosts(forumId);
+  }
 
   Future<void> _fetchPosts(String forumId) async {
     try {
@@ -86,12 +89,24 @@ void _selectForum(String forumId) {
     }
   }
 
+  Future<void> _fetchUserProfile(String userId) async {
+    try {
+      Map<String, dynamic>? fetchedUserProfile = await _profileServices.getUserDetails(userId);
+      if (!mounted) return;
+      setState(() {
+        userProfile = fetchedUserProfile;
+      });
+    } catch (e) {
+      print('Error fetching user profile: $e');
+    }
+  }
+
   Future<void> _addMessage() async {
     if (newMessageContent != null && newMessageContent!.isNotEmpty) {
       try {
         String? userId = await _authService.getCurrentUserId();
         await _forumServices.createMessage(selectedForumId!, userId!, newMessageContent!);
-        _fetchPosts(selectedForumId!);  // Refresh the posts after adding a new message
+        _fetchPosts(selectedForumId!); // Refresh the posts after adding a new message
         if (!mounted) return;
         setState(() {
           newMessageContent = '';
@@ -106,8 +121,8 @@ void _selectForum(String forumId) {
   Future<void> _likeMessage(String postId) async {
     try {
       String? userId = await _authService.getCurrentUserId();
-      await _forumServices.likeMessage(selectedForumId!,postId, userId!);
-      _fetchPosts(selectedForumId!);  // Refresh the posts after liking a message
+      await _forumServices.likeMessage(selectedForumId!, postId, userId!);
+      _fetchPosts(selectedForumId!); // Refresh the posts after liking a message
     } catch (e) {
       print('Error liking message: $e');
     }
@@ -117,8 +132,8 @@ void _selectForum(String forumId) {
     if (newReplyContent != null && newReplyContent!.isNotEmpty) {
       try {
         String? userId = await _authService.getCurrentUserId();
-        await _forumServices.replyToMessage(selectedForumId!,postId, userId!, newReplyContent!);
-        _fetchPosts(selectedForumId!);  // Refresh the posts after replying to a message
+        await _forumServices.replyToMessage(selectedForumId!, postId, userId!, newReplyContent!);
+        _fetchPosts(selectedForumId!); // Refresh the posts after replying to a message
         setState(() {
           newReplyContent = '';
         });
@@ -238,6 +253,8 @@ void _selectForum(String forumId) {
                                   itemCount: posts!.length,
                                   itemBuilder: (context, index) {
                                     final postId = posts![index]['messageId'];
+                                    final userId = posts![index]['message']?['UserId'] ?? 'Unknown User';
+                                    _fetchUserProfile(userId);
                                     return Container(
                                       margin: EdgeInsets.symmetric(vertical: 10),
                                       padding: EdgeInsets.all(10),
@@ -253,9 +270,15 @@ void _selectForum(String forumId) {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            posts![index]['message']?['UserId'] ?? 'Unknown User',
+                                            userProfile?['userName'] ?? 'Unknown User',
                                             style: TextStyle(
                                                 fontSize: bodyTextSize,
+                                                color: themeSettings.textColor),
+                                          ),
+                                          Text(
+                                            userProfile?['name'] ?? 'Unknown',
+                                            style: TextStyle(
+                                                fontSize: subBodyTextSize,
                                                 color: themeSettings.textColor),
                                           ),
                                           Text(
