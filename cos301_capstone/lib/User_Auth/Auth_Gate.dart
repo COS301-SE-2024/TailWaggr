@@ -3,6 +3,7 @@
 // import 'package:cos301_capstone/Homepage/Homepage.dart';
 // import 'package:cos301_capstone/Location/Desktop_View.dart';
 // import 'package:cos301_capstone/Location/Location.dart';
+import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Login/Login.dart';
 // import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:cos301_capstone/Notifications/Notifications.dart';
@@ -31,7 +32,8 @@ class _AuthGateState extends State<AuthGate> {
           // return User_Profile();
           // return Location();
           // return Homepage();
-          return Notifications();
+          //return Notifications();
+          return Forums();
         }
         return Login();
         // return Signup();
