@@ -27,7 +27,7 @@ class _DesktopForumsState extends State<DesktopForums> {
                 // mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    "Notifications",
+                    "Forums",
                     style: TextStyle(
                         fontSize: subtitleTextSize,
                         color: themeSettings.primaryColor),
@@ -134,184 +134,175 @@ class _DesktopForumsState extends State<DesktopForums> {
                         ),
                       ),
                       SizedBox(height: 40),
-                      Column(children: [
-                        Container(
-                            width: MediaQuery.of(context).size.width * 0.15,
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: themeSettings.cardColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color:
-                                    themeSettings.primaryColor, // Border color
-                                width: 2.0, // Border width
-                              ),
-                              // boxShadow: [
-                              //   BoxShadow(
-                              //     color: themeSettings.textColor.withOpacity(0.2),
-                              //     blurRadius: 10,
-                              //   ),
-                              // ],
-                            ),
-                            child: Text(
-                              'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
-                            )
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Container(
+                            child: Column(children: [
+                              Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.15,
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: themeSettings.cardColor,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: themeSettings
+                                          .primaryColor, // Border color
+                                      width: 2.0, // Border width
+                                    ),
+                                    // boxShadow: [
+                                    //   BoxShadow(
+                                    //     color: themeSettings.textColor.withOpacity(0.2),
+                                    //     blurRadius: 10,
+                                    //   ),
+                                    // ],
+                                  ),
+                                  child: Text(
+                                    'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
+                                  )),
+                                  Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.15,
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: themeSettings.cardColor,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: themeSettings
+                                          .primaryColor, // Border color
+                                      width: 2.0, // Border width
+                                    ),
+                                    // boxShadow: [
+                                    //   BoxShadow(
+                                    //     color: themeSettings.textColor.withOpacity(0.2),
+                                    //     blurRadius: 10,
+                                    //   ),
+                                    // ],
+                                  ),
+                                  child: Text(
+                                    'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
+                                  )),
+                                  Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.15,
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: themeSettings.cardColor,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: themeSettings
+                                          .primaryColor, // Border color
+                                      width: 2.0, // Border width
+                                    ),
+                                    // boxShadow: [
+                                    //   BoxShadow(
+                                    //     color: themeSettings.textColor.withOpacity(0.2),
+                                    //     blurRadius: 10,
+                                    //   ),
+                                    // ],
+                                  ),
+                                  child: Text(
+                                    'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
+                                  )),
+                                  Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.15,
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: themeSettings.cardColor,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: themeSettings
+                                          .primaryColor, // Border color
+                                      width: 2.0, // Border width
+                                    ),
+                                    // boxShadow: [
+                                    //   BoxShadow(
+                                    //     color: themeSettings.textColor.withOpacity(0.2),
+                                    //     blurRadius: 10,
+                                    //   ),
+                                    // ],
+                                  ),
+                                  child: Text(
+                                    'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
+                                  )),
+                                  Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.15,
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: themeSettings.cardColor,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: themeSettings
+                                          .primaryColor, // Border color
+                                      width: 2.0, // Border width
+                                    ),
+                                    // boxShadow: [
+                                    //   BoxShadow(
+                                    //     color: themeSettings.textColor.withOpacity(0.2),
+                                    //     blurRadius: 10,
+                                    //   ),
+                                    // ],
+                                  ),
+                                  child: Text(
+                                    'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
+                                  )),
+                                  Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.15,
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: themeSettings.cardColor,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: themeSettings
+                                          .primaryColor, // Border color
+                                      width: 2.0, // Border width
+                                    ),
+                                    // boxShadow: [
+                                    //   BoxShadow(
+                                    //     color: themeSettings.textColor.withOpacity(0.2),
+                                    //     blurRadius: 10,
+                                    //   ),
+                                    // ],
+                                  ),
+                                  child: Text(
+                                    'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
+                                  )),
+                                  Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.15,
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: themeSettings.cardColor,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: themeSettings
+                                          .primaryColor, // Border color
+                                      width: 2.0, // Border width
+                                    ),
+                                    // boxShadow: [
+                                    //   BoxShadow(
+                                    //     color: themeSettings.textColor.withOpacity(0.2),
+                                    //     blurRadius: 10,
+                                    //   ),
+                                    // ],
+                                  ),
+                                  child: Text(
+                                    'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
+                                  )),
+                            ]),
                           ),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.15,
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: themeSettings.cardColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color:
-                                    themeSettings.primaryColor, // Border color
-                                width: 2.0, // Border width
-                              ),
-                              // boxShadow: [
-                              //   BoxShadow(
-                              //     color: themeSettings.textColor.withOpacity(0.2),
-                              //     blurRadius: 10,
-                              //   ),
-                              // ],
-                            ),
-                            child: Text(
-                              'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
-                            )
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.15,
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: themeSettings.cardColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color:
-                                    themeSettings.primaryColor, // Border color
-                                width: 2.0, // Border width
-                              ),
-                              // boxShadow: [
-                              //   BoxShadow(
-                              //     color: themeSettings.textColor.withOpacity(0.2),
-                              //     blurRadius: 10,
-                              //   ),
-                              // ],
-                            ),
-                            child: Text(
-                              'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
-                            )
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.15,
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: themeSettings.cardColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color:
-                                    themeSettings.primaryColor, // Border color
-                                width: 2.0, // Border width
-                              ),
-                              // boxShadow: [
-                              //   BoxShadow(
-                              //     color: themeSettings.textColor.withOpacity(0.2),
-                              //     blurRadius: 10,
-                              //   ),
-                              // ],
-                            ),
-                            child: Text(
-                              'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
-                            )
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.15,
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: themeSettings.cardColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color:
-                                    themeSettings.primaryColor, // Border color
-                                width: 2.0, // Border width
-                              ),
-                              // boxShadow: [
-                              //   BoxShadow(
-                              //     color: themeSettings.textColor.withOpacity(0.2),
-                              //     blurRadius: 10,
-                              //   ),
-                              // ],
-                            ),
-                            child: Text(
-                              'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
-                            )
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.15,
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: themeSettings.cardColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color:
-                                    themeSettings.primaryColor, // Border color
-                                width: 2.0, // Border width
-                              ),
-                              // boxShadow: [
-                              //   BoxShadow(
-                              //     color: themeSettings.textColor.withOpacity(0.2),
-                              //     blurRadius: 10,
-                              //   ),
-                              // ],
-                            ),
-                            child: Text(
-                              'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
-                            )
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.15,
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: themeSettings.cardColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color:
-                                    themeSettings.primaryColor, // Border color
-                                width: 2.0, // Border width
-                              ),
-                              // boxShadow: [
-                              //   BoxShadow(
-                              //     color: themeSettings.textColor.withOpacity(0.2),
-                              //     blurRadius: 10,
-                              //   ),
-                              // ],
-                            ),
-                            child: Text(
-                              'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
-                            )
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.15,
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: themeSettings.cardColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color:
-                                    themeSettings.primaryColor, // Border color
-                                width: 2.0, // Border width
-                              ),
-                              // boxShadow: [
-                              //   BoxShadow(
-                              //     color: themeSettings.textColor.withOpacity(0.2),
-                              //     blurRadius: 10,
-                              //   ),
-                              // ],
-                            ),
-                            child: Text(
-                              'This is an message.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAaaaaaaaaaaa',
-                            )
-                          ),
-                      ]),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      TextField(
+                        decoration: InputDecoration(
+                          labelText: 'Type a new message',
+                          border: OutlineInputBorder(),
+                        ),
+                      )
                     ])),
           )
         ],
