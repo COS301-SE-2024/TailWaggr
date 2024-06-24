@@ -25,7 +25,7 @@ String? newMessageContent;
 String? newReplyContent;
 String? selectedPostId;
 String? forumName;
-Map<String, dynamic>? userProfile;
+Map<String, Map<String, dynamic>> userProfiles = {};
 
 class _DesktopForumsState extends State<DesktopForums> {
   TextEditingController forumSearchController = TextEditingController();
@@ -81,6 +81,7 @@ class _DesktopForumsState extends State<DesktopForums> {
         posts = fetchedPosts;
         isLoadingPosts = false; // Set loading state false when posts are fetched
       });
+      _fetchUserProfiles();
     } catch (e) {
       print('Error fetching posts: $e');
       setState(() {
@@ -89,15 +90,26 @@ class _DesktopForumsState extends State<DesktopForums> {
     }
   }
 
-  Future<void> _fetchUserProfile(String userId) async {
+  Future<void> _fetchUserProfiles() async {
+    if (posts == null || posts!.isEmpty) return;
+
     try {
-      Map<String, dynamic>? fetchedUserProfile = await _profileServices.getUserDetails(userId);
+      // Get unique userIds from posts
+      Set<String> userIds = posts!.map((post) => post['message']['UserId'] as String).toSet();
+
+      // Fetch profiles for all unique userIds
+      for (String userId in userIds) {
+        if (!userProfiles.containsKey(userId)) {
+          Map<String, dynamic>? profile = await _profileServices.getUserDetails(userId);
+          if (profile != null) {
+            userProfiles[userId] = profile;
+          }
+        }
+      }
       if (!mounted) return;
-      setState(() {
-        userProfile = fetchedUserProfile;
-      });
+      setState(() {});
     } catch (e) {
-      print('Error fetching user profile: $e');
+      print('Error fetching user profiles: $e');
     }
   }
 
@@ -252,9 +264,9 @@ class _DesktopForumsState extends State<DesktopForums> {
                                 child: ListView.builder(
                                   itemCount: posts!.length,
                                   itemBuilder: (context, index) {
-                                    final postId = posts![index]['messageId'];
-                                    final userId = posts![index]['message']?['UserId'] ?? 'Unknown User';
-                                    _fetchUserProfile(userId);
+                                    final post = posts![index];
+                                    final userId = post['message']['UserId'] as String;
+                                    final userProfile = userProfiles[userId];
                                     return Container(
                                       margin: EdgeInsets.symmetric(vertical: 10),
                                       padding: EdgeInsets.all(10),
@@ -282,7 +294,7 @@ class _DesktopForumsState extends State<DesktopForums> {
                                                 color: themeSettings.textColor),
                                           ),
                                           Text(
-                                            posts![index]['message']?['Content'] ?? 'No Content',
+                                            post['message']['Content'] ?? 'No Content',
                                             style: TextStyle(
                                                 fontSize: subBodyTextSize,
                                                 color: themeSettings.textColor),
@@ -292,14 +304,14 @@ class _DesktopForumsState extends State<DesktopForums> {
                                             children: [
                                               IconButton(
                                                 icon: Icon(Icons.thumb_up),
-                                                onPressed: () => _likeMessage(postId),
+                                                onPressed: () => _likeMessage(post['messageId']),
                                               ),
                                               IconButton(
                                                 icon: Icon(Icons.reply),
                                                 onPressed: () {
                                                   setState(() {
-                                                    selectedPostId = postId;
-                                                    _replyToMessage(postId);
+                                                    selectedPostId = post['messageId'];
+                                                    _replyToMessage(post['messageId']);
                                                   });
                                                 },
                                               ),
