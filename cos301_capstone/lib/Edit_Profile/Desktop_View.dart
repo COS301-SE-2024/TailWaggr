@@ -1,4 +1,3 @@
-
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
@@ -22,20 +21,19 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
         padding: EdgeInsets.all(30),
         margin: EdgeInsets.only(bottom: 60, top: 5),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: themeSettings.cardColor,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 10,
-              offset: Offset(0, 5),
-            ),
-          ],
         ),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Text("Edit Profile"),
+              Text(
+                "Edit Profile",
+                style: TextStyle(
+                  fontSize: subHeadingTextSize,
+                  color: themeSettings.textColor,
+                ),
+              ),
               SizedBox(height: 20),
               Row(
                 children: [
@@ -64,6 +62,9 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
                             labelText: "Name",
                             border: OutlineInputBorder(),
                           ),
+                          style: TextStyle(
+                            color: themeSettings.textColor,
+                          ),
                         ),
                       ),
                       SizedBox(height: 20),
@@ -74,6 +75,9 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
                           decoration: InputDecoration(
                             labelText: "Surname",
                             border: OutlineInputBorder(),
+                          ),
+                          style: TextStyle(
+                            color: themeSettings.textColor,
                           ),
                         ),
                       ),
@@ -89,18 +93,15 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
                   border: OutlineInputBorder(),
                 ),
                 maxLines: null, // Allow the field to expand
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: EditProfileVariables.emailController,
-                decoration: InputDecoration(
-                  labelText: "Email",
-                  border: OutlineInputBorder(),
+                style: TextStyle(
+                  color: themeSettings.textColor,
                 ),
-                enabled: false,
               ),
               SizedBox(height: 20),
               InternationalPhoneNumberInput(
+                textStyle: TextStyle(
+                  color: themeSettings.textColor,
+                ),
                 onInputChanged: (PhoneNumber number) {
                   print(number.phoneNumber);
                 },
@@ -124,7 +125,7 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
                 keyboardType: TextInputType.numberWithOptions(signed: true, decimal: true),
                 inputBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Colors.transparent,
+                    // color: Colors.transparent,
                     width: 0,
                   ),
                 ),
@@ -138,6 +139,9 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
                 decoration: InputDecoration(
                   labelText: "Address",
                   border: OutlineInputBorder(),
+                ),
+                style: TextStyle(
+                  color: themeSettings.textColor,
                 ),
               ),
               SizedBox(height: 20),

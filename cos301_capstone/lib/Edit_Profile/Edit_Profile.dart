@@ -38,9 +38,10 @@ class _EditProfileState extends State<EditProfile> {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth > 1000) {
-          return const Scaffold(
-            body: EditProfileDesktop(),
-          );
+          return EditProfileDesktop();
+          // return const Scaffold(
+          //   body: EditProfileDesktop(),
+          // );
         } else {
           return const Scaffold(
             body: EditProfileMobile(),

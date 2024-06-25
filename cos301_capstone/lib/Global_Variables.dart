@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 const titleTextSize = 56.0;
@@ -133,6 +134,18 @@ class ProfileDetails {
     Notification(DateTime(2021, 12, 30), "Friend Request", "Sarah Brown", ""),
   ];
 
+  // PostId: 0njz6TgFlZnZ8NH6Tycg, 
+  // UserId: QF5gHocYeGRNbsFmPE3RjUZIId82, 
+  // PetIds: [
+  //   {
+  //     name: Fluffy, 
+  //     pictureUrl: https://firebasestorage.googleapis.com/v0/b/tailwaggr.appspot.com/o/profile_images%2FGolden1.jpg?alt=media&token=82a1575f-fb0d-4144-8203-561b6733a31a, 
+  //     petId: KK5Yw7OSWm7EwF19Wokg
+  //     }
+  //   ], 
+  // ImgUrl: https://firebasestorage.googleapis.com/v0/b/tailwaggr.appspot.com/o/posts%2FQF5gHocYeGRNbsFmPE3RjUZIId82_1719149851324.JPG?alt=media&token=f593da46-5121-4c6f-a19c-9d7116d65a95, 
+  // Content: Buck, 
+  // CreatedAt: Timestamp(seconds=1719149860, nanoseconds=848000000)
   List<Map<String, dynamic>> posts = [];
 
 
