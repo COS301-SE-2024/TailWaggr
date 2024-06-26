@@ -1,6 +1,5 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
 
-import 'dart:io';
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
@@ -49,7 +48,7 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
                     child: CircleAvatar(
                       radius: 75,
                       // backgroundImage: AssetImage("assets/images/profile.jpg"),
-                      backgroundImage: NetworkImage(profileDetails.ProfilePicture),
+                      backgroundImage: NetworkImage(profileDetails.profilePicture),
                     ),
                   ),
                   SizedBox(width: 20),
@@ -116,9 +115,9 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
                 autoValidateMode: AutovalidateMode.disabled,
                 // selectorTextStyle: TextStyle(color: Colors.black),
                 initialValue: PhoneNumber(
-                  dialCode: profileDetails.DialCode,
+                  dialCode: profileDetails.dialCode,
                   isoCode: profileDetails.isoCode,
-                  phoneNumber: profileDetails.Phone,
+                  phoneNumber: profileDetails.phone,
                 ),
                 textFieldController: EditProfileVariables.phoneController,
                 formatInput: true,
@@ -145,20 +144,20 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
               ElevatedButton(
                 onPressed: () async {
                   setState(() {
-                    profileDetails.Name = EditProfileVariables.nameController.text;
-                    profileDetails.Surname = EditProfileVariables.surnameController.text;
-                    profileDetails.Bio = EditProfileVariables.bioController.text;
-                    profileDetails.Location = EditProfileVariables.addressController.text;
+                    profileDetails.name = EditProfileVariables.nameController.text;
+                    profileDetails.surname = EditProfileVariables.surnameController.text;
+                    profileDetails.bio = EditProfileVariables.bioController.text;
+                    profileDetails.location = EditProfileVariables.addressController.text;
                   });
                   Navigator.pop(context);
                 },
                 style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(themeSettings.Primary_Colour),
+                  backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
                 ),
                 child: Text(
                   "Save Changes",
                   style: TextStyle(
-                    fontSize: Body_Text_Size,
+                    fontSize: bodyTextSize,
                     color: Colors.white,
                   ),
                 ),

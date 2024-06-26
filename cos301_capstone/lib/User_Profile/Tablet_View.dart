@@ -4,7 +4,6 @@ import 'package:animations/animations.dart';
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
-import 'package:cos301_capstone/Navbar/Mobile_View.dart';
 import 'package:flutter/material.dart';
 
 class ProfileTablet extends StatefulWidget {
@@ -23,12 +22,12 @@ class _ProfileTabletState extends State<ProfileTablet> {
           DesktopNavbar(),
           Container(
             width: MediaQuery.of(context).size.width - (themeSettings.searchVisible ? 550 : 250),
-            color: ThemeSettings.Background_Colour,
+            color: ThemeSettings.backgroundColor,
             padding: EdgeInsets.all(20),
             child: DefaultTextStyle(
               style: TextStyle(
                 fontSize: 20,
-                color: ThemeSettings.Text_Colour,
+                color: ThemeSettings.textColor,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -67,11 +66,11 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: ThemeSettings.Card_Colour,
+        color: ThemeSettings.cardColor,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: ThemeSettings.Text_Colour.withOpacity(0.2),
+            color: ThemeSettings.textColor.withOpacity(0.2),
             blurRadius: 10,
           ),
         ],
@@ -82,7 +81,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
         children: [
           CircleAvatar(
             radius: MediaQuery.of(context).size.width * 0.1,
-            backgroundImage: NetworkImage(profileDetails.ProfilePicture),
+            backgroundImage: NetworkImage(profileDetails.profilePicture),
           ),
           SizedBox(width: 20),
           Column(
@@ -91,8 +90,8 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
             children: [
               Column(
                 children: [
-                  Text(profileDetails.Name, style: TextStyle(fontSize: Sub_Heading_Text_Size)),
-                  Text(profileDetails.Bio, style: TextStyle(fontSize: Sub_Body_Text_Size)),
+                  Text(profileDetails.name, style: TextStyle(fontSize: subHeadingTextSize)),
+                  Text(profileDetails.bio, style: TextStyle(fontSize: subBodyTextSize)),
                 ],
               ),
               SizedBox(height: 20),
@@ -102,7 +101,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                   return Container(
                     padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                     decoration: BoxDecoration(
-                      color: themeSettings.Primary_Colour,
+                      color: themeSettings.primaryColor,
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child: Text(
@@ -118,9 +117,9 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                     appBar: AppBar(
                       title: Text(
                         "Edit Profile",
-                        style: TextStyle(color: themeSettings.Primary_Colour, fontSize: 20),
+                        style: TextStyle(color: themeSettings.primaryColor, fontSize: 20),
                       ),
-                      iconTheme: IconThemeData(color: themeSettings.Primary_Colour),
+                      iconTheme: IconThemeData(color: themeSettings.primaryColor),
                     ),
                     body: EditProfile(),
                   );
@@ -149,11 +148,11 @@ class _PostsContainerState extends State<PostsContainer> {
       child: Container(
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: ThemeSettings.Card_Colour,
+          color: ThemeSettings.cardColor,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: ThemeSettings.Text_Colour.withOpacity(0.2),
+              color: ThemeSettings.textColor.withOpacity(0.2),
               blurRadius: 10,
               offset: Offset(0, 5),
             ),
@@ -236,8 +235,8 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: PetProfileButton(
-                petName: pet["Name"],
-                petBio: pet["Bio"],
+                petName: pet["name"],
+                petBio: pet["bio"],
               ),
             ),
         ],
@@ -272,13 +271,13 @@ class _PetProfileButtonState extends State<PetProfileButton> {
             children: [
               Text(
                 widget.petName,
-                style: TextStyle(fontSize: Sub_Heading_Text_Size),
+                style: TextStyle(fontSize: subHeadingTextSize),
                 overflow: TextOverflow.ellipsis,
               ),
               // SizedBox(height: 8),
               Text(
                 widget.petBio,
-                style: TextStyle(fontSize: Sub_Body_Text_Size),
+                style: TextStyle(fontSize: subBodyTextSize),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
               ),

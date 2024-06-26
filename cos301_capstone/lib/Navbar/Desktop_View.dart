@@ -1,14 +1,18 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:cos301_capstone/Events/Events.dart';
+import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Location/Desktop_View.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
-import 'package:cos301_capstone/Search_Users/Mobile_View.dart';
+import 'package:cos301_capstone/Notifications/Notifications.dart';
 import 'package:cos301_capstone/User_Profile/Desktop_View.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DesktopNavbar extends StatefulWidget {
   const DesktopNavbar({super.key});
@@ -38,7 +42,14 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
         Container(
           width: 250,
           padding: EdgeInsets.all(30),
-          color: ThemeSettings.Primary_Colour,
+          // color: ThemeSettings.primaryColor,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/pug.jpg"),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
+            ),
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,14 +58,14 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                 children: [
                   CircleAvatar(
                     radius: 20,
-                    // backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!),
+                    backgroundImage: NetworkImage(profileDetails.profilePicture),
                   ),
                   SizedBox(width: 20),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        profileDetails.Name,
+                        profileDetails.name,
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.white,
@@ -62,14 +73,23 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                       ),
                     ],
                   ),
+                  IconButton(
+                    icon: Icon(Icons.help_outline, color: Colors.white),
+                    onPressed: () async {
+                      print('Launching flutter.dev');
+                      final Uri url = Uri.parse('https://docs.google.com/document/d/1TiRA697HTTGuLCOzq20es4q_fotXlDpTnVuov_7zNP0/edit?usp=sharing ');
+                      if (!await launchUrl(url)) {
+                        print('Could not launch $url');
+                      }
+                    },
+                  ),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Navbar_Icon(icon: Icons.home, text: "Home", index: 0),
-                  // Navbar_Icon(icon: Icons.search, text: "Search", index: 1),
-                  // Navbar_Icon(icon: Icons.notifications, text: "Notifications", index: 0),
+                  Navbar_Icon(icon: Icons.home, text: "Home", page: Homepage()),
+                  Navbar_Icon(icon: Icons.notifications, text: "Notifications", page: Notifications()),
                   GestureDetector(
                     onTap: () {
                       themeSettings.toggleSearchVisible();
@@ -102,9 +122,9 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                       ),
                     ),
                   ),
-                  // Navbar_Icon(icon: Icons.calendar_month, text: "Events", index: 0),
+                  Navbar_Icon(icon: Icons.event, text: "Events", page: Events()),
                   Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: LocationDesktop()),
-                  // Navbar_Icon(icon: Icons.settings, text: "Forums", index: 0),
+                  Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                   Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile()),
                 ],
               ),
@@ -144,7 +164,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    themeSettings.ToggleTheme();
+                    themeSettings.toggleTheme();
                     isDarkMode = !isDarkMode;
                   });
                 },
@@ -169,7 +189,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                     padding: EdgeInsets.all(10),
                     child: Row(
                       children: [
-                        Icon(isDarkMode? Icons.dark_mode : Icons.light_mode, color: Colors.white),
+                        Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode, color: Colors.white),
                         SizedBox(width: 10),
                         Text("Toggle theme", style: TextStyle(color: Colors.white, fontSize: 20)),
                       ],
@@ -185,10 +205,10 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
             width: 300,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: themeSettings.Card_Colour,
+              color: themeSettings.cardColor,
               boxShadow: [
                 BoxShadow(
-                  color: themeSettings.Text_Colour.withOpacity(0.2),
+                  color: themeSettings.textColor.withOpacity(0.2),
                   blurRadius: 10,
                 ),
               ],
@@ -210,10 +230,10 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   controller: searchController,
                   decoration: InputDecoration(
                     hintText: "Search for a user or pet",
-                    hintStyle: TextStyle(color: themeSettings.Text_Colour.withOpacity(0.5)),
+                    hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.5)),
                     prefixIcon: Icon(Icons.search),
                   ),
-                  style: TextStyle(color: themeSettings.Text_Colour), // Add this line
+                  style: TextStyle(color: themeSettings.textColor), // Add this line
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
@@ -226,7 +246,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                     });
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: themeSettings.Primary_Colour,
+                    backgroundColor: themeSettings.primaryColor,
                     minimumSize: Size(double.infinity, 0),
                   ),
                   child: Padding(

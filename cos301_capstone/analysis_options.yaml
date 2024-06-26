@@ -10,8 +10,7 @@
 analyzer:
   errors:
     avoid_print: ignore
-    p ignorerefer_const_constructors: ignore
-    prefer_const_constructors: ignore ignore ignore ignore ignore
+    prefer_const_constructors: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:
@@ -28,6 +27,13 @@ linter:
   rules:
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
     # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    camel_case_types: true
+    curly_braces_in_flow_control_structures: true
+    avoid_empty_else: true
+    avoid_unused_constructor_parameters: true
+    unnecessary_null_checks: true
+    avoid_returning_null_for_void: true
+
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

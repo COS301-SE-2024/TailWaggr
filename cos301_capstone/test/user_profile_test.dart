@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Mobile_View.dart';
@@ -149,7 +148,7 @@ void main() {
         home: Scaffold(
       drawer: const NavbarDrawer(),
       appBar: AppBar(
-        backgroundColor: themeSettings.Primary_Colour,
+        backgroundColor: themeSettings.primaryColor,
         title: const Text(
           "TailWaggr",
           style: TextStyle(
