@@ -1,5 +1,8 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:animations/animations.dart';
+import 'package:cos301_capstone/Edit_Profile/Desktop_View.dart';
+import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Events/Events.dart';
 import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
@@ -34,6 +37,14 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
   TextEditingController searchController = TextEditingController();
 
   bool isDarkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    profileDetails.isEditing.addListener(() {
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +87,6 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   IconButton(
                     icon: Icon(Icons.help_outline, color: Colors.white),
                     onPressed: () async {
-                      print('Launching flutter.dev');
                       final Uri url = Uri.parse('https://docs.google.com/document/d/1TiRA697HTTGuLCOzq20es4q_fotXlDpTnVuov_7zNP0/edit?usp=sharing ');
                       if (!await launchUrl(url)) {
                         print('Could not launch $url');
@@ -126,6 +136,35 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: LocationDesktop()),
                   Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                   Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile()),
+                  OpenContainer(
+                    transitionDuration: Duration(milliseconds: 300),
+                    closedBuilder: (context, action) {
+                      return Container(
+                        padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                        decoration: BoxDecoration(
+                          color: themeSettings.primaryColor,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Text(
+                          "Edit Profile",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      );
+                    },
+                    closedColor: Colors.transparent,
+                    closedElevation: 0,
+                    openBuilder: (context, action) {
+                      return EditProfile();
+                      // Scaffold(
+                      //   backgroundColor: themeSettings.backgroundColor,
+                      //   appBar: AppBar(
+                      //     backgroundColor: themeSettings.backgroundColor,
+                      //     iconTheme: IconThemeData(color: themeSettings.primaryColor),
+                      //   ),
+                      //   body: EditProfile(),
+                      // );
+                    },
+                  ),
                 ],
               ),
               GestureDetector(

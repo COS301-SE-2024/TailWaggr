@@ -17,6 +17,9 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
   @override
   void initState() {
     super.initState();
+    profileDetails.isEditing.addListener(() {
+      setState(() {});
+    });
   }
 
   @override

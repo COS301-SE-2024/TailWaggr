@@ -3,13 +3,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
-const titleTextSize = 56.0;
-const subtitleTextSize = 40.0;
-const subHeadingTextSize = 30.0;
-const bodyTextSize = 20.0;
-const subBodyTextSize = 16.0;
-const textSize = 14.0;
+var titleTextSize = 56.0;
+var subtitleTextSize = 40.0;
+var subHeadingTextSize = 30.0;
+var bodyTextSize = 20.0;
+var subBodyTextSize = 16.0;
+var textSize = 14.0;
 
 class ThemeSettings {
   // static Color _primaryColor = Color(0xFF6D2480);
@@ -20,7 +21,7 @@ class ThemeSettings {
   // static Color _cardColor = Colors.white;
 
   static Color _primaryColor = Color(0XFFbc6c25);
-  static Color _secondaryColor = Color(0xFF9C89FF);
+  static Color _secondaryColor = Color(0xFF606c38);
   static Color _tertiaryColor = Color(0xFF99CCED);
   static Color _backgroundColor = Color.fromARGB(255, 246, 247, 251);
   static Color _textColor = Colors.black;
@@ -38,32 +39,12 @@ class ThemeSettings {
 
   static void toggleTheme() {
     if (_themeMode == "Light") {
-      // _primaryColor = Color.fromARGB(255, 56, 0, 76);
-      // _secondaryColor = Color(0xFF9C89FF);
-      // _tertiaryColor = Color(0xFF99CCED);
-      // _backgroundColor = Colors.black;
-      // _textColor = Colors.white;
-      // _cardColor = Color(0XFF141414);
-
-      _primaryColor = Color(0XFFbc6c25);
-      _secondaryColor = Color(0xFF9C89FF);
-      _tertiaryColor = Color(0xFF99CCED);
       _backgroundColor = Colors.black;
       _textColor = Colors.white;
       _cardColor = Color(0XFF141414);
 
       _themeMode = "Dark";
     } else if (_themeMode == "Dark") {
-      // _primaryColor = Color(0xFF6D2480);
-      // _secondaryColor = Color(0xFF9C89FF);
-      // _tertiaryColor = Color(0xFF99CCED);
-      // _backgroundColor = Color(0xFFEFF3FC);
-      // _textColor = Colors.black;
-      // _cardColor = Colors.white;
-
-      _primaryColor = Color(0XFFbc6c25);
-      _secondaryColor = Color(0xFF9C89FF);
-      _tertiaryColor = Color(0xFF99CCED);
       _backgroundColor = Color(0xFFEFF3FC);
       _textColor = Colors.black;
       _cardColor = Colors.white;
@@ -76,6 +57,30 @@ class ThemeSettings {
   static bool get searchVisible => _searchVisible;
   static void toggleSearchVisible() {
     _searchVisible = !_searchVisible;
+  }
+
+  static void setPrimaryColor(Color color) {
+    _primaryColor = color;
+  }
+
+  static void setSecondaryColor(Color color) {
+    _secondaryColor = color;
+  }
+
+  static void setTertiaryColor(Color color) {
+    _tertiaryColor = color;
+  }
+
+  static void setBackgroundColor(Color color) {
+    _backgroundColor = color;
+  }
+
+  static void setTextColor(Color color) {
+    _textColor = color;
+  }
+
+  static void setCardColor(Color color) {
+    _cardColor = color;
   }
 }
 
@@ -98,6 +103,36 @@ class ThemeSettingsObserver extends ChangeNotifier {
     ThemeSettings.toggleSearchVisible();
     notifyListeners();
   }
+
+  void setPrimaryColor(Color color) {
+    ThemeSettings.setPrimaryColor(color);
+    notifyListeners();
+  }
+
+  void setSecondaryColor(Color color) {
+    ThemeSettings.setSecondaryColor(color);
+    notifyListeners();
+  }
+
+  void setTertiaryColor(Color color) {
+    ThemeSettings.setTertiaryColor(color);
+    notifyListeners();
+  }
+
+  void setBackgroundColor(Color color) {
+    ThemeSettings.setBackgroundColor(color);
+    notifyListeners();
+  }
+
+  void setTextColor(Color color) {
+    ThemeSettings.setTextColor(color);
+    notifyListeners();
+  }
+
+  void setCardColor(Color color) {
+    ThemeSettings.setCardColor(color);
+    notifyListeners();
+  }
 }
 
 ThemeSettingsObserver themeSettings = ThemeSettingsObserver();
@@ -115,6 +150,8 @@ class ProfileDetails {
   String birthdate = "January 1, 2000";
   String profilePicture = "https://st3.depositphotos.com/4060975/17707/v/450/depositphotos_177073010-stock-illustration-male-vector-icon.jpg";
   String userType = "Veterinarian";
+
+  ValueNotifier<int> isEditing = ValueNotifier(0);
 
   // Age: 3, 
   // pictureUrl: gs://tailwaggr.appspot.com/forum_images/Golden2.jpg, 
