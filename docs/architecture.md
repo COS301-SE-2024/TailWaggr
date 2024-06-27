@@ -4,6 +4,7 @@ We have opted to design based on our quality requirements. This strategy will en
 
 ## Architectural strategies
 ### Asynchronous Messaging
+![](doc_images/AsynchronousMessaging_1.png)
 The use of asynchronous messaging will allow the system to handle notifications, post uploads, and other tasks without blocking the main application or forcing the user to reload the page to view live updates. This will improve system responsiveness and user experience, as well as decouple components, making the system more scalable and maintainable.
 ![](doc_images/AsynchronousMessaging.png)
 #### Usage
@@ -15,6 +16,7 @@ The use of asynchronous messaging will allow the system to handle notifications,
 - Handles high loads effectively.
 
 ### Client-Server
+![](doc_images/C_S_Arch.png)
 The Client-Server architectural pattern is a fundamental design pattern for networked applications. It separates the client (front-end) from the server (back-end), allowing each to be developed and used independently. The client is responsible for the presentation layer (What the user sees), while the server (API and database) handles the business logic and data access layer. This separation of concerns makes the system more modular and easier to maintain.
 #### Usage
 - **Viewing and Uploading Posts:** The client-server model is fundamental for retrieving and displaying posts. The client (web browser or mobile app) makes requests to the server, which processes the request, fetches data from the database, and sends the posts back to the client.
@@ -29,6 +31,7 @@ When a user uploads a post, the client sends the post data to the server, which 
 - Enhances security by centralizing sensitive operations on the server.
 
 ### Component-Based
+![](doc_images/Comp_Arch.png)
 The Component-Based architectural pattern divides the system into smaller, reusable components that can be developed, tested, and maintained independently. This pattern promotes reusability, simplifies testing and debugging, and enhances scalability.
 #### Usage
 - **Navbar:** The navbar component can be reused across multiple pages, providing consistent navigation and user experience.
