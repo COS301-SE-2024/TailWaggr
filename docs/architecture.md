@@ -57,3 +57,48 @@ The Component-Based architectural pattern divides the system into smaller, reusa
 3. Only highly performant database technology should be used due to the client’s desire for short loading times.
 
 ## Technology choices
+![](doc_images/Technology_Choices.jpg)
+### Flutter
+1. Cross-platform development: Flutter allows us to build a single codebase for iOS, Android platforms and Web services, allowing us to easily consolidate and build all three versions of the app at once.
+2. Rich user interface: Flutter offers a wide range of widgets for us to use to build a visually appealing and user-friendly interface.
+3. Native performance: Flutter compiles directly to native code, ensuring a smooth and responsive user experience in the app.
+### Version Control and Collaboration: Github 
+- Version control: Github will serve as our central repository to store and manage the codebase for the app. This allows for solid version control, change tracking, and reverting to previous versions as needed.
+- Collaboration: All of our crew can work on the project simultaneously, with Github facilitating code reviews, branch merging, and merge conflict resolution efficiently and easily.
+#### CI/CD with Github Actions 
+- Automated Builds and Tests: Github Actions will allow us to define workflows that automate tasks like building the app, running unit and integration tests, and deploying the app to testing environments. This ensures code quality and reduces manual work.
+- Continuous Integration: With each code push or pull request, the workflow can be triggered to automatically build and test the app. This helps catch bugs early in the development process and check for potential security risks.
+#### Integration with Firebase
+- Github Actions can integrate with Firebase services for deployments. For instance, a workflow can be triggered to deploy the built app to Firebase App Distribution for beta testing.
+
+## Time Tracking: TMetric
+- Detailed Time Tracking: TMetric allows our team to track time spent on different aspects of the project, such as building features, designing UI, and fixing bugs. This detailed breakdown helps identify areas where time optimization might be beneficial.
+- Improved Project Management: With accurate time tracking data, we can make informed decisions about project timelines, resource allocation, and budgeting.
+- Remote Team Management: TMetric's web app and mobile app features enable us to track our work hours easily, regardless of location.
+- Reporting and Analytics: TMetric provides reports that visualise how time is being spent. This data can be valuable for identifying bottlenecks in the development process and improving overall our team's efficiency.
+
+## Testing Framework: Flutter
+- Imagine a pyramid with unit tests forming the wide base, followed by widget tests, integration tests, and finally, UI/manual tests at the top. This represents the testing pyramid, where the focus is on running a high volume of faster, lower-level tests to catch issues early in development. This is the approach we will be using, using Flutters built in testing.
+
+### Unit Tests (Base of the Pyramid):
+- Focus on testing individual functions, classes, or small units of code within the app.
+- Typically run in isolation and are very fast to execute.
+- Use the flutter_test package to write unit tests for our Flutter code.
+
+### Widget Tests (Middle Layer):
+Test individual widgets and their behaviour in isolation.
+Verify that widgets render UI elements correctly and respond to user interactions as expected.
+Use the flutter_test package for widget testing as well.
+
+### Integration Tests (Upper Layer):
+- Test how different parts of the app work together, including interactions with Firebase backend services.
+- Simulate user interactions and verify app behaviour across different screens and functionalities.
+- Use the integration_test package for integration testing in Flutter. This package works with flutter_driver to drive the app on a real device or emulator.
+
+### UI/Manual Tests (Top of the Pyramid):
+Focus on testing the overall user experience and usability of the app.
+Involve manual testing by users or testers to identify usability issues, visual inconsistencies, and overall app flow.
+
+### Additional Testing Considerations for TailWaggr:
+- Security Testing: Since TailWaggr will likely handle user data, particularly their location, security testing is crucial. We aim to include this testing as part of the CI/CD development process.
+- Performance Testing: We will be testing app performance on various devices and network conditions to ensure a smooth user experience. Tools like Flutter Driver Performance can be used for this purpose.
