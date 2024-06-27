@@ -16,6 +16,7 @@ The use of asynchronous messaging will allow the system to handle notifications,
 
 ## Client-Server
 The Client-Server architectural pattern is a fundamental design pattern for networked applications. It separates the client (front-end) from the server (back-end), allowing each to be developed and used independently. The client is responsible for the presentation layer (What the user sees), while the server (API and databse) handles the business logic and data access layer. This separation of concerns makes the system more modular and easier to maintain.
+
 ##### Usage
 - **Viewing and Uploading Posts:** The client-server model is fundamental for retrieving and displaying posts. The client (web browser or mobile app) makes requests to the server, which processes the request, fetches data from the database, and sends the posts back to the client.
 When a user uploads a post, the client sends the post data to the server, which then stores the post in the database to be viewed by other users.
@@ -41,7 +42,6 @@ The Component-Based architectural pattern divides the system into smaller, reusa
 - Simplifies testing and debugging by isolating components.
 - Enhances scalability, as individual components can be updated or replaced without affecting the entire system.
 
-
 ## Architectural quality requirements
 - **Availability:** The system should have at least 99% uptime for the essential services (notably database access for reading and making posts).
 - **Usability:** The app and web interfaces should function smoothly on most devices, dynamically resizing interface elements to fit a reasonable variety of modern screen sizes.
@@ -52,5 +52,8 @@ The Component-Based architectural pattern divides the system into smaller, reusa
 ## Architectural design and pattern
 
 ## Architectural constraints
+1. The client specified that the system must be accessible at least from an Android app, with optional iOS and web support.
+2. The client specified that the app needs to be designed to be responsive to different screen sizes, adjusting accordingly.
+3. Only highly performant database technology should be used due to the client’s desire for short loading times.
 
 ## Technology choices
