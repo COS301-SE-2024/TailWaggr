@@ -29,7 +29,6 @@ Future iterations may consider expanding the scope to include features like:
 ## Class diagram
 ![Use Case Diagram](doc_images/CDiagrams.png)
 
-
 ## User stories/user characteristics:
 User Characteristics:
 
