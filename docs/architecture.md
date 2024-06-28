@@ -49,6 +49,12 @@ The Component-Based architectural pattern divides the system into smaller, reusa
 - **Security:** Firestore Security rules should be used to ensure that users do not have access to sensitive data, using role-based access control.
 
 ## Architectural design and pattern
+Design Decision justifications:
+- All three of our constraints are solved through the use of flutter, dart and firebase:
+- Flutter and dart provide seamless integration with all three platforms mentioned later in one of our constraints (Android, iOS and web). This allows the user to only need to program the system once and have it easily built to all platforms.
+- Flutter uses layout builder, which chooses from a set of different views to use depending on the screen size, solving the responsive constraint.
+- Firebase is a highly optimised and efficient technology for storing data, ensuring that we will have no issues with loading times or the like.
+
 
 ## Architectural constraints
 1. The client specified that the system must be accessible at least from an Android app, with optional iOS and web support.
