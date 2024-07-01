@@ -52,6 +52,7 @@ dependencies:
   expansion_widget: ^0.1.0
   url_launcher: ^6.3.0
   flutter_colorpicker: ^1.1.0
+  toggle_switch: ^2.3.0
 
 dev_dependencies:
   flutter_test:

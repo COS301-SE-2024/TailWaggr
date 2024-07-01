@@ -141,60 +141,62 @@ class ListOfPosts extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          for (var post in profileDetails.posts)
+          for (var post in profileDetails.posts) ...[
             Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Row(
-                  children: [
-                    // CircleAvatar(
-                    //   radius: 35,
-                    //   backgroundImage: NetworkImage(post["ImgUrl"]),
-                    // ),
-                    SizedBox(
-                      width: 175,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          post["ImgUrl"],
-                          height: 125,
-                          fit: BoxFit.fitHeight,
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  // CircleAvatar(
+                  //   radius: 35,
+                  //   backgroundImage: NetworkImage(post["ImgUrl"]),
+                  // ),
+                  SizedBox(
+                    width: 175,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        post["ImgUrl"],
+                        height: 125,
+                        fit: BoxFit.fitHeight,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          post["Content"],
+                          style: TextStyle(fontSize: bodyTextSize),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
+                        SizedBox(height: 8),
+                        if (post['PetIds'].length > 0) Text("Included pets:", style: TextStyle(fontSize: subBodyTextSize)),
+                        SizedBox(height: 8),
+                        Row(
+                          children: [
+                            for (var includedPet in post["PetIds"]) ...[
+                              Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 20,
+                                    backgroundImage: NetworkImage(includedPet['pictureUrl']),
+                                  ),
+                                  Text(includedPet['name'], style: TextStyle(fontSize: textSize)),
+                                ],
+                              ),
+                            ]
+                          ],
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            post["Content"],
-                            style: TextStyle(fontSize: bodyTextSize),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(height: 8),
-                          if (post['PetIds'].length > 0) Text("Included pets:", style: TextStyle(fontSize: subBodyTextSize)),
-                          SizedBox(height: 8),
-                          Row(
-                            children: [
-                              for (var includedPet in post["PetIds"]) ...[
-                                Column(
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 20,
-                                      backgroundImage: NetworkImage(includedPet['pictureUrl']),
-                                    ),
-                                    Text(includedPet['name'], style: TextStyle(fontSize: textSize)),
-                                  ],
-                                ),
-                              ]
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                )),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -252,14 +254,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                   closedColor: Colors.transparent,
                   closedElevation: 0,
                   openBuilder: (context, action) {
-                    return Scaffold(
-                      backgroundColor: themeSettings.backgroundColor,
-                      appBar: AppBar(
-                        backgroundColor: themeSettings.backgroundColor,
-                        iconTheme: IconThemeData(color: themeSettings.primaryColor),
-                      ),
-                      body: EditProfile(),
-                    );
+                    return EditProfile();
                   },
                 ),
                 SizedBox(height: 20),

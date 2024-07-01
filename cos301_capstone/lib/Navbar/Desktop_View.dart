@@ -155,14 +155,6 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                     closedElevation: 0,
                     openBuilder: (context, action) {
                       return EditProfile();
-                      // Scaffold(
-                      //   backgroundColor: themeSettings.backgroundColor,
-                      //   appBar: AppBar(
-                      //     backgroundColor: themeSettings.backgroundColor,
-                      //     iconTheme: IconThemeData(color: themeSettings.primaryColor),
-                      //   ),
-                      //   body: EditProfile(),
-                      // );
                     },
                   ),
                 ],

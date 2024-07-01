@@ -33,8 +33,8 @@ class _AuthGateState extends State<AuthGate> {
           populateUserData();
           populateUserPets();
 
-          return Homepage();
-          // return User_Profile();
+          // return Homepage();
+          return User_Profile();
         }
         return Login();
       },
