@@ -88,9 +88,9 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
                             ),
                             child: Row(
                               children: [
-                                CircleAvatar(
-                                  radius: 30,
-                                ),
+                                // CircleAvatar(
+                                //   radius: 30,
+                                // ),
                                 SizedBox(width: 20),
                                 Text(
                                   profileDetails.notifications[i].fromUser,

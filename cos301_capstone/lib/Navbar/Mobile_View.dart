@@ -78,9 +78,16 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: ThemeSettings.primaryColor,
+      // backgroundColor: ThemeSettings.primaryColor,
       child: Container(
         padding: EdgeInsets.all(30),
+        decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/pug.jpg"),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
+            ),
+          ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +96,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
               children: [
                 CircleAvatar(
                   radius: 40,
-                  // backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!),
+                  backgroundImage: NetworkImage(profileDetails.profilePicture),
                 ),
                 SizedBox(width: 20),
                 Column(

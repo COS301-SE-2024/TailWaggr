@@ -10,8 +10,14 @@
 
 Tailwaggr is a Flutter-based mobile application that aims to connect pet owners with veterinarians, pet keepers, and a supportive community of fellow pet enthusiasts. Our app provides a platform for creating profiles, finding professional pet care, engaging in discussions, and reuniting lost pets with their owners.
 
+## Tailwaggr App
+The app can be viewed [Here](https://tailwaggr.web.app)
+
 ## Project Board
-You can view our project board [here](https://github.com/orgs/COS301-SE-2024/projects/99/views/1).
+You can view our project board [Here](https://github.com/orgs/COS301-SE-2024/projects/99/views/1).
+
+## Tech Stack
+You can view our tech stack [Here](https://docs.google.com/document/d/11uUHFuaqj6Mx52eWC4wKD2fOWFQbhcgVURP3L99YpWo/edit)
 
 ## The Team
 
