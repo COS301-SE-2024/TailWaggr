@@ -239,4 +239,9 @@ Future<List<Map<String, dynamic>>?> getReplyNotifications(String userId) async {
       print("Error creating comment notification: $e");
     }
   }
+  Future<void> markAsRead(String notificationId) async {
+    await _db.collection('notifications').doc(notificationId).update({
+      'Read': true,
+    });
+  }
 }

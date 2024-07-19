@@ -13,8 +13,6 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Initialize FCM
-  await PushNotificationsManager.initializeFCM();
 
   runApp(const MyApp());
 }
