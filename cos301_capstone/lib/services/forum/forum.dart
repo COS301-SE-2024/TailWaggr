@@ -181,6 +181,8 @@ class ForumServices {
         'userId': userId,
         'CreatedAt': FieldValue.serverTimestamp(),
       });
+      // Create Like notification
+      notif.createLikeNotification(forumId,messageId, userId);
     }
   }
 
