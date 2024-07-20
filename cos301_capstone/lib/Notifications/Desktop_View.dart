@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
-import 'package:cos301_capstone/services/Profile/profile.dart';
 import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cos301_capstone/services/Notifications/notifications.dart';
@@ -182,6 +181,113 @@ class NotificationCard extends StatelessWidget {
     required this.onMarkAsRead,
   }) : super(key: key);
 
+  void _showForumDialog(BuildContext context) async {
+    String referenceId = notification['ReferenceId'];
+    List<String> ids = referenceId.split('/');
+    String forumId = ids[0];
+    String messageId = ids.length > 1 ? ids[1] : '';
+
+    try {
+      DocumentSnapshot forumSnapshot = await FirebaseFirestore.instance.collection('forum').doc(forumId).get();
+      DocumentSnapshot messageSnapshot = await FirebaseFirestore.instance
+          .collection('forum')
+          .doc(forumId)
+          .collection('messages')
+          .doc(messageId)
+          .get();
+      DocumentSnapshot userProfileSnapshot = await FirebaseFirestore.instance.collection('users').doc(messageSnapshot['UserId']).get();
+
+      if (forumSnapshot.exists && messageSnapshot.exists && userProfileSnapshot.exists) {
+        Map<String, dynamic> forum = forumSnapshot.data() as Map<String, dynamic>;
+        Map<String, dynamic> message = messageSnapshot.data() as Map<String, dynamic>;
+        Map<String, dynamic> userProfile = userProfileSnapshot.data() as Map<String, dynamic>;
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(
+                forum['Name'] ?? 'Unknown Forum',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              ),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Message from: ${userProfile['userName'] ?? 'Unknown User'}',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  SizedBox(height: 8),
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.yellow.withOpacity(0.2), // Highlight color
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.yellow),
+                    ),
+                    child: Text(message['Content'] ?? 'No content'),
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Posted on: ${formatDate(message['CreatedAt'])}',
+                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Close'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        // Handle the case where any of the documents do not exist
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('Unable to fetch forum details.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Close'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
+      print("Error fetching forum details: $e");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('An error occurred while fetching forum details.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isRead = notification['Read'] ?? false;
@@ -191,6 +297,7 @@ class NotificationCard extends StatelessWidget {
         if (!isRead) {
           onMarkAsRead(notification['id']);
         }
+        _showForumDialog(context);
       },
       child: SizedBox(
         height: 125,
@@ -251,7 +358,9 @@ class NotificationCard extends StatelessWidget {
                   Spacer(),
                   if (notification['NotificationTypeId'] == 1 || notification['NotificationTypeId'] == 3) ...[
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        _showForumDialog(context);
+                      },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all(themeSettings.primaryColor),
                       ),
