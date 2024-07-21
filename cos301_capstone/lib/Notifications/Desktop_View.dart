@@ -63,7 +63,7 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
           List<Map<String, dynamic>> newNotifications = snapshot.docs.map((doc) {
             return {
               'id': doc.id,
-              ...doc.data() as Map<String, dynamic>,
+              ...doc.data(),
             };
           }).toList();
 
@@ -181,6 +181,21 @@ class NotificationCard extends StatelessWidget {
     required this.onMarkAsRead,
   }) : super(key: key);
 
+  Future<String> _fetchProfilePicture(String userId) async {
+    try {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      if (userSnapshot.exists) {
+        Map<String, dynamic>? userData = userSnapshot.data() as Map<String, dynamic>?;
+        if (userData != null && userData.containsKey('profilePictureUrl')) {
+          return userData['profilePictureUrl'];
+        }
+      }
+    } catch (e) {
+      print("Error fetching profile picture: $e");
+    }
+    return profileDetails.profilePicture; // Return default profile picture if user profile picture is not found
+  }
+
   void _showForumDialog(BuildContext context) async {
     String referenceId = notification['ReferenceId'];
     List<String> ids = referenceId.split('/');
@@ -203,6 +218,7 @@ class NotificationCard extends StatelessWidget {
         Map<String, dynamic> userProfile = userProfileSnapshot.data() as Map<String, dynamic>;
 
         showDialog(
+          // ignore: use_build_context_synchronously
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
@@ -249,6 +265,7 @@ class NotificationCard extends StatelessWidget {
       } else {
         // Handle the case where any of the documents do not exist
         showDialog(
+          // ignore: use_build_context_synchronously
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
@@ -269,6 +286,7 @@ class NotificationCard extends StatelessWidget {
     } catch (e) {
       print("Error fetching forum details: $e");
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -279,9 +297,8 @@ class NotificationCard extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Close'),
-              ),
-            ],
+                child: Text('Close'),)
+              ],
           );
         },
       );
@@ -291,6 +308,7 @@ class NotificationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isRead = notification['Read'] ?? false;
+    String avatarUserId = notification['AvatarUrlId'] ?? '';
 
     return InkWell(
       onTap: () {
@@ -350,6 +368,27 @@ class NotificationCard extends StatelessWidget {
               ),
               child: Row(
                 children: [
+                  FutureBuilder<String>(
+                    future: _fetchProfilePicture(avatarUserId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircleAvatar(
+                          backgroundImage: NetworkImage(profileDetails.profilePicture), // Default image while loading
+                          radius: 30,
+                        );
+                      } else if (snapshot.hasError) {
+                        return CircleAvatar(
+                          backgroundImage: NetworkImage(profileDetails.profilePicture), // Default image on error
+                          radius: 30,
+                        );
+                      } else {
+                        return CircleAvatar(
+                          backgroundImage: NetworkImage(snapshot.data ?? profileDetails.profilePicture),
+                          radius: 30,
+                        );
+                      }
+                    },
+                  ),
                   SizedBox(width: 20),
                   Text(
                     notification['Content'] ?? '',
@@ -362,7 +401,7 @@ class NotificationCard extends StatelessWidget {
                         _showForumDialog(context);
                       },
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(themeSettings.primaryColor),
+                        backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
                       ),
                       child: Text(
                         "View Post",
