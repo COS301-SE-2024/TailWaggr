@@ -182,7 +182,7 @@ class NotificationCard extends StatelessWidget {
   }) : super(key: key);
 
   Future<String> _fetchProfilePicture(String userId) async {
-    try {
+    /*try {
       DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
       if (userSnapshot.exists) {
         Map<String, dynamic>? userData = userSnapshot.data() as Map<String, dynamic>?;
@@ -192,7 +192,7 @@ class NotificationCard extends StatelessWidget {
       }
     } catch (e) {
       print("Error fetching profile picture: $e");
-    }
+    }*/
     return profileDetails.profilePicture; // Return default profile picture if user profile picture is not found
   }
 
@@ -238,9 +238,8 @@ class NotificationCard extends StatelessWidget {
                   Container(
                     padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.yellow.withOpacity(0.2), // Highlight color
+                      color: Colors.grey, // Highlight color
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.yellow),
                     ),
                     child: Text(message['Content'] ?? 'No content'),
                   ),
