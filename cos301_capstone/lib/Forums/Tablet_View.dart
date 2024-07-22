@@ -212,11 +212,11 @@ class _ForumsPageState extends State<TabletForums> {
   Widget build(BuildContext context) {
     final isTablet = MediaQuery.of(context).size.shortestSide >= 600;
     final forumListWidth = isTablet
-        ? MediaQuery.of(context).size.width * 0.3
-        : MediaQuery.of(context).size.width * 0.38;
+        ? MediaQuery.of(context).size.width * 0.2
+        : MediaQuery.of(context).size.width * 0.35;
     final forumDetailWidth = isTablet
-        ? MediaQuery.of(context).size.width * 0.7
-        : MediaQuery.of(context).size.width * 0.62;
+        ? MediaQuery.of(context).size.width * 0.5
+        : MediaQuery.of(context).size.width * 0.35;
 
     return Container(
       color: themeSettings.backgroundColor,
@@ -305,7 +305,7 @@ class _ForumsPageState extends State<TabletForums> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (isLoadingPosts)
-                  CircularProgressIndicator()
+                Center(child: CircularProgressIndicator())
                 else if (posts == null || posts!.isEmpty)
                   Text(
                     "No posts available",
@@ -325,11 +325,14 @@ class _ForumsPageState extends State<TabletForums> {
                       itemCount: posts!.length,
                       itemBuilder: (context, index) {
                         final post = posts![index];
+                        final postId = post['messageId'];
+                        var numLikes = post['likesCount'].toString();
+                        final numReplies = post['repliesCount'].toString();
                         final userId = post['message']['UserId'];
                         final userProfile = userProfiles[userId];
-                        print('userProfile: $userProfile');
+                        //print('userProfile: $userProfile');
                         final username = userProfile != null ? userProfile['userName'] : 'Unknown';
-                        print('username: $username');
+                        //print('username: $username');
                         return GestureDetector(
                           onTap: () => _viewMessage(context, post),
                           child: Container(
@@ -366,13 +369,20 @@ class _ForumsPageState extends State<TabletForums> {
                                   children: [
                                     IconButton(
                                       icon: Icon(
-                                        Icons.thumb_up,
-                                        color:themeSettings.primaryColor
+                                      Icons.favorite_border,
+                                      color: Colors.red.withOpacity(0.7),
                                       ),
-                                      onPressed: () => _likeMessage(post['messageId']),
+                                      onPressed: () { _likeMessage(post['messageId']);
+                                      ForumServices().getLikesCount(selectedForumId!, postId).then((value) {
+                                      setState(() {
+                                      numLikes = value.toString();});
+                                      });
+                                      },
                                     ),
+                                    Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                                    Spacer(),
                                     IconButton(
-                                      icon: Icon(Icons.reply, color: themeSettings.textColor),
+                                      icon: Icon(Icons.comment, color: Colors.blue.withOpacity(0.7),),
                                       onPressed: () {
                                         setState(() {
                                           selectedPostId = post['messageId'];
@@ -380,6 +390,7 @@ class _ForumsPageState extends State<TabletForums> {
                                         showDialogBox(context);
                                       },
                                     ),
+                                    Text(numReplies, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
                                   ],
                                 ),
                               ],
@@ -419,7 +430,7 @@ class _ForumsPageState extends State<TabletForums> {
   }
 }
 
-class MessageView extends StatelessWidget {
+class MessageView extends StatefulWidget {
   final Map<String, dynamic> post;
   final String forumId;
   final Map<String, Map<String, dynamic>> userProfiles;
@@ -437,14 +448,39 @@ class MessageView extends StatelessWidget {
   });
 
   @override
+  _MessageViewState createState() => _MessageViewState();
+}
+
+class _MessageViewState extends State<MessageView> {
+  final TextEditingController _replyController = TextEditingController();
+
+  Future<void> _replyToMessage(String postId) async {
+    String? newReplyContent = _replyController.text;
+    if (newReplyContent.isNotEmpty) {
+      try {
+        String? userId = await widget.authService.getCurrentUserId();
+        await widget.forumServices.replyToMessage(widget.forumId, postId, userId!, newReplyContent);
+        _fetchReplies(widget.forumId, postId);
+        setState(() {
+          _replyController.clear();
+        });
+        widget.onReplyAdded();
+      } catch (e) {
+        print('Error replying to message: $e');
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final userId = post['message']['UserId'];
-    final userProfile = userProfiles[userId];
-    final username = userProfile != null ? userProfile['Username'] : 'Unknown';
+    final postId = widget.post['messageId'];
+    final userId = widget.post['message']['UserId'] as String;
+    final userProfile = widget.userProfiles[userId];
+    final replies = widget.post['replies'] ?? [];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Message Details'),
+        title: Text('View Message'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -452,42 +488,50 @@ class MessageView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              post['message']['Content'],
-              style: TextStyle(fontSize: 18),
+              userProfile?['userName'] ?? 'Unknown User',
+              style: TextStyle(
+                  fontSize: 24, color: Colors.black, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
             Text(
-              "Posted by $username",
-              style: TextStyle(color: Colors.grey),
+              widget.post['message']?['Content'] ?? 'No Content',
+              style: TextStyle(fontSize: 18, color: Colors.black),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Replies',
+              style: TextStyle(fontSize: 22, color: Colors.black),
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: post['replies'].length,
+                itemCount: replies.length,
                 itemBuilder: (context, index) {
-                  final reply = post['replies'][index];
-                  final replyUserId = reply['UserId'];
-                  final replyUserProfile = userProfiles[replyUserId];
-                  final replyUsername = replyUserProfile != null
-                      ? replyUserProfile['Username']
-                      : 'Unknown';
+                  final reply = replies[index];
+                  final replyUserId = reply['UserId'] as String;
+                  final replyUserProfile = widget.userProfiles[replyUserId];
+
                   return Container(
-                    margin: EdgeInsets.symmetric(vertical: 5),
+                    margin: EdgeInsets.symmetric(vertical: 10),
                     padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(5),
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 1.0,
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          reply['Content'],
-                          style: TextStyle(fontSize: 16),
+                          replyUserProfile?['userName'] ?? 'Unknown User',
+                          style: TextStyle(fontSize: 18, color: Colors.black),
                         ),
                         SizedBox(height: 5),
                         Text(
-                          "Replied by $replyUsername",
-                          style: TextStyle(color: Colors.grey),
+                          reply['Content'] ?? 'No Content',
+                          style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ],
                     ),
@@ -496,12 +540,14 @@ class MessageView extends StatelessWidget {
               ),
             ),
             TextField(
-              onChanged: (value) {},
+              controller: _replyController,
               decoration: InputDecoration(
-                hintText: "Type your reply here",
+                hintText: 'Type your reply here',
                 suffixIcon: IconButton(
                   icon: Icon(Icons.send),
-                  onPressed: () async {},
+                  onPressed: () async {
+                    await _replyToMessage(postId);
+                  },
                 ),
               ),
             ),
@@ -509,5 +555,13 @@ class MessageView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _fetchReplies(String forumId, String postId) {
+    widget.forumServices.getReplies(forumId, postId).then((replies) {
+      setState(() {
+        widget.post['replies'] = replies;
+      });
+    });
   }
 }
