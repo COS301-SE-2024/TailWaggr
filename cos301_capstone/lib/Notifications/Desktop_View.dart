@@ -223,7 +223,7 @@ class NotificationCard extends StatelessWidget {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text(
-                forum['Name'] ?? 'Unknown Forum',
+               'Forum: ${forum['Name'] ?? 'Unknown Forum'}',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
               ),
               content: Column(
@@ -231,7 +231,7 @@ class NotificationCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Message from: ${userProfile['userName'] ?? 'Unknown User'}',
+                    'Message by: ${userProfile['userName'] ?? 'Unknown User'}',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                   SizedBox(height: 8),
@@ -403,7 +403,7 @@ class NotificationCard extends StatelessWidget {
                         backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
                       ),
                       child: Text(
-                        "View Post",
+                        "View Message",
                         style: TextStyle(fontSize: subBodyTextSize - 2, color: Colors.white),
                       ),
                     ),
