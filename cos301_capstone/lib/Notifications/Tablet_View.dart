@@ -33,9 +33,9 @@ class _TabletNotificationsState extends State<TabletNotifications> {
         // Fetch notifications
         List<Map<String, dynamic>> likes = await _notificationsServices.getLikesNotifications(userId) ?? [];
         List<Map<String, dynamic>> replies = await _notificationsServices.getReplyNotifications(userId) ?? [];
-        List<Map<String, dynamic>> events = await _notificationsServices.getEventsNotifications(userId) ?? [];
+        //List<Map<String, dynamic>> events = await _notificationsServices.getEventsNotifications(userId) ?? [];
         Map<String, dynamic>? follow = await _notificationsServices.getFollowNotifications(userId);
-
+        List<Map<String, dynamic>> events = [];
         List<Map<String, dynamic>> allNotifications = [...likes, ...replies, ...events];
         if (follow != null) {
           allNotifications.add(follow);
