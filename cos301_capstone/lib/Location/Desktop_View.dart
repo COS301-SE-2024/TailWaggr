@@ -3,6 +3,7 @@
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -14,12 +15,21 @@ class LocationDesktop extends StatefulWidget {
 }
 
 class _LocationDesktopState extends State<LocationDesktop> {
+  final ScrollController _scrollController = ScrollController();
+
   GoogleMapController? _googleMapController;
   final Set<Marker> _markers = {};
   late CameraPosition _initialLocation = CameraPosition(
     target: LatLng(-28.284535, 24.402177),
     zoom: 5.0,
   );
+
+  Future<String?> _getMapStyle() async {
+    if (themeSettings.themeMode == "Light") {
+      return await rootBundle.loadString('assets/GoogleMaps/lightMode.json');
+    }
+    return await rootBundle.loadString('assets/GoogleMaps/darkMode.json');
+  }
 
   Future<LatLng> _getCurrentLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -47,23 +57,6 @@ class _LocationDesktopState extends State<LocationDesktop> {
     return LatLng(position.latitude, position.longitude);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _markers.add(
-      Marker(
-        markerId: const MarkerId('brooklyn_vet'),
-        position: LatLng(-25.758878914381995, 28.238580084657446),
-        infoWindow: const InfoWindow(
-          title: 'Brooklyn Vet',
-          snippet: 'Veterinary Clinic',
-        ),
-      ),
-    );
-
-    _initializeLocation();
-  }
-
   Future<void> _initializeLocation() async {
     try {
       LatLng currentLocation = await _getCurrentLocation();
@@ -86,58 +79,209 @@ class _LocationDesktopState extends State<LocationDesktop> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _markers.add(
+      Marker(
+        markerId: const MarkerId('brooklyn_vet'),
+        position: LatLng(-25.758878914381995, 28.238580084657446),
+        infoWindow: const InfoWindow(
+          title: 'Brooklyn Vet',
+          snippet: 'Veterinary Clinic',
+        ),
+      ),
+    );
+
+    _markers.add(
+      Marker(
+        markerId: const MarkerId('bryanston_vet'),
+        position: LatLng(-26.0565, 28.0248),
+        infoWindow: const InfoWindow(
+          title: 'Bryanston Vet',
+          snippet: 'Veterinary Clinic',
+        ),
+      ),
+    );
+
+    _initializeLocation();
+  }
+
+  @override
   void dispose() {
     try {
       if (_googleMapController != null && mounted) {
-      _googleMapController?.dispose();
-    }
-    super.dispose();
+        _googleMapController?.dispose();
+      }
+      super.dispose();
     } catch (e) {
       print("Error disposing Google Map Controller: $e");
+    } finally {
+      _scrollController.dispose();
+      super.dispose();
     }
-    
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
-        children: [
-          DesktopNavbar(),
-          Container(
-            color: themeSettings.backgroundColor,
-            padding: EdgeInsets.all(20),
-            child: Column(
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.2,
-                  child: TextField(
-                    // controller: searchController,
-                    decoration: InputDecoration(
-                      hintText: "Search for a vet clinic",
-                      hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.5)),
-                      prefixIcon: Icon(Icons.search),
+      body: Container(
+        color: themeSettings.backgroundColor,
+        child: Row(
+          children: [
+            DesktopNavbar(),
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width - 290.0,
+                    decoration: BoxDecoration(
+                      color: themeSettings.cardColor,
+                      borderRadius: BorderRadius.circular(20.0),
                     ),
-                    style: TextStyle(color: themeSettings.textColor), // Add this line
+                    child: DefaultTabController(
+                      length: 3,
+                      child: Column(
+                        children: [
+                          TabBar(
+                            labelColor: themeSettings.primaryColor,
+                            indicatorColor: themeSettings.secondaryColor,
+                            tabs: [
+                              Tab(text: 'Veterinary Clinics'),
+                              Tab(text: 'Pet Sitters'),
+                              Tab(text: 'Pet Groomers'),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 200.0,
+                            child: TabBarView(
+                              physics: NeverScrollableScrollPhysics(),
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        width: double.infinity,
+                                        padding: EdgeInsets.only(bottom: 10.0),
+                                        child: TextField(
+                                          decoration: InputDecoration(
+                                            hintText: 'Search Veterinary Clinics',
+                                            hintStyle: TextStyle(
+                                              color: themeSettings.primaryColor.withOpacity(0.5),
+                                            ),
+                                            prefixIcon: Icon(
+                                              Icons.search,
+                                              color: themeSettings.primaryColor,
+                                            ),
+                                            filled: true,
+                                            fillColor: themeSettings.cardColor,
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(20.0),
+                                              borderSide: BorderSide.none,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Scrollbar(
+                                        // isAlwaysShown: true,
+                                        controller: _scrollController,
+                                        child: SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          controller: _scrollController,
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              for (int i = 0; i < 20; i++) ...[
+                                                Container(
+                                                  margin: EdgeInsets.only(right: 50, bottom: 20),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(20.0),
+                                                  ),
+                                                  child: MouseRegion(
+                                                    cursor: SystemMouseCursors.click,
+                                                    child: GestureDetector(
+                                                      onTap: () {},
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            'Vet $i',
+                                                            style: TextStyle(color: themeSettings.textColor),
+                                                          ),
+                                                          Text(
+                                                            'Address $i',
+                                                            style: TextStyle(color: themeSettings.textColor),
+                                                          ),
+                                                          Text(
+                                                            "Phone number $i",
+                                                            style: TextStyle(color: themeSettings.textColor),
+                                                          ),
+                                                          Text(
+                                                            "Distance $i km",
+                                                            style: TextStyle(color: themeSettings.textColor),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Text('Pet Stores'),
+                                Text('Pet Groomers'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Center(
-              child: GoogleMap(
-                myLocationButtonEnabled: true,
-                zoomControlsEnabled: true,
-                onMapCreated: (controller) {
-                  _googleMapController = controller;
-                },
-                initialCameraPosition: _initialLocation,
-                markers: _markers,
+                  const SizedBox(height: 20.0),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width - 290.0,
+                    height: MediaQuery.of(context).size.height - 320.0,
+                    child: FutureBuilder<String?>(
+                      future: _getMapStyle(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+
+                        if (snapshot.hasError) {
+                          return Center(child: Text('Error loading map style'));
+                        }
+
+                        String? mapStyle = snapshot.data;
+
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(20.0),
+                          child: GoogleMap(
+                            style: mapStyle,
+                            onMapCreated: (controller) {
+                              _googleMapController = controller;
+                            },
+                            initialCameraPosition: _initialLocation,
+                            markers: _markers,
+                            myLocationButtonEnabled: true,
+                            zoomControlsEnabled: true,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
