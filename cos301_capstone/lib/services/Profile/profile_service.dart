@@ -4,6 +4,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
+import 'package:path/path.dart' as path;
+import 'package:cos301_capstone/services/general/general_service.dart';
 
 class ProfileService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -36,7 +38,7 @@ class ProfileService {
         print("Error fetching pet profile data: $e");
         return null;
       }
-    }
+  }
   /// Updates the user's profile with the provided data.
   ///
   /// Takes the user's ID and a map of updated data as input.
@@ -51,80 +53,67 @@ class ProfileService {
   /// ```
   Future<void> updateProfile(String userId, Map<String, dynamic> updatedData) async {
     try {
-      await _db.collection('profile').doc(userId).update(updatedData);
+      await _db.collection('users').doc(userId).update(updatedData);
     } catch (e) {
       print("Error updating profile: $e");
     }
   }
-
-  Future<String?> updateProfileImage(String userId, File file) async {
+  Future<String?> updateProfileImage(String userId, PlatformFile platformFile) async {
     try {
-      Reference ref = _storage.ref().child('profile_images/$userId');
-      UploadTask uploadTask = ref.putFile(file);
+      // Generate a unique file name for the photo
+      String photoFileName = 'profile_images/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(platformFile.name)}';
+      // Convert PlatformFile to Uint8List (byte data)
+      Uint8List? fileBytes = platformFile.bytes;
+      if (fileBytes == null) {
+        throw Exception("File data is null");
+      }
+      // Set metadata to force the MIME type to be image/jpeg
+      SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
+      // Upload the photo to Firebase Storage
+      TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
+      // Retrieve the photo URL
+      String imgUrl = await uploadTask.ref.getDownloadURL();
 
-      TaskSnapshot snapshot = await uploadTask;
-      String downloadUrl = await snapshot.ref.getDownloadURL();
+      // Delete the old profile image
+      String? oldImageUrl = await getUserDetails(userId).then((value) => value?['profilePictureUrl']);
+      if (oldImageUrl != null) {
+        await _storage.refFromURL(oldImageUrl).delete();
+      }
 
-      await updateProfile(userId, {'ProfileImg': downloadUrl});
-
-      return downloadUrl;
+      await updateProfile(userId, {'profilePictureUrl': imgUrl});
     } catch (e) {
       print("Error updating profile image: $e");
       return null;
     }
   }
-    Future<String?> updatePetProfileImage(String ownerId, File file) async {
+  Future<String?> updatePetProfileImage(String ownerId, String petId, PlatformFile platformFile) async {
     try {
-      Reference ref = _storage.ref().child('profile_images/$ownerId');
-      UploadTask uploadTask = ref.putFile(file);
+      // Generate a unique file name for the photo
+      String photoFileName = 'pet_images/${ownerId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(platformFile.name)}';
+      // Convert PlatformFile to Uint8List (byte data)
+      Uint8List? fileBytes = platformFile.bytes;
+      if (fileBytes == null) {
+        throw Exception("File data is null");
+      }
+      // Set metadata to force the MIME type to be image/jpeg
+      SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
+      // Upload the photo to Firebase Storage
+      TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
+      // Retrieve the photo URL
+      String imgUrl = await uploadTask.ref.getDownloadURL();
 
-      TaskSnapshot snapshot = await uploadTask;
-      String downloadUrl = await snapshot.ref.getDownloadURL();
+      // Delete the old pet profile image
+      String? oldImageUrl = await getPetProfile(petId).then((value) => value?['pictureUrl']);
+      if (oldImageUrl != null) {
+        await _storage.refFromURL(oldImageUrl).delete();
+      }
 
-      await updatePet(ownerId, {'profileImg': downloadUrl});
-
-      return downloadUrl;
+      await updatePet(ownerId, petId, {'pictureUrl': imgUrl});
     } catch (e) {
-      print("Error updating profile image: $e");
+      print("Error updating pet profile image: $e");
       return null;
     }
   }
-  Future<List<DocumentReference>> getUserLikes(String userId) async {
-    try {
-      QuerySnapshot snapshot = await _db.collection('likes')
-          .where('UserId', isEqualTo: _db.collection('users').doc(userId))
-          .get();
-      return snapshot.docs.map((doc) => doc.reference).toList();
-    } catch (e) {
-      print("Error fetching user likes: $e");
-      return [];
-    }
-  }
-
-  Future<List<DocumentReference>> getUserSaves(String userId) async {
-    try {
-      QuerySnapshot snapshot = await _db.collection('saves')
-          .where('UserId', isEqualTo: _db.collection('users').doc(userId))
-          .get();
-      return snapshot.docs.map((doc) => doc.reference).toList();
-    } catch (e) {
-      print("Error fetching user saves: $e");
-      return [];
-    }
-  }
-
-  Future<List<DocumentReference>> getUserEvents(String userId) async {
-    try {
-      QuerySnapshot snapshot = await _db.collection('events')
-          .where('userId', isEqualTo: _db.collection('users').doc(userId))
-          .get();
-      return snapshot.docs.map((doc) => doc.reference).toList();
-    } catch (e) {
-      print("Error fetching user events: $e");
-      return [];
-    }
-  }
-
   Future<List<DocumentReference>> getUserPosts(String userId) async {
     try {
       QuerySnapshot snapshot = await _db.collection('posts')
@@ -136,106 +125,19 @@ class ProfileService {
       return [];
     }
   }
-  /// Adds a pet to the user's profile.
-  ///
-  /// Takes the owner's ID and a map of pet data as input.
-  ///
-  /// - Parameters:
-  ///   - [ownerId]: The ID of the user who owns the pet.
-  ///   - [petData]: A map containing the pet's data.
-  ///   - [petData]: {"name":"","species":"","breed":"","age":"","bio":""}
-  ///
-  /// - Example:
-  /// ```dart
-  /// await addPet("ownerId123", {
-  ///   "name": "Fluffy",
-  ///   "species": "cat",
-  ///   "breed": "Siamese",
-  ///   "age": 2,
-  ///   "bio": "Fluffy is a cute and curious cat."
-  /// });
-  /// ```
   Future<void> addPet(String ownerId, Map<String, dynamic> petData) async {
     try {
-      DocumentReference petRef = await _db.collection('petProfile').add(petData);
-      await updateProfile(ownerId, {'petIds': FieldValue.arrayUnion([petRef])});
+      await _db.collection('users').doc(ownerId).collection('pets').add(petData);
+      print("Pet added successfully.");
     } catch (e) {
       print("Error adding pet: $e");
     }
   }
-  /// Updates a pet's profile with the provided data.
-  ///
-  /// Takes the pet's ID and a map of updated data as input.
-  ///
-  /// - Parameters:
-  ///   - [petId]: The ID of the pet whose profile is to be updated.
-  ///   - [updatedData]: A map containing the updated pet profile data.
-  ///   - [updatedpetData]: {"name":"","species":"","breed":"","age":"","bio":""}
-  ///
-  /// - Example:
-  /// ```dart
-  /// await updatePet("petId123", {"name": "Dragon"});
-  /// ```
-  Future<void> updatePet(String petId, Map<String, dynamic> updatedData) async {
+  Future<void> updatePet(String userID, String petId, Map<String, dynamic> updatedData) async {
     try {
-      await _db.collection('petProfile').doc(petId).update(updatedData);
+      await _db.collection('users').doc(userID).collection('pets').doc(petId).update(updatedData);
     } catch (e) {
-      print("Error updating pet details: $e");
-    }
-  }
-  /// Adds an event to the user's profile.
-  ///
-  /// Takes the user's ID and a map of event data as input.
-  ///
-  /// - Parameters:
-  ///   - [userId]: The ID of the user who owns the event.
-  ///   - [eventData]: A map containing the event's data.
-  ///   - [eventdata]:{"content":"","startTime":"","endTime":"","eventTypeId":""}
-  ///   - eventTypeId: (1 for vets, 2 for petkeeper and 3 for any)
-  /// - Example:
-  /// ```dart
-  /// await addEvent("userId123", {
-  ///   "content": "my pet's birthday",
-  ///   "startTime": Timestamp.fromDate(DateTime(2024, 6, 30, 9, 17, 3)),
-  ///   "endTime": Timestamp.fromDate(DateTime(2024, 6, 30, 11, 17, 38)),
-  ///   "eventTypeId": "3",
-  /// });
-  /// ```
-  Future<void> addEvent(String userId, Map<String, dynamic> eventData) async {
-    try {
-      // Add a new document with a generated ID
-      await _db.collection('events').add({
-        ...eventData,
-        'userId': '/users/$userId', 
-      });
-      print("Event added successfully.");
-    } catch (e) {
-      print("Error adding event: $e");
-      throw Exception("Failed to add event.");
-    }
-  }
-  /// Updates an event with the provided data.
-  ///
-  /// Takes the event's ID and a map of updated data as input.
-  ///
-  /// - Parameters:
-  ///   - [eventId]: The ID of the event to be updated.
-  ///   - [updatedEventData]: A map containing the updated event data.
-  ///   - [eventdata]:{"content":"","startTime":"","endTime":"","eventTypeId":""}
-  ///   - eventTypeId: (1 for vets, 2 for petkeeper and 3 for any)
-  ///
-  /// - Example:
-  /// ```dart
-  /// await updateEvent("eventId123", {"content": "Updated event content"});
-  /// ```
-  Future<void> updateEvent(String eventId, Map<String, dynamic> updatedEventData) async {
-    try {
-      // Update an existing document
-      _db.collection('events').doc(eventId).update(updatedEventData);
-      print("Event updated successfully.");
-    } catch (e) {
-      print("Error updating event: $e");
-      throw Exception("Failed to update event.");
+      print("Error updating pet: $e");
     }
   }
   Future<void> followUser(String userId, String followingId) async {
