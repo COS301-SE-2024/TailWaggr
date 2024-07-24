@@ -39,18 +39,6 @@ class ProfileService {
         return null;
       }
   }
-  /// Updates the user's profile with the provided data.
-  ///
-  /// Takes the user's ID and a map of updated data as input.
-  ///
-  /// - Parameters:
-  ///   - [userId]: The ID of the user whose profile is to be updated.
-  ///   - [updatedData]: A map containing the updated profile data.
-  ///
-  /// - Example:
-  /// ```dart
-  /// await updateProfile("userId123", {"Bio": "New bio", "DarkMode": true});
-  /// ```
   Future<void> updateProfile(String userId, Map<String, dynamic> updatedData) async {
     try {
       await _db.collection('users').doc(userId).update(updatedData);
@@ -138,27 +126,6 @@ class ProfileService {
       await _db.collection('users').doc(userID).collection('pets').doc(petId).update(updatedData);
     } catch (e) {
       print("Error updating pet: $e");
-    }
-  }
-  Future<void> followUser(String userId, String followingId) async {
-    try {
-      // Add to follow collection
-      DocumentReference followRef =  await _db.collection('follows').add({
-        'followerId': _db.doc('users/$userId'),
-        'followingId': _db.doc('users/$followingId'),
-        'createdAt': Timestamp.now(),
-      });
-
-      // Add to notifications collection
-      await _db.collection('notifications').add({
-        'UserId': _db.doc('users/$followingId'),
-        'NotificationTypeId': 4,
-        'Read': false,
-        'ReferenceId': _db.doc('notifications/$followRef'),
-        'CreatedAt': Timestamp.now(),
-      });
-    } catch (e) {
-      print("Error following user: $e");
     }
   }
   Future<void> updatePreferences(String userId, bool darkMode, Color sideBarColor, PlatformFile platformFile) async {
