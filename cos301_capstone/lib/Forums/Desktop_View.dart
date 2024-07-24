@@ -30,7 +30,7 @@ Map<String, Map<String, dynamic>> userProfiles = {};
 class _DesktopForumsState extends State<DesktopForums> {
   TextEditingController forumSearchController = TextEditingController();
   TextEditingController messageController = TextEditingController();
-  bool isLoadingPosts = false; // Flag to track if posts are being loaded
+  bool isLoadingPosts = false;
 
   @override
   void initState() {
@@ -51,7 +51,7 @@ class _DesktopForumsState extends State<DesktopForums> {
       if (!mounted) return;
       setState(() {
         forums = fetchedForums;
-        searchedForums = forums; // Initialize searchedForums with forums
+        searchedForums = forums;
         if (forums != null && forums!.isNotEmpty) {
           selectedForumId = forums!.first['forumId'];
           forumName = forums!.first['Name'];
@@ -68,7 +68,7 @@ class _DesktopForumsState extends State<DesktopForums> {
       selectedForumId = forumId;
       posts = null;
       forumName = forums!.firstWhere((forum) => forum['forumId'] == forumId)['Name'];
-      isLoadingPosts = true; // Set loading state true when forum is selected
+      isLoadingPosts = true;
     });
     _fetchPosts(forumId);
   }
@@ -79,13 +79,13 @@ class _DesktopForumsState extends State<DesktopForums> {
       if (!mounted) return;
       setState(() {
         posts = fetchedPosts;
-        isLoadingPosts = false; // Set loading state false when posts are fetched
+        isLoadingPosts = false;
       });
       _fetchUserProfiles();
     } catch (e) {
       print('Error fetching posts: $e');
       setState(() {
-        isLoadingPosts = false; // Ensure loading state is set false on error
+        isLoadingPosts = false;
       });
     }
   }
@@ -94,10 +94,8 @@ class _DesktopForumsState extends State<DesktopForums> {
     if (posts == null || posts!.isEmpty) return;
 
     try {
-      // Get unique userIds from posts
       Set<String> userIds = posts!.map((post) => post['message']['UserId'] as String).toSet();
 
-      // Fetch profiles for all unique userIds
       for (String userId in userIds) {
         if (!userProfiles.containsKey(userId)) {
           Map<String, dynamic>? profile = await _profileServices.getUserDetails(userId);
@@ -118,7 +116,7 @@ class _DesktopForumsState extends State<DesktopForums> {
       try {
         String? userId = await _authService.getCurrentUserId();
         await _forumServices.createMessage(selectedForumId!, userId!, newMessageContent!);
-        _fetchPosts(selectedForumId!); // Refresh the posts after adding a new message
+        _fetchPosts(selectedForumId!);
         if (!mounted) return;
         setState(() {
           newMessageContent = '';
@@ -133,8 +131,8 @@ class _DesktopForumsState extends State<DesktopForums> {
   Future<void> _likeMessage(String postId) async {
     try {
       String? userId = await _authService.getCurrentUserId();
-      await _forumServices.likeMessage(selectedForumId!, postId, userId!);
-      _fetchPosts(selectedForumId!); // Refresh the posts after liking a message
+      await _forumServices.toggleLikeOnMessage(selectedForumId!, postId, userId!);
+      _fetchPosts(selectedForumId!);
     } catch (e) {
       print('Error liking message: $e');
     }
@@ -145,13 +143,67 @@ class _DesktopForumsState extends State<DesktopForums> {
       try {
         String? userId = await _authService.getCurrentUserId();
         await _forumServices.replyToMessage(selectedForumId!, postId, userId!, newReplyContent!);
-        _fetchPosts(selectedForumId!); // Refresh the posts after replying to a message
+        _fetchPosts(selectedForumId!);
         setState(() {
           newReplyContent = '';
         });
       } catch (e) {
         print('Error replying to message: $e');
       }
+    }
+  }
+
+  Future<void> showDialogBox(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Reply to message"),
+            content: TextField(
+              onChanged: (value) {
+                if (!mounted) return;
+                setState(() {
+                  newReplyContent = value;
+                });
+              },
+              decoration: InputDecoration(hintText: "Type your reply here"),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () async {
+                  await _replyToMessage(selectedPostId!);
+                  Navigator.of(context).pop();
+                },
+                child: Text("Reply"),
+              ),
+            ],
+          );
+        });
+  }
+
+  void _viewMessage(BuildContext context, Map<String, dynamic> post) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => MessageView(
+        post: post,
+        forumId: selectedForumId!,
+        userProfiles: userProfiles,
+        forumServices: _forumServices,
+        authService: _authService,
+        onReplyAdded: _onReplyAdded, // Pass the callback here
+      ),
+    ));
+  }
+  // This method will be passed as a callback to MessageView
+  void _onReplyAdded() {
+    if (selectedForumId != null) {
+      print('Reply added');
+      _fetchPosts(selectedForumId!);
     }
   }
 
@@ -165,7 +217,7 @@ class _DesktopForumsState extends State<DesktopForums> {
           DesktopNavbar(),
           Container(
             padding: EdgeInsets.all(20),
-            width: MediaQuery.of(context).size.width * 0.38, // Adjusted width for forums column
+            width: MediaQuery.of(context).size.width * 0.38,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -197,7 +249,7 @@ class _DesktopForumsState extends State<DesktopForums> {
                       prefixIcon: Icon(Icons.search),
                     ),
                     style: TextStyle(
-                        color: themeSettings.textColor), // Add this line
+                        color: themeSettings.textColor),
                   ),
                 ),
                 Expanded(
@@ -258,66 +310,93 @@ class _DesktopForumsState extends State<DesktopForums> {
                     ),
                     SizedBox(height: 20),
                     isLoadingPosts
-                        ? Center(child: CircularProgressIndicator()) // Show loading indicator while posts are being fetched
+                        ? Center(child: CircularProgressIndicator())
                         : posts != null && posts!.isNotEmpty
                             ? Expanded(
                                 child: ListView.builder(
                                   itemCount: posts!.length,
                                   itemBuilder: (context, index) {
                                     final post = posts![index];
+                                    final postId = post['messageId'];
+                                    var numLikes = post['likesCount'].toString();
+                                    final numReplies = post['repliesCount'].toString();
                                     final userId = post['message']['UserId'] as String;
                                     final userProfile = userProfiles[userId];
-                                    return Container(
-                                      margin: EdgeInsets.symmetric(vertical: 10),
-                                      padding: EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        color: themeSettings.cardColor,
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          color: themeSettings.primaryColor,
-                                          width: 2.0,
+
+                                    return GestureDetector(
+                                      onTap: () {
+                                        _viewMessage(context, post);
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.symmetric(vertical: 10),
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: themeSettings.cardColor,
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: themeSettings.primaryColor,
+                                            width: 2.0,
+                                          ),
                                         ),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            userProfile?['userName'] ?? 'Unknown User',
-                                            style: TextStyle(
-                                                fontSize: bodyTextSize,
-                                                color: themeSettings.textColor),
-                                          ),
-                                          Text(
-                                            userProfile?['name'] ?? 'Unknown',
-                                            style: TextStyle(
-                                                fontSize: subBodyTextSize,
-                                                color: themeSettings.textColor),
-                                          ),
-                                          Text(
-                                            post['message']['Content'] ?? 'No Content',
-                                            style: TextStyle(
-                                                fontSize: subBodyTextSize,
-                                                color: themeSettings.textColor),
-                                          ),
-                                          SizedBox(height: 10),
-                                          Row(
-                                            children: [
-                                              IconButton(
-                                                icon: Icon(Icons.thumb_up),
-                                                onPressed: () => _likeMessage(post['messageId']),
-                                              ),
-                                              IconButton(
-                                                icon: Icon(Icons.reply),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    selectedPostId = post['messageId'];
-                                                    _replyToMessage(post['messageId']);
-                                                  });
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              userProfile?['userName'] ?? 'Unknown User',
+                                              style: TextStyle(
+                                                  fontSize: bodyTextSize,
+                                                  color: themeSettings.textColor),
+                                            ),
+                                            Text(
+                                              post['message']?['Content'] ?? 'No Content',
+                                              style: TextStyle(
+                                                  fontSize: subBodyTextSize,
+                                                  color: themeSettings.textColor),
+                                            ),
+                                            SizedBox(height: 10),
+                                            Row(
+                                              children: [
+                                                Tooltip(
+                                                  message: "Like",
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      print("Like button pressed");
+                                                      _likeMessage(postId);
+
+                                                      ForumServices().getLikesCount(selectedForumId!, postId).then((value) {
+                                                        setState(() {
+                                                          numLikes = value.toString();
+                                                        });
+                                                      });
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.favorite_border,
+                                                      color: Colors.red.withOpacity(0.7),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                                                Spacer(),
+                                                Tooltip(
+                                                  message: "Comment",
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        selectedPostId = postId;
+                                                      });
+                                                      showDialogBox(context);
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.comment,
+                                                      color: Colors.blue.withOpacity(0.7),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Text(numReplies, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     );
                                   },
@@ -338,10 +417,27 @@ class _DesktopForumsState extends State<DesktopForums> {
                           newMessageContent = value;
                         });
                         await _addMessage();
+                        messageController.clear();
+                        setState(() {
+                          newMessageContent = '';
+                        });
                       },
                       decoration: InputDecoration(
-                        labelText: 'Type a new message',
-                        border: OutlineInputBorder(),
+                        hintText: 'Type a message...',
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.send),
+                          onPressed: () async {
+                            if (!mounted) return;
+                            setState(() {
+                              newMessageContent = messageController.text;
+                            });
+                            await _addMessage();
+                            messageController.clear();
+                            setState(() {
+                              newMessageContent = '';
+                            });
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -351,5 +447,141 @@ class _DesktopForumsState extends State<DesktopForums> {
         ],
       ),
     );
+  }
+}
+class MessageView extends StatefulWidget {
+  final Map<String, dynamic> post;
+  final String forumId;
+  final Map<String, Map<String, dynamic>> userProfiles;
+  final ForumServices forumServices;
+  final AuthService authService;
+  final VoidCallback onReplyAdded; // Add the callback parameter
+
+  MessageView({
+    required this.post,
+    required this.forumId,
+    required this.userProfiles,
+    required this.forumServices,
+    required this.authService, 
+    required this.onReplyAdded, // Initialize the callback
+  });
+
+  @override
+  _MessageViewState createState() => _MessageViewState();
+}
+
+class _MessageViewState extends State<MessageView> {
+  final TextEditingController _replyController = TextEditingController();
+
+  Future<void> _replyToMessage(String postId) async {
+    String? newReplyContent = _replyController.text;
+    if (newReplyContent.isNotEmpty) {
+      try {
+        String? userId = await widget.authService.getCurrentUserId();
+        await widget.forumServices.replyToMessage(widget.forumId, postId, userId!, newReplyContent);
+        _fetchReplies(widget.forumId,postId); // Call the method to refresh the posts
+        setState(() {
+          _replyController.clear();
+        });
+        widget.onReplyAdded(); // Trigger the callback to notify DesktopForums
+      } catch (e) {
+        print('Error replying to message: $e');
+      }
+    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    final postId = widget.post['messageId'];
+    final userId = widget.post['message']['UserId'] as String;
+    final userProfile = widget.userProfiles[userId];
+    final replies = widget.post['replies'] ?? [];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('View Message'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              userProfile?['userName'] ?? 'Unknown User',
+              style: TextStyle(
+                  fontSize: 24, color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Text(
+              widget.post['message']?['Content'] ?? 'No Content',
+              style: TextStyle(fontSize: 18, color: Colors.black),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Replies',
+              style: TextStyle(fontSize: 22, color: Colors.black),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: replies.length,
+                itemBuilder: (context, index) {
+                  final reply = replies[index];
+                  final replyUserId = reply['UserId'] as String;
+                  final replyUserProfile = widget.userProfiles[replyUserId];
+
+                  return Container(
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 1.0,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          replyUserProfile?['userName'] ?? 'Unknown User',
+                          style: TextStyle(fontSize: 18, color: Colors.black),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          reply['Content'] ?? 'No Content',
+                          style: TextStyle(fontSize: 16, color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            TextField(
+              controller: _replyController,
+              decoration: InputDecoration(
+                hintText: 'Type your reply here',
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.send),
+                  onPressed: () async {
+                    await _replyToMessage(postId);
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  void _fetchReplies(String forumId, String postId) {
+    widget.forumServices.getReplies(forumId, postId).then((replies) {
+      setState(() {
+        widget.post['replies'] = replies;
+      });
+    });
   }
 }

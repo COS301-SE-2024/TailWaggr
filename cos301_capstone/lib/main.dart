@@ -2,6 +2,7 @@
 
 import 'package:cos301_capstone/User_Auth/Auth_Gate.dart';
 import 'package:cos301_capstone/firebase_options.dart';
+import 'package:cos301_capstone/services/Notifications/pushNotifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+
   runApp(const MyApp());
 }
 
