@@ -1,26 +1,14 @@
+import 'dart:ffi';
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 
 class ProfileService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  Future<Map<String, dynamic>?> getUserProfile(String userId) async {
-    try {
-      print("Fetching profile data for user: $userId");
-      final doc = await _db.collection('users').doc(userId).get();
-      if (doc.exists) {
-        return doc.data() as Map<String, dynamic>?;
-      } else {
-        print("No profile found for the given userId.");
-        return null;
-      }
-    } catch (e) {
-      print("Error fetching profile data: $e");
-      return null;
-    }
-  }
   Future<Map<String, dynamic>?> getUserDetails(String userId) async {
     try {
       DocumentSnapshot doc = await _db.collection('users').doc(userId).get();
@@ -269,6 +257,26 @@ class ProfileService {
       });
     } catch (e) {
       print("Error following user: $e");
+    }
+  }
+  Future<void> updatePreferences(String userId, bool darkMode, Color sideBarColor, PlatformFile platformFile) async {
+    try {
+      // Update the user's preferences
+      await _db.collection('users').doc(userId).update({
+        'DarkMode': darkMode,
+        'SideBarColor': sideBarColor.value,
+      });
+
+      Reference ref = _storage.ref().child('sidebar_images/$userId');
+      UploadTask uploadTask = ref.putData(platformFile.bytes!);
+
+      TaskSnapshot snapshot = await uploadTask;
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+
+      await _db.collection('users').doc(userId).update({'sidebarImage': downloadUrl});
+    }
+    catch (e) {
+      print("Error updating preferences: $e");
     }
   }
 }

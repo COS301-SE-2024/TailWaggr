@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:cos301_capstone/services/forum/forum.dart';
-import 'package:cos301_capstone/services/Profile/profile.dart';
+import 'package:cos301_capstone/services/Profile/profile_service.dart';
 
 class TabletForums extends StatefulWidget {
   const TabletForums({super.key});
