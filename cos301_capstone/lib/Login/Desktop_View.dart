@@ -14,7 +14,7 @@ class DesktopLogin extends StatefulWidget {
 }
 
 class _DesktopLoginState extends State<DesktopLogin> {
-   final AuthService _authService = AuthService();
+  final AuthService _authService = AuthService();
   bool Password_Visible = false;
   bool ErrorTextVisible = false;
   String errorText = '';
@@ -131,6 +131,35 @@ class _DesktopLoginState extends State<DesktopLogin> {
                           SizedBox(
                             width: MediaQuery.of(context).size.width * 0.25,
                             child: TextField(
+                              onSubmitted: (value) async {
+                                try {
+                                  setState(() {
+                                    LoginText = 'Logging in...';
+                                  });
+
+                                  await FirebaseAuth.instance.signInWithEmailAndPassword(
+                                    email: signInEmailController.text,
+                                    password: signInPasswordController.text,
+                                  );
+                                } on Exception catch (e) {
+                                  print(e);
+                                  setState(() {
+                                    LoginText = 'Login';
+                                    ErrorTextVisible = true;
+                                    if (e.toString().contains('[firebase_auth/channel-error] Unable to establish connection on channel.')) {
+                                      errorText = 'Please make sure your Email and Password fields are filled in';
+                                    } else if (e.toString().contains('[firebase_auth/invalid-email] The email address is badly formatted.')) {
+                                      errorText = 'Please make sure Email is correct';
+                                    } else if (e.toString().contains('[firebase_auth/invalid-credential] The supplied auth credential is incorrect, malformed or has expired.')) {
+                                      errorText = 'Your Email or Password is incorrect';
+                                    } else if (e.toString().contains('[firebase_auth/network-request-failed]')) {
+                                      errorText = 'Please make sure you are connected to the internet';
+                                    } else {
+                                      errorText = e.toString();
+                                    }
+                                  });
+                                }
+                              },
                               controller: signInPasswordController,
                               obscureText: !Password_Visible,
                               obscuringCharacter: "*",
@@ -194,7 +223,6 @@ class _DesktopLoginState extends State<DesktopLogin> {
                                     email: signInEmailController.text,
                                     password: signInPasswordController.text,
                                   );
-                                  
                                 } on Exception catch (e) {
                                   print(e);
                                   setState(() {

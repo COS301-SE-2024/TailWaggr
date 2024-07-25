@@ -317,15 +317,16 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
     super.initState();
 
     void getPets() async {
-      Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(FirebaseAuth.instance.currentUser!.uid);
-      pets.then((value) {
-        setState(() {
-          profileDetails.pets = value;
-          print("Pets: ${profileDetails.pets}");
-          for (var _ in profileDetails.pets) {
-            petAdded.add(false);
-          }
-        });
+      // Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(FirebaseAuth.instance.currentUser!.uid);
+      // pets.then((value) {
+
+      // });
+      setState(() {
+        // profileDetails.pets = value;
+        // print("Pets: ${profileDetails.pets}");
+        for (var _ in profileDetails.pets) {
+          petAdded.add(false);
+        }
       });
     }
 
