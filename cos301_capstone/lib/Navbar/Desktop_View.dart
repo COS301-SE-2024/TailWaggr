@@ -47,6 +47,9 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
   void initState() {
     super.initState();
     _countUnreadNotifications();
+    profileDetails.isEditing.addListener(() {
+      setState(() {});
+    });
   }
 
   void _countUnreadNotifications() async {
@@ -61,14 +64,6 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
     } catch (e) {
       print("Error counting unread notifications: $e");
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    profileDetails.isEditing.addListener(() {
-      setState(() {});
-    });
   }
 
   @override
