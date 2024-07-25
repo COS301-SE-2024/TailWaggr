@@ -12,7 +12,12 @@
           "package_name": "com.example.cos301_capstone"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "72589797723-bho34u3br9qbe63kl7nd17bp33it1p6d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCTXlY4MJkNqsgesUf15kZcxMZ5qMwXzRw"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "72589797723-bho34u3br9qbe63kl7nd17bp33it1p6d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "72589797723-843eks1t108118kuerelurfg3n4l3un1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.cos301Capstone"
+              }
+            }
+          ]
         }
       }
     }

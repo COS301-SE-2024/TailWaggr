@@ -1,8 +1,7 @@
+
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:animations/animations.dart';
-import 'package:cos301_capstone/Edit_Profile/Desktop_View.dart';
-import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Events/Events.dart';
 import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
@@ -12,6 +11,8 @@ import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:cos301_capstone/Notifications/Notifications.dart';
 import 'package:cos301_capstone/User_Profile/Desktop_View.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
+import 'package:cos301_capstone/services/Notifications/notifications.dart';
+import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -37,6 +38,30 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
   TextEditingController searchController = TextEditingController();
 
   bool isDarkMode = false;
+  int unreadNotificationsCount = 0;
+
+  final NotificationsServices _notificationsServices = NotificationsServices();
+  final AuthService _authService = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    _countUnreadNotifications();
+  }
+
+  void _countUnreadNotifications() async {
+    try {
+      String? userId = await _authService.getCurrentUserId();
+      if (userId != null) {
+        int count = await _notificationsServices.countNewUnreadNotifs(userId);
+        setState(() {
+          unreadNotificationsCount = count;
+        });
+      }
+    } catch (e) {
+      print("Error counting unread notifications: $e");
+    }
+  }
 
   @override
   void initState() {
@@ -99,7 +124,17 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Navbar_Icon(icon: Icons.home, text: "Home", page: Homepage()),
-                  Navbar_Icon(icon: Icons.notifications, text: "Notifications", page: Notifications()),
+                  Navbar_Icon(
+                    icon: Icons.notifications,
+                    text: "Notifications",
+                    page: Notifications(),
+                    badgeContent: unreadNotificationsCount > 0
+                        ? Text(
+                            '$unreadNotificationsCount',
+                            style: TextStyle(color: Colors.white),
+                          )
+                        : null,
+                  ),
                   GestureDetector(
                     onTap: () {
                       themeSettings.toggleSearchVisible();
