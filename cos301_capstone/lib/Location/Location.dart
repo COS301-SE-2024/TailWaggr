@@ -147,14 +147,18 @@ class LocationVAF {
 
   static Future<void> panCameraToLocation(double lat, double long, GoogleMapController googleMapController) async {
     print("Panning camera to location");
-    await googleMapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(lat, long),
-          zoom: 15.0,
+    try {
+      await googleMapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(lat, long),
+            zoom: 15.0,
+          ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      print("Error panning camera: $e");
+    }
   }
 
   String getDistanceFromMe(double lat, double long) {

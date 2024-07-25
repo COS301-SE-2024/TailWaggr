@@ -72,157 +72,147 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
     return Container(
       padding: const EdgeInsets.all(20.0),
       width: MediaQuery.of(context).size.width - 290.0,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            children: [
-              Container(
-                width: double.infinity,
-                margin: EdgeInsets.only(bottom: 10.0),
-                child: TextField(
-                  controller: LocationVAF.searchVetsController,
-                  decoration: InputDecoration(
-                    labelText: "Search Veterinary Clinics",
-                    labelStyle: TextStyle(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              margin: EdgeInsets.only(bottom: 10.0),
+              child: TextField(
+                controller: LocationVAF.searchVetsController,
+                decoration: InputDecoration(
+                  labelText: "Search Veterinary Clinics",
+                  labelStyle: TextStyle(
+                    color: themeSettings.primaryColor,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: themeSettings.primaryColor,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
                       color: themeSettings.primaryColor,
                     ),
-                    prefixIcon: Icon(
-                      Icons.search,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
                       color: themeSettings.primaryColor,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: themeSettings.primaryColor,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: themeSettings.primaryColor,
-                      ),
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 10.0),
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.only(bottom: 10.0),
-                child: TextField(
-                  controller: LocationVAF.searchDistanceController,
-                  decoration: InputDecoration(
-                    labelText: "Distance (km)",
-                    labelStyle: TextStyle(
+            ),
+            SizedBox(height: 10.0),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.only(bottom: 10.0),
+              child: TextField(
+                controller: LocationVAF.searchDistanceController,
+                decoration: InputDecoration(
+                  labelText: "Distance (km)",
+                  labelStyle: TextStyle(
+                    color: themeSettings.primaryColor,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.map_outlined,
+                    color: themeSettings.primaryColor,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
                       color: themeSettings.primaryColor,
                     ),
-                    prefixIcon: Icon(
-                      Icons.map_outlined,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
                       color: themeSettings.primaryColor,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: themeSettings.primaryColor,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: themeSettings.primaryColor,
-                      ),
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 10.0),
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () async {
-                    await LocationVAF.getVets(LocationVAF.myLocation.target, double.parse(LocationVAF.searchDistanceController.text));
-                    setState(() {});
-                  },
-                  child: Container(
-                    height: 48,
-                    width: double.infinity,
-                    margin: EdgeInsets.only(bottom: 10),
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: themeSettings.primaryColor,
-                      borderRadius: BorderRadius.circular(10.0),
+            ),
+            SizedBox(height: 10.0),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () async {
+                  await LocationVAF.getVets(LocationVAF.myLocation.target, double.parse(LocationVAF.searchDistanceController.text));
+                  setState(() {});
+                },
+                child: Container(
+                  height: 48,
+                  width: double.infinity,
+                  margin: EdgeInsets.only(bottom: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: themeSettings.primaryColor,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Apply Filters",
+                      style: TextStyle(color: Colors.white, fontSize: 16.0),
                     ),
-                    child: Center(
-                      child: Text(
-                        "Apply Filters",
-                        style: TextStyle(color: Colors.white, fontSize: 16.0),
-                      ),
+                  ),
+                ),
+              ),
+            ),
+            for (User vet in LocationVAF.vetList) ...[
+              Container(
+                margin: EdgeInsets.only(right: 50, bottom: 20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () async {
+                      try {
+                        await LocationVAF.panCameraToLocation(vet.location.latitude, vet.location.longitude, _googleMapController);
+                        
+                        // setState(() {
+                          // toggleCardExpansion();
+                        // });
+                      } catch (e) {
+                        print("Error getting directions: $e");
+                      }
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          vet.name,
+                          style: TextStyle(color: themeSettings.textColor),
+                        ),
+                        Text(
+                          "Email: ${vet.email == '' ? 'No email provided' : vet.email}",
+                          style: TextStyle(color: themeSettings.textColor),
+                        ),
+                        Text(
+                          "Phone number: ${vet.phone == '' ? 'No phone number provided' : vet.phone}",
+                          style: TextStyle(color: themeSettings.textColor),
+                        ),
+                        Text(
+                          "Distance: ${vet.distance.toStringAsFixed(2)}km",
+                          style: TextStyle(color: themeSettings.textColor),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
             ],
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            controller: _scrollController,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                for (User vet in LocationVAF.vetList) ...[
-                  Container(
-                    margin: EdgeInsets.only(right: 50, bottom: 20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        onTap: () async {
-                          try {
-                            await LocationVAF.panCameraToLocation(vet.location.latitude, vet.location.longitude, _googleMapController);
-                            setState(() {
-                              toggleCardExpansion();
-                            });
-                          } catch (e) {
-                            print("Error getting directions: $e");
-                          }
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              vet.name,
-                              style: TextStyle(color: themeSettings.textColor),
-                            ),
-                            Text(
-                              "Email: ${vet.email == '' ? 'No email provided' : vet.email}",
-                              style: TextStyle(color: themeSettings.textColor),
-                            ),
-                            Text(
-                              "Phone number: ${vet.phone == '' ? 'No phone number provided' : vet.phone}",
-                              style: TextStyle(color: themeSettings.textColor),
-                            ),
-                            Text(
-                              "Distance: ${vet.distance.toStringAsFixed(2)}km",
-                              style: TextStyle(color: themeSettings.textColor),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-                if (LocationVAF.vetList.isEmpty)
-                  Text(
-                    "No veterinary clinics found within the specified radius, try increasing the search radius.",
-                    style: TextStyle(color: themeSettings.textColor),
-                  ),
-              ],
-            ),
-          ),
-        ],
+            if (LocationVAF.vetList.isEmpty)
+              Text(
+                "No veterinary clinics found within the specified radius, try increasing the search radius.",
+                style: TextStyle(color: themeSettings.textColor),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -230,155 +220,143 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
   Widget searchPetSitters() {
     return Container(
       padding: const EdgeInsets.all(20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 400,
-                margin: EdgeInsets.only(bottom: 10.0),
-                child: TextField(
-                  controller: LocationVAF.searchPetSittersController,
-                  decoration: InputDecoration(
-                    labelText: "Search Pet Sitters",
-                    labelStyle: TextStyle(
+      width: MediaQuery.of(context).size.width - 290.0,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              margin: EdgeInsets.only(bottom: 10.0),
+              child: TextField(
+                controller: LocationVAF.searchPetSittersController,
+                decoration: InputDecoration(
+                  labelText: "Search Pet Sitters",
+                  labelStyle: TextStyle(
+                    color: themeSettings.primaryColor,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: themeSettings.primaryColor,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
                       color: themeSettings.primaryColor,
                     ),
-                    prefixIcon: Icon(
-                      Icons.search,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
                       color: themeSettings.primaryColor,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: themeSettings.primaryColor,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: themeSettings.primaryColor,
-                      ),
                     ),
                   ),
                 ),
               ),
-              SizedBox(width: 20.0),
-              Container(
-                width: 200,
-                padding: EdgeInsets.only(bottom: 10.0),
-                child: TextField(
-                  controller: LocationVAF.searchPetSittersDistanceController,
-                  decoration: InputDecoration(
-                    labelText: "Distance (km)",
-                    labelStyle: TextStyle(
+            ),
+            SizedBox(height: 10.0),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.only(bottom: 10.0),
+              child: TextField(
+                controller: LocationVAF.searchPetSittersDistanceController,
+                decoration: InputDecoration(
+                  labelText: "Distance (km)",
+                  labelStyle: TextStyle(
+                    color: themeSettings.primaryColor,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.map_outlined,
+                    color: themeSettings.primaryColor,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
                       color: themeSettings.primaryColor,
                     ),
-                    prefixIcon: Icon(
-                      Icons.map_outlined,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
                       color: themeSettings.primaryColor,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: themeSettings.primaryColor,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: themeSettings.primaryColor,
-                      ),
                     ),
                   ),
                 ),
               ),
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () async {
-                    await LocationVAF.getPetSitters(LocationVAF.myLocation.target, double.parse(LocationVAF.searchPetSittersDistanceController.text));
-                    setState(() {});
-                  },
-                  child: Container(
-                    height: 48,
-                    margin: EdgeInsets.only(bottom: 10, left: 20),
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: themeSettings.primaryColor,
-                      borderRadius: BorderRadius.circular(10.0),
+            ),
+            SizedBox(height: 10.0),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () async {
+                  await LocationVAF.getPetSitters(LocationVAF.myLocation.target, double.parse(LocationVAF.searchPetSittersDistanceController.text));
+                  setState(() {});
+                },
+                child: Container(
+                  height: 48,
+                  margin: EdgeInsets.only(bottom: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: themeSettings.primaryColor,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Apply Filters",
+                      style: TextStyle(color: Colors.white, fontSize: 16.0),
                     ),
-                    child: Center(
-                      child: Text(
-                        "Apply Filters",
-                        style: TextStyle(color: Colors.white, fontSize: 16.0),
-                      ),
+                  ),
+                ),
+              ),
+            ),
+            for (User petSitter in LocationVAF.petKeeperList) ...[
+              Container(
+                margin: EdgeInsets.only(right: 50, bottom: 20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () async {
+                      try {
+                        LocationVAF.panCameraToLocation(petSitter.location.latitude, petSitter.location.longitude, _googleMapController);
+                      } catch (e) {
+                        print("Error getting directions: $e");
+                      }
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          petSitter.name,
+                          style: TextStyle(color: themeSettings.textColor),
+                        ),
+                        Text(
+                          "Email: ${petSitter.email == '' ? 'No email provided' : petSitter.email}",
+                          style: TextStyle(color: themeSettings.textColor),
+                        ),
+                        Text(
+                          "Phone number: ${petSitter.phone == '' ? 'No phone number provided' : petSitter.phone}",
+                          style: TextStyle(color: themeSettings.textColor),
+                        ),
+                        Text(
+                          "Distance: ${petSitter.distance.toStringAsFixed(2)}km",
+                          style: TextStyle(color: themeSettings.textColor),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
             ],
-          ),
-          Scrollbar(
-            controller: _scrollController,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              controller: _scrollController,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  for (User petSitter in LocationVAF.petKeeperList) ...[
-                    Container(
-                      margin: EdgeInsets.only(right: 50, bottom: 20),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      child: MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: GestureDetector(
-                          onTap: () async {
-                            try {
-                              LocationVAF.panCameraToLocation(petSitter.location.latitude, petSitter.location.longitude, _googleMapController);
-                            } catch (e) {
-                              print("Error getting directions: $e");
-                            }
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                petSitter.name,
-                                style: TextStyle(color: themeSettings.textColor),
-                              ),
-                              Text(
-                                "Email: ${petSitter.email == '' ? 'No email provided' : petSitter.email}",
-                                style: TextStyle(color: themeSettings.textColor),
-                              ),
-                              Text(
-                                "Phone number: ${petSitter.phone == '' ? 'No phone number provided' : petSitter.phone}",
-                                style: TextStyle(color: themeSettings.textColor),
-                              ),
-                              Text(
-                                "Distance: ${petSitter.distance.toStringAsFixed(2)}km",
-                                style: TextStyle(color: themeSettings.textColor),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                  if (LocationVAF.petKeeperList.isEmpty)
-                    Text(
-                      "No pet sitters found within the specified radius, try increasing the search radius.",
-                      style: TextStyle(color: themeSettings.textColor),
-                    ),
-                ],
-              ),
-            ),
-          )
-        ],
+            if (LocationVAF.petKeeperList.isEmpty)
+              Text(
+                "No pet sitters found within the specified radius, try increasing the search radius.",
+                style: TextStyle(color: themeSettings.textColor),
+              )
+          ],
+        ),
       ),
     );
   }
@@ -395,101 +373,102 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
             DesktopNavbar(),
             Container(
               width: MediaQuery.of(context).size.width - 290.0,
-              height: double.infinity, // Adjusted height based on expansion state
+              height: MediaQuery.of(context).size.height, // Adjusted height based on expansion state
               margin: EdgeInsets.only(top: 20, bottom: 20, left: 20),
               decoration: BoxDecoration(
                 color: Colors.transparent,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Column(
-                children: [
-                  AnimatedContainer(
-                    padding: EdgeInsets.only(bottom: 5, left: 30, right: 30),
-                    duration: Duration(milliseconds: 300),
-                    height: cardExpanded ? MediaQuery.of(context).size.height - 170 : 50,
-                    // height: 50,
-                    width: MediaQuery.of(context).size.width - 290.0,
-                    decoration: BoxDecoration(
-                      color: themeSettings.cardColor,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    AnimatedContainer(
+                      padding: EdgeInsets.only(bottom: 5, left: 30, right: 30),
+                      duration: Duration(milliseconds: 300),
+                      height: MediaQuery.of(context).size.height / 2 - 40,
+                      // height: 50,
+                      width: MediaQuery.of(context).size.width - 290.0,
+                      decoration: BoxDecoration(
+                        color: themeSettings.cardColor,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Visibility(
-                          visible: cardExpanded,
-                          child: DefaultTabController(
-                            length: 2,
-                            child: Column(
-                              children: [
-                                TabBar(
-                                  labelColor: themeSettings.primaryColor,
-                                  indicatorColor: themeSettings.secondaryColor,
-                                  tabs: [
-                                    Tab(text: 'Veterinary Clinics'),
-                                    Tab(text: 'Pet Sitters'),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: MediaQuery.of(context).size.height - 270,
-                                  child: TabBarView(
-                                    physics: NeverScrollableScrollPhysics(),
-                                    children: [
-                                      searchVets(),
-                                      searchPetSitters(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Visibility(
+                            visible: !cardExpanded,
+                            child: DefaultTabController(
+                              length: 2,
+                              child: Column(
+                                children: [
+                                  TabBar(
+                                    labelColor: themeSettings.primaryColor,
+                                    indicatorColor: themeSettings.secondaryColor,
+                                    tabs: [
+                                      Tab(text: 'Veterinary Clinics'),
+                                      Tab(text: 'Pet Sitters'),
                                     ],
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Center(
-                          child: MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: GestureDetector(
-                              onTap: () {
-                                toggleCardExpansion();
-                              },
-                              child: SizedBox(
-                                width: double.infinity,
-                                height: 40,
-                                child: Center(
-                                  child: Text(
-                                    cardExpanded ? 'Close' : 'Expand',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(color: themeSettings.primaryColor, fontSize: 16.0),
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.height / 2 - 110,
+                                    child: TabBarView(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      children: [
+                                        searchVets(),
+                                        searchPetSitters(),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                          // Center(
+                          //   child: MouseRegion(
+                          //     cursor: SystemMouseCursors.click,
+                          //     child: GestureDetector(
+                          //       onTap: () {
+                          //         toggleCardExpansion();
+                          //       },
+                          //       child: SizedBox(
+                          //         width: double.infinity,
+                          //         height: 40,
+                          //         child: Center(
+                          //           child: Text(
+                          //             cardExpanded ? 'Close' : 'Expand',
+                          //             textAlign: TextAlign.center,
+                          //             style: TextStyle(color: themeSettings.primaryColor, fontSize: 16.0),
+                          //           ),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
+                      ),
                     ),
-                  ),
-                  AnimatedContainer(
-                    duration: Duration(milliseconds: 300),
-                    child: FutureBuilder<String?>(
-                      future: LocationVAF.getMapStyle(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        }
-
-                        if (snapshot.hasError) {
-                          return Center(child: Text('Error loading map style'));
-                        }
-
-                        String? mapStyle = snapshot.data;
-
-                        return SizedBox(
-                          height: !cardExpanded ? MediaQuery.of(context).size.height - 110 : 100,
-                          width: MediaQuery.of(context).size.width - 290.0,
-                          child: ClipRRect(
+                    SizedBox(height: 20),
+                    AnimatedContainer(
+                      height: MediaQuery.of(context).size.height / 2 - 40,
+                      width: MediaQuery.of(context).size.width - 290.0,
+                      duration: Duration(milliseconds: 300),
+                      child: FutureBuilder<String?>(
+                        future: LocationVAF.getMapStyle(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                
+                          if (snapshot.hasError) {
+                            return Center(child: Text('Error loading map style'));
+                          }
+                
+                          String? mapStyle = snapshot.data;
+                
+                          return ClipRRect(
                             borderRadius: BorderRadius.circular(20.0),
                             child: GoogleMap(
                               style: mapStyle,
@@ -510,12 +489,12 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
                                   ),
                               },
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
