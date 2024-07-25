@@ -136,27 +136,6 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: LocationDesktop()),
                   Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                   Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile()),
-                  OpenContainer(
-                    transitionDuration: Duration(milliseconds: 300),
-                    closedBuilder: (context, action) {
-                      return Container(
-                        padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-                        decoration: BoxDecoration(
-                          color: themeSettings.primaryColor,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Text(
-                          "Edit Profile",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      );
-                    },
-                    closedColor: Colors.transparent,
-                    closedElevation: 0,
-                    openBuilder: (context, action) {
-                      return EditProfile();
-                    },
-                  ),
                 ],
               ),
               GestureDetector(

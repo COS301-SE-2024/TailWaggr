@@ -61,7 +61,7 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: DefaultTabController(
-            initialIndex: 2,
+            initialIndex: 0,
             length: 3,
             child: Column(
               children: [
