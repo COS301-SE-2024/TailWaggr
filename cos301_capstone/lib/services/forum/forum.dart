@@ -99,8 +99,9 @@ class ForumServices {
           messages.add({
             'messageId': messageDoc.id, // Corrected here to add messageId
             'message': messageData,
-            'likes': likes,
-            'replies': replies,
+            'likesCount': likes.length,
+            'repliesCount': replies.length,
+            'replies':replies,
           });
         }
       }
@@ -166,4 +167,62 @@ class ForumServices {
       return null;
     }
   }
+ // Toggles like on a message
+  Future<void> toggleLikeOnMessage(String forumId, String messageId, String userId) async {
+    DocumentReference messageRef = _db.collection('forum').doc(forumId).collection('messages').doc(messageId);
+    DocumentReference likeRef = messageRef.collection('likes').doc(userId);
+
+    DocumentSnapshot likeSnapshot = await likeRef.get();
+
+    if (likeSnapshot.exists) {
+      await likeRef.delete();
+    } else {
+      await likeRef.set({
+        'userId': userId,
+        'CreatedAt': FieldValue.serverTimestamp(),
+      });
+      // Create Like notification
+      notif.createLikeNotification(forumId,messageId, userId);
+    }
+  }
+
+  // Get likes count for a message
+  Future<int> getLikesCount(String forumId, String messageId) async {
+    QuerySnapshot likesSnapshot = await _db.collection('forum').doc(forumId).collection('messages').doc(messageId).collection('likes').get();
+    return likesSnapshot.docs.length;
+  }
+
+  // Get replies count for a message
+  Future<int> getRepliesCount(String forumId, String messageId) async {
+    QuerySnapshot repliesSnapshot = await _db.collection('forum').doc(forumId).collection('messages').doc(messageId).collection('replies').get();
+    return repliesSnapshot.docs.length;
+  }
+   Future<List<Map<String, dynamic>>?> getReplies(String forumId, String messageId) async {
+    try {
+      QuerySnapshot repliesSnapshot = await _db
+          .collection('forum')
+          .doc(forumId)
+          .collection('messages')
+          .doc(messageId)
+          .collection('replies')
+          .get();
+
+      List<Map<String, dynamic>> replies = [];
+      for (DocumentSnapshot replyDoc in repliesSnapshot.docs) {
+        Map<String, dynamic>? replyData = replyDoc.data() as Map<String, dynamic>?;
+
+        if (replyData != null) {
+          replies.add({
+            'replyId': replyDoc.id,
+            ...replyData,
+          });
+        }
+      }
+      //print(replies);
+      return replies.isNotEmpty ? replies : null;
+    } catch (e) {
+      print('Error fetching replies: $e');
+      return null;
+    }
+}
 }

@@ -239,4 +239,23 @@ Future<List<Map<String, dynamic>>?> getReplyNotifications(String userId) async {
       print("Error creating comment notification: $e");
     }
   }
+  Future<void> markAsRead(String notificationId) async {
+    await _db.collection('notifications').doc(notificationId).update({
+      'Read': true,
+    });
+  }
+  Future<int> countNewUnreadNotifs(String userId) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+          .collection('notifications')
+          .where('UserId', isEqualTo: userId)
+          .where('Read', isEqualTo: false)
+          .get();
+
+      return snapshot.docs.length;
+    } catch (e) {
+      print("Error counting unread notifications: $e");
+      return 0;
+    }
+  }
 }
