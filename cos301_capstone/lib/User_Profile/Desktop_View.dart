@@ -17,6 +17,9 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
   @override
   void initState() {
     super.initState();
+    profileDetails.isEditing.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -80,12 +83,6 @@ class _PostsContainerState extends State<PostsContainer> {
         decoration: BoxDecoration(
           color: themeSettings.cardColor,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: themeSettings.textColor.withOpacity(0.2),
-              blurRadius: 10,
-            ),
-          ],
         ),
         child: DefaultTabController(
           length: 2,
@@ -120,7 +117,8 @@ class _PostsContainerState extends State<PostsContainer> {
               Expanded(
                 child: TabBarView(
                   children: [
-                    Icon(Icons.add_box_outlined),
+                    // Icon(Icons.add_box_outlined),
+                    ListOfPosts(),
                     Icon(Icons.calendar_month),
                   ],
                 ),
@@ -128,6 +126,78 @@ class _PostsContainerState extends State<PostsContainer> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ListOfPosts extends StatelessWidget {
+  const ListOfPosts({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          for (var post in profileDetails.posts) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  // CircleAvatar(
+                  //   radius: 35,
+                  //   backgroundImage: NetworkImage(post["ImgUrl"]),
+                  // ),
+                  SizedBox(
+                    width: 175,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        post["ImgUrl"],
+                        height: 125,
+                        fit: BoxFit.fitHeight,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          post["Content"],
+                          style: TextStyle(fontSize: bodyTextSize),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: 8),
+                        if (post['PetIds'].length > 0) Text("Included pets:", style: TextStyle(fontSize: subBodyTextSize)),
+                        SizedBox(height: 8),
+                        Row(
+                          children: [
+                            for (var includedPet in post["PetIds"]) ...[
+                              Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 20,
+                                    backgroundImage: NetworkImage(includedPet['pictureUrl']),
+                                  ),
+                                  Text(includedPet['name'], style: TextStyle(fontSize: textSize)),
+                                ],
+                              ),
+                            ]
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -148,12 +218,6 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
       decoration: BoxDecoration(
         color: themeSettings.cardColor,
         borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: themeSettings.textColor.withOpacity(0.2),
-            blurRadius: 10,
-          ),
-        ],
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -169,12 +233,8 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Column(
-                  children: [
-                    Text(profileDetails.name, style: TextStyle(fontSize: subHeadingTextSize)),
-                    Text(profileDetails.bio, style: TextStyle(fontSize: subBodyTextSize)),
-                  ],
-                ),
+                Text("${profileDetails.name} ${profileDetails.surname}", style: TextStyle(fontSize: subHeadingTextSize)),
+                Text(profileDetails.bio, style: TextStyle(fontSize: subBodyTextSize)),
                 SizedBox(height: 20),
                 OpenContainer(
                   transitionDuration: Duration(milliseconds: 300),
@@ -194,12 +254,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                   closedColor: Colors.transparent,
                   closedElevation: 0,
                   openBuilder: (context, action) {
-                    return Scaffold(
-                      appBar: AppBar(
-                        iconTheme: IconThemeData(color: themeSettings.primaryColor),
-                      ),
-                      body: EditProfile(),
-                    );
+                    return EditProfile();
                   },
                 ),
                 SizedBox(height: 20),
@@ -365,12 +420,6 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
         decoration: BoxDecoration(
           color: themeSettings.cardColor,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: themeSettings.textColor.withOpacity(0.2),
-              blurRadius: 10,
-            ),
-          ],
         ),
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -392,6 +441,7 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
                   child: PetProfileButton(
                     petName: pet["name"],
                     petBio: pet["bio"],
+                    petPicture: pet["pictureUrl"],
                   ),
                 ),
             ],
@@ -403,10 +453,11 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
 }
 
 class PetProfileButton extends StatefulWidget {
-  const PetProfileButton({Key? key, required this.petName, required this.petBio}) : super(key: key);
+  const PetProfileButton({Key? key, required this.petName, required this.petBio, required this.petPicture}) : super(key: key);
 
   final String petName;
   final String petBio;
+  final String petPicture;
 
   @override
   State<PetProfileButton> createState() => _PetProfileButtonState();
@@ -419,6 +470,7 @@ class _PetProfileButtonState extends State<PetProfileButton> {
       children: [
         CircleAvatar(
           radius: 35,
+          backgroundImage: NetworkImage(widget.petPicture),
         ),
         SizedBox(width: 20),
         Expanded(
