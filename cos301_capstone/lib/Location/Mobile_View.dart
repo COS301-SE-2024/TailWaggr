@@ -447,9 +447,9 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
                 AnimatedContainer(
-                  height: MediaQuery.of(context).size.height / 2 - 40,
+                  height: MediaQuery.of(context).size.height / 2 - 50,
                   width: MediaQuery.of(context).size.width,
                   duration: Duration(milliseconds: 300),
                   child: FutureBuilder<String?>(

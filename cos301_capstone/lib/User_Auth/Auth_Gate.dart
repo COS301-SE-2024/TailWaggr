@@ -2,7 +2,6 @@
 
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
-import 'package:cos301_capstone/Location/Location.dart';
 // import 'package:cos301_capstone/Location/Desktop_View.dart';
 // import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/Login/Login.dart';
@@ -32,8 +31,7 @@ class _AuthGateState extends State<AuthGate> {
 
           populateUserData();
 
-          // return Homepage();
-          return Location();
+          return Homepage();
         }
         return Login();
       },
