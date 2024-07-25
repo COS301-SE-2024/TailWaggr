@@ -76,7 +76,6 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   IconButton(
                     icon: Icon(Icons.help_outline, color: Colors.white),
                     onPressed: () async {
-                      print('Launching flutter.dev');
                       final Uri url = Uri.parse('https://docs.google.com/document/d/1TiRA697HTTGuLCOzq20es4q_fotXlDpTnVuov_7zNP0/edit?usp=sharing ');
                       if (!await launchUrl(url)) {
                         print('Could not launch $url');
