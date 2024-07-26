@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       title: 'TailWaggr',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Roboto', 
+        fontFamily: 'Roboto',
       ),
       home: const AuthGate(),
     );
