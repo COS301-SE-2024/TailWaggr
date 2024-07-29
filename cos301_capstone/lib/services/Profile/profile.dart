@@ -6,21 +6,33 @@ class ProfileService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  Future<Map<String, dynamic>?> getUserProfile(String userId) async {
-    try {
-      print("Fetching profile data for user: $userId");
-      final doc = await _db.collection('users').doc(userId).get();
-      if (doc.exists) {
-        return doc.data() as Map<String, dynamic>?;
-      } else {
-        print("No profile found for the given userId.");
-        return null;
-      }
-    } catch (e) {
-      print("Error fetching profile data: $e");
+Future<Map<String, dynamic>?> getUserProfile(String userId) async {
+  try {
+    print("Fetching profile data for user: $userId");
+
+    // Fetch the user's main profile data
+    final doc = await _db.collection('users').doc(userId).get();
+    if (!doc.exists) {
+      print("No profile found for the given userId.");
       return null;
     }
+
+    Map<String, dynamic> userProfile = doc.data() as Map<String, dynamic>;
+
+    // Fetch the user's pets subcollection data
+    final petsSnapshot = await _db.collection('users').doc(userId).collection('pets').get();
+    List<Map<String, dynamic>> pets = petsSnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+    // Add the pets data to the user's profile
+    userProfile['pets'] = pets;
+
+    return userProfile;
+  } catch (e) {
+    print("Error fetching profile data: $e");
+    return null;
   }
+}
+
   Future<Map<String, dynamic>?> getUserDetails(String userId) async {
     try {
       DocumentSnapshot doc = await _db.collection('users').doc(userId).get();

@@ -140,6 +140,39 @@ Future<List<Map<String, dynamic>>?> getReplyNotifications(String userId) async {
     return null;
   }
 }
+Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) async {
+  try {
+    QuerySnapshot likePostSnapshot = await _db
+        .collection('notifications')
+        .where('UserId', isEqualTo: userId)
+        .where('NotificationTypeId', isEqualTo: 5)
+        .get();
+
+    List<Map<String, dynamic>> notifications = [];
+    for (DocumentSnapshot likePostDoc in likePostSnapshot.docs) {
+      Map<String, dynamic>? likePostData = likePostDoc.data() as Map<String, dynamic>?;
+
+      if (likePostData != null) {
+        // Fetch the post details
+        String postId = likePostData['ReferenceId'];
+        DocumentSnapshot postSnapshot = await _db.collection('posts').doc(postId).get();
+        Map<String, dynamic>? postDetails = postSnapshot.data() as Map<String, dynamic>?;
+
+        if (postDetails != null) {
+          notifications.add({
+             'post': postDetails,
+            ...likePostData,
+          });
+        }
+      }
+    }
+
+    return notifications.isNotEmpty ? notifications : null;
+  } catch (e) {
+    print("Error fetching like post notifications: $e");
+    return null;
+  }
+}
 
   Future<void> createFollowNotification(String followingId, String followedId) async {
     try {
@@ -258,4 +291,44 @@ Future<List<Map<String, dynamic>>?> getReplyNotifications(String userId) async {
       return 0;
     }
   }
+  Future<void> createLikePostNotification(String postId, String userId) async {
+    try {
+      DocumentSnapshot postDoc = await _db.collection('posts').doc(postId).get();
+
+      if (!postDoc.exists) throw Exception("Post not found");
+      Map<String, dynamic> postData = postDoc.data() as Map<String, dynamic>;
+      String postOwnerId = postData['UserId'] ?? '';
+
+      DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
+      if (!userDoc.exists) throw Exception("User not found");
+      Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+      String username = userData['userName'] ?? '';
+
+      String content = "$username has liked your post";
+
+      QuerySnapshot existingNotifs = await _db
+          .collection('notifications')
+          .where('UserId', isEqualTo: postOwnerId)
+          .where('NotificationTypeId', isEqualTo: 5)
+          .where('Content', isEqualTo: content)
+          .get();
+
+      if (existingNotifs.docs.isNotEmpty) {
+        return;
+      } else {
+        await _db.collection('notifications').add({
+          'UserId': postOwnerId,
+          'NotificationTypeId': 5,
+          'Content': content,
+          'Read': false,
+          'ReferenceId': postId,
+          'AvatarUrlId': userId,
+          'CreatedAt': Timestamp.now(),
+        });
+      }
+    } catch (e) {
+      print("Error creating like post notification: $e");
+    }
+  }
+
 }

@@ -4,6 +4,7 @@ import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
+import 'package:cos301_capstone/services/Profile/profile.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,47 @@ class PostContainer extends StatefulWidget {
 }
 
 class _PostContainerState extends State<PostContainer> {
+
+  List<Map<String, dynamic>> posts = [];
+  Map<String, Map<String, dynamic>> userProfiles = {};
+  bool isLoading = true;
+  final ProfileService _profileServices = ProfileService();
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    await _fetchPosts();
+    await _fetchUserProfiles();
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<void> _fetchPosts() async {
+    posts = await HomePageService().getPosts();
+    print("successfully fetched posts");
+  }
+
+  Future<void> _fetchUserProfiles() async {
+    if (posts.isEmpty) return;
+
+    Set<String> userIds = posts.map((post) => post['UserId'] as String?).where((id) => id != null).toSet().cast<String>();
+    print('UserIds: $userIds');
+    for (String userId in userIds) {
+      if (!userProfiles.containsKey(userId)) {
+        Map<String, dynamic>? profile = await _profileServices.getUserProfile(userId);
+        if (profile != null) {
+          userProfiles[userId] = profile;
+        }
+      }
+    }
+    print("successfully fetched user profiles");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -55,8 +97,9 @@ class _PostContainerState extends State<PostContainer> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            for (int i = 0; i < profileDetails.posts.length; i++) ...{
-              Post(postDetails: profileDetails.posts[i]),
+            for (int i = 0; i < posts.length; i++) ...{
+              if (userProfiles[posts[i]['UserId']] != null) 
+                Post(postDetails: posts[i], userProfile: userProfiles[posts[i]['UserId']]!),
               Divider(),
             },
           ],
@@ -67,9 +110,10 @@ class _PostContainerState extends State<PostContainer> {
 }
 
 class Post extends StatefulWidget {
-  const Post({super.key, required this.postDetails});
+  const Post({super.key, required this.postDetails, required this.userProfile});
 
   final Map<String, dynamic> postDetails;
+  final Map<String, dynamic> userProfile;
 
   @override
   State<Post> createState() => _PostState();
@@ -91,28 +135,27 @@ class _PostState extends State<Post> {
   @override
   void initState() {
     super.initState();
-    void getLikes() async {
-      Future<int> likes = HomePageService().getLikesCount(widget.postDetails['PostId']);
-      likes.then((value) {
-        setState(() {
-          numLikes = value.toString();
-        });
-      });
-    }
-
     getLikes();
-
-    void getViews() async {
-      HomePageService().addViewToPost(widget.postDetails['PostId'], profileDetails.userID);
-      Future<int> views = HomePageService().getViewsCount(widget.postDetails['PostId']);
-      views.then((value) {
-        setState(() {
-          numViews = value.toString();
-        });
-      });
-    }
-
     getViews();
+  }
+  
+  void getLikes() async {
+    Future<int> likes = HomePageService().getLikesCount(widget.postDetails['PostId']);
+    likes.then((value) {
+      setState(() {
+        numLikes = value.toString();
+      });
+    });
+  }
+
+  void getViews() async {
+    HomePageService().addViewToPost(widget.postDetails['PostId'], widget.userProfile['authId']);
+    Future<int> views = HomePageService().getViewsCount(widget.postDetails['PostId']);
+    views.then((value) {
+      setState(() {
+        numViews = value.toString();
+      });
+    });
   }
 
   String getMonthAbbreviation(int month) {
@@ -168,14 +211,14 @@ class _PostState extends State<Post> {
                 children: [
                   CircleAvatar(
                     radius: 20,
-                    backgroundImage: NetworkImage(profileDetails.profilePicture),
+                    backgroundImage: NetworkImage(widget.userProfile['profilePictureUrl'] ?? profileDetails.profilePicture),
                   ),
                   SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        profileDetails.name,
+                        widget.userProfile['name'] ?? 'Unknown',
                         style: TextStyle(
                           color: themeSettings.textColor,
                         ),
@@ -192,7 +235,7 @@ class _PostState extends State<Post> {
               ),
               SizedBox(height: 20),
               Text(
-                widget.postDetails["Content"],
+                widget.postDetails["Content"] ?? 'No content',
                 style: TextStyle(
                   color: themeSettings.textColor,
                 ),
@@ -200,7 +243,7 @@ class _PostState extends State<Post> {
                 maxLines: 4,
               ),
               Spacer(),
-              if (widget.postDetails['PetIds'].length != 0) ...[
+              if (widget.postDetails['PetIds'] != null && widget.postDetails['PetIds'].length != 0) ...[
                 Text(
                   "Pets included in this post: ",
                   style: TextStyle(
@@ -212,18 +255,18 @@ class _PostState extends State<Post> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      for (var pet in profileDetails.pets) ...[
+                      for (var pet in widget.userProfile['pets'] ?? []) ...[
                         Container(
                           margin: EdgeInsets.only(right: 10),
                           child: Column(
                             children: [
                               CircleAvatar(
                                 radius: 20,
-                                backgroundImage: NetworkImage(pet["pictureUrl"]),
+                                backgroundImage: NetworkImage(pet["pictureUrl"] ?? profileDetails.profilePicture),
                               ),
                               SizedBox(height: 5),
                               Text(
-                                pet["name"],
+                                pet["name"] ?? 'Unnamed pet',
                                 style: TextStyle(color: themeSettings.textColor),
                               ),
                             ],
@@ -241,8 +284,7 @@ class _PostState extends State<Post> {
                     message: "Like",
                     child: IconButton(
                       onPressed: () {
-                        HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
-
+                        HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], widget.userProfile['authId']); 
                         HomePageService().getLikesCount(widget.postDetails['PostId']).then((value) {
                           setState(() {
                             numLikes = value.toString();
@@ -286,7 +328,7 @@ class _PostState extends State<Post> {
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Image.network(
-            widget.postDetails["ImgUrl"],
+            widget.postDetails["ImgUrl"] ?? profileDetails.profilePicture,
             width: (MediaQuery.of(context).size.width - 400) * 0.3,
             height: 300,
             fit: BoxFit.cover,

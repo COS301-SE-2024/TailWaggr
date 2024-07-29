@@ -34,12 +34,14 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
         List<Map<String, dynamic>> likes = await _notificationsServices.getLikesNotifications(userId) ?? [];
         List<Map<String, dynamic>> replies = await _notificationsServices.getReplyNotifications(userId) ?? [];
         //List<Map<String, dynamic>> events = await _notificationsServices.getEventsNotifications(userId) ?? [];
+        List<Map<String, dynamic>> likePosts = await _notificationsServices.getLikePostNotifications(userId) ?? [];
         Map<String, dynamic>? follow = await _notificationsServices.getFollowNotifications(userId);
         List<Map<String, dynamic>> events = [];
-        List<Map<String, dynamic>> allNotifications = [...likes, ...replies, ...events];
+        List<Map<String, dynamic>> allNotifications = [...likes, ...replies,...likePosts, ...events];
         if (follow != null) {
           allNotifications.add(follow);
         }
+        //print(allNotifications);
 
         // Sort notifications by 'CreatedAt' timestamp in descending order
         allNotifications.sort((a, b) {
@@ -66,7 +68,7 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
               ...doc.data(),
             };
           }).toList();
-
+          
           // Sort new notifications by 'CreatedAt' timestamp in descending order
           newNotifications.sort((a, b) {
             Timestamp aTimestamp = a['CreatedAt'];
@@ -304,6 +306,113 @@ class NotificationCard extends StatelessWidget {
     }
   }
 
+  void _showPostDialog(BuildContext context) async {
+  try {
+    // Fetch post data
+    DocumentSnapshot postSnapshot = await FirebaseFirestore.instance.collection('posts').doc(notification['ReferenceId']).get();
+    Map<String, dynamic> post = postSnapshot.data() as Map<String, dynamic>;
+    // Fetch user profile data
+    DocumentSnapshot userProfileSnapshot = await FirebaseFirestore.instance.collection('users').doc(post['UserId']).get();
+
+    if (userProfileSnapshot.exists) {
+      Map<String, dynamic> userProfile = userProfileSnapshot.data() as Map<String, dynamic>;
+
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              'Post Details',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            ),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Post by: ${userProfile['userName'] ?? 'Unknown User'}',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                SizedBox(height: 8),
+                if (post['ImgUrl'] != null)
+                  Image.network(
+                    post['ImgUrl'],
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                SizedBox(height: 8),
+                Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey, // Highlight color
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(post['Content'] ?? 'No content'),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Posted on: ${formatDate(post['CreatedAt'])}',
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // Handle the case where the user profile document does not exist
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Unable to fetch user profile details.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  } catch (e) {
+    print("Error fetching post details: $e");
+    showDialog(
+      // ignore: use_build_context_synchronously
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text('An error occurred while fetching post details.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     bool isRead = notification['Read'] ?? false;
@@ -314,7 +423,14 @@ class NotificationCard extends StatelessWidget {
         if (!isRead) {
           onMarkAsRead(notification['id']);
         }
+        print('Post: ');
+        print(notification['post']);
+      // Check the notification type and call the appropriate dialog
+      if (notification['NotificationTypeId'] == 1 || notification['NotificationTypeId'] == 3) {
         _showForumDialog(context);
+      } else if (notification['NotificationTypeId'] == 5) {
+        _showPostDialog(context);
+      }
       },
       child: SizedBox(
         height: 125,
@@ -404,6 +520,20 @@ class NotificationCard extends StatelessWidget {
                       ),
                       child: Text(
                         "View Message",
+                        style: TextStyle(fontSize: subBodyTextSize - 2, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                   if (notification['NotificationTypeId'] == 5) ...[
+                    ElevatedButton(
+                      onPressed: () {
+                        _showPostDialog(context);
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                      ),
+                      child: Text(
+                        "View Post",
                         style: TextStyle(fontSize: subBodyTextSize - 2, color: Colors.white),
                       ),
                     ),
