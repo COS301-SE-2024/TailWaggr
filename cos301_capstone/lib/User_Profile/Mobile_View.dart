@@ -111,16 +111,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                 closedColor: Colors.transparent,
                 closedElevation: 0,
                 openBuilder: (context, action) {
-                  return Scaffold(
-                    appBar: AppBar(
-                      title: Text(
-                        "Edit Profile",
-                        style: TextStyle(color: themeSettings.primaryColor, fontSize: 20),
-                      ),
-                      iconTheme: IconThemeData(color: themeSettings.primaryColor),
-                    ),
-                    body: EditProfile(),
-                  );
+                  return EditProfile();
                 },
               ),
             ],

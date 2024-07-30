@@ -25,9 +25,6 @@ class _HomepageState extends State<Homepage> {
     void getPosts() async {
       Future<List<Map<String, dynamic>>> posts = HomePageService().getPosts();
       posts.then((value) {
-        for (var post in value) {
-          print(post);
-        }
         setState(() {
           profileDetails.posts = value;
         });
@@ -153,3 +150,9 @@ class ImagePicker {
 }
 
 ImagePicker imagePicker = ImagePicker();
+
+class HomepageVAF {
+  ValueNotifier<bool> postPosted = ValueNotifier<bool>(false);
+}
+
+HomepageVAF homepageVAF = HomepageVAF();

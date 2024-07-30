@@ -1,3 +1,7 @@
+
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+
+import 'package:animations/animations.dart';
 import 'package:cos301_capstone/Events/Events.dart';
 import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
@@ -43,6 +47,9 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
   void initState() {
     super.initState();
     _countUnreadNotifications();
+    profileDetails.isEditing.addListener(() {
+      setState(() {});
+    });
   }
 
   void _countUnreadNotifications() async {
@@ -100,7 +107,6 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   IconButton(
                     icon: Icon(Icons.help_outline, color: Colors.white),
                     onPressed: () async {
-                      print('Launching flutter.dev');
                       final Uri url = Uri.parse('https://docs.google.com/document/d/1TiRA697HTTGuLCOzq20es4q_fotXlDpTnVuov_7zNP0/edit?usp=sharing ');
                       if (!await launchUrl(url)) {
                         print('Could not launch $url');

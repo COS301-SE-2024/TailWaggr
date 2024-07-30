@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
@@ -39,6 +40,8 @@ class HomePageService {
       // Retrieve the photo URL
       String imgUrl = await uploadTask.ref.getDownloadURL();
 
+      String profilePhoto = profileDetails.profilePicture.replaceAll('"', '');
+
 
       // Create a map for the post data, including the imgUrl
       final postData = {
@@ -47,6 +50,8 @@ class HomePageService {
         'CreatedAt': DateTime.now(),
         'ImgUrl': imgUrl, // Use the uploaded photo URL
         'PetIds': petIds,
+        'pictureUrl' : profilePhoto,
+        'name' : profileDetails.name
       };
       DocumentReference postRef = await _db.collection('posts').add(postData);
 
@@ -114,6 +119,9 @@ class HomePageService {
 
       // Convert each document to a map and add it to a list
       final posts = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+      // Sort the posts from newest to oldest based on the 'CreatedAt' field
+      posts.sort((a, b) => b['CreatedAt'].compareTo(a['CreatedAt']));
 
       print("Posts fetched successfully.");
       return posts; // Return the list of posts

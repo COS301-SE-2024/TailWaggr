@@ -2,10 +2,11 @@
 
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
-import 'package:cos301_capstone/Location/Location.dart';
 // import 'package:cos301_capstone/Location/Desktop_View.dart';
 // import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/Login/Login.dart';
+import 'package:cos301_capstone/User_Profile/User_Profile.dart';
+import 'package:cos301_capstone/services/general/general_service.dart';
 // import 'package:cos301_capstone/Navbar/Navbar.dart';
 // import 'package:cos301_capstone/Notifications/Notifications.dart';
 // import 'package:cos301_capstone/User_Profile/Desktop_View.dart';
@@ -29,11 +30,10 @@ class _AuthGateState extends State<AuthGate> {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-
           populateUserData();
+          populateUserPets();
 
-          // return Homepage();
-          return Location();
+          return Homepage();
         }
         return Login();
       },
@@ -42,20 +42,29 @@ class _AuthGateState extends State<AuthGate> {
 }
 
 void populateUserData() async {
-
-  print("Populating user data...");
+  // print("Populating user data...");
   // print(FirebaseAuth.instance.currentUser!.uid);
 
   Future<Map<String, dynamic>?> tempDetails = ProfileService().getUserDetails(FirebaseAuth.instance.currentUser!.uid);
   tempDetails.then((value) {
-    print("User data populated successfully.");
-    print(value);
+    // print("User data populated successfully.");
+    // print(value);
     profileDetails.name = value!['name'];
     profileDetails.surname = value['surname'];
     profileDetails.email = value['email'];
     profileDetails.bio = value['bio'];
     profileDetails.profilePicture = value['profilePictureUrl'];
+    profileDetails.location = value['location'];
 
+    if (value['preferences']['darkMode']) {
+      themeSettings.toggleTheme();
+    }
   });
 }
 
+void populateUserPets() {
+  Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(FirebaseAuth.instance.currentUser!.uid);
+  pets.then((value) {
+    profileDetails.pets = value;
+  });
+}

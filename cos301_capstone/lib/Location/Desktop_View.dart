@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_final_fields
 
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
+import 'package:cos301_capstone/services/Location/location_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -16,101 +18,29 @@ class LocationDesktop extends StatefulWidget {
 
 class _LocationDesktopState extends State<LocationDesktop> {
   final ScrollController _scrollController = ScrollController();
+  late GoogleMapController _googleMapController;
 
-  GoogleMapController? _googleMapController;
-  final Set<Marker> _markers = {};
-  late CameraPosition _initialLocation = CameraPosition(
-    target: LatLng(-28.284535, 24.402177),
-    zoom: 5.0,
-  );
-
-  Future<String?> _getMapStyle() async {
-    if (themeSettings.themeMode == "Light") {
-      return await rootBundle.loadString('assets/GoogleMaps/lightMode.json');
-    }
-    return await rootBundle.loadString('assets/GoogleMaps/darkMode.json');
-  }
-
-  Future<LatLng> _getCurrentLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      print("Location services are disabled.");
-      return Future.error("Location services are disabled.");
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.deniedForever) {
-      print("Location permissions are permantly denied, we cannot request permissions.");
-      return Future.error("Location permissions are permantly denied, we cannot request permissions.");
-    }
-
-    if (permission == LocationPermission.denied) {
-      print("Location permissions are denied");
-      permission = await Geolocator.requestPermission();
-      if (permission != LocationPermission.whileInUse && permission != LocationPermission.always) {
-        print("Location permissions are denied (actual value: $permission).");
-        return Future.error("Location permissions are denied (actual value: $permission).");
-      }
-    }
-
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    return LatLng(position.latitude, position.longitude);
-  }
-
-  Future<void> _initializeLocation() async {
-    try {
-      LatLng currentLocation = await _getCurrentLocation();
-      setState(() {
-        _initialLocation = CameraPosition(
-          target: currentLocation,
-          zoom: 14.0,
-        );
-        _markers.add(
-          Marker(
-            markerId: MarkerId('current_location'),
-            position: currentLocation,
-            infoWindow: InfoWindow(title: 'Current Location'),
-          ),
-        );
-      });
-    } catch (e) {
-      print("Error getting location: $e");
-    }
-  }
+  
 
   @override
   void initState() {
     super.initState();
-    _markers.add(
-      Marker(
-        markerId: const MarkerId('brooklyn_vet'),
-        position: LatLng(-25.758878914381995, 28.238580084657446),
-        infoWindow: const InfoWindow(
-          title: 'Brooklyn Vet',
-          snippet: 'Veterinary Clinic',
-        ),
-      ),
-    );
 
-    _markers.add(
-      Marker(
-        markerId: const MarkerId('bryanston_vet'),
-        position: LatLng(-26.0565, 28.0248),
-        infoWindow: const InfoWindow(
-          title: 'Bryanston Vet',
-          snippet: 'Veterinary Clinic',
-        ),
-      ),
-    );
+    populateData() async {
+      await LocationVAF.initializeLocation();
+      await LocationVAF.getVets(LocationVAF.myLocation.target, 100);
+      await LocationVAF.getPetSitters(LocationVAF.myLocation.target, 100);
+      setState(() {});
+    }
 
-    _initializeLocation();
+    populateData();
   }
 
   @override
   void dispose() {
     try {
-      if (_googleMapController != null && mounted) {
-        _googleMapController?.dispose();
+      if (mounted) {
+        _googleMapController.dispose();
       }
       super.dispose();
     } catch (e) {
@@ -119,6 +49,319 @@ class _LocationDesktopState extends State<LocationDesktop> {
       _scrollController.dispose();
       super.dispose();
     }
+  }
+
+  Widget searchVets() {
+    return Container(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 400,
+                margin: EdgeInsets.only(bottom: 10.0),
+                child: TextField(
+                  controller: LocationVAF.searchVetsController,
+                  decoration: InputDecoration(
+                    labelText: "Search Veterinary Clinics",
+                    labelStyle: TextStyle(
+                      color: themeSettings.primaryColor,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: themeSettings.primaryColor,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: themeSettings.primaryColor,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: themeSettings.primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 20.0),
+              Container(
+                width: 200,
+                padding: EdgeInsets.only(bottom: 10.0),
+                child: TextField(
+                  controller: LocationVAF.searchDistanceController,
+                  decoration: InputDecoration(
+                    labelText: "Distance (km)",
+                    labelStyle: TextStyle(
+                      color: themeSettings.primaryColor,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.map_outlined,
+                      color: themeSettings.primaryColor,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: themeSettings.primaryColor,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: themeSettings.primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () async {
+                    await LocationVAF.getVets(LocationVAF.myLocation.target, double.parse(LocationVAF.searchDistanceController.text));
+                    setState(() {});
+                  },
+                  child: Container(
+                    height: 48,
+                    margin: EdgeInsets.only(bottom: 10, left: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: themeSettings.primaryColor,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Apply Filters",
+                        style: TextStyle(color: Colors.white, fontSize: 16.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Scrollbar(
+            controller: _scrollController,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              controller: _scrollController,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  for (User vet in LocationVAF.vetList) ...[
+                    Container(
+                      margin: EdgeInsets.only(right: 50, bottom: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () async {
+                            try {
+                              LocationVAF.panCameraToLocation(vet.location.latitude, vet.location.longitude, _googleMapController);
+                            } catch (e) {
+                              print("Error getting directions: $e");
+                            }
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                vet.name,
+                                style: TextStyle(color: themeSettings.textColor),
+                              ),
+                              Text(
+                                "Email: ${vet.email == '' ? 'No email provided' : vet.email}",
+                                style: TextStyle(color: themeSettings.textColor),
+                              ),
+                              Text(
+                                "Phone number: ${vet.phone == '' ? 'No phone number provided' : vet.phone}",
+                                style: TextStyle(color: themeSettings.textColor),
+                              ),
+                              Text(
+                                "Distance: ${vet.distance.toStringAsFixed(2)}km",
+                                style: TextStyle(color: themeSettings.textColor),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (LocationVAF.vetList.isEmpty)
+                    Text(
+                      "No veterinary clinics found within the specified radius, try increasing the search radius.",
+                      style: TextStyle(color: themeSettings.textColor),
+                    ),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget searchPetSitters() {
+
+    return Container(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 400,
+                margin: EdgeInsets.only(bottom: 10.0),
+                child: TextField(
+                  controller: LocationVAF.searchPetSittersController,
+                  decoration: InputDecoration(
+                    labelText: "Search Pet Sitters",
+                    labelStyle: TextStyle(
+                      color: themeSettings.primaryColor,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: themeSettings.primaryColor,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: themeSettings.primaryColor,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: themeSettings.primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 20.0),
+              Container(
+                width: 200,
+                padding: EdgeInsets.only(bottom: 10.0),
+                child: TextField(
+                  controller: LocationVAF.searchPetSittersDistanceController,
+                  decoration: InputDecoration(
+                    labelText: "Distance (km)",
+                    labelStyle: TextStyle(
+                      color: themeSettings.primaryColor,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.map_outlined,
+                      color: themeSettings.primaryColor,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: themeSettings.primaryColor,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: themeSettings.primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () async {
+                    await LocationVAF.getPetSitters(LocationVAF.myLocation.target, double.parse(LocationVAF.searchPetSittersDistanceController.text));
+                    setState(() {});
+                  },
+                  child: Container(
+                    height: 48,
+                    margin: EdgeInsets.only(bottom: 10, left: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: themeSettings.primaryColor,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Apply Filters",
+                        style: TextStyle(color: Colors.white, fontSize: 16.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Scrollbar(
+            controller: _scrollController,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              controller: _scrollController,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  for (User petSitter in LocationVAF.petKeeperList) ...[
+                    Container(
+                      margin: EdgeInsets.only(right: 50, bottom: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () async {
+                            try {
+                              LocationVAF.panCameraToLocation(petSitter.location.latitude, petSitter.location.longitude, _googleMapController);
+                            } catch (e) {
+                              print("Error getting directions: $e");
+                            }
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                petSitter.name,
+                                style: TextStyle(color: themeSettings.textColor),
+                              ),
+                              Text(
+                                "Email: ${petSitter.email == '' ? 'No email provided' : petSitter.email}",
+                                style: TextStyle(color: themeSettings.textColor),
+                              ),
+                              Text(
+                                "Phone number: ${petSitter.phone == '' ? 'No phone number provided' : petSitter.phone}",
+                                style: TextStyle(color: themeSettings.textColor),
+                              ),
+                              Text(
+                                "Distance: ${petSitter.distance.toStringAsFixed(2)}km",
+                                style: TextStyle(color: themeSettings.textColor),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (LocationVAF.petKeeperList.isEmpty)
+                    Text(
+                      "No pet sitters found within the specified radius, try increasing the search radius.",
+                      style: TextStyle(color: themeSettings.textColor),
+                    ),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -140,7 +383,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     child: DefaultTabController(
-                      length: 3,
+                      length: 2,
                       child: Column(
                         children: [
                           TabBar(
@@ -149,7 +392,6 @@ class _LocationDesktopState extends State<LocationDesktop> {
                             tabs: [
                               Tab(text: 'Veterinary Clinics'),
                               Tab(text: 'Pet Sitters'),
-                              Tab(text: 'Pet Groomers'),
                             ],
                           ),
                           SizedBox(
@@ -157,86 +399,8 @@ class _LocationDesktopState extends State<LocationDesktop> {
                             child: TabBarView(
                               physics: NeverScrollableScrollPhysics(),
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        width: double.infinity,
-                                        padding: EdgeInsets.only(bottom: 10.0),
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                            hintText: 'Search Veterinary Clinics',
-                                            hintStyle: TextStyle(
-                                              color: themeSettings.primaryColor.withOpacity(0.5),
-                                            ),
-                                            prefixIcon: Icon(
-                                              Icons.search,
-                                              color: themeSettings.primaryColor,
-                                            ),
-                                            filled: true,
-                                            fillColor: themeSettings.cardColor,
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(20.0),
-                                              borderSide: BorderSide.none,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Scrollbar(
-                                        // isAlwaysShown: true,
-                                        controller: _scrollController,
-                                        child: SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          controller: _scrollController,
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              for (int i = 0; i < 20; i++) ...[
-                                                Container(
-                                                  margin: EdgeInsets.only(right: 50, bottom: 20),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(20.0),
-                                                  ),
-                                                  child: MouseRegion(
-                                                    cursor: SystemMouseCursors.click,
-                                                    child: GestureDetector(
-                                                      onTap: () {},
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            'Vet $i',
-                                                            style: TextStyle(color: themeSettings.textColor),
-                                                          ),
-                                                          Text(
-                                                            'Address $i',
-                                                            style: TextStyle(color: themeSettings.textColor),
-                                                          ),
-                                                          Text(
-                                                            "Phone number $i",
-                                                            style: TextStyle(color: themeSettings.textColor),
-                                                          ),
-                                                          Text(
-                                                            "Distance $i km",
-                                                            style: TextStyle(color: themeSettings.textColor),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ],
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Text('Pet Stores'),
-                                Text('Pet Groomers'),
+                                searchVets(),
+                                searchPetSitters(),
                               ],
                             ),
                           ),
@@ -249,7 +413,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                     width: MediaQuery.of(context).size.width - 290.0,
                     height: MediaQuery.of(context).size.height - 320.0,
                     child: FutureBuilder<String?>(
-                      future: _getMapStyle(),
+                      future: LocationVAF.getMapStyle(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return Center(child: CircularProgressIndicator());
@@ -268,10 +432,19 @@ class _LocationDesktopState extends State<LocationDesktop> {
                             onMapCreated: (controller) {
                               _googleMapController = controller;
                             },
-                            initialCameraPosition: _initialLocation,
-                            markers: _markers,
+                            initialCameraPosition: LocationVAF.myLocation,
+                            markers: LocationVAF.markers,
                             myLocationButtonEnabled: true,
                             zoomControlsEnabled: true,
+                            polylines: {
+                              if (LocationVAF.polylineResult.points.isNotEmpty)
+                                Polyline(
+                                  polylineId: const PolylineId('polyline'),
+                                  color: themeSettings.primaryColor,
+                                  width: 4, // Change the line thickness here
+                                  points: LocationVAF.polylineResult.points.map((e) => LatLng(e.latitude, e.longitude)).toList(),
+                                ),
+                            },
                           ),
                         );
                       },
