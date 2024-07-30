@@ -352,7 +352,7 @@ void _showPostDialog(BuildContext context) async {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Post(postDetails: post, userProfile: userProfile),
+                  Post(postDetails: post),
                   if (notificationType == 6 && comment.isNotEmpty) ...[
                     SizedBox(height: 16),
                     Divider(),

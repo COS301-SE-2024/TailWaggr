@@ -150,3 +150,9 @@ class ImagePicker {
 }
 
 ImagePicker imagePicker = ImagePicker();
+
+class HomepageVAF {
+  ValueNotifier<bool> postPosted = ValueNotifier<bool>(false);
+}
+
+HomepageVAF homepageVAF = HomepageVAF();

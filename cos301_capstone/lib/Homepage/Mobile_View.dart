@@ -1,11 +1,13 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'dart:math';
 
 import 'package:animations/animations.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
+import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MobileHomepage extends StatefulWidget {
@@ -98,6 +100,36 @@ class Post extends StatefulWidget {
 }
 
 class _PostState extends State<Post> {
+  String numLikes = "0";
+  String numViews = "0";
+
+  @override
+  void initState() {
+    super.initState();
+    void getLikes() async {
+      Future<int> likes = HomePageService().getLikesCount(widget.postDetails['PostId']);
+      likes.then((value) {
+        setState(() {
+          numLikes = value.toString();
+        });
+      });
+    }
+
+    getLikes();
+
+    void getViews() async {
+      HomePageService().addViewToPost(widget.postDetails['PostId'], profileDetails.userID);
+      Future<int> views = HomePageService().getViewsCount(widget.postDetails['PostId']);
+      views.then((value) {
+        setState(() {
+          numViews = value.toString();
+        });
+      });
+    }
+
+    getViews();
+  }
+
   String getMonthAbbreviation(int month) {
     switch (month) {
       case 1:
@@ -147,7 +179,7 @@ class _PostState extends State<Post> {
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundImage: NetworkImage(profileDetails.profilePicture),
+                  backgroundImage: NetworkImage(widget.postDetails["pictureUrl"]),
                 ),
                 SizedBox(width: 10),
                 Column(
@@ -155,7 +187,7 @@ class _PostState extends State<Post> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      profileDetails.name,
+                      widget.postDetails["name"],
                       style: TextStyle(
                         color: themeSettings.textColor,
                       ),
@@ -202,7 +234,7 @@ class _PostState extends State<Post> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    for (var pet in profileDetails.pets) ...[
+                    for (var pet in widget.postDetails['PetIds']) ...[
                       Container(
                         margin: EdgeInsets.only(right: 10),
                         child: Column(
@@ -230,14 +262,22 @@ class _PostState extends State<Post> {
                 Tooltip(
                   message: "Like",
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
+
+                      HomePageService().getLikesCount(widget.postDetails['PostId']).then((value) {
+                        setState(() {
+                          numLikes = value.toString();
+                        });
+                      });
+                    },
                     icon: Icon(
-                      Icons.favorite_border,
+                      Icons.pets_outlined,
                       color: Colors.red.withOpacity(0.7),
                     ),
                   ),
                 ),
-                Text("0", style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
                 Spacer(),
                 Tooltip(
                   message: "Comment",
@@ -258,7 +298,7 @@ class _PostState extends State<Post> {
                     color: Colors.green.withOpacity(0.7),
                   ),
                 ),
-                Text("0", style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                Text(numViews, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
               ],
             ),
           ],
@@ -290,9 +330,21 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
       setState(() {}); // Rebuild the widget when files are selected
     });
 
-    for (var _ in profileDetails.pets) {
-      petAdded.add(false);
+    void getPets() async {
+      if (!profileDetails.pets.isNotEmpty) {
+        print("Pets not found. Fetching pets...");
+        List<Map<String, dynamic>> pets = await GeneralService().getUserPets(FirebaseAuth.instance.currentUser!.uid);
+        profileDetails.pets = pets;
+      }
+
+      setState(() {
+        for (var _ in profileDetails.pets) {
+          petAdded.add(false);
+        }
+      });
     }
+
+    getPets();
   }
 
   String errorText = "";
@@ -445,7 +497,12 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                                           selectingPet = false;
                                           removePet.add(false);
                                           petList.add(
-                                            {'name': profileDetails.pets[i]['name'], 'profilePicture': profileDetails.pets[i]['profilePicture'], 'index': i},
+                                            {
+                                              'name': profileDetails.pets[i]['name'],
+                                              'pictureUrl': profileDetails.pets[i]['pictureUrl'],
+                                              'index': i,
+                                              'petID': profileDetails.pets[i]['petID'],
+                                            },
                                           );
                                           petAdded[i] = true;
                                         });
@@ -457,7 +514,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                                           children: [
                                             CircleAvatar(
                                               radius: 20,
-                                              backgroundImage: NetworkImage(profileDetails.pets[i]["profilePicture"]),
+                                              backgroundImage: NetworkImage(profileDetails.pets[i]["pictureUrl"]),
                                             ),
                                             SizedBox(width: 10),
                                             Text(
@@ -495,7 +552,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                             },
                             child: CircleAvatar(
                               radius: 20,
-                              backgroundImage: NetworkImage(petList[i]["profilePicture"]!),
+                              backgroundImage: NetworkImage(petList[i]["pictureUrl"]!),
                             ),
                           ),
                         ),
@@ -598,6 +655,8 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     removePet.clear();
                     postText = "Post";
                   });
+
+                  homepageVAF.postPosted.value = !homepageVAF.postPosted.value;
                 } else {
                   setState(() {
                     errorText = "An error occurred while posting";
@@ -616,6 +675,14 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
+            ),
+          ),
+          SizedBox(height: 20),
+          Visibility(
+            visible: errorVisible,
+            child: Text(
+              errorText,
+              style: TextStyle(color: Colors.red),
             ),
           ),
         ],

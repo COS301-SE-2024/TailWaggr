@@ -51,6 +51,9 @@ dependencies:
   dotted_border: ^2.1.0
   expansion_widget: ^0.1.0
   url_launcher: ^6.3.0
+  vertical_tab_bar_view: ^0.0.1
+  flutter_polyline_points: ^2.1.0
+  google_maps_flutter_web: ^0.5.8
   flutter_colorpicker: ^1.1.0
   toggle_switch: ^2.3.0
   firebase_messaging: ^14.9.4
@@ -86,6 +89,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/GoogleMaps/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

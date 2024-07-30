@@ -42,45 +42,23 @@ class PostContainer extends StatefulWidget {
 }
 
 class _PostContainerState extends State<PostContainer> {
-
-  List<Map<String, dynamic>> posts = [];
-  Map<String, Map<String, dynamic>> userProfiles = {};
-  bool isLoading = true;
-  final ProfileService _profileServices = ProfileService();
-
   @override
   void initState() {
     super.initState();
-    _initializeData();
-  }
 
-  Future<void> _initializeData() async {
-    await _fetchPosts();
-    await _fetchUserProfiles();
-    setState(() {
-      isLoading = false;
-    });
-  }
-
-  Future<void> _fetchPosts() async {
-    posts = await HomePageService().getPosts();
-    print("successfully fetched posts");
-  }
-
-  Future<void> _fetchUserProfiles() async {
-    if (posts.isEmpty) return;
-
-    Set<String> userIds = posts.map((post) => post['UserId'] as String?).where((id) => id != null).toSet().cast<String>();
-    print('UserIds: $userIds');
-    for (String userId in userIds) {
-      if (!userProfiles.containsKey(userId)) {
-        Map<String, dynamic>? profile = await _profileServices.getUserProfile(userId);
-        if (profile != null) {
-          userProfiles[userId] = profile;
-        }
-      }
+    Future<void> getPosts() async {
+      Future<List<Map<String, dynamic>>> posts = HomePageService().getPosts();
+      posts.then((value) {
+        setState(() {
+          profileDetails.posts = value;
+        });
+      });
     }
-    print("successfully fetched user profiles");
+
+    homepageVAF.postPosted.addListener(() async {
+      await getPosts();
+      setState(() {});
+    });
   }
 
   @override
@@ -97,9 +75,8 @@ class _PostContainerState extends State<PostContainer> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            for (int i = 0; i < posts.length; i++) ...{
-              if (userProfiles[posts[i]['UserId']] != null) 
-                Post(postDetails: posts[i], userProfile: userProfiles[posts[i]['UserId']]!),
+              for (int i = 0; i < profileDetails.posts.length; i++) ...{
+              Post(postDetails: profileDetails.posts[i]),
               Divider(),
             },
           ],
@@ -110,10 +87,9 @@ class _PostContainerState extends State<PostContainer> {
 }
 
 class Post extends StatefulWidget {
-  const Post({super.key, required this.postDetails, required this.userProfile});
+  const Post({super.key, required this.postDetails});
 
   final Map<String, dynamic> postDetails;
-  final Map<String, dynamic> userProfile;
 
   @override
   State<Post> createState() => _PostState();
@@ -152,7 +128,7 @@ class _PostState extends State<Post> {
   }
 
   void getViews() async {
-    HomePageService().addViewToPost(widget.postDetails['PostId'], widget.userProfile['authId']);
+    HomePageService().addViewToPost(widget.postDetails['PostId'], profileDetails.userID);
     Future<int> views = HomePageService().getViewsCount(widget.postDetails['PostId']);
     views.then((value) {
       setState(() {
@@ -236,14 +212,14 @@ class _PostState extends State<Post> {
                     children: [
                       CircleAvatar(
                         radius: 20,
-                        backgroundImage: NetworkImage(widget.userProfile['profilePictureUrl'] ?? profileDetails.profilePicture),
+                        backgroundImage: NetworkImage( profileDetails.profilePicture),
                       ),
                       SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.userProfile['name'] ?? 'Unknown',
+                            widget.postDetails['name'] ?? 'Unknown',
                             style: TextStyle(
                               color: themeSettings.textColor,
                               fontWeight: FontWeight.bold,
@@ -372,14 +348,14 @@ class _PostState extends State<Post> {
                 children: [
                   CircleAvatar(
                     radius: 20,
-                    backgroundImage: NetworkImage(widget.userProfile['profilePictureUrl'] ?? profileDetails.profilePicture),
+                    backgroundImage: NetworkImage(widget.postDetails["pictureUrl"]),
                   ),
                   SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.userProfile['name'] ?? 'Unknown',
+                        widget.postDetails["name"],
                         style: TextStyle(
                           color: themeSettings.textColor,
                         ),
@@ -416,7 +392,7 @@ class _PostState extends State<Post> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      for (var pet in widget.userProfile['pets'] ?? []) ...[
+                      for (var pet in widget.postDetails['PetIds']) ...[
                         Container(
                           margin: EdgeInsets.only(right: 10),
                           child: Column(
@@ -445,7 +421,7 @@ class _PostState extends State<Post> {
                     message: "Like",
                     child: IconButton(
                       onPressed: () {
-                        HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], widget.userProfile['authId']); 
+                        HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID); 
                         HomePageService().getLikesCount(widget.postDetails['PostId']).then((value) {
                           setState(() {
                             numLikes = value.toString();
@@ -453,7 +429,7 @@ class _PostState extends State<Post> {
                         });
                       },
                       icon: Icon(
-                        Icons.favorite_border,
+                        Icons.pets_outlined,
                         color: Colors.red.withOpacity(0.7),
                       ),
                     ),
@@ -522,13 +498,13 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
     super.initState();
 
     void getPets() async {
-      // Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(FirebaseAuth.instance.currentUser!.uid);
-      // pets.then((value) {
+      if (!profileDetails.pets.isNotEmpty) {
+        print("Pets not found. Fetching pets...");
+        List<Map<String, dynamic>> pets = await GeneralService().getUserPets(FirebaseAuth.instance.currentUser!.uid);
+        profileDetails.pets = pets;
+      }
 
-      // });
       setState(() {
-        // profileDetails.pets = value;
-        // print("Pets: ${profileDetails.pets}");
         for (var _ in profileDetails.pets) {
           petAdded.add(false);
         }
@@ -861,6 +837,8 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                       removePet.clear();
                       postText = "Post";
                     });
+
+                    homepageVAF.postPosted.value = !homepageVAF.postPosted.value;
                   } else {
                     setState(() {
                       errorText = "An error occurred while posting";
@@ -882,12 +860,13 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
               ),
             ),
             SizedBox(height: 20),
-            if (errorVisible) ...[
-              Text(
+            Visibility(
+              visible: errorVisible,
+              child: Text(
                 errorText,
                 style: TextStyle(color: Colors.red),
               ),
-            ],
+            ),
           ],
         ),
       ),
