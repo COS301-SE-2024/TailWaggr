@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Homepage/Desktop_View.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:flutter/material.dart';
@@ -306,17 +307,16 @@ class NotificationCard extends StatelessWidget {
     }
   }
 
-  void _showPostDialog(BuildContext context) async {
+void _showPostDialog(BuildContext context) async {
   try {
     // Fetch post data
     DocumentSnapshot postSnapshot = await FirebaseFirestore.instance.collection('posts').doc(notification['ReferenceId']).get();
     Map<String, dynamic> post = postSnapshot.data() as Map<String, dynamic>;
     // Fetch user profile data
     DocumentSnapshot userProfileSnapshot = await FirebaseFirestore.instance.collection('users').doc(post['UserId']).get();
+    Map<String, dynamic> userProfile = userProfileSnapshot.data() as Map<String, dynamic>;
 
     if (userProfileSnapshot.exists) {
-      Map<String, dynamic> userProfile = userProfileSnapshot.data() as Map<String, dynamic>;
-
       showDialog(
         // ignore: use_build_context_synchronously
         context: context,
@@ -326,37 +326,8 @@ class NotificationCard extends StatelessWidget {
               'Post Details',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Post by: ${userProfile['userName'] ?? 'Unknown User'}',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                SizedBox(height: 8),
-                if (post['ImgUrl'] != null)
-                  Image.network(
-                    post['ImgUrl'],
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                SizedBox(height: 8),
-                Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey, // Highlight color
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(post['Content'] ?? 'No content'),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Posted on: ${formatDate(post['CreatedAt'])}',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
-              ],
+            content: SingleChildScrollView(
+              child: Post(postDetails: post, userProfile: userProfile),
             ),
             actions: [
               TextButton(
