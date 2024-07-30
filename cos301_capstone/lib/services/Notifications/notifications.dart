@@ -186,13 +186,23 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
         Map<String, dynamic>? commentPostData = commentPostDoc.data() as Map<String, dynamic>?;
 
         if (commentPostData != null) {
-          // Fetch the post details
-          String postId = commentPostData['ReferenceId'];
+          // Extract postId and commentId from the ReferenceId field
+          String referenceId = commentPostData['ReferenceId'] ?? '';
+          List<String> referenceParts = referenceId.split('/');
+          if (referenceParts.length != 2) continue;
+          String postId = referenceParts[0];
+          String commentId = referenceParts[1];
+
           DocumentSnapshot postSnapshot = await _db.collection('posts').doc(postId).get();
           Map<String, dynamic>? postDetails = postSnapshot.data() as Map<String, dynamic>?;
 
+          DocumentSnapshot commentsSnapshot = await _db.collection('posts').doc(postId).collection('comments').doc(commentId).get();
+          Map<String, dynamic>? commentDetails = commentsSnapshot.data() as Map<String, dynamic>?;
+
+
           if (postDetails != null) {
             notifications.add({
+              'comment': commentDetails,
               'post': postDetails,
               ...commentPostData,
             });
@@ -362,7 +372,7 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
       print("Error creating like post notification: $e");
     }
   }
-  Future<void> createCommentPostNotification(String postId, String userId) async {
+  Future<void> createCommentPostNotification(String postId, String userId,String commentId) async {
     try {
       DocumentSnapshot postDoc = await _db.collection('posts').doc(postId).get();
 
@@ -382,7 +392,7 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
         'NotificationTypeId': 6,
         'Content': content,
         'Read': false,
-        'ReferenceId': postId,
+        'ReferenceId': '$postId/$commentId',
         'AvatarUrlId': userId,
         'CreatedAt': Timestamp.now(),
       });

@@ -36,9 +36,10 @@ class _DesktopNotificationsState extends State<DesktopNotifications> {
         List<Map<String, dynamic>> replies = await _notificationsServices.getReplyNotifications(userId) ?? [];
         //List<Map<String, dynamic>> events = await _notificationsServices.getEventsNotifications(userId) ?? [];
         List<Map<String, dynamic>> likePosts = await _notificationsServices.getLikePostNotifications(userId) ?? [];
+        List<Map<String, dynamic>> comments = await _notificationsServices.getCommentPostNotifications(userId) ?? [];
         Map<String, dynamic>? follow = await _notificationsServices.getFollowNotifications(userId);
         List<Map<String, dynamic>> events = [];
-        List<Map<String, dynamic>> allNotifications = [...likes, ...replies,...likePosts, ...events];
+        List<Map<String, dynamic>> allNotifications = [...likes, ...replies,...likePosts,...comments, ...events];
         if (follow != null) {
           allNotifications.add(follow);
         }
@@ -306,28 +307,94 @@ class NotificationCard extends StatelessWidget {
       );
     }
   }
-
 void _showPostDialog(BuildContext context) async {
   try {
+    // Fetch the notification type to distinguish between types
+    int notificationType = notification['NotificationTypeId'];
+    String referenceId = notification['ReferenceId'];
+    
+    // Initialize variables to hold post and user profile data
+    Map<String, dynamic> post = {};
+    Map<String, dynamic> userProfile = {};
+    Map<String, dynamic> comment = {};
+    
     // Fetch post data
-    DocumentSnapshot postSnapshot = await FirebaseFirestore.instance.collection('posts').doc(notification['ReferenceId']).get();
-    Map<String, dynamic> post = postSnapshot.data() as Map<String, dynamic>;
-    // Fetch user profile data
-    DocumentSnapshot userProfileSnapshot = await FirebaseFirestore.instance.collection('users').doc(post['UserId']).get();
-    Map<String, dynamic> userProfile = userProfileSnapshot.data() as Map<String, dynamic>;
+    DocumentSnapshot postSnapshot = await FirebaseFirestore.instance.collection('posts').doc(referenceId.split('/')[0]).get();
+    if (postSnapshot.exists) {
+      post = postSnapshot.data() as Map<String, dynamic>;
 
-    if (userProfileSnapshot.exists) {
+      // Fetch user profile data
+      DocumentSnapshot userProfileSnapshot = await FirebaseFirestore.instance.collection('users').doc(post['UserId']).get();
+      if (userProfileSnapshot.exists) {
+        userProfile = userProfileSnapshot.data() as Map<String, dynamic>;
+      } else {
+        throw Exception('User profile not found');
+      }
+
+      // If the notification is of type 6, fetch the comment data
+      if (notificationType == 6) {
+        String postId = referenceId.split('/')[0];
+        String commentId = referenceId.split('/')[1];
+        DocumentSnapshot commentSnapshot = await FirebaseFirestore.instance.collection('posts').doc(postId).collection('comments').doc(commentId).get();
+        if (commentSnapshot.exists) {
+          comment = commentSnapshot.data() as Map<String, dynamic>;
+        } else {
+          throw Exception('Comment not found');
+        }
+      }
+
       showDialog(
         // ignore: use_build_context_synchronously
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(
-              'Post Details',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-            ),
             content: SingleChildScrollView(
-              child: Post(postDetails: post, userProfile: userProfile),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Post(postDetails: post, userProfile: userProfile),
+                  if (notificationType == 6 && comment.isNotEmpty) ...[
+                    SizedBox(height: 16),
+                    Divider(),
+                    Text(
+                      'Comment:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(userProfile['profilePicture'] ?? profileDetails.profilePicture),
+                        ),
+                      SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            userProfile['name'] ?? 'Unknown',
+                            style: TextStyle(
+                              color: themeSettings.textColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            comment['comment'] ?? 'No content',
+                            style: TextStyle(
+                              color: themeSettings.textColor.withOpacity(0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Commented on: ${formatDate(comment['commentedAt'])}',
+                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
+                  ],
+                ],
+              ),
             ),
             actions: [
               TextButton(
@@ -341,25 +408,7 @@ void _showPostDialog(BuildContext context) async {
         },
       );
     } else {
-      // Handle the case where the user profile document does not exist
-      showDialog(
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text('Unable to fetch user profile details.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Close'),
-              ),
-            ],
-          );
-        },
-      );
+      throw Exception('Post not found');
     }
   } catch (e) {
     print("Error fetching post details: $e");
@@ -399,7 +448,7 @@ void _showPostDialog(BuildContext context) async {
       // Check the notification type and call the appropriate dialog
       if (notification['NotificationTypeId'] == 1 || notification['NotificationTypeId'] == 3) {
         _showForumDialog(context);
-      } else if (notification['NotificationTypeId'] == 5) {
+      } else if (notification['NotificationTypeId'] == 5 || notification['NotificationTypeId'] == 6) {
         _showPostDialog(context);
       }
       },
@@ -495,7 +544,7 @@ void _showPostDialog(BuildContext context) async {
                       ),
                     ),
                   ],
-                   if (notification['NotificationTypeId'] == 5) ...[
+                   if (notification['NotificationTypeId'] == 5 ) ...[
                     ElevatedButton(
                       onPressed: () {
                         _showPostDialog(context);
@@ -505,6 +554,20 @@ void _showPostDialog(BuildContext context) async {
                       ),
                       child: Text(
                         "View Post",
+                        style: TextStyle(fontSize: subBodyTextSize - 2, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                    if (notification['NotificationTypeId'] == 6 ) ...[
+                    ElevatedButton(
+                      onPressed: () {
+                        _showPostDialog(context);
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                      ),
+                      child: Text(
+                        "View Comment",
                         style: TextStyle(fontSize: subBodyTextSize - 2, color: Colors.white),
                       ),
                     ),

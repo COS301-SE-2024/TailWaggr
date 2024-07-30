@@ -135,13 +135,13 @@ class HomePageService {
   }
   Future<void> addCommentToPost(String postId, String userId, String comment) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
-    await postRef.collection('comments').add({
+    DocumentReference<Map<String, dynamic>> commentRef = await postRef.collection('comments').add({
       'userId': userId, // Storing the userId of the commenter
       'comment': comment, // Storing the actual comment text
       'commentedAt': DateTime.now(), // Storing the timestamp of the comment
       // Additional comment information can go here
     });
-    notif.createCommentPostNotification(postId, userId);
+    notif.createCommentPostNotification(postId, userId, commentRef.id);
   }
   Future<void> addViewToPost(String postId, String userId) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
