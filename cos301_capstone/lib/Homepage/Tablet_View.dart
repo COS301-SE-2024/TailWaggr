@@ -744,6 +744,14 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                 ),
               ),
             ),
+            SizedBox(height: 20),
+            Visibility(
+              visible: errorVisible,
+              child: Text(
+                errorText,
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
           ],
         ),
       ),
