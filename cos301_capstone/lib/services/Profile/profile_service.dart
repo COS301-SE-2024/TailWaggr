@@ -49,67 +49,79 @@ class ProfileService {
     }
   }
 
-  Future<void> updateProfile(String userId, Map<String, dynamic> updatedData) async {
+  Future<void> updateProfile(String userId, Map<String, dynamic> updatedData, PlatformFile profileImage, PlatformFile sidebarImage) async {
     try {
+      // The following fields can be updated in the user profile:
+      // 
+      // address: (string) The user's address.
+      // authId: (string) The authentication ID of the user.
+      // bio: (string) A short biography of the user.
+      // email: (string) The user's email address.
+      // location: (geopoint) The user's geographical location.
+      // name: (string) The user's first name.
+      // preferences: (map) A map containing user preferences.
+      //   - darkMode: (boolean) Whether the user prefers dark mode.
+      //   - sidebarColor: (number) The color code for the sidebar.
+      //   - sidebarImage: (string) The URL of the sidebar image.
+      // profilePictureUrl: (string) The URL of the user's profile picture
+      // sidebarImage: (PlatformFile) The new sidebar image file.
+      // profileImage: (PlatformFile) The new profile image file.
+      // surname: (string) The user's surname.
+      // userName: (string) The user's username.
+      // userType: (string) The type of user (e.g., "pet_keeper").
+
+      // Update profile data
       await _db.collection('users').doc(userId).update(updatedData);
+
+      // Update profile image
+      if (profileImage != null) {
+        String profilePhotoFileName = 'profile_images/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(profileImage.name)}';
+        Uint8List? profileFileBytes = profileImage.bytes;
+        if (profileFileBytes == null) {
+          throw Exception("Profile image data is null");
+        }
+        SettableMetadata profileMetadata = SettableMetadata(contentType: 'image/jpeg');
+        TaskSnapshot profileUploadTask = await _storage.ref(profilePhotoFileName).putData(profileFileBytes, profileMetadata);
+        String profileImgUrl = await profileUploadTask.ref.getDownloadURL();
+
+        // Delete the old profile image
+        String? oldProfileImageUrl = await getUserDetails(userId).then((value) => value?['profilePictureUrl']);
+        if (oldProfileImageUrl != null) {
+          await _storage.refFromURL(oldProfileImageUrl).delete();
+        }
+
+        await updateProfileData(userId, {'profilePictureUrl': profileImgUrl});
+      }
+
+      // Update sidebar image
+      if (sidebarImage != null) {
+        String sidebarPhotoFileName = 'sidebar_images/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(sidebarImage.name)}';
+        Uint8List? sidebarFileBytes = sidebarImage.bytes;
+        if (sidebarFileBytes == null) {
+          throw Exception("Sidebar image data is null");
+        }
+        SettableMetadata sidebarMetadata = SettableMetadata(contentType: 'image/jpeg');
+        TaskSnapshot sidebarUploadTask = await _storage.ref(sidebarPhotoFileName).putData(sidebarFileBytes, sidebarMetadata);
+        String sidebarImgUrl = await sidebarUploadTask.ref.getDownloadURL();
+
+        // Delete the old sidebar image
+        String? oldSidebarImageUrl = await getUserDetails(userId).then((value) => value?['sidebarImage']);
+        if (oldSidebarImageUrl != null) {
+          await _storage.refFromURL(oldSidebarImageUrl).delete();
+        }
+
+        await updateProfileData(userId, {'sidebarImage': sidebarImgUrl});
+      }
     } catch (e) {
       print("Error updating profile: $e");
     }
   }
-  Future<String?> updateProfileImage(String userId, PlatformFile platformFile) async {
+  Future<void> updateProfileData(String userId, Map<String, dynamic> updatedData) async {
     try {
-      // Generate a unique file name for the photo
-      String photoFileName = 'profile_images/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(platformFile.name)}';
-      // Convert PlatformFile to Uint8List (byte data)
-      Uint8List? fileBytes = platformFile.bytes;
-      if (fileBytes == null) {
-        throw Exception("File data is null");
-      }
-      // Set metadata to force the MIME type to be image/jpeg
-      SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
-      // Upload the photo to Firebase Storage
-      TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
-      // Retrieve the photo URL
-      String imgUrl = await uploadTask.ref.getDownloadURL();
-
-      // Delete the old profile image
-      String? oldImageUrl = await getUserDetails(userId).then((value) => value?['profilePictureUrl']);
-      if (oldImageUrl != null) {
-        await _storage.refFromURL(oldImageUrl).delete();
-      }
-
-      await updateProfile(userId, {'profilePictureUrl': imgUrl});
+      await _db.collection('users').doc(userId).update(updatedData);
+      print("Profile updated successfully.");
     } catch (e) {
-      print("Error updating profile image: $e");
-      return null;
-    }
-  }
-  Future<String?> updatePetProfileImage(String ownerId, String petId, PlatformFile platformFile) async {
-    try {
-      // Generate a unique file name for the photo
-      String photoFileName = 'pet_images/${ownerId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(platformFile.name)}';
-      // Convert PlatformFile to Uint8List (byte data)
-      Uint8List? fileBytes = platformFile.bytes;
-      if (fileBytes == null) {
-        throw Exception("File data is null");
-      }
-      // Set metadata to force the MIME type to be image/jpeg
-      SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
-      // Upload the photo to Firebase Storage
-      TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
-      // Retrieve the photo URL
-      String imgUrl = await uploadTask.ref.getDownloadURL();
-
-      // Delete the old pet profile image
-      String? oldImageUrl = await getPetProfile(ownerId, petId).then((value) => value?['pictureUrl']);
-      if (oldImageUrl != null) {
-        await _storage.refFromURL(oldImageUrl).delete();
-      }
-
-      await updatePet(ownerId, petId, {'pictureUrl': imgUrl});
-    } catch (e) {
-      print("Error updating pet profile image: $e");
-      return null;
+      print("Error updating profile: $e");
     }
   }
   Future<List<DocumentReference>> getUserPosts(String userId) async {
@@ -131,31 +143,39 @@ class ProfileService {
       print("Error adding pet: $e");
     }
   }
-  Future<void> updatePet(String userID, String petId, Map<String, dynamic> updatedData) async {
+  Future<void> updatePetData(String ownerId, String petId, Map<String, dynamic> updatedData) async {
     try {
-      await _db.collection('users').doc(userID).collection('pets').doc(petId).update(updatedData);
+      await _db.collection('users').doc(ownerId).collection('pets').doc(petId).update(updatedData);
+      print("Pet updated successfully.");
     } catch (e) {
       print("Error updating pet: $e");
     }
   }
-  Future<void> updatePreferences(String userId, bool darkMode, Color sideBarColor, PlatformFile platformFile) async {
+  Future<void> updatePet(String userID, String petId, Map<String, dynamic> updatedData, PlatformFile profileImage) async {
     try {
-      // Update the user's preferences
-      await _db.collection('users').doc(userId).update({
-        'DarkMode': darkMode,
-        'SideBarColor': sideBarColor.value,
-      });
+      await _db.collection('users').doc(userID).collection('pets').doc(petId).update(updatedData);
 
-      Reference ref = _storage.ref().child('sidebar_images/$userId');
-      UploadTask uploadTask = ref.putData(platformFile.bytes!);
+      // Update pet profile image
+      if (profileImage != null) {
+        String photoFileName = 'pet_images/${userID}_${DateTime.now().millisecondsSinceEpoch}${path.extension(profileImage.name)}';
+        Uint8List? fileBytes = profileImage.bytes;
+        if (fileBytes == null) {
+          throw Exception("File data is null");
+        }
+        SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
+        TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
+        String imgUrl = await uploadTask.ref.getDownloadURL();
 
-      TaskSnapshot snapshot = await uploadTask;
-      String downloadUrl = await snapshot.ref.getDownloadURL();
+        // Delete the old pet profile image
+        String? oldImageUrl = await getPetProfile(userID, petId).then((value) => value?['pictureUrl']);
+        if (oldImageUrl != null) {
+          await _storage.refFromURL(oldImageUrl).delete();
+        }
 
-      await _db.collection('users').doc(userId).update({'sidebarImage': downloadUrl});
-    }
-    catch (e) {
-      print("Error updating preferences: $e");
+        await updatePetData(userID, petId, {'pictureUrl': imgUrl});
+      }
+    } catch (e) {
+      print("Error updating pet: $e");
     }
   }
 }
