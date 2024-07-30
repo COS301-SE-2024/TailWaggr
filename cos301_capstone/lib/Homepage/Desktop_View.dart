@@ -131,12 +131,15 @@ class Post extends StatefulWidget {
 class _PostState extends State<Post> {
   String numLikes = "0";
   String numViews = "0";
-
+  String numComments = "0";
+  String newReplyContent = "";
+  final HomePageService _homePageService = HomePageService();
   @override
   void initState() {
     super.initState();
     getLikes();
     getViews();
+    getComments();
   }
   
   void getLikes() async {
@@ -157,7 +160,14 @@ class _PostState extends State<Post> {
       });
     });
   }
-
+  void getComments() async {
+    Future<int> comments = HomePageService().getCommentsCount(widget.postDetails['PostId']);
+    comments.then((value) {
+      setState(() {
+        numComments = value.toString();
+      });
+    });
+  }
   String getMonthAbbreviation(int month) {
     switch (month) {
       case 1:
@@ -194,6 +204,157 @@ class _PostState extends State<Post> {
     String month = getMonthAbbreviation(date.month);
     return "${date.day} $month ${date.year}";
   }
+    Future<void> _replyToMessage(String postId) async {
+    if ( newReplyContent.isNotEmpty) {
+      try {
+        _homePageService.addCommentToPost( postId, profileDetails.userID, newReplyContent);
+        //_PostContainerState()._fetchPosts();//refresh the posts
+        setState(() { 
+          newReplyContent = '';
+        });
+      } catch (e) {
+        print('Error replying to post: $e');
+      }
+    }
+  }Future<void> showDialogBox(BuildContext context) async {
+  try {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Container(
+            width: MediaQuery.of(context).size.width * 0.5,
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Spacer(flex: 1),
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundImage: NetworkImage(widget.userProfile['profilePictureUrl'] ?? profileDetails.profilePicture),
+                      ),
+                      SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.userProfile['name'] ?? 'Unknown',
+                            style: TextStyle(
+                              color: themeSettings.textColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            "Posted on ${formatDate()}",
+                            style: TextStyle(
+                              color: themeSettings.textColor.withOpacity(0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Spacer(flex: 2),
+                  Text(
+                    widget.postDetails['Content'] ?? 'No content',
+                    style: TextStyle(
+                      color: themeSettings.textColor,
+                    ),
+                  ),
+                  Spacer(flex: 2),
+                  Divider(),
+                  Spacer(flex: 1),
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundImage: NetworkImage(profileDetails.profilePicture),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          onChanged: (value) {
+                            if (!mounted) return;
+                            setState(() {
+                              newReplyContent = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            hintText: "Post your reply",
+                            hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
+                            filled: true,
+                            fillColor: Colors.grey[200],
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Spacer(flex: 1),
+                ],
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(color: themeSettings.primaryColor),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                await _replyToMessage(widget.postDetails['PostId']);
+                Navigator.of(context).pop();
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: themeSettings.primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                ),
+              ),
+              child: Text(
+                "Reply",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  } catch (e) {
+    print("Error fetching post details: $e");
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text('An error occurred while fetching post details.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -302,14 +463,16 @@ class _PostState extends State<Post> {
                   Tooltip(
                     message: "Comment",
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialogBox(context);
+                      },
                       icon: Icon(
                         Icons.comment,
                         color: Colors.blue.withOpacity(0.7),
                       ),
                     ),
                   ),
-                  Text("0", style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                  Text(numComments, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
                   Spacer(),
                   Tooltip(
                     message: "Views",

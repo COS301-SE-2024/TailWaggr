@@ -173,7 +173,39 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
     return null;
   }
 }
+  Future<List<Map<String, dynamic>>?> getCommentPostNotifications(String userId) async {
+    try {
+      QuerySnapshot commentPostSnapshot = await _db
+          .collection('notifications')
+          .where('UserId', isEqualTo: userId)
+          .where('NotificationTypeId', isEqualTo: 6)
+          .get();
 
+      List<Map<String, dynamic>> notifications = [];
+      for (DocumentSnapshot commentPostDoc in commentPostSnapshot.docs) {
+        Map<String, dynamic>? commentPostData = commentPostDoc.data() as Map<String, dynamic>?;
+
+        if (commentPostData != null) {
+          // Fetch the post details
+          String postId = commentPostData['ReferenceId'];
+          DocumentSnapshot postSnapshot = await _db.collection('posts').doc(postId).get();
+          Map<String, dynamic>? postDetails = postSnapshot.data() as Map<String, dynamic>?;
+
+          if (postDetails != null) {
+            notifications.add({
+              'post': postDetails,
+              ...commentPostData,
+            });
+          }
+        }
+      }
+
+      return notifications.isNotEmpty ? notifications : null;
+    } catch (e) {
+      print("Error fetching comment post notifications: $e");
+      return null;
+    }
+  }
   Future<void> createFollowNotification(String followingId, String followedId) async {
     try {
       DocumentSnapshot followingDoc = await _db.collection('users').doc(followingId).get();
@@ -328,6 +360,34 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
       }
     } catch (e) {
       print("Error creating like post notification: $e");
+    }
+  }
+  Future<void> createCommentPostNotification(String postId, String userId) async {
+    try {
+      DocumentSnapshot postDoc = await _db.collection('posts').doc(postId).get();
+
+      if (!postDoc.exists) throw Exception("Post not found");
+      Map<String, dynamic> postData = postDoc.data() as Map<String, dynamic>;
+      String postOwnerId = postData['UserId'] ?? '';
+
+      DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
+      if (!userDoc.exists) throw Exception("User not found");
+      Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+      String username = userData['userName'] ?? '';
+
+      String content = "$username has commented on your post";
+
+      await _db.collection('notifications').add({
+        'UserId': postOwnerId,
+        'NotificationTypeId': 6,
+        'Content': content,
+        'Read': false,
+        'ReferenceId': postId,
+        'AvatarUrlId': userId,
+        'CreatedAt': Timestamp.now(),
+      });
+    } catch (e) {
+      print("Error creating comment post notification: $e");
     }
   }
 
