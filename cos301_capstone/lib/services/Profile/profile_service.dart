@@ -25,20 +25,30 @@ class ProfileService {
       return null;
     }
   }
-  Future<Map<String, dynamic>?> getPetProfile(String petId) async {
-      try {
-        DocumentSnapshot doc = await _db.collection('petProfile').doc(petId).get();
-        if (doc.exists) {
-          return doc.data() as Map<String, dynamic>?;
-        } else {
-          print("No pet profile found for the given petId.");
-          return null;
-        }
-      } catch (e) {
-        print("Error fetching pet profile data: $e");
+  Future<Map<String, dynamic>?> getPetProfile(String userId, String petId) async {
+    try {
+      DocumentSnapshot doc = await _db.collection('users').doc(userId).collection('pets').doc(petId).get();
+      if (doc.exists) {
+        return doc.data() as Map<String, dynamic>?;
+      } else {
+        print("No pet profile found for the given petId.");
         return null;
       }
+    } catch (e) {
+      print("Error fetching pet profile data: $e");
+      return null;
+    }
   }
+  Future<List<Map<String, dynamic>>> getUserPets(String userId) async {
+    try {
+      QuerySnapshot snapshot = await _db.collection('users').doc(userId).collection('pets').get();
+      return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+    } catch (e) {
+      print("Error fetching user pets: $e");
+      return [];
+    }
+  }
+
   Future<void> updateProfile(String userId, Map<String, dynamic> updatedData) async {
     try {
       await _db.collection('users').doc(userId).update(updatedData);
