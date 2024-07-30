@@ -101,7 +101,7 @@ class ProfileService {
       String imgUrl = await uploadTask.ref.getDownloadURL();
 
       // Delete the old pet profile image
-      String? oldImageUrl = await getPetProfile(petId).then((value) => value?['pictureUrl']);
+      String? oldImageUrl = await getPetProfile(ownerId, petId).then((value) => value?['pictureUrl']);
       if (oldImageUrl != null) {
         await _storage.refFromURL(oldImageUrl).delete();
       }
