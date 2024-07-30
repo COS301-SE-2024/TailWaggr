@@ -1,9 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 var titleTextSize = 56.0;
 var subtitleTextSize = 40.0;
@@ -13,12 +11,6 @@ var subBodyTextSize = 16.0;
 var textSize = 14.0;
 
 class ThemeSettings {
-  // static Color _primaryColor = Color(0xFF6D2480);
-  // static Color _secondaryColor = Color(0xFF9C89FF);
-  // static Color _tertiaryColor = Color(0xFF99CCED);
-  // static Color _backgroundColor = Colors.white10;
-  // static Color _textColor = Colors.black;
-  // static Color _cardColor = Colors.white;
 
   static Color _primaryColor = Color(0XFFbc6c25);
   static Color _secondaryColor = Color(0xFF606c38);

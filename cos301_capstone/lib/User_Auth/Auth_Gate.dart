@@ -54,6 +54,11 @@ void populateUserData() async {
     profileDetails.email = value['email'];
     profileDetails.bio = value['bio'];
     profileDetails.profilePicture = value['profilePictureUrl'];
+    profileDetails.location = value['location'];
+
+    if (value['preferences']['darkMode']) {
+      themeSettings.toggleTheme();
+    }
   });
 }
 
