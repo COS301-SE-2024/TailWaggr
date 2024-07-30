@@ -3,7 +3,7 @@ import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:cos301_capstone/services/forum/forum.dart';
-import 'package:cos301_capstone/services/Profile/profile.dart';
+import 'package:cos301_capstone/services/Profile/profile_service.dart';
 
 class DesktopForums extends StatefulWidget {
   const DesktopForums({super.key});

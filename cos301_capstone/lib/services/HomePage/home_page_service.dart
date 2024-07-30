@@ -3,6 +3,7 @@ import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
+import 'package:cos301_capstone/services/general/general_service.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -94,12 +95,19 @@ class HomePageService {
 
   Future<bool> deletePost(String postId) async {
     try {
-      // Delete the post from the "posts" collection
+      // Step 1: Retrieve the post document to get the image file path
+      DocumentSnapshot postSnapshot = await _db.collection('posts').doc(postId).get();
+      String filePath = (postSnapshot.data() as Map<String, dynamic>)['imagePath'];
+  
+      // Step 2: Call deleteImageFromStorage with the retrieved file path
+      await GeneralService().deleteImageFromStorage(filePath);
+      
+      // Step 3: Delete the post document from Firestore
       await _db.collection('posts').doc(postId).delete();
-      print("Post deleted successfully.");
-      return true; // Return true if the post is deleted successfully
+      print("Post and associated image deleted successfully.");
+      return true; // Return true if the post and image are deleted successfully
     } catch (e) {
-      print("Error deleting post: $e");
+      print("Error deleting post or image: $e");
       return false; // Return false if an error occurs
     }
   }

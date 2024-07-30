@@ -14,7 +14,7 @@ import 'package:cos301_capstone/services/general/general_service.dart';
 // import 'package:cos301_capstone/Signup/Signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cos301_capstone/services/Profile/profile.dart';
+import 'package:cos301_capstone/services/Profile/profile_service.dart';
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -45,7 +45,7 @@ void populateUserData() async {
   // print("Populating user data...");
   // print(FirebaseAuth.instance.currentUser!.uid);
 
-  Future<Map<String, dynamic>?> tempDetails = ProfileService().getUserProfile(FirebaseAuth.instance.currentUser!.uid);
+  Future<Map<String, dynamic>?> tempDetails = ProfileService().getUserDetails(FirebaseAuth.instance.currentUser!.uid);
   tempDetails.then((value) {
     // print("User data populated successfully.");
     // print(value);
