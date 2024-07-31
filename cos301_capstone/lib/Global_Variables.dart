@@ -15,7 +15,7 @@ class ThemeSettings {
   static Color _primaryColor = Color(0XFFbc6c25);
   static Color _secondaryColor = Color(0xFF606c38);
   static Color _tertiaryColor = Color(0xFF99CCED);
-  static Color _backgroundColor = Color.fromARGB(255, 246, 247, 251);
+  static Color _backgroundColor = Color(0xFFEFF3FC);
   static Color _textColor = Colors.black;
   static Color _cardColor = Colors.white;
 

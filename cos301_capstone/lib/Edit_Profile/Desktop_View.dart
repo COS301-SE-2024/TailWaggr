@@ -894,59 +894,32 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                           ),
                         ],
                       ),
-                      // if (!useDefaultImage) ...[
                       SizedBox(height: 20),
-                      if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) ...[
-                        Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.memory(
-                                imagePicker.filesNotifier.value![0].bytes!,
-                              ),
-                            ),
-                            Positioned(
-                              top: 10,
-                              right: 10,
-                              child: IconButton(
-                                color: Colors.white.withOpacity(0.5),
-                                icon: Icon(
-                                  Icons.close,
-                                  color: Colors.grey,
-                                ),
-                                onPressed: () => imagePicker.clearCachedFiles(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ] else ...[
-                        Container(
-                          decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
-                          child: GestureDetector(
-                            onTap: () => imagePicker.pickFiles(),
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.add_a_photo,
-                                      color: themeSettings.textColor.withOpacity(0.7),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      "Change background",
-                                      style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
-                                    ),
-                                  ],
-                                ),
+                      Container(
+                        decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
+                        child: GestureDetector(
+                          onTap: () => imagePicker.pickFiles(),
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add_a_photo,
+                                    color: themeSettings.textColor.withOpacity(0.7),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "Change background",
+                                    style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ),
-                      ],
-                      // ],
+                      ),
                     ] else ...[
                       ToggleSwitch(
                         minWidth: double.infinity,
@@ -988,7 +961,10 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                             backgroundColor: WidgetStateProperty.all(primaryColor),
                             textStyle: WidgetStateProperty.all(TextStyle(color: themeSettings.textColor)),
                           ),
-                          child: Text("Change", style: TextStyle(color: Colors.white),),
+                          child: Text(
+                            "Change",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ],
                     ),

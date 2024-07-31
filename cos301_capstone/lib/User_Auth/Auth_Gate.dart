@@ -42,8 +42,6 @@ class _AuthGateState extends State<AuthGate> {
 }
 
 void populateUserData() async {
-  // print("Populating user data...");
-  // print(FirebaseAuth.instance.currentUser!.uid);
 
   Future<Map<String, dynamic>?> tempDetails = ProfileService().getUserDetails(FirebaseAuth.instance.currentUser!.uid);
   tempDetails.then((value) {
