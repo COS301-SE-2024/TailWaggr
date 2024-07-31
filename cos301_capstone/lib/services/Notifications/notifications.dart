@@ -218,6 +218,11 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
   }
   Future<void> createFollowNotification(String followingId, String followedId) async {
     try {
+      //return if sending notification to self
+      if (followingId == followedId) {
+        return;
+      }
+      
       DocumentSnapshot followingDoc = await _db.collection('users').doc(followingId).get();
       Map<String, dynamic> followingData = followingDoc.data() as Map<String, dynamic>;
       String username = followingData['userName'] ?? '';
@@ -254,6 +259,11 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
       if (!postDoc.exists) throw Exception("Message not found");
       Map<String, dynamic> postData = postDoc.data() as Map<String, dynamic>;
       String postOwnerId = postData['UserId'] ?? '';
+
+      //return if sending notification to self
+      if (postOwnerId == userId) {
+        return;
+      }
 
       DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
       if (!userDoc.exists) throw Exception("User not found");
@@ -294,6 +304,11 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
       Map<String, dynamic> postData = postDoc.data() as Map<String, dynamic>;
       String postOwnerId = postData['UserId'] ?? '';
 
+      //return if sending notification to self
+      if (postOwnerId == userId) {
+        return;
+      }
+      
       DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
       if (!userDoc.exists) throw Exception("User not found");
       Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
@@ -341,6 +356,11 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
       Map<String, dynamic> postData = postDoc.data() as Map<String, dynamic>;
       String postOwnerId = postData['UserId'] ?? '';
 
+      //return if sending notification to self
+      if (postOwnerId == userId) {
+        return;
+      }
+      
       DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
       if (!userDoc.exists) throw Exception("User not found");
       Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
@@ -380,6 +400,11 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
       Map<String, dynamic> postData = postDoc.data() as Map<String, dynamic>;
       String postOwnerId = postData['UserId'] ?? '';
 
+      //return if sending notification to self
+      if (postOwnerId == userId) {
+        return;
+      }
+      
       DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
       if (!userDoc.exists) throw Exception("User not found");
       Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
