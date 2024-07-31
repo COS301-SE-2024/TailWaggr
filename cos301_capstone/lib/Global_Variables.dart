@@ -29,19 +29,26 @@ class ThemeSettings {
   static Color get cardColor => _cardColor;
   static String get themeMode => _themeMode;
 
-  static void toggleTheme() {
-    if (_themeMode == "Light") {
+  static void toggleTheme(String themeMode) {
+    if (themeMode == "Dark") {
+      _themeMode = "Dark";
+      _primaryColor = Color(0XFFbc6c25);
+      _secondaryColor = Color(0xFF606c38);
+      _tertiaryColor = Color(0xFF99CCED);
       _backgroundColor = Colors.black;
       _textColor = Colors.white;
       _cardColor = Color(0XFF141414);
 
-      _themeMode = "Dark";
-    } else if (_themeMode == "Dark") {
+    } else if (themeMode == "Light") {
+      _themeMode = "Light";
+      _primaryColor = Color(0XFFbc6c25);
+      _secondaryColor = Color(0xFF606c38);
+      _tertiaryColor = Color(0xFF99CCED);
       _backgroundColor = Color(0xFFEFF3FC);
       _textColor = Colors.black;
       _cardColor = Colors.white;
-
-      _themeMode = "Light";
+    } else if (themeMode == "Custom") {
+      _themeMode = "Custom";
     }
   }
 
@@ -85,8 +92,8 @@ class ThemeSettingsObserver extends ChangeNotifier {
   Color get cardColor => ThemeSettings.cardColor;
   String get themeMode => ThemeSettings.themeMode;
 
-  void toggleTheme() {
-    ThemeSettings.toggleTheme();
+  void toggleTheme(String themeMode) {
+    ThemeSettings.toggleTheme(themeMode);
     notifyListeners();
   }
 
@@ -134,14 +141,15 @@ class ProfileDetails {
   String surname = "";
   String userID = FirebaseAuth.instance.currentUser!.uid;
   String bio = "";
-  String email = "johndoe@gmail.com";
-  String phone = "012 345 6789";
-  String dialCode = "+27";
-  String isoCode = "ZA";
+  String email = "";
+  String phone = "";
+  String dialCode = "";
+  String isoCode = "";
   String location = "1234 Street Name, City, Country";
-  String birthdate = "January 1, 2000";
+  String birthdate = "";
   String profilePicture = "https://st3.depositphotos.com/4060975/17707/v/450/depositphotos_177073010-stock-illustration-male-vector-icon.jpg";
   String userType = "Veterinarian";
+  String themeMode = "Light";
 
   ValueNotifier<int> isEditing = ValueNotifier(0);
 
@@ -177,7 +185,13 @@ class ProfileDetails {
   // CreatedAt: Timestamp(seconds=1719149860, nanoseconds=848000000)
   List<Map<String, dynamic>> posts = [];
 
-
+  void setCustomColours(Map<String, dynamic> colours) {
+    ThemeSettings.setPrimaryColor(Color(colours['PrimaryColour']));
+    ThemeSettings.setSecondaryColor(Color(colours['SecondaryColour']));
+    ThemeSettings.setBackgroundColor(Color(colours['BackgroundColour']));
+    ThemeSettings.setTextColor(Color(colours['TextColour']));
+    ThemeSettings.setCardColor(Color(colours['CardColour']));
+  }
 }
 
 class Notification {
@@ -195,7 +209,12 @@ class Notification {
     return '$day $month $year';
   }
 
-  String getMonthAbbreviation(int month) {
+  
+}
+
+ProfileDetails profileDetails = ProfileDetails();
+
+String getMonthAbbreviation(int month) {
     switch (month) {
       case 1:
         return 'Jan';
@@ -225,6 +244,3 @@ class Notification {
         return '';
     }
   }
-}
-
-ProfileDetails profileDetails = ProfileDetails();

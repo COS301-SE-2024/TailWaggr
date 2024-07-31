@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 ValueNotifier<int> themeModeNotifier = ValueNotifier<int>(0);
 Color primaryColor = themeSettings.primaryColor;
@@ -132,12 +133,13 @@ class UpdatePersonalDetails extends StatefulWidget {
 }
 
 class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
+  bool isDatePickerVisible = false;
+  bool isPhoneValid = true;
+
   @override
   void initState() {
     super.initState();
-    imagePicker.filesNotifier.addListener(() {
-      setState(() {}); // Rebuild the widget when files are selected
-    });
+    imagePicker.filesNotifier.addListener(() {});
   }
 
   @override
@@ -214,18 +216,24 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
               color: themeSettings.textColor,
             ),
             onInputChanged: (PhoneNumber number) {
-              // print(number.phoneNumber);
+              profileDetails.dialCode = number.dialCode!;
+              profileDetails.isoCode = number.isoCode!;
+              profileDetails.phone = number.phoneNumber!;
             },
             onInputValidated: (bool value) {
-              // print(value);
+              print("Validating phone number: $value");
+              if (value != isPhoneValid) {
+                setState(() {
+                  isPhoneValid = value;
+                });
+              }
             },
             selectorConfig: SelectorConfig(
               selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
               useBottomSheetSafeArea: true,
             ),
             ignoreBlank: false,
-            autoValidateMode: AutovalidateMode.disabled,
-            // selectorTextStyle: TextStyle(color: Colors.black),
+            autoValidateMode: AutovalidateMode.onUserInteraction,
             initialValue: PhoneNumber(
               dialCode: profileDetails.dialCode,
               isoCode: profileDetails.isoCode,
@@ -244,6 +252,7 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
               print('On Saved: $number');
             },
           ),
+
           SizedBox(height: 20),
           TextField(
             controller: EditProfileVariables.addressController,
@@ -256,34 +265,112 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
             ),
           ),
           SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () async {
-              profileDetails.name = EditProfileVariables.nameController.text;
-              profileDetails.surname = EditProfileVariables.surnameController.text;
-              profileDetails.bio = EditProfileVariables.bioController.text;
-              profileDetails.location = EditProfileVariables.addressController.text;
-
-              PlatformFile? newProfileImage;
-
-              if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
-                newProfileImage = imagePicker.filesNotifier.value![0];
-              }
-
-              await ProfileService().updateProfile(
-                profileDetails.userID,
-                {
-                  'name': profileDetails.name,
-                  'surname': profileDetails.surname,
-                  'bio': profileDetails.bio,
-                  'location': profileDetails.location,
+          TextField(
+            controller: EditProfileVariables.birthdateController,
+            decoration: InputDecoration(
+              labelText: "Birth Date",
+              border: OutlineInputBorder(),
+              suffixIcon: IconButton(
+                icon: Icon(Icons.calendar_today),
+                onPressed: () {
+                  setState(() {
+                    isDatePickerVisible = !isDatePickerVisible;
+                  });
                 },
-                newProfileImage,
-                null,
-              );
-
-              profileDetails.isEditing.value++;
-              Navigator.pop(context);
+              ),
+            ),
+            style: TextStyle(
+              color: themeSettings.textColor,
+            ),
+            onChanged: (value) {
+              EditProfileVariables.birthdateController.text = profileDetails.birthdate;
             },
+            // enabled: false,
+          ),
+          SizedBox(height: 20),
+          Visibility(
+            visible: isDatePickerVisible,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: themeSettings.primaryColor),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SfDateRangePicker(
+                  backgroundColor: themeSettings.cardColor,
+                  onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                    profileDetails.birthdate = args.value.toString();
+                  },
+                  selectionMode: DateRangePickerSelectionMode.single,
+                  initialDisplayDate: DateTime.now(),
+                  showActionButtons: true,
+                  confirmText: "Select",
+                  cancelText: "Cancel",
+                  headerStyle: DateRangePickerHeaderStyle(
+                    backgroundColor: themeSettings.cardColor,
+                    textAlign: TextAlign.center,
+                  ),
+                  todayHighlightColor: themeSettings.primaryColor,
+                  showNavigationArrow: true,
+                  onSubmit: (p0) {
+                    EditProfileVariables.setBirthDateControllers(p0);
+                    setState(() {
+                      isDatePickerVisible = false;
+                    });
+                  },
+                  onCancel: () {
+                    setState(() {
+                      EditProfileVariables.birthdateController.text = profileDetails.birthdate;
+                      isDatePickerVisible = false;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: isDatePickerVisible,
+            child: SizedBox(height: 20),
+          ),
+          ElevatedButton(
+            onPressed: !isPhoneValid
+                ? () {
+                  print("Phone number is invalid");
+                }
+                : () async {
+                    profileDetails.name = EditProfileVariables.nameController.text;
+                    profileDetails.surname = EditProfileVariables.surnameController.text;
+                    profileDetails.bio = EditProfileVariables.bioController.text;
+                    profileDetails.location = EditProfileVariables.addressController.text;
+
+                    PlatformFile? newProfileImage;
+
+                    if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
+                      newProfileImage = imagePicker.filesNotifier.value![0];
+                    }
+
+                    await ProfileService().updateProfile(
+                      profileDetails.userID,
+                      {
+                        'name': profileDetails.name,
+                        'surname': profileDetails.surname,
+                        'bio': profileDetails.bio,
+                        'location': profileDetails.location,
+                        'phoneDetails': {
+                          'dialCode': profileDetails.dialCode,
+                          'isoCode': profileDetails.isoCode,
+                          'phoneNumber': profileDetails.phone,
+                        },
+                        'birthDate': EditProfileVariables.birthdate,
+                      },
+                      newProfileImage,
+                      null,
+                    );
+
+                    profileDetails.isEditing.value++;
+                    Navigator.pop(context);
+                  },
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
             ),
@@ -326,6 +413,7 @@ class _UpdateThemeState extends State<UpdateTheme> {
             primaryColor = newColor;
             // themeSettings.setPrimaryColor(newColor);
             themeModeNotifier.value++;
+
             break;
           case "SecondaryColour":
             secondaryColor = newColor;
@@ -480,7 +568,7 @@ class _UpdateThemeState extends State<UpdateTheme> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       setState(() {
                         switch (themeModeSelector) {
                           case "PrimaryColour":
@@ -508,6 +596,23 @@ class _UpdateThemeState extends State<UpdateTheme> {
                             break;
                         }
                       });
+                      await ProfileService().updateProfile(
+                        profileDetails.userID,
+                        {
+                          'preferences': {
+                            'themeMode': "Custom",
+                            'Colours': {
+                              'PrimaryColour': primaryColor.value,
+                              'SecondaryColour': secondaryColor.value,
+                              'BackgroundColour': backgroundColor.value,
+                              'TextColour': textColor.value,
+                              'CardColour': cardColor.value,
+                            },
+                          },
+                        },
+                        null,
+                        null,
+                      );
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(primaryColor),

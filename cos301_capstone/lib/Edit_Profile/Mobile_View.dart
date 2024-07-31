@@ -1,13 +1,17 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
+import 'package:cos301_capstone/services/Location/location_service.dart';
+import 'package:cos301_capstone/services/Profile/profile_service.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 ValueNotifier<int> themeModeNotifier = ValueNotifier<int>(0);
 Color primaryColor = themeSettings.primaryColor;
@@ -53,18 +57,12 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
       ),
       body: Center(
         child: Container(
+          width: 600,
           padding: EdgeInsets.all(30),
-          margin: EdgeInsets.symmetric(horizontal: 20),
+          margin: EdgeInsets.only(bottom: 60, top: 5),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cardColor,
             borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 10,
-                offset: Offset(0, 5),
-              ),
-            ],
           ),
           child: DefaultTabController(
             initialIndex: 0,
@@ -77,31 +75,13 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
                   dividerColor: Colors.transparent,
                   tabs: [
                     Tab(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.pets),
-                          Text("Profile"),
-                        ],
-                      ),
+                      child: Icon(Icons.pets),
                     ),
                     Tab(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.palette),
-                          Text("Theme"),
-                        ],
-                      ),
+                      child: Icon(Icons.palette),
                     ),
                     Tab(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.menu),
-                          Text("Navbar"),
-                        ],
-                      ),
+                      child: Icon(Icons.menu),
                     ),
                   ],
                 ),
@@ -124,45 +104,62 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
   }
 }
 
-class UpdatePersonalDetails extends StatelessWidget {
+class UpdatePersonalDetails extends StatefulWidget {
   const UpdatePersonalDetails({super.key});
+
+  @override
+  State<UpdatePersonalDetails> createState() => _UpdatePersonalDetailsState();
+}
+
+class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
+  bool isDatePickerVisible = false;
+  bool isPhoneValid = true;
+
+  @override
+  void initState() {
+    super.initState();
+    imagePicker.filesNotifier.addListener(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Column(
-            children: [
-              GestureDetector(
-                onTap: () async {
-                  try {} catch (e) {
-                    print("Error: $e");
-                  }
-                },
-                child: CircleAvatar(
-                  radius: 75,
-                  // backgroundImage: AssetImage("assets/images/profile.jpg"),
-                  backgroundImage: NetworkImage(profileDetails.profilePicture),
-                ),
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () async {
+                imagePicker.pickFiles();
+              },
+              child: CircleAvatar(
+                radius: 75,
+                // backgroundImage: AssetImage("assets/images/profile.jpg"),
+                backgroundImage: NetworkImage(profileDetails.profilePicture),
               ),
-              SizedBox(width: 20),
-              TextField(
-                controller: EditProfileVariables.nameController,
-                decoration: InputDecoration(
-                  labelText: "Name",
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: EditProfileVariables.surnameController,
-                decoration: InputDecoration(
-                  labelText: "Surname",
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ],
+            ),
+          ),
+          SizedBox(height: 20),
+          TextField(
+            controller: EditProfileVariables.nameController,
+            decoration: InputDecoration(
+              labelText: "Name",
+              border: OutlineInputBorder(),
+            ),
+            style: TextStyle(
+              color: themeSettings.textColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          TextField(
+            controller: EditProfileVariables.surnameController,
+            decoration: InputDecoration(
+              labelText: "Surname",
+              border: OutlineInputBorder(),
+            ),
+            style: TextStyle(
+              color: themeSettings.textColor,
+            ),
           ),
           SizedBox(height: 20),
           TextField(
@@ -172,31 +169,34 @@ class UpdatePersonalDetails extends StatelessWidget {
               border: OutlineInputBorder(),
             ),
             maxLines: null, // Allow the field to expand
-          ),
-          SizedBox(height: 20),
-          TextField(
-            controller: EditProfileVariables.emailController,
-            decoration: InputDecoration(
-              labelText: "Email",
-              border: OutlineInputBorder(),
+            style: TextStyle(
+              color: themeSettings.textColor,
             ),
-            enabled: false,
           ),
           SizedBox(height: 20),
           InternationalPhoneNumberInput(
+            textStyle: TextStyle(
+              color: themeSettings.textColor,
+            ),
             onInputChanged: (PhoneNumber number) {
-              print(number.phoneNumber);
+              profileDetails.dialCode = number.dialCode!;
+              profileDetails.isoCode = number.isoCode!;
+              profileDetails.phone = number.phoneNumber!;
             },
             onInputValidated: (bool value) {
-              print(value);
+              print("Validating phone number: $value");
+              if (value != isPhoneValid) {
+                setState(() {
+                  isPhoneValid = value;
+                });
+              }
             },
             selectorConfig: SelectorConfig(
               selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
               useBottomSheetSafeArea: true,
             ),
             ignoreBlank: false,
-            autoValidateMode: AutovalidateMode.disabled,
-            // selectorTextStyle: TextStyle(color: Colors.black),
+            autoValidateMode: AutovalidateMode.onUserInteraction,
             initialValue: PhoneNumber(
               dialCode: profileDetails.dialCode,
               isoCode: profileDetails.isoCode,
@@ -207,7 +207,7 @@ class UpdatePersonalDetails extends StatelessWidget {
             keyboardType: TextInputType.numberWithOptions(signed: true, decimal: true),
             inputBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: Colors.transparent,
+                // color: Colors.transparent,
                 width: 0,
               ),
             ),
@@ -215,6 +215,7 @@ class UpdatePersonalDetails extends StatelessWidget {
               print('On Saved: $number');
             },
           ),
+
           SizedBox(height: 20),
           TextField(
             controller: EditProfileVariables.addressController,
@@ -222,10 +223,117 @@ class UpdatePersonalDetails extends StatelessWidget {
               labelText: "Address",
               border: OutlineInputBorder(),
             ),
+            style: TextStyle(
+              color: themeSettings.textColor,
+            ),
           ),
           SizedBox(height: 20),
+          TextField(
+            controller: EditProfileVariables.birthdateController,
+            decoration: InputDecoration(
+              labelText: "Birth Date",
+              border: OutlineInputBorder(),
+              suffixIcon: IconButton(
+                icon: Icon(Icons.calendar_today),
+                onPressed: () {
+                  setState(() {
+                    isDatePickerVisible = !isDatePickerVisible;
+                  });
+                },
+              ),
+            ),
+            style: TextStyle(
+              color: themeSettings.textColor,
+            ),
+            onChanged: (value) {
+              EditProfileVariables.birthdateController.text = profileDetails.birthdate;
+            },
+            // enabled: false,
+          ),
+          SizedBox(height: 20),
+          Visibility(
+            visible: isDatePickerVisible,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: themeSettings.primaryColor),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SfDateRangePicker(
+                  backgroundColor: themeSettings.cardColor,
+                  onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                    profileDetails.birthdate = args.value.toString();
+                  },
+                  selectionMode: DateRangePickerSelectionMode.single,
+                  initialDisplayDate: DateTime.now(),
+                  showActionButtons: true,
+                  confirmText: "Select",
+                  cancelText: "Cancel",
+                  headerStyle: DateRangePickerHeaderStyle(
+                    backgroundColor: themeSettings.cardColor,
+                    textAlign: TextAlign.center,
+                  ),
+                  todayHighlightColor: themeSettings.primaryColor,
+                  showNavigationArrow: true,
+                  onSubmit: (p0) {
+                    EditProfileVariables.setBirthDateControllers(p0);
+                    setState(() {
+                      isDatePickerVisible = false;
+                    });
+                  },
+                  onCancel: () {
+                    setState(() {
+                      EditProfileVariables.birthdateController.text = profileDetails.birthdate;
+                      isDatePickerVisible = false;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: isDatePickerVisible,
+            child: SizedBox(height: 20),
+          ),
           ElevatedButton(
-            onPressed: () async {},
+            onPressed: !isPhoneValid
+                ? () {
+                  print("Phone number is invalid");
+                }
+                : () async {
+                    profileDetails.name = EditProfileVariables.nameController.text;
+                    profileDetails.surname = EditProfileVariables.surnameController.text;
+                    profileDetails.bio = EditProfileVariables.bioController.text;
+                    profileDetails.location = EditProfileVariables.addressController.text;
+
+                    PlatformFile? newProfileImage;
+
+                    if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
+                      newProfileImage = imagePicker.filesNotifier.value![0];
+                    }
+
+                    await ProfileService().updateProfile(
+                      profileDetails.userID,
+                      {
+                        'name': profileDetails.name,
+                        'surname': profileDetails.surname,
+                        'bio': profileDetails.bio,
+                        'location': profileDetails.location,
+                        'phoneDetails': {
+                          'dialCode': profileDetails.dialCode,
+                          'isoCode': profileDetails.isoCode,
+                          'phoneNumber': profileDetails.phone,
+                        },
+                        'birthDate': EditProfileVariables.birthdate,
+                      },
+                      newProfileImage,
+                      null,
+                    );
+
+                    profileDetails.isEditing.value++;
+                    Navigator.pop(context);
+                  },
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
             ),
@@ -268,6 +376,7 @@ class _UpdateThemeState extends State<UpdateTheme> {
             primaryColor = newColor;
             // themeSettings.setPrimaryColor(newColor);
             themeModeNotifier.value++;
+
             break;
           case "SecondaryColour":
             secondaryColor = newColor;
@@ -326,10 +435,10 @@ class _UpdateThemeState extends State<UpdateTheme> {
         borderRadius: BorderRadius.circular(5),
       ),
       padding: EdgeInsets.all(10),
-      child: Column(
+      child: Row(
         children: [
           SizedBox(
-            width: double.infinity,
+            width: 280,
             height: 320,
             child: ColorPicker(
               pickerColor: getColour(),
@@ -422,7 +531,7 @@ class _UpdateThemeState extends State<UpdateTheme> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       setState(() {
                         switch (themeModeSelector) {
                           case "PrimaryColour":
@@ -450,6 +559,23 @@ class _UpdateThemeState extends State<UpdateTheme> {
                             break;
                         }
                       });
+                      await ProfileService().updateProfile(
+                        profileDetails.userID,
+                        {
+                          'preferences': {
+                            'themeMode': "Custom",
+                            'Colours': {
+                              'PrimaryColour': primaryColor.value,
+                              'SecondaryColour': secondaryColor.value,
+                              'BackgroundColour': backgroundColor.value,
+                              'TextColour': textColor.value,
+                              'CardColour': cardColor.value,
+                            },
+                          },
+                        },
+                        null,
+                        null,
+                      );
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(primaryColor),
@@ -541,7 +667,6 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
   bool useImage = true;
   bool useDefaultImage = true;
   bool usePrimaryColour = true;
-  bool previewNavbar = true;
 
   int petIncludeCounter = 0;
   List<bool> petAdded = [];
@@ -697,307 +822,245 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: Alignment.topCenter,
       children: [
-        if (previewNavbar) ...[
-          Container(
-            width: 250,
-            padding: EdgeInsets.all(20),
-            height: double.infinity,
-            decoration: useImage
-                ? !useDefaultImage
-                    ? imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty
-                        ? BoxDecoration(image: DecorationImage(image: MemoryImage(imagePicker.filesNotifier.value![0].bytes!), fit: BoxFit.cover))
-                        : BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/pug.jpg"), fit: BoxFit.cover))
-                    : BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/pug.jpg"), fit: BoxFit.cover))
-                : BoxDecoration(color: usePrimaryColour ? primaryColor : secondaryColor),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 25,
-                      backgroundImage: NetworkImage(profileDetails.profilePicture),
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      profileDetails.name,
-                      style: TextStyle(color: navbarTextColor, fontSize: 20),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.home, color: navbarTextColor),
-                        SizedBox(width: 10),
-                        Text("Home", style: TextStyle(color: navbarTextColor, fontSize: 20)),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(Icons.notifications, color: navbarTextColor),
-                        SizedBox(width: 10),
-                        Text("Notifications", style: TextStyle(color: navbarTextColor, fontSize: 20)),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(Icons.search, color: navbarTextColor),
-                        SizedBox(width: 10),
-                        Text("Search", style: TextStyle(color: navbarTextColor, fontSize: 20)),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(Icons.event, color: navbarTextColor),
-                        SizedBox(width: 10),
-                        Text("Events", style: TextStyle(color: navbarTextColor, fontSize: 20)),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(Icons.map_sharp, color: navbarTextColor),
-                        SizedBox(width: 10),
-                        Text("Locate", style: TextStyle(color: navbarTextColor, fontSize: 20)),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(Icons.forum_outlined, color: navbarTextColor),
-                        SizedBox(width: 10),
-                        Text("Forums", style: TextStyle(color: navbarTextColor, fontSize: 20)),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(Icons.person_outline, color: navbarTextColor),
-                        SizedBox(width: 10),
-                        Text("Profile", style: TextStyle(color: navbarTextColor, fontSize: 20)),
-                      ],
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Icon(Icons.dark_mode, color: navbarTextColor),
-                    SizedBox(width: 10),
-                    Text("Logout", style: TextStyle(color: navbarTextColor, fontSize: 20)),
-                  ],
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        previewNavbar = false;
-                      });
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(primaryColor),
-                    ),
-                    child: Text(
-                      "Edit Navbar",
-                      style: TextStyle(
-                        fontSize: bodyTextSize,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ] else ...[
-          Expanded(
-            flex: 1,
-            child: SingleChildScrollView(
-              padding: EdgeInsets.only(left: 20),
+        Row(
+          children: [
+            Container(
+              width: 175,
+              padding: EdgeInsets.all(20),
+              height: double.infinity,
+              decoration: useImage
+                  ? !useDefaultImage
+                      ? imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty
+                          ? BoxDecoration(image: DecorationImage(image: MemoryImage(imagePicker.filesNotifier.value![0].bytes!), fit: BoxFit.cover))
+                          : BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/pug.jpg"), fit: BoxFit.cover))
+                      : BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/pug.jpg"), fit: BoxFit.cover))
+                  : BoxDecoration(color: usePrimaryColour ? primaryColor : secondaryColor),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          previewNavbar = true;
-                        });
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(primaryColor),
-                      ),
-                      child: Text(
-                        "Preview Navbar",
-                        style: TextStyle(
-                          fontSize: bodyTextSize,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Use image", style: TextStyle(color: themeSettings.primaryColor, fontSize: bodyTextSize)),
-                      Switch(
-                        value: useImage,
-                        activeColor: themeSettings.primaryColor,
-                        inactiveThumbColor: themeSettings.secondaryColor,
-                        onChanged: (value) => setState(() => useImage = value),
+                      CircleAvatar(
+                        radius: 15,
+                        backgroundImage: NetworkImage(profileDetails.profilePicture),
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        profileDetails.name,
+                        style: TextStyle(color: navbarTextColor, fontSize: 14),
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
-                  if (useImage) ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Use default image", style: TextStyle(color: themeSettings.secondaryColor, fontSize: bodyTextSize)),
-                        Switch(
-                          value: useDefaultImage,
-                          activeColor: themeSettings.primaryColor,
-                          inactiveThumbColor: themeSettings.secondaryColor,
-                          onChanged: (value) => setState(() => useDefaultImage = value),
-                        ),
-                      ],
-                    ),
-                    if (!useDefaultImage) ...[
-                      SizedBox(height: 20),
+                  Column(
+                    children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Navbar text colour", style: TextStyle(color: themeSettings.primaryColor, fontSize: bodyTextSize)),
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                navbarTextColourSelector = true;
-                              });
-                            },
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStateProperty.all(primaryColor),
-                              textStyle: WidgetStateProperty.all(TextStyle(color: themeSettings.textColor)),
-                            ),
-                            child: Text("Change"),
-                          ),
+                          Icon(Icons.home, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Home", style: TextStyle(color: navbarTextColor, fontSize: 14)),
                         ],
                       ),
-                      SizedBox(height: 20),
-                      if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) ...[
-                        Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.memory(
-                                imagePicker.filesNotifier.value![0].bytes!,
-                              ),
-                            ),
-                            Positioned(
-                              top: 10,
-                              right: 10,
-                              child: IconButton(
-                                color: Colors.white.withOpacity(0.5),
-                                icon: Icon(
-                                  Icons.close,
-                                  color: Colors.grey,
-                                ),
-                                onPressed: () => imagePicker.clearCachedFiles(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ] else ...[
-                        Container(
-                          decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
-                          child: GestureDetector(
-                            onTap: () => imagePicker.pickFiles(),
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.add_a_photo,
-                                      color: themeSettings.textColor.withOpacity(0.7),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      "Change background",
-                                      style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.notifications, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Notifications", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.search, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Search", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.event, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Events", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.map_sharp, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Locate", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.forum_outlined, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Forums", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.person_outline, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Profile", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
                     ],
-                  ] else ...[
-                    ToggleSwitch(
-                      minWidth: double.infinity,
-                      cornerRadius: 20.0,
-                      activeBgColors: [
-                        [primaryColor],
-                        [secondaryColor]
-                      ],
-                      activeFgColor: Colors.white,
-                      inactiveBgColor: Colors.grey,
-                      inactiveFgColor: Colors.white,
-                      initialLabelIndex: usePrimaryColour ? 0 : 1,
-                      totalSwitches: 2,
-                      labels: ['Primary', 'Secondary'],
-                      radiusStyle: true,
-                      animate: true,
-                      curve: Curves.easeInOut, // animate must be set to true when using custom curve
-                      animationDuration: 200,
-                      onToggle: (index) {
-                        print('switched to: $index');
-                        setState(() {
-                          usePrimaryColour = index == 0;
-                        });
-                      },
-                    ),
-                  ],
-                  SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {});
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(primaryColor),
-                      ),
-                      child: Text(
-                        "Save Changes",
-                        style: TextStyle(
-                          fontSize: bodyTextSize,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.dark_mode, color: navbarTextColor),
+                      SizedBox(width: 10),
+                      Text("Logout", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.logout, color: navbarTextColor),
+                      SizedBox(width: 10),
+                      Text("Toggle theme", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                    ],
                   ),
                 ],
               ),
             ),
-          )
-        ],
-        // Row(
-        //   children: [
-        //      ],
-        // ),
+            Expanded(
+              flex: 1,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(left: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Use image", style: TextStyle(color: themeSettings.primaryColor, fontSize: bodyTextSize)),
+                        Switch(
+                          value: useImage,
+                          activeColor: themeSettings.primaryColor,
+                          inactiveThumbColor: themeSettings.secondaryColor,
+                          onChanged: (value) => setState(() => useImage = value),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    if (useImage) ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Use default image", style: TextStyle(color: themeSettings.secondaryColor, fontSize: bodyTextSize)),
+                          Switch(
+                            value: useDefaultImage,
+                            activeColor: themeSettings.primaryColor,
+                            inactiveThumbColor: themeSettings.secondaryColor,
+                            onChanged: (value) => setState(() => useDefaultImage = value),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      Container(
+                        decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
+                        child: GestureDetector(
+                          onTap: () => imagePicker.pickFiles(),
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add_a_photo,
+                                    color: themeSettings.textColor.withOpacity(0.7),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "Change background",
+                                    style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      ToggleSwitch(
+                        minWidth: double.infinity,
+                        cornerRadius: 20.0,
+                        activeBgColors: [
+                          [primaryColor],
+                          [secondaryColor]
+                        ],
+                        activeFgColor: Colors.white,
+                        inactiveBgColor: Colors.grey,
+                        inactiveFgColor: Colors.white,
+                        initialLabelIndex: usePrimaryColour ? 0 : 1,
+                        totalSwitches: 2,
+                        labels: ['Primary', 'Secondary'],
+                        radiusStyle: true,
+                        animate: true,
+                        curve: Curves.easeInOut, // animate must be set to true when using custom curve
+                        animationDuration: 200,
+                        onToggle: (index) {
+                          print('switched to: $index');
+                          setState(() {
+                            usePrimaryColour = index == 0;
+                          });
+                        },
+                      ),
+                    ],
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Navbar text colour", style: TextStyle(color: themeSettings.primaryColor, fontSize: bodyTextSize)),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              navbarTextColourSelector = true;
+                            });
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(primaryColor),
+                            textStyle: WidgetStateProperty.all(TextStyle(color: themeSettings.textColor)),
+                          ),
+                          child: Text(
+                            "Change",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {});
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(primaryColor),
+                        ),
+                        child: Text(
+                          "Save Changes",
+                          style: TextStyle(
+                            fontSize: bodyTextSize,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
         if (navbarTextColourSelector) ...[
           Positioned(
             child: changeColour(),
