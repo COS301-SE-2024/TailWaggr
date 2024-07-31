@@ -60,11 +60,19 @@ class ProfileService {
   /// - location: (geopoint) The user's geographical location.
   /// - name: (string) The user's first name.
   /// - preferences: (map) A map containing user preferences.
-  ///   - darkMode: (boolean) Whether the user prefers dark mode.
-  ///   - sidebarColor: (number) The color code for the sidebar.
+  ///   - sidebarImage: (PlatformFile) The new sidebar image file.
+  ///   - usingImage: (bool) Whether the user is using an image.
+  ///   - color: (map) A map containing the user's preferred color scheme.
+  ///     - primary: (Int) The primary color.
+  ///     - secondary: (Int) The secondary color.
+  ///     - tertiary: (Int) The tertiary color.
+  ///     - background: (Int) The background color.
+  ///     - text: (Int) The text color.
+  ///     - cardColor: (Int) The card color.
+  ///     - sidebarColor: (Int) The sidebar color.
   ///   - sidebarImage: (string) The URL of the sidebar image.
+  ///   - themeMode: (string) whether light, dark or custom.
   /// - profilePictureUrl: (string) The URL of the user's profile picture.
-  /// - sidebarImage: (PlatformFile) The new sidebar image file.
   /// - profileImage: (PlatformFile) The new profile image file.
   /// - surname: (string) The user's surname.
   /// - userName: (string) The user's username.
