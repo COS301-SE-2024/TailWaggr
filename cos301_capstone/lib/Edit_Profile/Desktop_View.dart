@@ -689,17 +689,22 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
   bool useImage = true;
   bool useDefaultImage = true;
   bool usePrimaryColour = true;
-
-  int petIncludeCounter = 0;
-  List<bool> petAdded = [];
-  List<Map<String, dynamic>> petList = [];
-  TextEditingController postController = TextEditingController();
-  bool selectingPet = false;
-  List<bool> removePet = [];
-
   bool navbarTextColourSelector = false;
-
   TextEditingController changeColourtextController = TextEditingController();
+  String saveChangesText = "Save Changes";
+  
+  @override
+  void initState() {
+    super.initState();
+    imagePicker.filesNotifier.addListener(() {
+      setState(() {}); // Rebuild the widget when files are selected
+    });
+
+    setState(() {
+      useImage = profileDetails.usingImage;
+      useDefaultImage = profileDetails.usingDefaultImage;
+    });
+  }
 
   void updateTextController(Color color) {
     changeColourtextController.text = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
@@ -802,19 +807,23 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       setState(() {
                         // themeSettings.setNavbarTextColor(navbarTextColor);
                         themeModeNotifier.value++;
                         navbarTextColourSelector = false;
+                        saveChangesText = "Saving...";
                       });
-                      EditProfileVariables.setNavbarPreferences(profileDetails.usingImage, profileDetails.usingDefaultImage);
+                      await EditProfileVariables.setNavbarPreferences(profileDetails.usingImage, profileDetails.usingDefaultImage);
+                      setState(() {
+                        saveChangesText = "Save Changes";
+                      });
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(primaryColor),
                     ),
                     child: Text(
-                      "Save Changes",
+                      saveChangesText,
                       style: TextStyle(
                         fontSize: bodyTextSize,
                         color: Colors.white,
@@ -830,13 +839,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    imagePicker.filesNotifier.addListener(() {
-      setState(() {}); // Rebuild the widget when files are selected
-    });
-  }
+  
 
   String errorText = "";
   bool errorVisible = false;
@@ -856,7 +859,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                   ? !useDefaultImage
                       ? imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty
                           ? BoxDecoration(image: DecorationImage(image: MemoryImage(imagePicker.filesNotifier.value![0].bytes!), fit: BoxFit.cover))
-                          : BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/pug.jpg"), fit: BoxFit.cover))
+                          : BoxDecoration(image: DecorationImage(image: NetworkImage(profileDetails.sidebarImage), fit: BoxFit.cover))
                       : BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/pug.jpg"), fit: BoxFit.cover))
                   : BoxDecoration(color: usePrimaryColour ? primaryColor : secondaryColor),
               child: Column(
@@ -986,32 +989,35 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                         ],
                       ),
                       SizedBox(height: 20),
-                      Container(
-                        decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
-                        child: GestureDetector(
-                          onTap: () => imagePicker.pickFiles(),
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.add_a_photo,
-                                    color: themeSettings.textColor.withOpacity(0.7),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    "Change background",
-                                    style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
-                                  ),
-                                ],
+                      Visibility(
+                        visible: !useDefaultImage,
+                        child: Container(
+                          decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
+                          margin: EdgeInsets.only(bottom: 20),
+                          child: GestureDetector(
+                            onTap: () => imagePicker.pickFiles(),
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.add_a_photo,
+                                      color: themeSettings.textColor.withOpacity(0.7),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      "Change background",
+                                      style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(height: 20),
                     ],
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1038,23 +1044,22 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          print("Saving navbar preferences");
-                          print("User using image: $useImage");
-
-
-                          print("User using default image: $useDefaultImage");
-
-                          EditProfileVariables.setNavbarPreferences(useImage, useDefaultImage);
+                        onPressed: () async {
                           setState(() {
-                            
+                            profileDetails.usingImage = useImage;
+                            profileDetails.usingDefaultImage = useDefaultImage;
+                            saveChangesText = "Saving...";
+                          });
+                          await EditProfileVariables.setNavbarPreferences(useImage, useDefaultImage);
+                          setState(() {
+                            saveChangesText = "Save Changes";
                           });
                         },
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(primaryColor),
                         ),
                         child: Text(
-                          "Save Changes",
+                          saveChangesText,
                           style: TextStyle(
                             fontSize: bodyTextSize,
                             color: Colors.white,

@@ -38,7 +38,9 @@ class _AuthGateState extends State<AuthGate> {
       profileDetails.phone = value['phoneDetails']['phoneNumber'];
       profileDetails.isoCode = value['phoneDetails']['isoCode'];
       profileDetails.dialCode = value['phoneDetails']['dialCode'];
-
+      profileDetails.usingImage = value['preferences']['usingImage'];
+      profileDetails.usingDefaultImage = value['preferences']['usingDefaultImage'];
+      profileDetails.sidebarImage = value['sidebarImage'];
 
       profileDetails.birthdate = formatDate(value['birthDate'].toDate());
       profileDetails.setCustomColours({

@@ -83,6 +83,10 @@ class ThemeSettings {
   static void setCardColor(Color color) {
     _cardColor = color;
   }
+
+  static void setNavbarTextColour(Color color) {
+    _navbarTextColour = color;
+  }
 }
 
 class ThemeSettingsObserver extends ChangeNotifier {
@@ -133,6 +137,11 @@ class ThemeSettingsObserver extends ChangeNotifier {
 
   void setCardColor(Color color) {
     ThemeSettings.setCardColor(color);
+    notifyListeners();
+  }
+
+  void setNavbarTextColour(Color color) {
+    ThemeSettings.setNavbarTextColour(color);
     notifyListeners();
   }
 }
@@ -198,6 +207,7 @@ class ProfileDetails {
     ThemeSettings.setBackgroundColor(Color(colours['BackgroundColour']));
     ThemeSettings.setTextColor(Color(colours['TextColour']));
     ThemeSettings.setCardColor(Color(colours['CardColour']));
+    ThemeSettings.setNavbarTextColour(Color(colours['NavbarTextColour']));
   }
 }
 
