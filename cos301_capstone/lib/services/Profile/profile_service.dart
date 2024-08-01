@@ -99,7 +99,7 @@ class ProfileService {
           await _storage.refFromURL(oldProfileImageUrl).delete();
         }
 
-        await updateProfileData(userId, {'profilePictureUrl': profileImgUrl});
+        await _updateProfileData(userId, {'profilePictureUrl': profileImgUrl});
       }
 
       // Update sidebar image
@@ -119,14 +119,14 @@ class ProfileService {
           await _storage.refFromURL(oldSidebarImageUrl).delete();
         }
 
-        await updateProfileData(userId, {'sidebarImage': sidebarImgUrl});
+        await _updateProfileData(userId, {'sidebarImage': sidebarImgUrl});
       }
     } catch (e) {
       print("Error updating profile: $e");
     }
   }
 
-  Future<void> updateProfileData(String userId, Map<String, dynamic> updatedData) async {
+  Future<void> _updateProfileData(String userId, Map<String, dynamic> updatedData) async {
     try {
       await _db.collection('users').doc(userId).update(updatedData);
       print("Profile updated successfully.");
@@ -168,7 +168,7 @@ class ProfileService {
     }
   }
 
-  Future<void> updatePetData(String ownerId, String petId, Map<String, dynamic> updatedData) async {
+  Future<void> _updatePetData(String ownerId, String petId, Map<String, dynamic> updatedData) async {
     try {
       await _db.collection('users').doc(ownerId).collection('pets').doc(petId).update(updatedData);
       print("Pet updated successfully.");
@@ -198,7 +198,7 @@ class ProfileService {
           await _storage.refFromURL(oldImageUrl).delete();
         }
 
-        await updatePetData(userID, petId, {'pictureUrl': imgUrl});
+        await _updatePetData(userID, petId, {'pictureUrl': imgUrl});
       }
     } catch (e) {
       print("Error updating pet: $e");
