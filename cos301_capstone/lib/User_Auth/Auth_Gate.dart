@@ -25,8 +25,12 @@ class AuthGate extends StatefulWidget {
 
 class _AuthGateState extends State<AuthGate> {
   void populateUserData() async {
+    print("Haha testing");
     Future<Map<String, dynamic>?> tempDetails = ProfileService().getUserDetails(FirebaseAuth.instance.currentUser!.uid);
     tempDetails.then((value) {
+      print("User details:");
+      print(value);
+
       profileDetails.name = value!['name'];
       profileDetails.surname = value['surname'];
       profileDetails.email = value['email'];

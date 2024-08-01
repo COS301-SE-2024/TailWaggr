@@ -588,6 +588,7 @@ class _UpdateThemeState extends State<UpdateTheme> {
                   borderRadius: BorderRadius.circular(50),
                 ),
               ),
+              SizedBox(width: 10),
               Text(
                 title,
                 style: TextStyle(color: themeSettings.textColor, fontSize: bodyTextSize),
@@ -595,20 +596,23 @@ class _UpdateThemeState extends State<UpdateTheme> {
             ],
           ),
           SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                themeModeSelector = changeNotifier;
-              });
-            },
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
-            ),
-            child: Text(
-              "Change",
-              style: TextStyle(
-                fontSize: bodyTextSize,
-                color: themeSettings.cardColor,
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  themeModeSelector = changeNotifier;
+                });
+              },
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
+              ),
+              child: Text(
+                "Change",
+                style: TextStyle(
+                  fontSize: bodyTextSize,
+                  color: themeSettings.cardColor,
+                ),
               ),
             ),
           ),
@@ -626,9 +630,9 @@ class _UpdateThemeState extends State<UpdateTheme> {
             children: [
               themeSettingRow("Primary Colour", primaryColor, "PrimaryColour"),
               themeSettingRow("Secondary Colour", secondaryColor, "SecondaryColour"),
-              themeSettingRow("Background Colour", textColor, "BackgroundColour"),
+              themeSettingRow("Background Colour", backgroundColor, "BackgroundColour"),
               themeSettingRow("Text Colour", textColor, "TextColour"),
-              themeSettingRow("Card Colour", textColor, "CardColour"),
+              themeSettingRow("Card Colour", cardColor, "CardColour"),
 
               // Add more color change buttons as needed
             ],
@@ -654,7 +658,7 @@ class UpdateNavbar extends StatefulWidget {
 class _UpdateNavbarState extends State<UpdateNavbar> {
   bool useImage = true;
   bool useDefaultImage = true;
-  bool ViewNavbar = true;
+  bool viewNavbar = true;
   bool navbarTextColourSelector = false;
   TextEditingController changeColourtextController = TextEditingController();
   String saveChangesText = "Save Changes";
@@ -747,6 +751,8 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                     onPressed: () {
                       setState(() {
                         navbarTextColor = themeSettings.navbarTextColour;
+                        themeModeNotifier.value++;
+                        navbarTextColourSelector = false;
                       });
                     },
                     style: ButtonStyle(
@@ -805,6 +811,8 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
       setState(() {}); // Rebuild the widget when files are selected
     });
 
+
+
     setState(() {
       useImage = profileDetails.usingImage;
       useDefaultImage = profileDetails.usingDefaultImage;
@@ -833,7 +841,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                 activeFgColor: Colors.white,
                 inactiveBgColor: Colors.grey,
                 inactiveFgColor: Colors.white,
-                initialLabelIndex: ViewNavbar ? 0 : 1,
+                initialLabelIndex: viewNavbar ? 0 : 1,
                 totalSwitches: 2,
                 labels: ['View', 'Edit'],
                 radiusStyle: true,
@@ -843,12 +851,12 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                 onToggle: (index) {
                   print('switched to: $index');
                   setState(() {
-                    ViewNavbar = index == 0;
+                    viewNavbar = index == 0;
                   });
                 },
               ),
               SizedBox(height: 20),
-              if (ViewNavbar) ...[
+              if (viewNavbar) ...[
                 Container(
                   width: 175,
                   padding: EdgeInsets.all(20),

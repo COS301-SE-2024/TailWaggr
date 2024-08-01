@@ -788,6 +788,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                     onPressed: () {
                       setState(() {
                          navbarTextColor = themeSettings.navbarTextColour;
+                         navbarTextColourSelector = false;
                       });
                     },
                     style: ButtonStyle(
