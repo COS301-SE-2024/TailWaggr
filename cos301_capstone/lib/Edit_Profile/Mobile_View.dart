@@ -49,7 +49,7 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
       ),
       body: Center(
         child: Container(
-          width: 600,
+          width: MediaQuery.of(context).size.width - 20,
           padding: EdgeInsets.all(30),
           margin: EdgeInsets.only(bottom: 60, top: 5),
           decoration: BoxDecoration(
@@ -207,7 +207,6 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
               print('On Saved: $number');
             },
           ),
-
           SizedBox(height: 20),
           TextField(
             controller: EditProfileVariables.addressController,
@@ -291,8 +290,8 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
           ElevatedButton(
             onPressed: !isPhoneValid
                 ? () {
-                  print("Phone number is invalid");
-                }
+                    print("Phone number is invalid");
+                  }
                 : () async {
                     profileDetails.name = EditProfileVariables.nameController.text;
                     profileDetails.surname = EditProfileVariables.surnameController.text;
@@ -427,7 +426,7 @@ class _UpdateThemeState extends State<UpdateTheme> {
         borderRadius: BorderRadius.circular(5),
       ),
       padding: EdgeInsets.all(10),
-      child: Row(
+      child: Column(
         children: [
           SizedBox(
             width: 280,
@@ -457,6 +456,7 @@ class _UpdateThemeState extends State<UpdateTheme> {
             child: Column(
               children: [
                 TextField(
+                  style: TextStyle(color: themeSettings.textColor),
                   controller: changeColourtextController,
                   decoration: InputDecoration(
                     prefixIcon: Padding(
@@ -551,23 +551,7 @@ class _UpdateThemeState extends State<UpdateTheme> {
                             break;
                         }
                       });
-                      await ProfileService().updateProfile(
-                        profileDetails.userID,
-                        {
-                          'preferences': {
-                            'themeMode': "Custom",
-                            'Colours': {
-                              'PrimaryColour': primaryColor.value,
-                              'SecondaryColour': secondaryColor.value,
-                              'BackgroundColour': backgroundColor.value,
-                              'TextColour': textColor.value,
-                              'CardColour': cardColor.value,
-                            },
-                          },
-                        },
-                        null,
-                        null,
-                      );
+                      await EditProfileVariables.setNavbarPreferences(profileDetails.usingImage, profileDetails.usingDefaultImage);
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(primaryColor),
@@ -592,13 +576,25 @@ class _UpdateThemeState extends State<UpdateTheme> {
   Widget themeSettingRow(String title, Color color, String changeNotifier) {
     return Container(
       margin: EdgeInsets.only(top: 20),
-      child: Row(
+      child: Column(
         children: [
-          Text(
-            title,
-            style: TextStyle(color: color, fontSize: bodyTextSize),
+          Row(
+            children: [
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+              ),
+              Text(
+                title,
+                style: TextStyle(color: themeSettings.textColor, fontSize: bodyTextSize),
+              ),
+            ],
           ),
-          Spacer(),
+          SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {
               setState(() {
@@ -606,13 +602,13 @@ class _UpdateThemeState extends State<UpdateTheme> {
               });
             },
             style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(color),
+              backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
             ),
             child: Text(
               "Change",
               style: TextStyle(
                 fontSize: bodyTextSize,
-                color: Colors.white,
+                color: themeSettings.cardColor,
               ),
             ),
           ),
@@ -658,18 +654,10 @@ class UpdateNavbar extends StatefulWidget {
 class _UpdateNavbarState extends State<UpdateNavbar> {
   bool useImage = true;
   bool useDefaultImage = true;
-  bool usePrimaryColour = true;
-
-  int petIncludeCounter = 0;
-  List<bool> petAdded = [];
-  List<Map<String, dynamic>> petList = [];
-  TextEditingController postController = TextEditingController();
-  bool selectingPet = false;
-  List<bool> removePet = [];
-
+  bool ViewNavbar = true;
   bool navbarTextColourSelector = false;
-
   TextEditingController changeColourtextController = TextEditingController();
+  String saveChangesText = "Save Changes";
 
   void updateTextController(Color color) {
     changeColourtextController.text = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
@@ -680,6 +668,11 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
       setState(() {
         updateTextController(newColor);
         navbarTextColor = newColor;
+      });
+
+      setState(() {
+        useImage = profileDetails.usingImage;
+        useDefaultImage = profileDetails.usingDefaultImage;
       });
     }
 
@@ -697,7 +690,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
         borderRadius: BorderRadius.circular(5),
       ),
       padding: EdgeInsets.all(10),
-      child: Row(
+      child: Column(
         children: [
           SizedBox(
             width: 280,
@@ -727,6 +720,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
             child: Column(
               children: [
                 TextField(
+                  style: TextStyle(color: themeSettings.textColor),
                   controller: changeColourtextController,
                   decoration: InputDecoration(
                     prefixIcon: Padding(
@@ -752,7 +746,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                   child: ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        navbarTextColor = Colors.white;
+                        navbarTextColor = themeSettings.navbarTextColour;
                       });
                     },
                     style: ButtonStyle(
@@ -772,18 +766,23 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       setState(() {
                         // themeSettings.setNavbarTextColor(navbarTextColor);
                         themeModeNotifier.value++;
                         navbarTextColourSelector = false;
+                        saveChangesText = "Saving...";
+                      });
+                      await EditProfileVariables.setNavbarPreferences(profileDetails.usingImage, profileDetails.usingDefaultImage);
+                      setState(() {
+                        saveChangesText = "Save Changes";
                       });
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(primaryColor),
                     ),
                     child: Text(
-                      "Save Changes",
+                      saveChangesText,
                       style: TextStyle(
                         fontSize: bodyTextSize,
                         color: Colors.white,
@@ -805,6 +804,11 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
     imagePicker.filesNotifier.addListener(() {
       setState(() {}); // Rebuild the widget when files are selected
     });
+
+    setState(() {
+      useImage = profileDetails.usingImage;
+      useDefaultImage = profileDetails.usingDefaultImage;
+    });
   }
 
   String errorText = "";
@@ -815,116 +819,141 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Row(
-          children: [
-            Container(
-              width: 175,
-              padding: EdgeInsets.all(20),
-              height: double.infinity,
-              decoration: useImage
-                  ? !useDefaultImage
-                      ? imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty
-                          ? BoxDecoration(image: DecorationImage(image: MemoryImage(imagePicker.filesNotifier.value![0].bytes!), fit: BoxFit.cover))
-                          : BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/pug.jpg"), fit: BoxFit.cover))
-                      : BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/pug.jpg"), fit: BoxFit.cover))
-                  : BoxDecoration(color: usePrimaryColour ? primaryColor : secondaryColor),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 15,
-                        backgroundImage: NetworkImage(profileDetails.profilePicture),
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        profileDetails.name,
-                        style: TextStyle(color: navbarTextColor, fontSize: 14),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.home, color: navbarTextColor),
-                          SizedBox(width: 10),
-                          Text("Home", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Icon(Icons.notifications, color: navbarTextColor),
-                          SizedBox(width: 10),
-                          Text("Notifications", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Icon(Icons.search, color: navbarTextColor),
-                          SizedBox(width: 10),
-                          Text("Search", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Icon(Icons.event, color: navbarTextColor),
-                          SizedBox(width: 10),
-                          Text("Events", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Icon(Icons.map_sharp, color: navbarTextColor),
-                          SizedBox(width: 10),
-                          Text("Locate", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Icon(Icons.forum_outlined, color: navbarTextColor),
-                          SizedBox(width: 10),
-                          Text("Forums", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Icon(Icons.person_outline, color: navbarTextColor),
-                          SizedBox(width: 10),
-                          Text("Profile", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Icon(Icons.dark_mode, color: navbarTextColor),
-                      SizedBox(width: 10),
-                      Text("Logout", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Icon(Icons.logout, color: navbarTextColor),
-                      SizedBox(width: 10),
-                      Text("Toggle theme", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                    ],
-                  ),
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(height: 20),
+              ToggleSwitch(
+                minWidth: double.infinity,
+                cornerRadius: 20.0,
+                activeBgColors: [
+                  [primaryColor],
+                  [secondaryColor]
                 ],
+                activeFgColor: Colors.white,
+                inactiveBgColor: Colors.grey,
+                inactiveFgColor: Colors.white,
+                initialLabelIndex: ViewNavbar ? 0 : 1,
+                totalSwitches: 2,
+                labels: ['View', 'Edit'],
+                radiusStyle: true,
+                animate: true,
+                curve: Curves.easeInOut, // animate must be set to true when using custom curve
+                animationDuration: 200,
+                onToggle: (index) {
+                  print('switched to: $index');
+                  setState(() {
+                    ViewNavbar = index == 0;
+                  });
+                },
               ),
-            ),
-            Expanded(
-              flex: 1,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(left: 20),
-                child: Column(
+              SizedBox(height: 20),
+              if (ViewNavbar) ...[
+                Container(
+                  width: 175,
+                  padding: EdgeInsets.all(20),
+                  height: MediaQuery.of(context).size.height - 200,
+                  decoration: useImage
+                      ? !useDefaultImage
+                          ? imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty
+                              ? BoxDecoration(image: DecorationImage(image: MemoryImage(imagePicker.filesNotifier.value![0].bytes!), fit: BoxFit.cover))
+                              : BoxDecoration(image: DecorationImage(image: NetworkImage(profileDetails.sidebarImage), fit: BoxFit.cover))
+                          : BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/pug.jpg"), fit: BoxFit.cover))
+                      : BoxDecoration(color: primaryColor),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            backgroundImage: NetworkImage(profileDetails.profilePicture),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            profileDetails.name,
+                            style: TextStyle(color: navbarTextColor, fontSize: 14),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.home, color: navbarTextColor),
+                              SizedBox(width: 10),
+                              Text("Home", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Icon(Icons.notifications, color: navbarTextColor),
+                              SizedBox(width: 10),
+                              Text("Notifications", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Icon(Icons.search, color: navbarTextColor),
+                              SizedBox(width: 10),
+                              Text("Search", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Icon(Icons.event, color: navbarTextColor),
+                              SizedBox(width: 10),
+                              Text("Events", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Icon(Icons.map_sharp, color: navbarTextColor),
+                              SizedBox(width: 10),
+                              Text("Locate", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Icon(Icons.forum_outlined, color: navbarTextColor),
+                              SizedBox(width: 10),
+                              Text("Forums", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Icon(Icons.person_outline, color: navbarTextColor),
+                              SizedBox(width: 10),
+                              Text("Profile", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.logout, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Logout", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.dark_mode, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Toggle theme", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ] else ...[
+                Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -955,58 +984,36 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                         ],
                       ),
                       SizedBox(height: 20),
-                      Container(
-                        decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
-                        child: GestureDetector(
-                          onTap: () => imagePicker.pickFiles(),
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.add_a_photo,
-                                    color: themeSettings.textColor.withOpacity(0.7),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    "Change background",
-                                    style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
-                                  ),
-                                ],
+                      Visibility(
+                        visible: !useDefaultImage,
+                        child: Container(
+                          decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
+                          margin: EdgeInsets.only(bottom: 20),
+                          child: GestureDetector(
+                            onTap: () => imagePicker.pickFiles(),
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.add_a_photo,
+                                      color: themeSettings.textColor.withOpacity(0.7),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      "Change background",
+                                      style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ] else ...[
-                      ToggleSwitch(
-                        minWidth: double.infinity,
-                        cornerRadius: 20.0,
-                        activeBgColors: [
-                          [primaryColor],
-                          [secondaryColor]
-                        ],
-                        activeFgColor: Colors.white,
-                        inactiveBgColor: Colors.grey,
-                        inactiveFgColor: Colors.white,
-                        initialLabelIndex: usePrimaryColour ? 0 : 1,
-                        totalSwitches: 2,
-                        labels: ['Primary', 'Secondary'],
-                        radiusStyle: true,
-                        animate: true,
-                        curve: Curves.easeInOut, // animate must be set to true when using custom curve
-                        animationDuration: 200,
-                        onToggle: (index) {
-                          print('switched to: $index');
-                          setState(() {
-                            usePrimaryColour = index == 0;
-                          });
-                        },
-                      ),
                     ],
-                    SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -1032,14 +1039,23 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {});
+                        onPressed: () async {
+                          print("Saving changes");
+                          setState(() {
+                            profileDetails.usingImage = useImage;
+                            profileDetails.usingDefaultImage = useDefaultImage;
+                            saveChangesText = "Saving...";
+                          });
+                          await EditProfileVariables.setNavbarPreferences(useImage, useDefaultImage);
+                          setState(() {
+                            saveChangesText = "Save Changes";
+                          });
                         },
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(primaryColor),
                         ),
                         child: Text(
-                          "Save Changes",
+                          saveChangesText,
                           style: TextStyle(
                             fontSize: bodyTextSize,
                             color: Colors.white,
@@ -1049,9 +1065,9 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                     ),
                   ],
                 ),
-              ),
-            )
-          ],
+              ],
+            ],
+          ),
         ),
         if (navbarTextColourSelector) ...[
           Positioned(

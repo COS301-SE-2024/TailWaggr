@@ -787,7 +787,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                   child: ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        navbarTextColor = Colors.white;
+                         navbarTextColor = themeSettings.navbarTextColour;
                       });
                     },
                     style: ButtonStyle(
