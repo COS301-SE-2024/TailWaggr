@@ -27,8 +27,6 @@ class _AuthGateState extends State<AuthGate> {
   void populateUserData() async {
     Future<Map<String, dynamic>?> tempDetails = ProfileService().getUserDetails(FirebaseAuth.instance.currentUser!.uid);
     tempDetails.then((value) {
-      // print("User data populated successfully.");
-      // print(value);
       profileDetails.name = value!['name'];
       profileDetails.surname = value['surname'];
       profileDetails.email = value['email'];
@@ -49,6 +47,7 @@ class _AuthGateState extends State<AuthGate> {
         "BackgroundColour": value['preferences']['Colours']['BackgroundColour'],
         "TextColour": value['preferences']['Colours']['TextColour'],
         "CardColour": value['preferences']['Colours']['CardColour'],
+        "NavbarTextColour": value['preferences']['Colours']['NavbarTextColour'],
       });
       themeSettings.toggleTheme(value['preferences']['themeMode']);
     });

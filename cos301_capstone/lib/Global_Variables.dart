@@ -18,6 +18,7 @@ class ThemeSettings {
   static Color _backgroundColor = Color(0xFFEFF3FC);
   static Color _textColor = Colors.black;
   static Color _cardColor = Colors.white;
+  static Color _navbarTextColour = Colors.white;
 
   static var _themeMode = "Light";
 
@@ -28,6 +29,7 @@ class ThemeSettings {
   static Color get textColor => _textColor;
   static Color get cardColor => _cardColor;
   static String get themeMode => _themeMode;
+  static Color get navbarTextColour => _navbarTextColour;
 
   static void toggleTheme(String themeMode) {
     if (themeMode == "Dark") {
@@ -91,6 +93,7 @@ class ThemeSettingsObserver extends ChangeNotifier {
   Color get textColor => ThemeSettings.textColor;
   Color get cardColor => ThemeSettings.cardColor;
   String get themeMode => ThemeSettings.themeMode;
+  Color get navbarTextColour => ThemeSettings.navbarTextColour;
 
   void toggleTheme(String themeMode) {
     ThemeSettings.toggleTheme(themeMode);
@@ -150,6 +153,10 @@ class ProfileDetails {
   String profilePicture = "https://st3.depositphotos.com/4060975/17707/v/450/depositphotos_177073010-stock-illustration-male-vector-icon.jpg";
   String userType = "Veterinarian";
   String themeMode = "Light";
+  String sidebarImage = "";
+  bool usingImage = false;
+  bool usingDefaultImage = true;
+  
 
   ValueNotifier<int> isEditing = ValueNotifier(0);
 

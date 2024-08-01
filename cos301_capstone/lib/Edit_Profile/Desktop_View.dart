@@ -13,14 +13,6 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-ValueNotifier<int> themeModeNotifier = ValueNotifier<int>(0);
-Color primaryColor = themeSettings.primaryColor;
-Color secondaryColor = themeSettings.secondaryColor;
-Color backgroundColor = themeSettings.backgroundColor;
-Color textColor = themeSettings.textColor;
-Color cardColor = themeSettings.cardColor;
-Color navbarTextColor = Colors.white;
-
 class EditProfileDesktop extends StatefulWidget {
   const EditProfileDesktop({super.key});
 
@@ -252,7 +244,6 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
               print('On Saved: $number');
             },
           ),
-
           SizedBox(height: 20),
           TextField(
             controller: EditProfileVariables.addressController,
@@ -336,8 +327,8 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
           ElevatedButton(
             onPressed: !isPhoneValid
                 ? () {
-                  print("Phone number is invalid");
-                }
+                    print("Phone number is invalid");
+                  }
                 : () async {
                     profileDetails.name = EditProfileVariables.nameController.text;
                     profileDetails.surname = EditProfileVariables.surnameController.text;
@@ -596,23 +587,7 @@ class _UpdateThemeState extends State<UpdateTheme> {
                             break;
                         }
                       });
-                      await ProfileService().updateProfile(
-                        profileDetails.userID,
-                        {
-                          'preferences': {
-                            'themeMode': "Custom",
-                            'Colours': {
-                              'PrimaryColour': primaryColor.value,
-                              'SecondaryColour': secondaryColor.value,
-                              'BackgroundColour': backgroundColor.value,
-                              'TextColour': textColor.value,
-                              'CardColour': cardColor.value,
-                            },
-                          },
-                        },
-                        null,
-                        null,
-                      );
+                      await EditProfileVariables.setNavbarPreferences(profileDetails.usingImage, profileDetails.usingDefaultImage);
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(primaryColor),
@@ -639,9 +614,19 @@ class _UpdateThemeState extends State<UpdateTheme> {
       margin: EdgeInsets.only(top: 20),
       child: Row(
         children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(100),
+              // border: Border.all(color: Colors.white, width: 2),
+            ),
+          ),
+          SizedBox(width: 10),
           Text(
             title,
-            style: TextStyle(color: color, fontSize: bodyTextSize),
+            style: TextStyle(color: themeSettings.textColor, fontSize: bodyTextSize),
           ),
           Spacer(),
           ElevatedButton(
@@ -651,13 +636,13 @@ class _UpdateThemeState extends State<UpdateTheme> {
               });
             },
             style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(color),
+              backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
             ),
             child: Text(
               "Change",
               style: TextStyle(
                 fontSize: bodyTextSize,
-                color: Colors.white,
+                color: themeSettings.cardColor,
               ),
             ),
           ),
@@ -675,9 +660,9 @@ class _UpdateThemeState extends State<UpdateTheme> {
             children: [
               themeSettingRow("Primary Colour", primaryColor, "PrimaryColour"),
               themeSettingRow("Secondary Colour", secondaryColor, "SecondaryColour"),
-              themeSettingRow("Background Colour", textColor, "BackgroundColour"),
+              themeSettingRow("Background Colour", backgroundColor, "BackgroundColour"),
               themeSettingRow("Text Colour", textColor, "TextColour"),
-              themeSettingRow("Card Colour", textColor, "CardColour"),
+              themeSettingRow("Card Colour", cardColor, "CardColour"),
 
               // Add more color change buttons as needed
             ],
@@ -823,6 +808,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                         themeModeNotifier.value++;
                         navbarTextColourSelector = false;
                       });
+                      EditProfileVariables.setNavbarPreferences(profileDetails.usingImage, profileDetails.usingDefaultImage);
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(primaryColor),
@@ -950,14 +936,14 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                   ),
                   Row(
                     children: [
-                      Icon(Icons.dark_mode, color: navbarTextColor),
+                      Icon(Icons.logout, color: navbarTextColor),
                       SizedBox(width: 10),
                       Text("Logout", style: TextStyle(color: navbarTextColor, fontSize: 14)),
                     ],
                   ),
                   Row(
                     children: [
-                      Icon(Icons.logout, color: navbarTextColor),
+                      Icon(Icons.dark_mode, color: navbarTextColor),
                       SizedBox(width: 10),
                       Text("Toggle theme", style: TextStyle(color: navbarTextColor, fontSize: 14)),
                     ],
@@ -1025,33 +1011,8 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                           ),
                         ),
                       ),
-                    ] else ...[
-                      ToggleSwitch(
-                        minWidth: double.infinity,
-                        cornerRadius: 20.0,
-                        activeBgColors: [
-                          [primaryColor],
-                          [secondaryColor]
-                        ],
-                        activeFgColor: Colors.white,
-                        inactiveBgColor: Colors.grey,
-                        inactiveFgColor: Colors.white,
-                        initialLabelIndex: usePrimaryColour ? 0 : 1,
-                        totalSwitches: 2,
-                        labels: ['Primary', 'Secondary'],
-                        radiusStyle: true,
-                        animate: true,
-                        curve: Curves.easeInOut, // animate must be set to true when using custom curve
-                        animationDuration: 200,
-                        onToggle: (index) {
-                          print('switched to: $index');
-                          setState(() {
-                            usePrimaryColour = index == 0;
-                          });
-                        },
-                      ),
+                      SizedBox(height: 20),
                     ],
-                    SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -1078,7 +1039,16 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          setState(() {});
+                          print("Saving navbar preferences");
+                          print("User using image: $useImage");
+
+
+                          print("User using default image: $useDefaultImage");
+
+                          EditProfileVariables.setNavbarPreferences(useImage, useDefaultImage);
+                          setState(() {
+                            
+                          });
                         },
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(primaryColor),

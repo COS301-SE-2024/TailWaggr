@@ -68,11 +68,11 @@ class ProfileService {
   ///     - BackgroundColour: (int) The color code for the background color.
   ///     - TextColour: (int) The color code for the text color.
   ///     - CardColour: (int) The color code for the card color.
-  ///     - sidebarColor: (number) The color code for the sidebar.
+  ///     - NavbarTextColour: (number) The color code for the navbar text.
   ///   - usingImage: (bool) Whether the user is using an image.
+  ///   - usingDefaultImage: (bool) Whether the user is using the default image.
   ///   - sidebarImage: (string) The URL of the sidebar image.
   ///   - themeMode: (string) whether light, dark or custom.
-  /// - profilePictureUrl: (string) The URL of the user's profile picture.
   /// - profileImage: (PlatformFile) The new profile image file.
   /// - surname: (string) The user's surname.
   /// - userName: (string) The user's username.

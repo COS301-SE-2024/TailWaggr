@@ -13,14 +13,6 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-ValueNotifier<int> themeModeNotifier = ValueNotifier<int>(0);
-Color primaryColor = themeSettings.primaryColor;
-Color secondaryColor = themeSettings.secondaryColor;
-Color backgroundColor = themeSettings.backgroundColor;
-Color textColor = themeSettings.textColor;
-Color cardColor = themeSettings.cardColor;
-Color navbarTextColor = Colors.white;
-
 class EditProfileMobile extends StatefulWidget {
   const EditProfileMobile({super.key});
 
