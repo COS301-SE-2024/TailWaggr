@@ -153,6 +153,20 @@ class ProfileService {
       print("Error adding pet: $e");
     }
   }
+  Future<void> deletePet(String ownerId, String petId) async {
+    try {
+      // Delete the pet profile image
+      String? petImageUrl = await getPetProfile(ownerId, petId).then((value) => value?['pictureUrl']);
+      if (petImageUrl != null) {
+        await _storage.refFromURL(petImageUrl).delete();
+      }
+      // Delete the pet document
+      await _db.collection('users').doc(ownerId).collection('pets').doc(petId).delete();
+      print("Pet deleted successfully.");
+    } catch (e) {
+      print("Error deleting pet: $e");
+    }
+  }
 
   Future<void> updatePetData(String ownerId, String petId, Map<String, dynamic> updatedData) async {
     try {
