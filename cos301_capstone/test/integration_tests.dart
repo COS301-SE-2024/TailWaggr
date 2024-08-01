@@ -4,7 +4,7 @@ import 'package:cos301_capstone/main.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
-// import 'package:cos301_capstone/services/profile/profile.dart';
+import 'package:cos301_capstone/services/profile/profile_service.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
