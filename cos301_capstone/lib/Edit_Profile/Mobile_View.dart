@@ -3,7 +3,6 @@
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
-import 'package:cos301_capstone/services/Location/location_service.dart';
 import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';

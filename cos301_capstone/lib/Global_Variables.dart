@@ -177,15 +177,7 @@ class ProfileDetails {
 
   List pets = [];
   
-  List notifications = [
-    Notification(DateTime(2024, 1, 2), "Friend Request", "Jane Doe", ""),
-    Notification(DateTime(2024, 1, 1), "Like", "John Smith", ""),
-    Notification(DateTime(2023, 1, 4), "Comment", "Alice Johnson", ""),
-    Notification(DateTime(2023, 1, 3), "Following", "Bob Brown", ""),
-    Notification(DateTime(2022, 1, 2), "Like", "Emily Johnson", ""),
-    Notification(DateTime(2021, 12, 31), "Comment", "Michael Smith", ""),
-    Notification(DateTime(2021, 12, 30), "Friend Request", "Sarah Brown", ""),
-  ];
+  List notifications = [];
 
   // PostId: 0njz6TgFlZnZ8NH6Tycg, 
   // UserId: QF5gHocYeGRNbsFmPE3RjUZIId82, 
@@ -200,6 +192,7 @@ class ProfileDetails {
   // Content: Buck, 
   // CreatedAt: Timestamp(seconds=1719149860, nanoseconds=848000000)
   List<Map<String, dynamic>> posts = [];
+  List<Map<String, dynamic>> myPosts = [];
 
   void setCustomColours(Map<String, dynamic> colours) {
     ThemeSettings.setPrimaryColor(Color(colours['PrimaryColour']));

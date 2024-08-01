@@ -1,7 +1,5 @@
 // ignore_for_file: file_names
 
-import 'dart:io';
-
 import 'package:cos301_capstone/Edit_Profile/Desktop_View.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Edit_Profile/Mobile_View.dart';

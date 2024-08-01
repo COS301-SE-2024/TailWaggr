@@ -3,14 +3,12 @@
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
-import 'package:cos301_capstone/services/Location/location_service.dart';
 import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class EditProfileDesktop extends StatefulWidget {

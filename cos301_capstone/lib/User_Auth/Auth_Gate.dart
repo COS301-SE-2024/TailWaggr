@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 // import 'package:cos301_capstone/Location/Desktop_View.dart';
@@ -25,12 +26,8 @@ class AuthGate extends StatefulWidget {
 
 class _AuthGateState extends State<AuthGate> {
   void populateUserData() async {
-    print("Haha testing");
     Future<Map<String, dynamic>?> tempDetails = ProfileService().getUserDetails(FirebaseAuth.instance.currentUser!.uid);
     tempDetails.then((value) {
-      print("User details:");
-      print(value);
-
       profileDetails.name = value!['name'];
       profileDetails.surname = value['surname'];
       profileDetails.email = value['email'];
@@ -57,6 +54,11 @@ class _AuthGateState extends State<AuthGate> {
       });
       themeSettings.toggleTheme(value['preferences']['themeMode']);
     });
+
+    // Future<List<DocumentReference>> myPosts = ProfileService().getUserPosts(FirebaseAuth.instance.currentUser!.uid);
+    // myPosts.then((value) {
+    //   print(value);
+    // });
   }
 
   String getMonthAbbreviation(int month) {

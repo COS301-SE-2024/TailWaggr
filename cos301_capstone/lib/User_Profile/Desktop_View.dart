@@ -3,6 +3,7 @@
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 
@@ -84,45 +85,20 @@ class _PostsContainerState extends State<PostsContainer> {
           color: themeSettings.cardColor,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: DefaultTabController(
-          length: 2,
+        child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TabBar(
-                dividerColor: Colors.transparent,
-                tabs: [
-                  Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.add_box_outlined),
-                        SizedBox(width: 10),
-                        Text("Posts"),
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.calendar_month),
-                        SizedBox(width: 10),
-                        Text("Events"),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Divider(),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    // Icon(Icons.add_box_outlined),
-                    ListOfPosts(),
-                    Icon(Icons.calendar_month),
-                  ],
+              Text(
+                "Posts",
+                style: TextStyle(
+                  fontSize: subHeadingTextSize,
+                  color: themeSettings.primaryColor,
                 ),
               ),
+              Divider(),
+              ListOfPosts(),
             ],
           ),
         ),
@@ -231,7 +207,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
             SizedBox(width: 20),
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("${profileDetails.name} ${profileDetails.surname}", style: TextStyle(fontSize: subHeadingTextSize)),
                 Text(profileDetails.bio, style: TextStyle(fontSize: subBodyTextSize)),
@@ -435,7 +411,7 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
                 ),
               ),
               Divider(),
-              for (var pet in profileDetails.pets)
+              for (var pet in profileDetails.pets) ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: PetProfileButton(
@@ -444,6 +420,39 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
                     petPicture: pet["pictureUrl"],
                   ),
                 ),
+              ],
+              SizedBox(height: 20),
+              OpenContainer(
+                transitionDuration: Duration(milliseconds: 300),
+                closedBuilder: (context, action) {
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: DottedBorder(
+                      padding: EdgeInsets.all(20),
+                      borderType: BorderType.RRect,
+                      radius: Radius.circular(100),
+                      color: themeSettings.textColor,
+                      strokeWidth: 0.5,
+                      dashPattern: [5, 5], // Modify the dash pattern to make the border more spread out
+                      child: Row(
+                        children: [
+                          Icon(Icons.add, color: themeSettings.primaryColor, size: 30),
+                          SizedBox(width: 10),
+                          Text(
+                            "Add a new pet to your family",
+                            style: TextStyle(color: themeSettings.textColor),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+                closedColor: Colors.transparent,
+                closedElevation: 0,
+                openBuilder: (context, action) {
+                  return EditProfile();
+                },
+              ),
             ],
           ),
         ),
