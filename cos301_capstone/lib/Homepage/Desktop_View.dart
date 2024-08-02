@@ -192,7 +192,8 @@ class _PostState extends State<Post> {
         print('Error replying to post: $e');
       }
     }
-  }Future<void> showDialogBox(BuildContext context) async {
+  }
+  Future<void> showDialogBox(BuildContext context) async {
   try {
     showDialog(
       context: context,
@@ -200,7 +201,7 @@ class _PostState extends State<Post> {
         return AlertDialog(
           content: Container(
             width: MediaQuery.of(context).size.width * 0.5,
-            height: MediaQuery.of(context).size.height * 0.5,
+            height: MediaQuery.of(context).size.height * 0.6,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -212,7 +213,7 @@ class _PostState extends State<Post> {
                     children: [
                       CircleAvatar(
                         radius: 20,
-                        backgroundImage: NetworkImage( profileDetails.profilePicture),
+                        backgroundImage: NetworkImage( widget.postDetails['pictureUrl'] ?? profileDetails.profilePicture),
                       ),
                       SizedBox(width: 10),
                       Column(
@@ -243,8 +244,16 @@ class _PostState extends State<Post> {
                     ),
                   ),
                   Spacer(flex: 2),
+                  SizedBox(height: 20),
+                  if (widget.postDetails['ImgUrl'] != null)
+                    Image.network(
+                      widget.postDetails['ImgUrl'],
+                      height: 95,
+                      width: double.infinity,
+                      fit: BoxFit.fitHeight,
+                    ),
                   Divider(),
-                  Spacer(flex: 1),
+                  SizedBox(height: 10), // Reduced space
                   Row(
                     children: [
                       CircleAvatar(
@@ -441,6 +450,11 @@ class _PostState extends State<Post> {
                     child: IconButton(
                       onPressed: () {
                         showDialogBox(context);
+                        HomePageService().getCommentsCount(widget.postDetails['PostId']).then((value) {
+                          setState(() {
+                            numComments = value.toString();
+                          });
+                        });
                       },
                       icon: Icon(
                         Icons.comment,

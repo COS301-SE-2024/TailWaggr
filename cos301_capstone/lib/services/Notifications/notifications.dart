@@ -297,7 +297,7 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
     }
   }
 
-  Future<void> createReplyNotification(String forumId,String messageId, String userId) async {
+  Future<void> createReplyNotification(String forumId,String messageId,String commentId, String userId) async {
     try {
       DocumentSnapshot postDoc = await _db.collection('forum').doc(forumId).collection('messages').doc(messageId).get();
       if (!postDoc.exists) throw Exception("Message not found");
@@ -321,7 +321,7 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
         'NotificationTypeId': 3,
         'Content': content,
         'Read': false,
-        'ReferenceId': '$forumId/$messageId',
+        'ReferenceId': '$forumId/$messageId/$commentId',
         'AvatarUrlId': userId,
         'CreatedAt': Timestamp.now(),
       });
