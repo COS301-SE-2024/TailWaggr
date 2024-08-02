@@ -27,19 +27,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'TailWaggr',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'Roboto',
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          focusColor: themeSettings.primaryColor,
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            borderSide: BorderSide(color: themeSettings.primaryColor),
-          ),
-        ),
-      ),
       home: const AuthGate(),
     );
   }

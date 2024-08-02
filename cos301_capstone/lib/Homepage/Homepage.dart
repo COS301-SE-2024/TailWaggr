@@ -36,34 +36,49 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListenableBuilder(
-        listenable: themeSettings,
-        builder: (BuildContext context, Widget? child) {
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth > 1100) {
-                return DesktopHomepage();
-              } else if (constraints.maxWidth > 800) {
-                return TabletHomepage();
-              } else {
-                return Scaffold(
-                  drawer: NavbarDrawer(),
-                  appBar: AppBar(
-                    backgroundColor: themeSettings.primaryColor,
-                    title: Text(
-                      "TailWaggr",
-                      style: TextStyle(
-                        color: Colors.white,
+    return MaterialApp(
+      theme: ThemeData(
+        fontFamily: 'Roboto',
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          focusColor: themeSettings.primaryColor,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            borderSide: BorderSide(color: themeSettings.primaryColor),
+          ),
+        ),
+      ),
+      home: Scaffold(
+        body: ListenableBuilder(
+          listenable: themeSettings,
+          builder: (BuildContext context, Widget? child) {
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth > 1100) {
+                  return DesktopHomepage();
+                } else if (constraints.maxWidth > 800) {
+                  return TabletHomepage();
+                } else {
+                  return Scaffold(
+                    drawer: NavbarDrawer(),
+                    appBar: AppBar(
+                      backgroundColor: themeSettings.primaryColor,
+                      title: Text(
+                        "TailWaggr",
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
-                  body: MobileHomepage(),
-                );
-              }
-            },
-          );
-        },
+                    body: MobileHomepage(),
+                  );
+                }
+              },
+            );
+          },
+        ),
       ),
     );
   }

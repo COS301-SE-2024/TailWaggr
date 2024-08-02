@@ -3,6 +3,7 @@
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
+import 'package:cos301_capstone/Pets/Pet_Profile.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
@@ -450,7 +451,9 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
                 closedColor: Colors.transparent,
                 closedElevation: 0,
                 openBuilder: (context, action) {
-                  return EditProfile();
+                  return PetProfile(
+                    creatingNewPet: true,
+                  );
                 },
               ),
             ],
