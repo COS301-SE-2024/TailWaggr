@@ -23,6 +23,11 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
   String creatingNewPetText = 'Create Your Pets Profile';
   bool isCreateButtonDisabled = false;
 
+  String edittingPetText = 'Update Your Pets Profile';
+  bool usingNewImage = false;
+
+  String removePetText = 'Remove Pet Profile';
+
   void showCustomSnackBar(BuildContext context, String message, Color color) {
     final snackBar = SnackBar(
       backgroundColor: color,
@@ -35,6 +40,46 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
 
     // Display the snackbar
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  Future<bool?> showConfirmationDialog(BuildContext context, String name) async {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false, // User must tap a button to dismiss the dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: themeSettings.cardColor,
+          title: SizedBox(
+            width: 450,
+            child: Text('Are you sure you wish to remove $name from your family?', style: TextStyle(color: themeSettings.textColor)),
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: ButtonStyle(
+                foregroundColor: WidgetStateProperty.all(themeSettings.cardColor),
+                backgroundColor: WidgetStateProperty.all(themeSettings.cardColor),
+                side: WidgetStateProperty.all(BorderSide(color: themeSettings.secondaryColor)),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text('Cancel', style: TextStyle(color: themeSettings.textColor)),
+            ),
+            TextButton(
+              style: ButtonStyle(
+                foregroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                side: WidgetStateProperty.all(BorderSide(color: themeSettings.primaryColor)),
+              ),
+              child: Text('Confirm', style: TextStyle(color: themeSettings.textColor)),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -269,6 +314,88 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
                       child: Text(creatingNewPetText, style: TextStyle(color: themeSettings.textColor)),
                     ),
                   ),
+                ] else ...[
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 270,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            try {
+                              bool? result = await showConfirmationDialog(context, PetProfileVariables.nameController.text);
+
+                              if (result == null || !result) {
+                                return;
+                              }
+
+                              setState(() {
+                                removePetText = 'Removing Pet Profile...';
+                              });
+
+                              // await PetProfileVariables.updatePet(usingNewImage);
+                              print("Pet removed");
+
+                              showCustomSnackBar(context, "Pet removed from profile, We are sorry to see ${PetProfileVariables.nameController.text} go.", Colors.green);
+                              return;
+                            } catch (e) {
+                              print('Error creating pet profile: $e');
+                              showCustomSnackBar(context, 'Error creating pet profile', Colors.red);
+                            } finally {
+                              setState(() {
+                                removePetText = 'Remove Pet Profile';
+                              });
+                            }
+                          },
+                          style: ButtonStyle(
+                            foregroundColor: WidgetStateProperty.all(themeSettings.cardColor),
+                            backgroundColor: WidgetStateProperty.all(themeSettings.cardColor),
+                            side: WidgetStateProperty.all(BorderSide(color: themeSettings.secondaryColor)),
+                          ),
+                          child: Text(removePetText, style: TextStyle(color: themeSettings.textColor)),
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      SizedBox(
+                        width: 270,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            try {
+                              if (PetProfileVariables.nameController.text.isEmpty || PetProfileVariables.bioController.text.isEmpty || PetProfileVariables.birthdateController.text.isEmpty) {
+                                showCustomSnackBar(context, 'Please make sure all fields ae filled in', Colors.red);
+                                return;
+                              }
+
+                              setState(() {
+                                edittingPetText = 'Updating Pet Profile...';
+                              });
+
+                              if (PetProfileVariables.imagePicker.filesNotifier.value != null && PetProfileVariables.imagePicker.filesNotifier.value!.isNotEmpty) {
+                                setState(() {
+                                  usingNewImage = true;
+                                });
+                              }
+
+                              await PetProfileVariables.updatePet(usingNewImage);
+
+                              showCustomSnackBar(context, 'Sucessfully updated your pets profile', Colors.green);
+                              return;
+                            } catch (e) {
+                              print('Error creating pet profile: $e');
+                              showCustomSnackBar(context, 'Error creating pet profile', Colors.red);
+                            } finally {
+                              setState(() {
+                                edittingPetText = 'Update Your Pets Profile';
+                              });
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: themeSettings.primaryColor,
+                          ),
+                          child: Text(edittingPetText, style: TextStyle(color: themeSettings.textColor)),
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               ],
             ),

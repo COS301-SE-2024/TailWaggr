@@ -1,5 +1,6 @@
 // ignore_for_file: file_names, must_be_immutable
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Pets/PetProfileDesktop.dart';
@@ -13,6 +14,7 @@ class PetProfileVariables {
   static TextEditingController bioController = TextEditingController();
   static TextEditingController birthdateController = TextEditingController();
   static DateTime? birthdate;
+  static String? petId;
 
   static ImagePicker imagePicker = ImagePicker();
   static String? profilePicture;
@@ -21,11 +23,16 @@ class PetProfileVariables {
     birthdate = p0 as DateTime;
 
     birthdateController.text = "${p0.day} ${getMonthAbbreviation(p0.month)} ${p0.year}";
-    profileDetails.birthdate = "${p0.day} ${getMonthAbbreviation(p0.month)} ${p0.year}";
+  }
+
+  static String getFormattedDate(DateTime date) {
+    String day = date.day.toString().padLeft(2, '0');
+    String month = getMonthAbbreviation(date.month);
+    String year = date.year.toString();
+    return '$day $month $year';
   }
 
   static Future<void> createPet() async {
-
     await ProfileService().addPet(
       profileDetails.userID,
       {
@@ -34,6 +41,24 @@ class PetProfileVariables {
         'birthdate': birthdate,
         'profilePicture': profilePicture,
       },
+    );
+  }
+
+  static Future<void> updatePet(bool usingNewImage) async {
+    print("Updating pet profile");
+    print("Pet ID: $petId");
+    print("Name: ${nameController.text}");
+    print("Bio: ${bioController.text}");
+    print("Birthdate: $birthdate");
+    await ProfileService().updatePet(
+      profileDetails.userID,
+      petId!,
+      {
+        'name': nameController.text,
+        'bio': bioController.text,
+        'birthDate': birthdate,
+      },
+      usingNewImage ? PetProfileVariables.imagePicker.filesNotifier.value![0] : null,
     );
   }
 }
@@ -46,13 +71,15 @@ class PetProfile extends StatefulWidget {
     this.petBio,
     this.petBirthdate,
     this.petProfilePicture,
+    this.petID,
   });
 
   final bool creatingNewPet;
   String? petName;
   String? petBio;
-  String? petBirthdate;
+  Timestamp? petBirthdate;
   String? petProfilePicture;
+  String? petID;
 
   @override
   State<PetProfile> createState() => _PetProfileState();
@@ -64,8 +91,12 @@ class _PetProfileState extends State<PetProfile> {
     super.initState();
     PetProfileVariables.nameController.text = widget.petName ?? '';
     PetProfileVariables.bioController.text = widget.petBio ?? '';
-    PetProfileVariables.birthdateController.text = widget.petBirthdate ?? '';
+    if (widget.petBirthdate != null) {
+      PetProfileVariables.birthdate = widget.petBirthdate?.toDate();
+      PetProfileVariables.birthdateController.text = PetProfileVariables.getFormattedDate(widget.petBirthdate?.toDate() ?? DateTime.now());
+    }
     PetProfileVariables.profilePicture = widget.petProfilePicture;
+    PetProfileVariables.petId = widget.petID;
   }
 
   @override

@@ -413,13 +413,34 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
               ),
               Divider(),
               for (var pet in profileDetails.pets) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: PetProfileButton(
-                    petName: pet["name"],
-                    petBio: pet["bio"],
-                    petPicture: pet["pictureUrl"],
-                  ),
+                OpenContainer(
+                  transitionDuration: Duration(milliseconds: 300),
+                  closedBuilder: (context, action) {
+                    return MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+
+                        child: PetProfileButton(
+                          petName: pet["name"],
+                          petBio: pet["bio"],
+                          petPicture: pet["pictureUrl"],
+                        ),
+                      ),
+                    );
+                  },
+                  closedColor: Colors.transparent,
+                  closedElevation: 0,
+                  openBuilder: (context, action) {
+                    return PetProfile(
+                      creatingNewPet: false,
+                      petName: pet["name"],
+                      petBio: pet["bio"],
+                      petBirthdate: pet["birthDate"],
+                      petProfilePicture: pet["pictureUrl"],
+                      petID: pet["petID"],
+                    );
+                  },
                 ),
               ],
               SizedBox(height: 20),
@@ -492,13 +513,13 @@ class _PetProfileButtonState extends State<PetProfileButton> {
             children: [
               Text(
                 widget.petName,
-                style: TextStyle(fontSize: subHeadingTextSize),
+                style: TextStyle(fontSize: subHeadingTextSize, color: themeSettings.textColor),
                 overflow: TextOverflow.ellipsis,
               ),
               // SizedBox(height: 8),
               Text(
                 widget.petBio,
-                style: TextStyle(fontSize: subBodyTextSize),
+                style: TextStyle(fontSize: subBodyTextSize, color: themeSettings.textColor),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
               ),
