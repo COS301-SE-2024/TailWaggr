@@ -12,14 +12,29 @@ class PetProfileVariables {
   static TextEditingController nameController = TextEditingController();
   static TextEditingController bioController = TextEditingController();
   static TextEditingController birthdateController = TextEditingController();
+  static DateTime? birthdate;
 
   static ImagePicker imagePicker = ImagePicker();
   static String? profilePicture;
 
-  static void setPetDetails() {
-    nameController.text = profileDetails.name;
-    bioController.text = profileDetails.bio;
-    birthdateController.text = profileDetails.birthdate;
+  static void setBirthDateControllers(Object? p0) {
+    birthdate = p0 as DateTime;
+
+    birthdateController.text = "${p0.day} ${getMonthAbbreviation(p0.month)} ${p0.year}";
+    profileDetails.birthdate = "${p0.day} ${getMonthAbbreviation(p0.month)} ${p0.year}";
+  }
+
+  static Future<void> createPet() async {
+
+    await ProfileService().addPet(
+      profileDetails.userID,
+      {
+        'name': nameController.text,
+        'bio': bioController.text,
+        'birthdate': birthdate,
+        'profilePicture': profilePicture,
+      },
+    );
   }
 }
 
