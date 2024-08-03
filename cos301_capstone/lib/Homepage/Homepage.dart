@@ -25,6 +25,11 @@ class _HomepageState extends State<Homepage> {
     void getPosts() async {
       Future<List<Map<String, dynamic>>> posts = HomePageService().getPosts();
       posts.then((value) {
+        for (Map<String, dynamic> post in value) {
+          if (post['UserId'] == profileDetails.userID) {
+            profileDetails.myPosts.add(post);
+          }
+        }
         setState(() {
           profileDetails.posts = value;
         });

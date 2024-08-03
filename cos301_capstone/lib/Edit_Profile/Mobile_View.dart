@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -43,6 +44,10 @@ class _EditProfileMobileState extends State<EditProfileMobile> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
+        title: Text(
+          "Edit Profile",
+          style: TextStyle(color: themeSettings.primaryColor, fontSize: 20),
+        ),
         backgroundColor: backgroundColor,
         iconTheme: IconThemeData(color: primaryColor),
       ),
@@ -250,34 +255,46 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: SfDateRangePicker(
-                  backgroundColor: themeSettings.cardColor,
-                  onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
-                    profileDetails.birthdate = args.value.toString();
-                  },
-                  selectionMode: DateRangePickerSelectionMode.single,
-                  initialDisplayDate: DateTime.now(),
-                  showActionButtons: true,
-                  confirmText: "Select",
-                  cancelText: "Cancel",
-                  headerStyle: DateRangePickerHeaderStyle(
-                    backgroundColor: themeSettings.cardColor,
-                    textAlign: TextAlign.center,
+                child: SfDateRangePickerTheme(
+                  data: SfDateRangePickerThemeData(
+                    activeDatesTextStyle: TextStyle(color: themeSettings.textColor),
+                    headerTextStyle: TextStyle(color: themeSettings.primaryColor),
+                    selectionColor: themeSettings.secondaryColor,
+                    todayTextStyle: TextStyle(color: themeSettings.primaryColor),
+                    weekNumberTextStyle: TextStyle(color: themeSettings.primaryColor),
+                    viewHeaderTextStyle: TextStyle(color: themeSettings.primaryColor),
+                    cellTextStyle: TextStyle(color: themeSettings.textColor),
+                    todayCellTextStyle: TextStyle(color: themeSettings.primaryColor),
                   ),
-                  todayHighlightColor: themeSettings.primaryColor,
-                  showNavigationArrow: true,
-                  onSubmit: (p0) {
-                    EditProfileVariables.setBirthDateControllers(p0);
-                    setState(() {
-                      isDatePickerVisible = false;
-                    });
-                  },
-                  onCancel: () {
-                    setState(() {
-                      EditProfileVariables.birthdateController.text = profileDetails.birthdate;
-                      isDatePickerVisible = false;
-                    });
-                  },
+                  child: SfDateRangePicker(
+                    backgroundColor: themeSettings.cardColor,
+                    onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                      profileDetails.birthdate = args.value.toString();
+                    },
+                    selectionMode: DateRangePickerSelectionMode.single,
+                    initialDisplayDate: DateTime.now(),
+                    showActionButtons: true,
+                    confirmText: "Select",
+                    cancelText: "Cancel",
+                    headerStyle: DateRangePickerHeaderStyle(
+                      backgroundColor: themeSettings.cardColor,
+                      textAlign: TextAlign.center,
+                    ),
+                    todayHighlightColor: themeSettings.primaryColor,
+                    showNavigationArrow: true,
+                    onSubmit: (p0) {
+                      EditProfileVariables.setBirthDateControllers(p0);
+                      setState(() {
+                        isDatePickerVisible = false;
+                      });
+                    },
+                    onCancel: () {
+                      setState(() {
+                        EditProfileVariables.birthdateController.text = profileDetails.birthdate;
+                        isDatePickerVisible = false;
+                      });
+                    },
+                  ),
                 ),
               ),
             ),
@@ -292,37 +309,7 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
                     print("Phone number is invalid");
                   }
                 : () async {
-                    profileDetails.name = EditProfileVariables.nameController.text;
-                    profileDetails.surname = EditProfileVariables.surnameController.text;
-                    profileDetails.bio = EditProfileVariables.bioController.text;
-                    profileDetails.location = EditProfileVariables.addressController.text;
-
-                    PlatformFile? newProfileImage;
-
-                    if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
-                      newProfileImage = imagePicker.filesNotifier.value![0];
-                    }
-
-                    await ProfileService().updateProfile(
-                      profileDetails.userID,
-                      {
-                        'name': profileDetails.name,
-                        'surname': profileDetails.surname,
-                        'bio': profileDetails.bio,
-                        'location': profileDetails.location,
-                        'phoneDetails': {
-                          'dialCode': profileDetails.dialCode,
-                          'isoCode': profileDetails.isoCode,
-                          'phoneNumber': profileDetails.phone,
-                        },
-                        'birthDate': EditProfileVariables.birthdate,
-                      },
-                      newProfileImage,
-                      null,
-                    );
-
-                    profileDetails.isEditing.value++;
-                    Navigator.pop(context);
+                    await EditProfileVariables.updatePersonalDetails(context);
                   },
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
@@ -809,8 +796,6 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
     imagePicker.filesNotifier.addListener(() {
       setState(() {}); // Rebuild the widget when files are selected
     });
-
-
 
     setState(() {
       useImage = profileDetails.usingImage;

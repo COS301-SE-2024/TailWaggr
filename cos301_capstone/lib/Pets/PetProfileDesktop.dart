@@ -28,6 +28,8 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
 
   String removePetText = 'Remove Pet Profile';
 
+  String originalPetBirthday = '';
+
   void showCustomSnackBar(BuildContext context, String message, Color color) {
     final snackBar = SnackBar(
       backgroundColor: color,
@@ -88,6 +90,10 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
     PetProfileVariables.imagePicker.filesNotifier.addListener(() {
       setState(() {});
     });
+
+    if (!widget.creatingNewPet) {
+      originalPetBirthday = PetProfileVariables.birthdateController.text;
+    }
   }
 
   @override
@@ -205,7 +211,7 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
                     color: themeSettings.textColor,
                   ),
                   onChanged: (value) {
-                    PetProfileVariables.birthdateController.text = profileDetails.birthdate;
+                    PetProfileVariables.birthdateController.text = originalPetBirthday;
                   },
                   // enabled: false,
                 ),
@@ -233,7 +239,7 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
                         child: SfDateRangePicker(
                           backgroundColor: themeSettings.cardColor,
                           onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
-                            profileDetails.birthdate = args.value.toString();
+                            PetProfileVariables.birthdateController.text = args.value.toString();
                           },
                           selectionMode: DateRangePickerSelectionMode.single,
                           initialDisplayDate: DateTime.now(),

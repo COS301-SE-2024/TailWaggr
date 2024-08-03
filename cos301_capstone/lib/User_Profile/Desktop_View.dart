@@ -118,15 +118,11 @@ class ListOfPosts extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          for (var post in profileDetails.posts) ...[
+          for (var post in profileDetails.myPosts) ...[
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Row(
                 children: [
-                  // CircleAvatar(
-                  //   radius: 35,
-                  //   backgroundImage: NetworkImage(post["ImgUrl"]),
-                  // ),
                   SizedBox(
                     width: 175,
                     child: ClipRRect(
@@ -155,14 +151,17 @@ class ListOfPosts extends StatelessWidget {
                         Row(
                           children: [
                             for (var includedPet in post["PetIds"]) ...[
-                              Column(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 20,
-                                    backgroundImage: NetworkImage(includedPet['pictureUrl']),
-                                  ),
-                                  Text(includedPet['name'], style: TextStyle(fontSize: textSize)),
-                                ],
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage: NetworkImage(includedPet['pictureUrl']),
+                                    ),
+                                    Text(includedPet['name'], style: TextStyle(fontSize: textSize)),
+                                  ],
+                                ),
                               ),
                             ]
                           ],
@@ -477,6 +476,7 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
                   );
                 },
               ),
+              SizedBox(height: 20),
             ],
           ),
         ),

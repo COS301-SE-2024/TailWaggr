@@ -6,7 +6,8 @@ import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Pets/PetProfileDesktop.dart';
 import 'package:cos301_capstone/Pets/PetProfileMobile.dart';
 import 'package:cos301_capstone/services/Profile/profile_service.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:cos301_capstone/services/general/general_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class PetProfileVariables {
@@ -38,28 +39,31 @@ class PetProfileVariables {
       {
         'name': nameController.text,
         'bio': bioController.text,
-        'birthdate': birthdate,
+        'birthDate': birthdate,
         'profilePicture': profilePicture,
       },
     );
   }
 
   static Future<void> updatePet(bool usingNewImage) async {
-    print("Updating pet profile");
-    print("Pet ID: $petId");
-    print("Name: ${nameController.text}");
-    print("Bio: ${bioController.text}");
-    print("Birthdate: $birthdate");
+    Map<String, dynamic> petData = {
+      'name': nameController.text,
+      'bio': bioController.text,
+    };
+
+    if (birthdate != null) {
+      petData['birthDate'] = birthdate;
+    }
     await ProfileService().updatePet(
       profileDetails.userID,
       petId!,
-      {
-        'name': nameController.text,
-        'bio': bioController.text,
-        'birthDate': birthdate,
-      },
+      petData,
       usingNewImage ? PetProfileVariables.imagePicker.filesNotifier.value![0] : null,
     );
+
+    
+
+    profileDetails.isEditing.value++;
   }
 }
 

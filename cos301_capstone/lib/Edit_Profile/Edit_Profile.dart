@@ -34,6 +34,47 @@ class EditProfileVariables {
     profileDetails.birthdate = "${p0.day} ${getMonthAbbreviation(p0.month)} ${p0.year}";
   }
 
+  static Future<void> updatePersonalDetails(context) async {
+    profileDetails.name = EditProfileVariables.nameController.text;
+    profileDetails.surname = EditProfileVariables.surnameController.text;
+    profileDetails.bio = EditProfileVariables.bioController.text;
+    profileDetails.location = EditProfileVariables.addressController.text;
+
+    PlatformFile? newProfileImage;
+
+    if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
+      newProfileImage = imagePicker.filesNotifier.value![0];
+    }
+
+    print("Birthdate: ${EditProfileVariables.birthdate}");
+
+    Map<String, dynamic> jsonData = {
+      'name': profileDetails.name,
+      'surname': profileDetails.surname,
+      'bio': profileDetails.bio,
+      'location': profileDetails.location,
+      'phoneDetails': {
+        'dialCode': profileDetails.dialCode,
+        'isoCode': profileDetails.isoCode,
+        'phoneNumber': profileDetails.phone,
+      },
+    };
+
+    if (EditProfileVariables.birthdate != null) {
+      jsonData['birthDate'] = EditProfileVariables.birthdate;
+    }
+
+    await ProfileService().updateProfile(
+      profileDetails.userID,
+      jsonData,
+      newProfileImage,
+      null,
+    );
+
+    profileDetails.isEditing.value++;
+    Navigator.pop(context);
+  }
+
   static Future<void> setNavbarPreferences(bool usingImage, bool usingDefaultImage) async {
     PlatformFile? sidebarImage;
 
