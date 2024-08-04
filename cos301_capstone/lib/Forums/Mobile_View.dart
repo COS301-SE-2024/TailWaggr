@@ -229,7 +229,7 @@ class _MobileForumsState extends State<MobileForums> {
         children: [
           Container(//left side
             padding: EdgeInsets.all(20),
-            width: MediaQuery.of(context).size.width * 0.38,
+            width: MediaQuery.of(context).size.width,
             child: 
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
