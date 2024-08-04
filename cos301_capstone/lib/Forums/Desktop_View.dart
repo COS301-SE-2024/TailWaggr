@@ -25,6 +25,7 @@ String? newMessageContent;
 String? newReplyContent;
 String? selectedPostId;
 String? forumName;
+String? forumDescription;
 Map<String, Map<String, dynamic>> userProfiles = {};
 
 class _DesktopForumsState extends State<DesktopForums> {
@@ -55,6 +56,7 @@ class _DesktopForumsState extends State<DesktopForums> {
         if (forums != null && forums!.isNotEmpty) {
           selectedForumId = forums!.first['forumId'];
           forumName = forums!.first['Name'];
+          forumDescription = forums!.first['Description'];
           _fetchPosts(selectedForumId!);
         }
       });
