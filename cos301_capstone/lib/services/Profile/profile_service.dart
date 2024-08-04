@@ -145,10 +145,23 @@ class ProfileService {
     }
   }
 
-  Future<void> addPet(String ownerId, Map<String, dynamic> petData) async {
+  Future<void> addPet(String ownerId, Map<String, dynamic> petData, PlatformFile? profileImage) async {
     try {
-      await _db.collection('users').doc(ownerId).collection('pets').add(petData);
-      print("Pet added successfully.");
+      DocumentReference docRef = await _db.collection('users').doc(ownerId).collection('pets').add(petData);
+
+      // Add pet profile image
+      if (profileImage != null) {
+        String photoFileName = 'pet_images/${ownerId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(profileImage.name)}';
+        Uint8List? fileBytes = profileImage.bytes;
+        if (fileBytes == null) {
+          throw Exception("File data is null");
+        }
+        SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
+        TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
+        String imgUrl = await uploadTask.ref.getDownloadURL();
+
+        await _updatePetData(ownerId, docRef.id, {'pictureUrl': imgUrl});
+      }
     } catch (e) {
       print("Error adding pet: $e");
     }
