@@ -74,6 +74,9 @@ class _MobileForumsState extends State<MobileForums> {
       posts = null;
       forumName =
           forums!.firstWhere((forum) => forum['forumId'] == forumId)['Name'];
+      //uncomment after adding descriptions for each post:
+        //forumDescription =
+       //  forums!.firstWhere((forum) => forum['forumId'] == forumId)['Description'];
       isLoadingPosts = true;
     });
     _fetchPosts(forumId);
@@ -227,11 +230,11 @@ class _MobileForumsState extends State<MobileForums> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(//left side
+          Container(
+            //left side
             padding: EdgeInsets.all(20),
             width: MediaQuery.of(context).size.width,
-            child: 
-            Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -248,11 +251,12 @@ class _MobileForumsState extends State<MobileForums> {
                       if (!mounted) return;
                       setState(() {
                         searchTerm = value;
-                        searchedForums = forums!.where((forum) =>
-                            forum['Name']
+                        searchedForums = forums!
+                            .where((forum) => forum['Name']
                                 .toString()
                                 .toLowerCase()
-                                .contains(searchTerm.toLowerCase())).toList();
+                                .contains(searchTerm.toLowerCase()))
+                            .toList();
                       });
                     },
                     decoration: InputDecoration(
@@ -261,199 +265,285 @@ class _MobileForumsState extends State<MobileForums> {
                           color: themeSettings.textColor.withOpacity(0.5)),
                       prefixIcon: Icon(Icons.search),
                     ),
-                    style: TextStyle(
-                        color: themeSettings.textColor),
+                    style: TextStyle(color: themeSettings.textColor),
                   ),
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: searchTerm.isNotEmpty ? searchedForums!.length : forums!.length,
+                    itemCount: searchTerm.isNotEmpty
+                        ? searchedForums!.length
+                        : forums!.length,
                     itemBuilder: (context, index) {
-                      final forum = searchTerm.isNotEmpty ? searchedForums![index] : forums![index];
-                      return GestureDetector(
+                      final forum = searchTerm.isNotEmpty
+                          ? searchedForums![index]
+                          : forums![index];
+                      return OpenContainer(
+                          transitionDuration: Duration(milliseconds: 300),
+                          tappable: false,
+                          closedBuilder: (context, action) {
+                            return GestureDetector(
                         onTap: () {
+                          action();
                           _selectForum(forum['forumId']);
                         },
-                        child: 
-                          OpenContainer(
-                            transitionDuration: Duration(milliseconds: 300),
-                            closedBuilder: (context, action) {
-                              return 
-                              Container(
-                                height: 100,
-                                margin: EdgeInsets.symmetric(vertical: 10),
-                                padding: EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: themeSettings.cardColor,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: themeSettings.primaryColor,
-                                    width: 2.0,
-                                  ),
+                        child: Container(
+                              height: 100,
+                              margin: EdgeInsets.symmetric(vertical: 10),
+                              padding: EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: themeSettings.cardColor,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: themeSettings.primaryColor,
+                                  width: 2.0,
                                 ),
-                                child: Text(
-                                  forum['Name'],
-                                  style: TextStyle(
-                                    fontSize: bodyTextSize,
-                                    color: themeSettings.textColor,
-                                  ),
+                              ),
+                              child: Text(
+                                forum['Name'],
+                                style: TextStyle(
+                                  fontSize: bodyTextSize,
+                                  color: themeSettings.textColor,
                                 ),
-                              );
-                            },
-                            closedColor: Colors.transparent,
-                            closedElevation: 0,
-                            openBuilder: (context, action) {
-                              return Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.all(20),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        forumName!,
-                                        style: TextStyle(
-                                            fontSize: subtitleTextSize,
-                                            color: themeSettings.primaryColor),
-                                      ),
-                                      SizedBox(height: 20),
-                                      isLoadingPosts
-                                          ? Center(child: CircularProgressIndicator())
-                                          : posts != null && posts!.isNotEmpty
-                                              ? Expanded(
-                                                  child: ListView.builder(
-                                                    itemCount: posts!.length,
-                                                    itemBuilder: (context, index) {
-                                                      final post = posts![index];
-                                                      final postId = post['messageId'];
-                                                      var numLikes = post['likesCount'].toString();
-                                                      final numReplies = post['repliesCount'].toString();
-                                                      final userId = post['message']['UserId'] as String;
-                                                      final userProfile = userProfiles[userId];
+                              ),
+                            )
+                            );
+                          },
+                          closedColor: Colors.transparent,
+                          closedElevation: 0,
+                          openBuilder: (context, action) {
+                            return Scaffold(
+                                appBar: AppBar(
+                                  title: Text(
+                                    forumName!,
+                                    style: TextStyle(
+                                        color: themeSettings.primaryColor,
+                                        fontSize: 30),
+                                  ),
+                                  iconTheme: IconThemeData(
+                                      color: themeSettings.primaryColor),
+                                ),
+                                body: Expanded(
+                                  child: Container(
+                                    padding: EdgeInsets.all(20),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          forumDescription!,
+                                          //"Hi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the way",
+                                          style: TextStyle(
+                                              color: themeSettings.textColor),
+                                        ),
+                                        SizedBox(height: 20),
+                                        isLoadingPosts
+                                            ? Center(
+                                                child:
+                                                    CircularProgressIndicator())
+                                            : posts != null && posts!.isNotEmpty
+                                                ? Expanded(
+                                                    child: ListView.builder(
+                                                      itemCount: posts!.length,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        final post =
+                                                            posts![index];
+                                                        final postId =
+                                                            post['messageId'];
+                                                        var numLikes =
+                                                            post['likesCount']
+                                                                .toString();
+                                                        final numReplies =
+                                                            post['repliesCount']
+                                                                .toString();
+                                                        final userId =
+                                                            post['message']
+                                                                    ['UserId']
+                                                                as String;
+                                                        final userProfile =
+                                                            userProfiles[
+                                                                userId];
 
-                                                      return GestureDetector(
-                                                        onTap: () {
-                                                          _viewMessage(context, post);
-                                                        },
-                                                        child: Container(
-                                                          margin: EdgeInsets.symmetric(vertical: 10),
-                                                          padding: EdgeInsets.all(10),
-                                                          decoration: BoxDecoration(
-                                                            color: themeSettings.cardColor,
-                                                            borderRadius: BorderRadius.circular(10),
-                                                            border: Border.all(
-                                                              color: themeSettings.primaryColor,
-                                                              width: 2.0,
+                                                        return GestureDetector(
+                                                          onTap: () {
+                                                            _viewMessage(
+                                                                context, post);
+                                                          },
+                                                          child: Container(
+                                                            margin: EdgeInsets
+                                                                .symmetric(
+                                                                    vertical:
+                                                                        10),
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    10),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color:
+                                                                  themeSettings
+                                                                      .cardColor,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                              border:
+                                                                  Border.all(
+                                                                color: themeSettings
+                                                                    .primaryColor,
+                                                                width: 2.0,
+                                                              ),
+                                                            ),
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Text(
+                                                                  userProfile?[
+                                                                          'userName'] ??
+                                                                      'Unknown User',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          bodyTextSize,
+                                                                      color: themeSettings
+                                                                          .textColor),
+                                                                ),
+                                                                Text(
+                                                                  post['message']
+                                                                          ?[
+                                                                          'Content'] ??
+                                                                      'No Content',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          subBodyTextSize,
+                                                                      color: themeSettings
+                                                                          .textColor),
+                                                                ),
+                                                                SizedBox(
+                                                                    height: 10),
+                                                                Row(
+                                                                  children: [
+                                                                    Tooltip(
+                                                                      message:
+                                                                          "Like",
+                                                                      child:
+                                                                          IconButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          print(
+                                                                              "Like button pressed");
+                                                                          _likeMessage(
+                                                                              postId);
+
+                                                                          ForumServices()
+                                                                              .getLikesCount(selectedForumId!, postId)
+                                                                              .then((value) {
+                                                                            setState(() {
+                                                                              numLikes = value.toString();
+                                                                            });
+                                                                          });
+                                                                        },
+                                                                        icon:
+                                                                            Icon(
+                                                                          Icons
+                                                                              .favorite_border,
+                                                                          color: Colors
+                                                                              .red
+                                                                              .withOpacity(0.7),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                        numLikes,
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                themeSettings.textColor.withOpacity(0.7))),
+                                                                    Spacer(),
+                                                                    Tooltip(
+                                                                      message:
+                                                                          "Comment",
+                                                                      child:
+                                                                          IconButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          setState(
+                                                                              () {
+                                                                            selectedPostId =
+                                                                                postId;
+                                                                          });
+                                                                          showDialogBox(
+                                                                              context);
+                                                                        },
+                                                                        icon:
+                                                                            Icon(
+                                                                          Icons
+                                                                              .comment,
+                                                                          color: Colors
+                                                                              .blue
+                                                                              .withOpacity(0.7),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                        numReplies,
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                themeSettings.textColor.withOpacity(0.7))),
+                                                                  ],
+                                                                ),
+                                                              ],
                                                             ),
                                                           ),
-                                                          child: Column(
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children: [
-                                                              Text(
-                                                                userProfile?['userName'] ?? 'Unknown User',
-                                                                style: TextStyle(
-                                                                    fontSize: bodyTextSize,
-                                                                    color: themeSettings.textColor),
-                                                              ),
-                                                              Text(
-                                                                post['message']?['Content'] ?? 'No Content',
-                                                                style: TextStyle(
-                                                                    fontSize: subBodyTextSize,
-                                                                    color: themeSettings.textColor),
-                                                              ),
-                                                              SizedBox(height: 10),
-                                                              Row(
-                                                                children: [
-                                                                  Tooltip(
-                                                                    message: "Like",
-                                                                    child: IconButton(
-                                                                      onPressed: () {
-                                                                        print("Like button pressed");
-                                                                        _likeMessage(postId);
-
-                                                                        ForumServices().getLikesCount(selectedForumId!, postId).then((value) {
-                                                                          setState(() {
-                                                                            numLikes = value.toString();
-                                                                          });
-                                                                        });
-                                                                      },
-                                                                      icon: Icon(
-                                                                        Icons.favorite_border,
-                                                                        color: Colors.red.withOpacity(0.7),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
-                                                                  Spacer(),
-                                                                  Tooltip(
-                                                                    message: "Comment",
-                                                                    child: IconButton(
-                                                                      onPressed: () {
-                                                                        setState(() {
-                                                                          selectedPostId = postId;
-                                                                        });
-                                                                        showDialogBox(context);
-                                                                      },
-                                                                      icon: Icon(
-                                                                        Icons.comment,
-                                                                        color: Colors.blue.withOpacity(0.7),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  Text(numReplies, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
-                                                                ],
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      );
-                                                    },
+                                                        );
+                                                      },
+                                                    ),
+                                                  )
+                                                : Center(
+                                                    child: Text(
+                                                      'No posts available',
+                                                      style: TextStyle(
+                                                          color: Colors.grey),
+                                                    ),
                                                   ),
-                                                )
-                                              : Center(
-                                                  child: Text(
-                                                    'No posts available',
-                                                    style: TextStyle(color: Colors.grey),
-                                                  ),
-                                                ),
-                                      SizedBox(height: 10),
-                                      TextField(
-                                        controller: messageController,
-                                        onSubmitted: (value) async {
-                                          if (!mounted) return;
-                                          setState(() {
-                                            newMessageContent = value;
-                                          });
-                                          await _addMessage();
-                                          messageController.clear();
-                                          setState(() {
-                                            newMessageContent = '';
-                                          });
-                                        },
-                                        decoration: InputDecoration(
-                                          hintText: 'Type a message...',
-                                          suffixIcon: IconButton(
-                                            icon: Icon(Icons.send),
-                                            onPressed: () async {
-                                              if (!mounted) return;
-                                              setState(() {
-                                                newMessageContent = messageController.text;
-                                              });
-                                              await _addMessage();
-                                              messageController.clear();
-                                              setState(() {
-                                                newMessageContent = '';
-                                              });
-                                            },
+                                        SizedBox(height: 10),
+                                        TextField(
+                                          controller: messageController,
+                                          onSubmitted: (value) async {
+                                            if (!mounted) return;
+                                            setState(() {
+                                              newMessageContent = value;
+                                            });
+                                            await _addMessage();
+                                            messageController.clear();
+                                            setState(() {
+                                              newMessageContent = '';
+                                            });
+                                          },
+                                          decoration: InputDecoration(
+                                            hintText: 'Type a message...',
+                                            suffixIcon: IconButton(
+                                              icon: Icon(Icons.send),
+                                              onPressed: () async {
+                                                if (!mounted) return;
+                                                setState(() {
+                                                  newMessageContent =
+                                                      messageController.text;
+                                                });
+                                                await _addMessage();
+                                                messageController.clear();
+                                                setState(() {
+                                                  newMessageContent = '';
+                                                });
+                                              },
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),                        
-                      );
+                                ));
+                          },
+                        );
                     },
                   ),
                 ),
@@ -486,7 +576,7 @@ class MessageView extends StatefulWidget {
     required this.forumId,
     required this.userProfiles,
     required this.forumServices,
-    required this.authService, 
+    required this.authService,
     required this.onReplyAdded, // Initialize the callback
   });
 
@@ -502,8 +592,10 @@ class _MessageViewState extends State<MessageView> {
     if (newReplyContent.isNotEmpty) {
       try {
         String? userId = await widget.authService.getCurrentUserId();
-        await widget.forumServices.replyToMessage(widget.forumId, postId, userId!, newReplyContent);
-        _fetchReplies(widget.forumId,postId); // Call the method to refresh the posts
+        await widget.forumServices
+            .replyToMessage(widget.forumId, postId, userId!, newReplyContent);
+        _fetchReplies(
+            widget.forumId, postId); // Call the method to refresh the posts
         setState(() {
           _replyController.clear();
         });
@@ -513,7 +605,6 @@ class _MessageViewState extends State<MessageView> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -534,7 +625,9 @@ class _MessageViewState extends State<MessageView> {
             Text(
               userProfile?['userName'] ?? 'Unknown User',
               style: TextStyle(
-                  fontSize: 24, color: Colors.black, fontWeight: FontWeight.bold),
+                  fontSize: 24,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
             Text(
@@ -600,7 +693,7 @@ class _MessageViewState extends State<MessageView> {
       ),
     );
   }
-  
+
   void _fetchReplies(String forumId, String postId) {
     widget.forumServices.getReplies(forumId, postId).then((replies) {
       setState(() {
