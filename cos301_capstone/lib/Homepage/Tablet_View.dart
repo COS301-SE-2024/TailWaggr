@@ -508,13 +508,13 @@ class _PostState extends State<Post> {
                 Tooltip(
                   message: "Comment",
                   child: IconButton(
-                        onPressed: () {
-                        showDialogBox(context);
-                        HomePageService().getCommentsCount(widget.postDetails['PostId']).then((value) {
-                          setState(() {
-                            numComments = value.toString();
-                          });
+                      onPressed: () {
+                      showDialogBox(context);
+                      HomePageService().getCommentsCount(widget.postDetails['PostId']).then((value) {
+                        setState(() {
+                          numComments = value.toString();
                         });
+                      });
                       },
                     icon: Icon(
                       Icons.comment,
