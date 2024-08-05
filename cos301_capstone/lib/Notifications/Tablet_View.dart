@@ -487,6 +487,7 @@ void _showPostDialog(BuildContext context) async {
       //fetch user name and profile picture
       final String name = await _fetchUserName(notification['AvatarUrlId']);
       final String profilePicture = await _fetchProfilePicture(notification['AvatarUrlId']);
+      
       showDialog(
         // ignore: use_build_context_synchronously
         context: context,
@@ -510,25 +511,28 @@ void _showPostDialog(BuildContext context) async {
                         CircleAvatar(
                           backgroundImage: NetworkImage(profilePicture),
                         ),
-                      SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            name,
-                            style: TextStyle(
-                              color: themeSettings.textColor,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        SizedBox(width: 10),
+                        Expanded( // Use Expanded here
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                name,
+                                style: TextStyle(
+                                  color: themeSettings.textColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                comment['comment'] ?? 'No content',
+                                style: TextStyle(
+                                  color: themeSettings.textColor.withOpacity(0.7),
+                                ),
+                                maxLines: null, // Allow text to wrap
+                              ),
+                            ],
                           ),
-                          Text(
-                            comment['comment'] ?? 'No content',
-                            style: TextStyle(
-                              color: themeSettings.textColor.withOpacity(0.7),
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
                       ],
                     ),
                     SizedBox(height: 8),
@@ -576,6 +580,7 @@ void _showPostDialog(BuildContext context) async {
     );
   }
 }
+
 
   void _showEventDialog(BuildContext context) async {
     String referenceId = notification['ReferenceId'];
