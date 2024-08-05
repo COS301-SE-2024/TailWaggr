@@ -3,6 +3,7 @@ import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Desktop_View.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/auth/auth.dart';
+import 'package:cos301_capstone/services/forum/forum.dart';
 import 'package:flutter/material.dart';
 import 'package:cos301_capstone/services/Notifications/notifications.dart';
 
@@ -199,6 +200,14 @@ class NotificationCard extends StatelessWidget {
     }
     return 'Unknown User';
   }
+  Future<int> getLikes(String forumId, String messageId) async
+  {
+    return ForumServices().getLikesCount(forumId, messageId) ;
+  }
+  Future<int> getReplies(String forumId, String messageId) async
+  {
+    return ForumServices().getRepliesCount(forumId, messageId);
+  }
   Future<String> _fetchProfilePicture(String userId) async {
     try {
       DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
@@ -213,7 +222,7 @@ class NotificationCard extends StatelessWidget {
     }
     return profileDetails.profilePicture; // Return default profile picture if user profile picture is not found
   }
-void _showForumDialog(BuildContext context) async {
+  void _showForumDialog(BuildContext context) async {
   String referenceId = notification['ReferenceId'];
   List<String> ids = referenceId.split('/');
   String forumId = ids[0];
@@ -251,8 +260,8 @@ void _showForumDialog(BuildContext context) async {
       Map<String, dynamic> message = messageSnapshot.data() as Map<String, dynamic>;
       Map<String, dynamic> userProfile = userProfileSnapshot.data() as Map<String, dynamic>;
       final String profilePicture = await _fetchProfilePicture(notification['AvatarUrlId']);
-      final int likes = message['likes'] ?? 0;
-      final int comments = message['comments'] ?? 0;
+      final int likes = await getLikes(forumId, messageId);
+      final int comments =await getReplies(forumId, messageId);
       final String name = await _fetchUserName(notification['AvatarUrlId']);
 
       showDialog(
@@ -274,78 +283,77 @@ void _showForumDialog(BuildContext context) async {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Message Section
+                    // User Info Section
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CircleAvatar(
                           radius: 20,
                           backgroundImage: NetworkImage(profilePicture),
                         ),
                         SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              userProfile['name'] ?? 'Unknown User',
+                              style: TextStyle(
+                                color: themeSettings.textColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Posted on: ${formatDate(message['CreatedAt'])}',
+                              style: TextStyle(
+                                color: themeSettings.textColor.withOpacity(0.7),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    // Message Content Section
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: themeSettings.primaryColor,
+                          width: 2,  // Increased border thickness
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            message['Content'] ?? 'No content',
+                            style: TextStyle(
+                              color: themeSettings.textColor,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                userProfile['name'] ?? 'Unknown User',
-                                style: TextStyle(
-                                  color: themeSettings.textColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Row(
+                                children: [
+                                  Icon(Icons.pets_outlined, size: 16),
+                                  SizedBox(width: 4),
+                                  Text('$likes'),
+                                ],
                               ),
-                              Text(
-                                'Posted on: ${formatDate(message['CreatedAt'])}',
-                                style: TextStyle(
-                                  color: themeSettings.textColor.withOpacity(0.7),
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: themeSettings.primaryColor,
-                                    width: 2,  // Increased border thickness
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      message['Content'] ?? 'No content',
-                                      style: TextStyle(
-                                        color: themeSettings.textColor,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Icon(Icons.pets_outlined, size: 16),
-                                            SizedBox(width: 4),
-                                            Text('$likes'),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Icon(Icons.comment, size: 16),
-                                            SizedBox(width: 4),
-                                            Text('$comments'),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                              Row(
+                                children: [
+                                  Icon(Icons.comment, size: 16),
+                                  SizedBox(width: 4),
+                                  Text('$comments'),
+                                ],
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     if (comment.isNotEmpty) ...[
                       SizedBox(height: 16),
