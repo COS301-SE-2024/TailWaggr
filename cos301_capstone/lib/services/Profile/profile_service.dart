@@ -72,7 +72,6 @@ class ProfileService {
   ///     - sidebarColor: (Int) The sidebar color.
   ///   - sidebarImage: (string) The URL of the sidebar image.
   ///   - themeMode: (string) whether light, dark or custom.
-  /// - profilePictureUrl: (string) The URL of the user's profile picture.
   /// - profileImage: (PlatformFile) The new profile image file.
   /// - surname: (string) The user's surname.
   /// - userName: (string) The user's username.
@@ -144,7 +143,11 @@ class ProfileService {
       return [];
     }
   }
-
+  /// The following fields can be added to the pet profile:
+  /// - bio: (string) A short biography of the pet.
+  /// - birthDate: (timestamp) The pet's birth date.
+  /// - name: (string) The pet's name.
+  /// - profileImage: (PlatformFile) The new profile image file.
   Future<void> addPet(String ownerId, Map<String, dynamic> petData, PlatformFile? profileImage) async {
     try {
       DocumentReference docRef = await _db.collection('users').doc(ownerId).collection('pets').add(petData);
@@ -189,7 +192,11 @@ class ProfileService {
       print("Error updating pet: $e");
     }
   }
-
+  /// The following fields can be added to the pet profile:
+  /// - bio: (string) A short biography of the pet.
+  /// - birthDate: (timestamp) The pet's birth date.
+  /// - name: (string) The pet's name.
+  /// - profileImage: (PlatformFile) The new profile image file.
   Future<void> updatePet(String userID, String petId, Map<String, dynamic> updatedData, PlatformFile? profileImage) async {
     try {
       await _db.collection('users').doc(userID).collection('pets').doc(petId).update(updatedData);
