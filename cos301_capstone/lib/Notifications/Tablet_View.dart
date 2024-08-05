@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Homepage/Tablet_View.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:cos301_capstone/services/Notifications/notifications.dart';
@@ -455,6 +456,124 @@ class NotificationCard extends StatelessWidget {
   }
 }
 
+void _showPostDialog(BuildContext context) async {
+  try {
+    // Fetch the notification type to distinguish between types
+    int notificationType = notification['NotificationTypeId'];
+    String referenceId = notification['ReferenceId'];
+    
+    // Initialize variables to hold post and user profile data
+    Map<String, dynamic> post = {};
+    Map<String, dynamic> comment = {};
+    
+    // Fetch post data
+    DocumentSnapshot postSnapshot = await FirebaseFirestore.instance.collection('posts').doc(referenceId.split('/')[0]).get();
+    if (postSnapshot.exists) {
+      post = postSnapshot.data() as Map<String, dynamic>;
+
+      // If the notification is of type 6, fetch the comment data
+      if (notificationType == 6) {
+        String postId = referenceId.split('/')[0];
+        String commentId = referenceId.split('/')[1];
+        DocumentSnapshot commentSnapshot = await FirebaseFirestore.instance.collection('posts').doc(postId).collection('comments').doc(commentId).get();
+        if (commentSnapshot.exists) {
+          comment = commentSnapshot.data() as Map<String, dynamic>;
+        } else {
+          throw Exception('Comment not found');
+        }
+      }
+      //fetch user name and profile picture
+      final String name = await _fetchUserName(notification['AvatarUrlId']);
+      final String profilePicture = await _fetchProfilePicture(notification['AvatarUrlId']);
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Post(postDetails: post),
+                  if (notificationType == 6 && comment.isNotEmpty) ...[
+                    SizedBox(height: 16),
+                    Divider(),
+                    Text(
+                      'Comment:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(profilePicture),
+                        ),
+                      SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: TextStyle(
+                              color: themeSettings.textColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            comment['comment'] ?? 'No content',
+                            style: TextStyle(
+                              color: themeSettings.textColor.withOpacity(0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Commented on: ${formatDate(comment['commentedAt'])}',
+                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      throw Exception('Post not found');
+    }
+  } catch (e) {
+    print("Error fetching post details: $e");
+    showDialog(
+      // ignore: use_build_context_synchronously
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text('An error occurred while fetching post details.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
 
   void _showEventDialog(BuildContext context) async {
     String referenceId = notification['ReferenceId'];
@@ -578,6 +697,9 @@ class NotificationCard extends StatelessWidget {
             onTap: () {
               if (type == 1 || type == 3) {
                 _showForumDialog(context);
+              }
+              else if (type == 6 || type == 5) {
+                _showPostDialog(context);
               }
             },
           ),
