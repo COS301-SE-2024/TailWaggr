@@ -159,7 +159,7 @@ class ForumServices {
       });
 
       // Create reply notification
-      notif.createReplyNotification(forumId,messageId, userId);
+      notif.createReplyNotification(forumId,messageId,replyRef.id, userId);
 
       return replyRef;
     } catch (e) {

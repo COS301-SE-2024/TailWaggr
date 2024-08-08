@@ -5,12 +5,15 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:cos301_capstone/services/general/general_service.dart';
 
+import 'package:cos301_capstone/services/Notifications/notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class HomePageService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
+  NotificationsServices notif = NotificationsServices();
+
 
   Future<bool> addPost(
     String userId,
@@ -143,16 +146,19 @@ class HomePageService {
         'likedAt': DateTime.now(),
         // Additional like information can go here
       });
+       //add like notification
+        notif.createLikePostNotification(postId, userId);
     }
   }
   Future<void> addCommentToPost(String postId, String userId, String comment) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
-    await postRef.collection('comments').add({
+    DocumentReference<Map<String, dynamic>> commentRef = await postRef.collection('comments').add({
       'userId': userId, // Storing the userId of the commenter
       'comment': comment, // Storing the actual comment text
       'commentedAt': DateTime.now(), // Storing the timestamp of the comment
       // Additional comment information can go here
     });
+    notif.createCommentPostNotification(postId, userId, commentRef.id);
   }
   Future<void> addViewToPost(String postId, String userId) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
