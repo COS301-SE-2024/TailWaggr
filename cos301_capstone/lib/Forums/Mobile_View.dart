@@ -238,7 +238,8 @@ class _ForumView extends StatefulWidget {
 }
 
 class __ForumViewState extends State<_ForumView> {
-  bool isLoadingPosts = false;
+  bool isLoadingPosts = true;
+  List<Map<String, dynamic>>? localPosts;
 
   TextEditingController messageController = TextEditingController();
 
@@ -249,7 +250,7 @@ class __ForumViewState extends State<_ForumView> {
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _selectForum(widget.forumId);
   }
@@ -345,8 +346,8 @@ class __ForumViewState extends State<_ForumView> {
           await _forumServices.getMessages(forumId);
       if (!mounted) return;
       setState(() {
-        posts = fetchedPosts;
-        //isLoadingPosts = false;
+        localPosts = fetchedPosts;
+        isLoadingPosts = false;
       });
       _fetchUserProfiles();
     } catch (e) {
@@ -419,123 +420,142 @@ class __ForumViewState extends State<_ForumView> {
         ),
         iconTheme: IconThemeData(color: themeSettings.primaryColor),
       ),
-      body: Container(
+      body: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              forumDescription!,
-              //"Hi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the way",
-              style: TextStyle(color: themeSettings.textColor),
-            ),
-            SizedBox(height: 20),
-            isLoadingPosts
-                ? Center(child: CircularProgressIndicator())
-                : posts != null && posts!.isNotEmpty
-                    ? ListView.builder(
-                        itemCount: posts!.length,
-                        itemBuilder: (context, index) {
-                          final post = posts![index];
-                          final postId = post['messageId'];
-                          var numLikes = post['likesCount'].toString();
-                          final numReplies = post['repliesCount'].toString();
-                          final userId = post['message']['UserId'] as String;
-                          final userProfile = userProfiles[userId];
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    forumDescription!,
+                    //"Hi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the way",
+                    style: TextStyle(color: themeSettings.textColor),
+                  ),
+                  SizedBox(height: 20),
+                  isLoadingPosts
+                      ? Center(child: CircularProgressIndicator())
+                      : localPosts != null && localPosts!.isNotEmpty
+                          ? ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              itemCount: localPosts!.length,
+                              itemBuilder: (context, index) {
+                                final post = localPosts![index];
+                                final postId = post['messageId'];
+                                var numLikes = post['likesCount'].toString();
+                                final numReplies =
+                                    post['repliesCount'].toString();
+                                final userId =
+                                    post['message']['UserId'] as String;
+                                final userProfile = userProfiles[userId];
 
-                          return GestureDetector(
-                            onTap: () {
-                              _viewMessage(context, post);
-                            },
-                            child: Container(
-                              margin: EdgeInsets.symmetric(vertical: 10),
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: themeSettings.cardColor,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: themeSettings.primaryColor,
-                                  width: 2.0,
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    userProfile?['userName'] ?? 'Unknown User',
-                                    style: TextStyle(
-                                        fontSize: bodyTextSize,
-                                        color: themeSettings.textColor),
-                                  ),
-                                  Text(
-                                    post['message']?['Content'] ?? 'No Content',
-                                    style: TextStyle(
-                                        fontSize: subBodyTextSize,
-                                        color: themeSettings.textColor),
-                                  ),
-                                  SizedBox(height: 10),
-                                  Row(
-                                    children: [
-                                      Tooltip(
-                                        message: "Like",
-                                        child: IconButton(
-                                          onPressed: () {
-                                            print("Like button pressed");
-                                            _likeMessage(postId);
+                                return GestureDetector(
+                                  onTap: () {
+                                    _viewMessage(context, post);
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(vertical: 10),
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: themeSettings.cardColor,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: themeSettings.primaryColor,
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          userProfile?['userName'] ??
+                                              'Unknown User',
+                                          style: TextStyle(
+                                              fontSize: bodyTextSize,
+                                              color: themeSettings.textColor),
+                                        ),
+                                        Text(
+                                          post['message']?['Content'] ??
+                                              'No Content',
+                                          style: TextStyle(
+                                              fontSize: subBodyTextSize,
+                                              color: themeSettings.textColor),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Tooltip(
+                                              message: "Like",
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  print("Like button pressed");
+                                                  _likeMessage(postId);
 
-                                            ForumServices()
-                                                .getLikesCount(
-                                                    selectedForumId!, postId)
-                                                .then((value) {
-                                              setState(() {
-                                                numLikes = value.toString();
-                                              });
-                                            });
-                                          },
-                                          icon: Icon(
-                                            Icons.favorite_border,
-                                            color: Colors.red.withOpacity(0.7),
-                                          ),
+                                                  ForumServices()
+                                                      .getLikesCount(
+                                                          selectedForumId!,
+                                                          postId)
+                                                      .then((value) {
+                                                    setState(() {
+                                                      numLikes =
+                                                          value.toString();
+                                                    });
+                                                  });
+                                                },
+                                                icon: Icon(
+                                                  Icons.favorite_border,
+                                                  color: Colors.red
+                                                      .withOpacity(0.7),
+                                                ),
+                                              ),
+                                            ),
+                                            Text(numLikes,
+                                                style: TextStyle(
+                                                    color: themeSettings
+                                                        .textColor
+                                                        .withOpacity(0.7))),
+                                            Spacer(),
+                                            Tooltip(
+                                              message: "Comment",
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    selectedPostId = postId;
+                                                  });
+                                                  showDialogBox(context);
+                                                },
+                                                icon: Icon(
+                                                  Icons.comment,
+                                                  color: Colors.blue
+                                                      .withOpacity(0.7),
+                                                ),
+                                              ),
+                                            ),
+                                            Text(numReplies,
+                                                style: TextStyle(
+                                                    color: themeSettings
+                                                        .textColor
+                                                        .withOpacity(0.7))),
+                                          ],
                                         ),
-                                      ),
-                                      Text(numLikes,
-                                          style: TextStyle(
-                                              color: themeSettings.textColor
-                                                  .withOpacity(0.7))),
-                                      Spacer(),
-                                      Tooltip(
-                                        message: "Comment",
-                                        child: IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              selectedPostId = postId;
-                                            });
-                                            showDialogBox(context);
-                                          },
-                                          icon: Icon(
-                                            Icons.comment,
-                                            color: Colors.blue.withOpacity(0.7),
-                                          ),
-                                        ),
-                                      ),
-                                      Text(numReplies,
-                                          style: TextStyle(
-                                              color: themeSettings.textColor
-                                                  .withOpacity(0.7))),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ],
+                                );
+                              },
+                            )
+                          : Center(
+                              child: Text(
+                                'No posts available',
+                                style: TextStyle(color: Colors.grey),
                               ),
                             ),
-                          );
-                        },
-                      )
-                    : Center(
-                        child: Text(
-                          'No posts available',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      ),
+                ],
+              ),
+            ),
             SizedBox(height: 10),
             TextField(
               controller: messageController,
