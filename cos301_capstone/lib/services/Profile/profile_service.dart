@@ -99,7 +99,7 @@ class ProfileService {
           await _storage.refFromURL(oldProfileImageUrl).delete();
         }
 
-        await updateProfileData(userId, {'profilePictureUrl': profileImgUrl});
+        await _updateProfileData(userId, {'profilePictureUrl': profileImgUrl});
       }
 
       // Update sidebar image
@@ -119,14 +119,14 @@ class ProfileService {
           await _storage.refFromURL(oldSidebarImageUrl).delete();
         }
 
-        await updateProfileData(userId, {'sidebarImage': sidebarImgUrl});
+        await _updateProfileData(userId, {'sidebarImage': sidebarImgUrl});
       }
     } catch (e) {
       print("Error updating profile: $e");
     }
   }
 
-  Future<void> updateProfileData(String userId, Map<String, dynamic> updatedData) async {
+  Future<void> _updateProfileData(String userId, Map<String, dynamic> updatedData) async {
     try {
       await _db.collection('users').doc(userId).update(updatedData);
       print("Profile updated successfully.");
@@ -144,17 +144,48 @@ class ProfileService {
       return [];
     }
   }
-
-  Future<void> addPet(String ownerId, Map<String, dynamic> petData) async {
+  /// The following fields can be added to the pet profile:
+  /// - bio: (string) A short biography of the pet.
+  /// - birthDate: (timestamp) The pet's birth date.
+  /// - name: (string) The pet's name.
+  /// - profileImage: (PlatformFile) The new profile image file.
+  Future<void> addPet(String ownerId, Map<String, dynamic> petData, PlatformFile? profileImage) async {
     try {
-      await _db.collection('users').doc(ownerId).collection('pets').add(petData);
-      print("Pet added successfully.");
+      DocumentReference docRef = await _db.collection('users').doc(ownerId).collection('pets').add(petData);
+
+      // Add pet profile image
+      if (profileImage != null) {
+        String photoFileName = 'pet_images/${ownerId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(profileImage.name)}';
+        Uint8List? fileBytes = profileImage.bytes;
+        if (fileBytes == null) {
+          throw Exception("File data is null");
+        }
+        SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
+        TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
+        String imgUrl = await uploadTask.ref.getDownloadURL();
+
+        await _updatePetData(ownerId, docRef.id, {'pictureUrl': imgUrl});
+      }
     } catch (e) {
       print("Error adding pet: $e");
     }
   }
+  Future<void> deletePet(String ownerId, String petId) async {
+    try {
+      // Delete the pet profile image
+      String? petImageUrl = await getPetProfile(ownerId, petId).then((value) => value?['pictureUrl']);
+      if (petImageUrl != null) {
+        await _storage.refFromURL(petImageUrl).delete();
+      }
+      // Delete the pet document
+      await _db.collection('users').doc(ownerId).collection('pets').doc(petId).delete();
+      print("Pet deleted successfully.");
+    } catch (e) {
+      print("Error deleting pet: $e");
+    }
+  }
 
-  Future<void> updatePetData(String ownerId, String petId, Map<String, dynamic> updatedData) async {
+  Future<void> _updatePetData(String ownerId, String petId, Map<String, dynamic> updatedData) async {
     try {
       await _db.collection('users').doc(ownerId).collection('pets').doc(petId).update(updatedData);
       print("Pet updated successfully.");
@@ -162,7 +193,11 @@ class ProfileService {
       print("Error updating pet: $e");
     }
   }
-
+  /// The following fields can be added to the pet profile:
+  /// - bio: (string) A short biography of the pet.
+  /// - birthDate: (timestamp) The pet's birth date.
+  /// - name: (string) The pet's name.
+  /// - profileImage: (PlatformFile) The new profile image file.
   Future<void> updatePet(String userID, String petId, Map<String, dynamic> updatedData, PlatformFile? profileImage) async {
     try {
       await _db.collection('users').doc(userID).collection('pets').doc(petId).update(updatedData);
@@ -184,7 +219,7 @@ class ProfileService {
           await _storage.refFromURL(oldImageUrl).delete();
         }
 
-        await updatePetData(userID, petId, {'pictureUrl': imgUrl});
+        await _updatePetData(userID, petId, {'pictureUrl': imgUrl});
       }
     } catch (e) {
       print("Error updating pet: $e");
