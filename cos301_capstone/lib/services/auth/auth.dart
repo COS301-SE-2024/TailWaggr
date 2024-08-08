@@ -32,14 +32,6 @@ class AuthService {
           'email': email,
           'userType': 'pet_owner'
         });
-
-        // Add user profile data to the 'profile' collection
-        await _db.collection('profile').doc(user.uid).set({
-          'Bio': '',
-          'DarkMode': false,
-          'ProfileImg': '', 
-          'UserId': _db.collection('users').doc(user.uid) // Reference to the user document
-        });
       }
       return user;
     } catch (e) {
@@ -115,14 +107,6 @@ Future<String?> getUserByAuthId(String authId) async {
             'surname': '', // Adjust as needed, Google sign-in may not provide surname
             'email': user.email,
             'typeUser': 'pet_owner'
-          });
-
-          // Create a profile document
-          await _db.collection('profile').doc(user.uid).set({
-            'Bio': '',
-            'DarkMode': false,
-            'ProfileImg': '',
-            'UserId': _db.collection('users').doc(user.uid)
           });
         }
       }

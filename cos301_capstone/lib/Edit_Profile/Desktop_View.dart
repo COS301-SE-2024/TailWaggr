@@ -1,8 +1,11 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
+import 'package:cos301_capstone/services/Location/location_service.dart';
+import 'package:cos301_capstone/services/Profile/profile_service.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -121,8 +124,21 @@ class _EditProfileDesktopState extends State<EditProfileDesktop> {
   }
 }
 
-class UpdatePersonalDetails extends StatelessWidget {
+class UpdatePersonalDetails extends StatefulWidget {
   const UpdatePersonalDetails({super.key});
+
+  @override
+  State<UpdatePersonalDetails> createState() => _UpdatePersonalDetailsState();
+}
+
+class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
+  @override
+  void initState() {
+    super.initState();
+    imagePicker.filesNotifier.addListener(() {
+      setState(() {}); // Rebuild the widget when files are selected
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,16 +147,17 @@ class UpdatePersonalDetails extends StatelessWidget {
         children: [
           Row(
             children: [
-              GestureDetector(
-                onTap: () async {
-                  try {} catch (e) {
-                    print("Error: $e");
-                  }
-                },
-                child: CircleAvatar(
-                  radius: 75,
-                  // backgroundImage: AssetImage("assets/images/profile.jpg"),
-                  backgroundImage: NetworkImage(profileDetails.profilePicture),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () async {
+                    imagePicker.pickFiles();
+                  },
+                  child: CircleAvatar(
+                    radius: 75,
+                    // backgroundImage: AssetImage("assets/images/profile.jpg"),
+                    backgroundImage: NetworkImage(profileDetails.profilePicture),
+                  ),
                 ),
               ),
               SizedBox(width: 20),
@@ -245,6 +262,25 @@ class UpdatePersonalDetails extends StatelessWidget {
               profileDetails.surname = EditProfileVariables.surnameController.text;
               profileDetails.bio = EditProfileVariables.bioController.text;
               profileDetails.location = EditProfileVariables.addressController.text;
+
+              PlatformFile? newProfileImage;
+
+              if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
+                newProfileImage = imagePicker.filesNotifier.value![0];
+              }
+
+              await ProfileService().updateProfile(
+                profileDetails.userID,
+                {
+                  'name': profileDetails.name,
+                  'surname': profileDetails.surname,
+                  'bio': profileDetails.bio,
+                  'location': profileDetails.location,
+                },
+                newProfileImage,
+                null,
+              );
+
               profileDetails.isEditing.value++;
               Navigator.pop(context);
             },
@@ -858,78 +894,59 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                           ),
                         ],
                       ),
-                      if (!useDefaultImage) ...[
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      // if (!useDefaultImage) ...[
+                      SizedBox(height: 20),
+                      if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) ...[
+                        Stack(
                           children: [
-                            Text("Navbar text colour", style: TextStyle(color: themeSettings.primaryColor, fontSize: bodyTextSize)),
-                            ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  navbarTextColourSelector = true;
-                                });
-                              },
-                              style: ButtonStyle(
-                                backgroundColor: WidgetStateProperty.all(primaryColor),
-                                textStyle: WidgetStateProperty.all(TextStyle(color: themeSettings.textColor)),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.memory(
+                                imagePicker.filesNotifier.value![0].bytes!,
                               ),
-                              child: Text("Change"),
+                            ),
+                            Positioned(
+                              top: 10,
+                              right: 10,
+                              child: IconButton(
+                                color: Colors.white.withOpacity(0.5),
+                                icon: Icon(
+                                  Icons.close,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () => imagePicker.clearCachedFiles(),
+                              ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 20),
-                        if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) ...[
-                          Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.memory(
-                                  imagePicker.filesNotifier.value![0].bytes!,
-                                ),
-                              ),
-                              Positioned(
-                                top: 10,
-                                right: 10,
-                                child: IconButton(
-                                  color: Colors.white.withOpacity(0.5),
-                                  icon: Icon(
-                                    Icons.close,
-                                    color: Colors.grey,
-                                  ),
-                                  onPressed: () => imagePicker.clearCachedFiles(),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ] else ...[
-                          Container(
-                            decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
-                            child: GestureDetector(
-                              onTap: () => imagePicker.pickFiles(),
-                              child: Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.add_a_photo,
-                                        color: themeSettings.textColor.withOpacity(0.7),
-                                      ),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        "Change background",
-                                        style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
-                                      ),
-                                    ],
-                                  ),
+                      ] else ...[
+                        Container(
+                          decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
+                          child: GestureDetector(
+                            onTap: () => imagePicker.pickFiles(),
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.add_a_photo,
+                                      color: themeSettings.textColor.withOpacity(0.7),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      "Change background",
+                                      style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
                           ),
-                        ],
+                        ),
                       ],
+                      // ],
                     ] else ...[
                       ToggleSwitch(
                         minWidth: double.infinity,
@@ -956,6 +973,25 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                         },
                       ),
                     ],
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Navbar text colour", style: TextStyle(color: themeSettings.primaryColor, fontSize: bodyTextSize)),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              navbarTextColourSelector = true;
+                            });
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(primaryColor),
+                            textStyle: WidgetStateProperty.all(TextStyle(color: themeSettings.textColor)),
+                          ),
+                          child: Text("Change", style: TextStyle(color: Colors.white),),
+                        ),
+                      ],
+                    ),
                     SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
