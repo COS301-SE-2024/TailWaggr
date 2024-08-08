@@ -5,6 +5,7 @@ import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/Pets/Pet_Profile.dart';
+import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +22,15 @@ class _ProfileMobileState extends State<ProfileMobile> {
     super.initState();
     profileDetails.isEditing.addListener(() {
       setState(() {});
+    });
+
+    PetProfileVariables.petEditted.addListener(() {
+      Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(profileDetails.userID);
+      pets.then((value) {
+        setState(() {
+          profileDetails.pets = value;
+        });
+      });
     });
   }
 

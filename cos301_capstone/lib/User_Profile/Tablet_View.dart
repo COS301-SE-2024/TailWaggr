@@ -23,6 +23,15 @@ class _ProfileTabletState extends State<ProfileTablet> {
     profileDetails.isEditing.addListener(() {
       setState(() {});
     });
+
+    PetProfileVariables.petEditted.addListener(() {
+      Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(profileDetails.userID);
+      pets.then((value) {
+        setState(() {
+          profileDetails.pets = value;
+        });
+      });
+    });
   }
 
   @override

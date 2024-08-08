@@ -298,7 +298,11 @@ class _PetProfileMobileState extends State<PetProfileMobile> {
                             creatingNewPetText = 'Creating Pet Profile...';
                           });
 
-                          // await PetProfileVariables.createPet();
+                          await PetProfileVariables.createPet();
+
+                          showCustomSnackBar(context, 'Sucessfully created your pets profile', Colors.green);
+
+                          Navigator.pop(context);
 
                           return;
                         } catch (e) {
@@ -326,19 +330,21 @@ class _PetProfileMobileState extends State<PetProfileMobile> {
                       onPressed: () async {
                         try {
                           bool? result = await showConfirmationDialog(context, PetProfileVariables.nameController.text);
-                  
+
                           if (result == null || !result) {
                             return;
                           }
-                  
+
                           setState(() {
                             removePetText = 'Removing Pet Profile...';
                           });
-                  
-                          // await PetProfileVariables.updatePet(usingNewImage);
-                          print("Pet removed");
-                  
+
+                          await PetProfileVariables.deletePet();
+
                           showCustomSnackBar(context, "Pet removed from profile, We are sorry to see ${PetProfileVariables.nameController.text} go.", Colors.green);
+
+                          Navigator.pop(context);
+
                           return;
                         } catch (e) {
                           print('Error creating pet profile: $e');
@@ -367,20 +373,23 @@ class _PetProfileMobileState extends State<PetProfileMobile> {
                             showCustomSnackBar(context, 'Please make sure all fields ae filled in', Colors.red);
                             return;
                           }
-                  
+
                           setState(() {
                             edittingPetText = 'Updating Pet Profile...';
                           });
-                  
+
                           if (PetProfileVariables.imagePicker.filesNotifier.value != null && PetProfileVariables.imagePicker.filesNotifier.value!.isNotEmpty) {
                             setState(() {
                               usingNewImage = true;
                             });
                           }
-                  
+
                           await PetProfileVariables.updatePet(usingNewImage);
-                  
+
                           showCustomSnackBar(context, 'Sucessfully updated your pets profile', Colors.green);
+
+                          Navigator.pop(context);
+
                           return;
                         } catch (e) {
                           print('Error creating pet profile: $e');

@@ -8,7 +8,9 @@ import 'package:cos301_capstone/Pets/PetProfileMobile.dart';
 import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class PetProfileVariables {
   static TextEditingController nameController = TextEditingController();
@@ -19,6 +21,8 @@ class PetProfileVariables {
 
   static ImagePicker imagePicker = ImagePicker();
   static String? profilePicture;
+
+  static ValueNotifier<int> petEditted = ValueNotifier<int>(0);
 
   static void setBirthDateControllers(Object? p0) {
     birthdate = p0 as DateTime;
@@ -40,9 +44,16 @@ class PetProfileVariables {
         'name': nameController.text,
         'bio': bioController.text,
         'birthDate': birthdate,
-        'profilePicture': profilePicture,
       },
+      imagePicker.filesNotifier.value![0],
     );
+
+    Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(profileDetails.userID);
+    pets.then((value) {
+      profileDetails.pets = value;
+    });
+
+    petEditted.value++;
   }
 
   static Future<void> updatePet(bool usingNewImage) async {
@@ -61,9 +72,20 @@ class PetProfileVariables {
       usingNewImage ? PetProfileVariables.imagePicker.filesNotifier.value![0] : null,
     );
 
+    Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(profileDetails.userID);
+    pets.then((value) {
+      profileDetails.pets = value;
+    });
+
+    petEditted.value++;
+  }
+
+  static Future<void> deletePet() async {
+    await ProfileService().deletePet(profileDetails.userID, petId!);
+
     
 
-    profileDetails.isEditing.value++;
+    petEditted.value++;
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/Pets/Pet_Profile.dart';
+import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
@@ -21,6 +22,15 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
     super.initState();
     profileDetails.isEditing.addListener(() {
       setState(() {});
+    });
+
+    PetProfileVariables.petEditted.addListener(() {
+      Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(profileDetails.userID);
+      pets.then((value) {
+        setState(() {
+          profileDetails.pets = value;
+        });
+      });
     });
   }
 
@@ -419,7 +429,6 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
                       cursor: SystemMouseCursors.click,
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
-
                         child: PetProfileButton(
                           petName: pet["name"],
                           petBio: pet["bio"],

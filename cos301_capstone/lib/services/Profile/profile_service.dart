@@ -164,7 +164,7 @@ class ProfileService {
         TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
         String imgUrl = await uploadTask.ref.getDownloadURL();
 
-        await _updatePetData(ownerId, docRef.id, {'pictureUrl': imgUrl});
+        await _updatePetData(ownerId, docRef.id, {'pictureUrl': imgUrl, 'petID': docRef.id});
       }
     } catch (e) {
       print("Error adding pet: $e");

@@ -2,6 +2,8 @@
 
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Pets/Pet_Profile.dart';
+import 'package:cos301_capstone/User_Profile/User_Profile.dart';
+import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
@@ -299,7 +301,11 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
                             creatingNewPetText = 'Creating Pet Profile...';
                           });
 
-                          // await PetProfileVariables.createPet();
+                          await PetProfileVariables.createPet();
+
+                          showCustomSnackBar(context, 'Sucessfully created your pets profile', Colors.green);
+
+                          Navigator.pop(context);
 
                           return;
                         } catch (e) {
@@ -338,14 +344,16 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
                                 removePetText = 'Removing Pet Profile...';
                               });
 
-                              // await PetProfileVariables.updatePet(usingNewImage);
-                              print("Pet removed");
+                              await PetProfileVariables.deletePet();
 
                               showCustomSnackBar(context, "Pet removed from profile, We are sorry to see ${PetProfileVariables.nameController.text} go.", Colors.green);
+                              
+                              Navigator.pop(context);
+                              
                               return;
                             } catch (e) {
-                              print('Error creating pet profile: $e');
-                              showCustomSnackBar(context, 'Error creating pet profile', Colors.red);
+                              print('Error removing pet profile: $e');
+                              showCustomSnackBar(context, 'Error removing pet profile', Colors.red);
                             } finally {
                               setState(() {
                                 removePetText = 'Remove Pet Profile';
@@ -384,6 +392,9 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
                               await PetProfileVariables.updatePet(usingNewImage);
 
                               showCustomSnackBar(context, 'Sucessfully updated your pets profile', Colors.green);
+                              
+                              Navigator.pop(context);
+                              
                               return;
                             } catch (e) {
                               print('Error creating pet profile: $e');
