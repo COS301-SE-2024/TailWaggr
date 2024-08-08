@@ -32,8 +32,6 @@ Map<String, Map<String, dynamic>> userProfiles = {};
 
 class _MobileForumsState extends State<MobileForums> {
   TextEditingController forumSearchController = TextEditingController();
-  TextEditingController messageController = TextEditingController();
-  bool isLoadingPosts = false;
 
   @override
   void initState() {
@@ -44,7 +42,6 @@ class _MobileForumsState extends State<MobileForums> {
   @override
   void dispose() {
     forumSearchController.dispose();
-    messageController.dispose();
     super.dispose();
   }
 
@@ -77,7 +74,7 @@ class _MobileForumsState extends State<MobileForums> {
       //uncomment after adding descriptions for each post:
       //forumDescription =
       //  forums!.firstWhere((forum) => forum['forumId'] == forumId)['Description'];
-      isLoadingPosts = true;
+      //isLoadingPosts = true;
     });
     _fetchPosts(forumId);
   }
@@ -89,13 +86,13 @@ class _MobileForumsState extends State<MobileForums> {
       if (!mounted) return;
       setState(() {
         posts = fetchedPosts;
-        isLoadingPosts = false;
+        //isLoadingPosts = false;
       });
       _fetchUserProfiles();
     } catch (e) {
       print('Error fetching posts: $e');
       setState(() {
-        isLoadingPosts = false;
+        //isLoadingPosts = false;
       });
     }
   }
@@ -120,106 +117,6 @@ class _MobileForumsState extends State<MobileForums> {
       setState(() {});
     } catch (e) {
       print('Error fetching user profiles: $e');
-    }
-  }
-
-  Future<void> _addMessage() async {
-    if (newMessageContent != null && newMessageContent!.isNotEmpty) {
-      try {
-        String? userId = await _authService.getCurrentUserId();
-        await _forumServices.createMessage(
-            selectedForumId!, userId!, newMessageContent!);
-        _fetchPosts(selectedForumId!);
-        if (!mounted) return;
-        setState(() {
-          newMessageContent = '';
-          messageController.clear();
-        });
-      } catch (e) {
-        print('Error adding message: $e');
-      }
-    }
-  }
-
-  Future<void> _likeMessage(String postId) async {
-    try {
-      String? userId = await _authService.getCurrentUserId();
-      await _forumServices.toggleLikeOnMessage(
-          selectedForumId!, postId, userId!);
-      _fetchPosts(selectedForumId!);
-    } catch (e) {
-      print('Error liking message: $e');
-    }
-  }
-
-  Future<void> _replyToMessage(String postId) async {
-    if (newReplyContent != null && newReplyContent!.isNotEmpty) {
-      try {
-        String? userId = await _authService.getCurrentUserId();
-        await _forumServices.replyToMessage(
-            selectedForumId!, postId, userId!, newReplyContent!);
-        _fetchPosts(selectedForumId!);
-        setState(() {
-          newReplyContent = '';
-        });
-      } catch (e) {
-        print('Error replying to message: $e');
-      }
-    }
-  }
-
-  Future<void> showDialogBox(BuildContext context) {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Reply to message"),
-            content: TextField(
-              onChanged: (value) {
-                if (!mounted) return;
-                setState(() {
-                  newReplyContent = value;
-                });
-              },
-              decoration: InputDecoration(hintText: "Type your reply here"),
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text("Cancel"),
-              ),
-              TextButton(
-                onPressed: () async {
-                  await _replyToMessage(selectedPostId!);
-                  Navigator.of(context).pop();
-                },
-                child: Text("Reply"),
-              ),
-            ],
-          );
-        });
-  }
-
-  void _viewMessage(BuildContext context, Map<String, dynamic> post) {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => MessageView(
-        post: post,
-        forumId: selectedForumId!,
-        userProfiles: userProfiles,
-        forumServices: _forumServices,
-        authService: _authService,
-        onReplyAdded: _onReplyAdded, // Pass the callback here
-      ),
-    ));
-  }
-
-  // This method will be passed as a callback to MessageView
-  void _onReplyAdded() {
-    if (selectedForumId != null) {
-      print('Reply added');
-      _fetchPosts(selectedForumId!);
     }
   }
 
@@ -311,231 +208,7 @@ class _MobileForumsState extends State<MobileForums> {
                       closedColor: Colors.transparent,
                       closedElevation: 0,
                       openBuilder: (context, action) {
-                        return Scaffold(
-                            appBar: AppBar(
-                              title: Text(
-                                forumName!,
-                                style: TextStyle(
-                                    color: themeSettings.primaryColor,
-                                    fontSize: 30),
-                              ),
-                              iconTheme: IconThemeData(
-                                  color: themeSettings.primaryColor),
-                            ),
-                            body:  Container(
-                                padding: EdgeInsets.all(20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      forumDescription!,
-                                      //"Hi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the way",
-                                      style: TextStyle(
-                                          color: themeSettings.textColor),
-                                    ),
-                                    SizedBox(height: 20),
-                                    isLoadingPosts
-                                        ? Center(
-                                            child: CircularProgressIndicator())
-                                        : posts != null && posts!.isNotEmpty
-                                            ? Expanded(
-                                                child: ListView.builder(
-                                                  itemCount: posts!.length,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    final post = posts![index];
-                                                    final postId =
-                                                        post['messageId'];
-                                                    var numLikes =
-                                                        post['likesCount']
-                                                            .toString();
-                                                    final numReplies =
-                                                        post['repliesCount']
-                                                            .toString();
-                                                    final userId =
-                                                        post['message']
-                                                                ['UserId']
-                                                            as String;
-                                                    final userProfile =
-                                                        userProfiles[userId];
-
-                                                    return GestureDetector(
-                                                      onTap: () {
-                                                        _viewMessage(
-                                                            context, post);
-                                                      },
-                                                      child: Container(
-                                                        margin: EdgeInsets
-                                                            .symmetric(
-                                                                vertical: 10),
-                                                        padding:
-                                                            EdgeInsets.all(10),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: themeSettings
-                                                              .cardColor,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(10),
-                                                          border: Border.all(
-                                                            color: themeSettings
-                                                                .primaryColor,
-                                                            width: 2.0,
-                                                          ),
-                                                        ),
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                              userProfile?[
-                                                                      'userName'] ??
-                                                                  'Unknown User',
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      bodyTextSize,
-                                                                  color: themeSettings
-                                                                      .textColor),
-                                                            ),
-                                                            Text(
-                                                              post['message']?[
-                                                                      'Content'] ??
-                                                                  'No Content',
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      subBodyTextSize,
-                                                                  color: themeSettings
-                                                                      .textColor),
-                                                            ),
-                                                            SizedBox(
-                                                                height: 10),
-                                                            Row(
-                                                              children: [
-                                                                Tooltip(
-                                                                  message:
-                                                                      "Like",
-                                                                  child:
-                                                                      IconButton(
-                                                                    onPressed:
-                                                                        () {
-                                                                      print(
-                                                                          "Like button pressed");
-                                                                      _likeMessage(
-                                                                          postId);
-
-                                                                      ForumServices()
-                                                                          .getLikesCount(
-                                                                              selectedForumId!,
-                                                                              postId)
-                                                                          .then(
-                                                                              (value) {
-                                                                        setState(
-                                                                            () {
-                                                                          numLikes =
-                                                                              value.toString();
-                                                                        });
-                                                                      });
-                                                                    },
-                                                                    icon: Icon(
-                                                                      Icons
-                                                                          .favorite_border,
-                                                                      color: Colors
-                                                                          .red
-                                                                          .withOpacity(
-                                                                              0.7),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                                Text(numLikes,
-                                                                    style: TextStyle(
-                                                                        color: themeSettings
-                                                                            .textColor
-                                                                            .withOpacity(0.7))),
-                                                                Spacer(),
-                                                                Tooltip(
-                                                                  message:
-                                                                      "Comment",
-                                                                  child:
-                                                                      IconButton(
-                                                                    onPressed:
-                                                                        () {
-                                                                      setState(
-                                                                          () {
-                                                                        selectedPostId =
-                                                                            postId;
-                                                                      });
-                                                                      showDialogBox(
-                                                                          context);
-                                                                    },
-                                                                    icon: Icon(
-                                                                      Icons
-                                                                          .comment,
-                                                                      color: Colors
-                                                                          .blue
-                                                                          .withOpacity(
-                                                                              0.7),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                                Text(numReplies,
-                                                                    style: TextStyle(
-                                                                        color: themeSettings
-                                                                            .textColor
-                                                                            .withOpacity(0.7))),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              )
-                                            : Center(
-                                                child: Text(
-                                                  'No posts available',
-                                                  style: TextStyle(
-                                                      color: Colors.grey),
-                                                ),
-                                              ),
-                                    SizedBox(height: 10),
-                                    TextField(
-                                      controller: messageController,
-                                      onSubmitted: (value) async {
-                                        if (!mounted) return;
-                                        setState(() {
-                                          newMessageContent = value;
-                                        });
-                                        await _addMessage();
-                                        messageController.clear();
-                                        setState(() {
-                                          newMessageContent = '';
-                                        });
-                                      },
-                                      decoration: InputDecoration(
-                                        hintText: 'Type a message...',
-                                        suffixIcon: IconButton(
-                                          icon: Icon(Icons.send),
-                                          onPressed: () async {
-                                            if (!mounted) return;
-                                            setState(() {
-                                              newMessageContent =
-                                                  messageController.text;
-                                            });
-                                            await _addMessage();
-                                            messageController.clear();
-                                            setState(() {
-                                              newMessageContent = '';
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
+                        return _ForumView(forumId: forum['forumId']);
                       },
                     );
                   },
@@ -551,6 +224,352 @@ class _MobileForumsState extends State<MobileForums> {
           //   ),
           // ),
         ],
+      ),
+    );
+  }
+}
+
+class _ForumView extends StatefulWidget {
+  const _ForumView({super.key, required this.forumId});
+  final String forumId;
+
+  @override
+  State<_ForumView> createState() => __ForumViewState();
+}
+
+class __ForumViewState extends State<_ForumView> {
+  bool isLoadingPosts = false;
+
+  TextEditingController messageController = TextEditingController();
+
+  @override
+  void dispose() {
+    messageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    _selectForum(widget.forumId);
+  }
+
+  Future<void> _replyToMessage(String postId) async {
+    if (newReplyContent != null && newReplyContent!.isNotEmpty) {
+      try {
+        String? userId = await _authService.getCurrentUserId();
+        await _forumServices.replyToMessage(
+            selectedForumId!, postId, userId!, newReplyContent!);
+        _fetchPosts(selectedForumId!);
+        setState(() {
+          newReplyContent = '';
+        });
+      } catch (e) {
+        print('Error replying to message: $e');
+      }
+    }
+  }
+
+  // This method will be passed as a callback to MessageView
+  void _onReplyAdded() {
+    if (selectedForumId != null) {
+      print('Reply added');
+      _fetchPosts(selectedForumId!);
+    }
+  }
+
+  Future<void> showDialogBox(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Reply to message"),
+            content: TextField(
+              onChanged: (value) {
+                if (!mounted) return;
+                setState(() {
+                  newReplyContent = value;
+                });
+              },
+              decoration: InputDecoration(hintText: "Type your reply here"),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () async {
+                  await _replyToMessage(selectedPostId!);
+                  Navigator.of(context).pop();
+                },
+                child: Text("Reply"),
+              ),
+            ],
+          );
+        });
+  }
+
+  void _viewMessage(BuildContext context, Map<String, dynamic> post) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => MessageView(
+        post: post,
+        forumId: selectedForumId!,
+        userProfiles: userProfiles,
+        forumServices: _forumServices,
+        authService: _authService,
+        onReplyAdded: _onReplyAdded, // Pass the callback here
+      ),
+    ));
+  }
+
+  void _selectForum(String forumId) {
+    setState(() {
+      selectedForumId = forumId;
+      posts = null;
+      forumName =
+          forums!.firstWhere((forum) => forum['forumId'] == forumId)['Name'];
+      //uncomment after adding descriptions for each post:
+      //forumDescription =
+      //  forums!.firstWhere((forum) => forum['forumId'] == forumId)['Description'];
+      //isLoadingPosts = true;
+    });
+    _fetchPosts(forumId);
+  }
+
+  Future<void> _fetchPosts(String forumId) async {
+    try {
+      List<Map<String, dynamic>>? fetchedPosts =
+          await _forumServices.getMessages(forumId);
+      if (!mounted) return;
+      setState(() {
+        posts = fetchedPosts;
+        //isLoadingPosts = false;
+      });
+      _fetchUserProfiles();
+    } catch (e) {
+      print('Error fetching posts: $e');
+      setState(() {
+        //isLoadingPosts = false;
+      });
+    }
+  }
+
+  Future<void> _fetchUserProfiles() async {
+    if (posts == null || posts!.isEmpty) return;
+
+    try {
+      Set<String> userIds =
+          posts!.map((post) => post['message']['UserId'] as String).toSet();
+
+      for (String userId in userIds) {
+        if (!userProfiles.containsKey(userId)) {
+          Map<String, dynamic>? profile =
+              await _profileServices.getUserDetails(userId);
+          if (profile != null) {
+            userProfiles[userId] = profile;
+          }
+        }
+      }
+      if (!mounted) return;
+      setState(() {});
+    } catch (e) {
+      print('Error fetching user profiles: $e');
+    }
+  }
+
+  Future<void> _addMessage() async {
+    if (newMessageContent != null && newMessageContent!.isNotEmpty) {
+      try {
+        String? userId = await _authService.getCurrentUserId();
+        await _forumServices.createMessage(
+            selectedForumId!, userId!, newMessageContent!);
+        _fetchPosts(selectedForumId!);
+        if (!mounted) return;
+        setState(() {
+          newMessageContent = '';
+          messageController.clear();
+        });
+      } catch (e) {
+        print('Error adding message: $e');
+      }
+    }
+  }
+
+  Future<void> _likeMessage(String postId) async {
+    try {
+      String? userId = await _authService.getCurrentUserId();
+      await _forumServices.toggleLikeOnMessage(
+          selectedForumId!, postId, userId!);
+      _fetchPosts(selectedForumId!);
+    } catch (e) {
+      print('Error liking message: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          forumName!,
+          style: TextStyle(color: themeSettings.primaryColor, fontSize: 30),
+        ),
+        iconTheme: IconThemeData(color: themeSettings.primaryColor),
+      ),
+      body: Container(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              forumDescription!,
+              //"Hi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the way",
+              style: TextStyle(color: themeSettings.textColor),
+            ),
+            SizedBox(height: 20),
+            isLoadingPosts
+                ? Center(child: CircularProgressIndicator())
+                : posts != null && posts!.isNotEmpty
+                    ? ListView.builder(
+                        itemCount: posts!.length,
+                        itemBuilder: (context, index) {
+                          final post = posts![index];
+                          final postId = post['messageId'];
+                          var numLikes = post['likesCount'].toString();
+                          final numReplies = post['repliesCount'].toString();
+                          final userId = post['message']['UserId'] as String;
+                          final userProfile = userProfiles[userId];
+
+                          return GestureDetector(
+                            onTap: () {
+                              _viewMessage(context, post);
+                            },
+                            child: Container(
+                              margin: EdgeInsets.symmetric(vertical: 10),
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: themeSettings.cardColor,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: themeSettings.primaryColor,
+                                  width: 2.0,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    userProfile?['userName'] ?? 'Unknown User',
+                                    style: TextStyle(
+                                        fontSize: bodyTextSize,
+                                        color: themeSettings.textColor),
+                                  ),
+                                  Text(
+                                    post['message']?['Content'] ?? 'No Content',
+                                    style: TextStyle(
+                                        fontSize: subBodyTextSize,
+                                        color: themeSettings.textColor),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Row(
+                                    children: [
+                                      Tooltip(
+                                        message: "Like",
+                                        child: IconButton(
+                                          onPressed: () {
+                                            print("Like button pressed");
+                                            _likeMessage(postId);
+
+                                            ForumServices()
+                                                .getLikesCount(
+                                                    selectedForumId!, postId)
+                                                .then((value) {
+                                              setState(() {
+                                                numLikes = value.toString();
+                                              });
+                                            });
+                                          },
+                                          icon: Icon(
+                                            Icons.favorite_border,
+                                            color: Colors.red.withOpacity(0.7),
+                                          ),
+                                        ),
+                                      ),
+                                      Text(numLikes,
+                                          style: TextStyle(
+                                              color: themeSettings.textColor
+                                                  .withOpacity(0.7))),
+                                      Spacer(),
+                                      Tooltip(
+                                        message: "Comment",
+                                        child: IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              selectedPostId = postId;
+                                            });
+                                            showDialogBox(context);
+                                          },
+                                          icon: Icon(
+                                            Icons.comment,
+                                            color: Colors.blue.withOpacity(0.7),
+                                          ),
+                                        ),
+                                      ),
+                                      Text(numReplies,
+                                          style: TextStyle(
+                                              color: themeSettings.textColor
+                                                  .withOpacity(0.7))),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    : Center(
+                        child: Text(
+                          'No posts available',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+            SizedBox(height: 10),
+            TextField(
+              controller: messageController,
+              onSubmitted: (value) async {
+                if (!mounted) return;
+                setState(() {
+                  newMessageContent = value;
+                });
+                await _addMessage();
+                messageController.clear();
+                setState(() {
+                  newMessageContent = '';
+                });
+              },
+              decoration: InputDecoration(
+                hintText: 'Type a message...',
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.send),
+                  onPressed: () async {
+                    if (!mounted) return;
+                    setState(() {
+                      newMessageContent = messageController.text;
+                    });
+                    await _addMessage();
+                    messageController.clear();
+                    setState(() {
+                      newMessageContent = '';
+                    });
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
