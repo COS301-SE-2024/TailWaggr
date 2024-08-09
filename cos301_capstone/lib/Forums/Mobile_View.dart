@@ -414,14 +414,16 @@ class __ForumViewState extends State<_ForumView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: themeSettings.backgroundColor,
         title: Text(
           forumName!,
           style: TextStyle(color: themeSettings.primaryColor, fontSize: 30),
         ),
         iconTheme: IconThemeData(color: themeSettings.primaryColor),
       ),
-      body: Padding(
+      body: Container(
         padding: const EdgeInsets.all(16.0),
+        color: themeSettings.backgroundColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -435,7 +437,7 @@ class __ForumViewState extends State<_ForumView> {
                 ? Center(child: CircularProgressIndicator())
                 : localPosts != null && localPosts!.isNotEmpty
                     ? Expanded(
-                      child: ListView.builder(
+                        child: ListView.builder(
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
                           itemCount: localPosts!.length,
@@ -446,7 +448,7 @@ class __ForumViewState extends State<_ForumView> {
                             final numReplies = post['repliesCount'].toString();
                             final userId = post['message']['UserId'] as String;
                             final userProfile = userProfiles[userId];
-                      
+
                             return GestureDetector(
                               onTap: () {
                                 _viewMessage(context, post);
@@ -466,13 +468,15 @@ class __ForumViewState extends State<_ForumView> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      userProfile?['userName'] ?? 'Unknown User',
+                                      userProfile?['userName'] ??
+                                          'Unknown User',
                                       style: TextStyle(
                                           fontSize: bodyTextSize,
                                           color: themeSettings.textColor),
                                     ),
                                     Text(
-                                      post['message']?['Content'] ?? 'No Content',
+                                      post['message']?['Content'] ??
+                                          'No Content',
                                       style: TextStyle(
                                           fontSize: subBodyTextSize,
                                           color: themeSettings.textColor),
@@ -486,7 +490,7 @@ class __ForumViewState extends State<_ForumView> {
                                             onPressed: () {
                                               print("Like button pressed");
                                               _likeMessage(postId);
-                      
+
                                               ForumServices()
                                                   .getLikesCount(
                                                       selectedForumId!, postId)
@@ -498,7 +502,8 @@ class __ForumViewState extends State<_ForumView> {
                                             },
                                             icon: Icon(
                                               Icons.favorite_border,
-                                              color: Colors.red.withOpacity(0.7),
+                                              color:
+                                                  Colors.red.withOpacity(0.7),
                                             ),
                                           ),
                                         ),
@@ -518,7 +523,8 @@ class __ForumViewState extends State<_ForumView> {
                                             },
                                             icon: Icon(
                                               Icons.comment,
-                                              color: Colors.blue.withOpacity(0.7),
+                                              color:
+                                                  Colors.blue.withOpacity(0.7),
                                             ),
                                           ),
                                         ),
@@ -534,7 +540,7 @@ class __ForumViewState extends State<_ForumView> {
                             );
                           },
                         ),
-                    )
+                      )
                     : Center(
                         child: Text(
                           'No posts available',
@@ -557,6 +563,8 @@ class __ForumViewState extends State<_ForumView> {
               },
               decoration: InputDecoration(
                 hintText: 'Type a message...',
+                hintStyle:
+                    TextStyle(color: themeSettings.textColor.withOpacity(0.5)),
                 suffixIcon: IconButton(
                   icon: Icon(Icons.send),
                   onPressed: () async {
@@ -632,10 +640,13 @@ class _MessageViewState extends State<MessageView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('View Message'),
+        backgroundColor: themeSettings.backgroundColor,
+        title: Text('View Message',
+            style: TextStyle(color: themeSettings.primaryColor, fontSize: 30)),
       ),
-      body: Padding(
+      body: Container(
         padding: const EdgeInsets.all(16.0),
+        color: themeSettings.backgroundColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -643,13 +654,13 @@ class _MessageViewState extends State<MessageView> {
               userProfile?['userName'] ?? 'Unknown User',
               style: TextStyle(
                   fontSize: 24,
-                  color: Colors.black,
+                  color: themeSettings.primaryColor,
                   fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
             Text(
               widget.post['message']?['Content'] ?? 'No Content',
-              style: TextStyle(fontSize: 18, color: Colors.black),
+              style: TextStyle(fontSize: 18, color: themeSettings.textColor),
             ),
             SizedBox(height: 20),
             Text(
@@ -668,11 +679,11 @@ class _MessageViewState extends State<MessageView> {
                     margin: EdgeInsets.symmetric(vertical: 10),
                     padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
+                      color: themeSettings.cardColor,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: Colors.grey,
-                        width: 1.0,
+                        color: themeSettings.primaryColor,
+                        width: 2.0,
                       ),
                     ),
                     child: Column(
@@ -680,12 +691,16 @@ class _MessageViewState extends State<MessageView> {
                       children: [
                         Text(
                           replyUserProfile?['userName'] ?? 'Unknown User',
-                          style: TextStyle(fontSize: 18, color: Colors.black),
+                          style: TextStyle(
+                              fontSize: bodyTextSize,
+                              color: themeSettings.textColor),
                         ),
                         SizedBox(height: 5),
                         Text(
                           reply['Content'] ?? 'No Content',
-                          style: TextStyle(fontSize: 16, color: Colors.black),
+                          style: TextStyle(
+                              fontSize: subBodyTextSize,
+                              color: themeSettings.textColor),
                         ),
                       ],
                     ),
@@ -697,6 +712,8 @@ class _MessageViewState extends State<MessageView> {
               controller: _replyController,
               decoration: InputDecoration(
                 hintText: 'Type your reply here',
+                hintStyle:
+                    TextStyle(color: themeSettings.textColor.withOpacity(0.5)),
                 suffixIcon: IconButton(
                   icon: Icon(Icons.send),
                   onPressed: () async {
