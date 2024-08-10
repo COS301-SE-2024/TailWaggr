@@ -4,6 +4,7 @@ import 'package:cos301_capstone/Events/Events.dart';
 import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
+import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:cos301_capstone/Notifications/Notifications.dart';
 import 'package:cos301_capstone/Search_Users/Mobile_View.dart';
@@ -78,9 +79,16 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: ThemeSettings.primaryColor,
+      // backgroundColor: ThemeSettings.primaryColor,
       child: Container(
         padding: EdgeInsets.all(30),
+        decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/pug.jpg"),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
+            ),
+          ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +121,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                 Navbar_Icon(icon: Icons.search, text: "Search", page: SearchUsersMobile()),
                 Navbar_Icon(icon: Icons.notifications, text: "Notifications", page: Notifications()),
                 Navbar_Icon(icon: Icons.event, text: "Events", page: Events()),
-                // Navbar_Icon(icon: Icons.map_sharp, text: "Locate", index: 0),
+                Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: Location()),
                 Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                 Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile()),
               ],

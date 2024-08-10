@@ -6,10 +6,36 @@ class ProfileService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  Future<Map<String, dynamic>?> getUserProfile(String userId) async {
+Future<Map<String, dynamic>?> getUserProfile(String userId) async {
+  try {
+    print("Fetching profile data for user: $userId");
+
+    // Fetch the user's main profile data
+    final doc = await _db.collection('users').doc(userId).get();
+    if (!doc.exists) {
+      print("No profile found for the given userId.");
+      return null;
+    }
+
+    Map<String, dynamic> userProfile = doc.data() as Map<String, dynamic>;
+
+    // Fetch the user's pets subcollection data
+    final petsSnapshot = await _db.collection('users').doc(userId).collection('pets').get();
+    List<Map<String, dynamic>> pets = petsSnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+    // Add the pets data to the user's profile
+    userProfile['pets'] = pets;
+
+    return userProfile;
+  } catch (e) {
+    print("Error fetching profile data: $e");
+    return null;
+  }
+}
+
+  Future<Map<String, dynamic>?> getUserDetails(String userId) async {
     try {
-      print("Fetching profile data for user: $userId");
-      final doc = await _db.collection('users').doc(userId).get();
+      DocumentSnapshot doc = await _db.collection('users').doc(userId).get();
       if (doc.exists) {
         return doc.data() as Map<String, dynamic>?;
       } else {
@@ -229,11 +255,32 @@ class ProfileService {
   Future<void> updateEvent(String eventId, Map<String, dynamic> updatedEventData) async {
     try {
       // Update an existing document
-      await _db.collection('events').doc(eventId).update(updatedEventData);
+      _db.collection('events').doc(eventId).update(updatedEventData);
       print("Event updated successfully.");
     } catch (e) {
       print("Error updating event: $e");
       throw Exception("Failed to update event.");
+    }
+  }
+  Future<void> followUser(String userId, String followingId) async {
+    try {
+      // Add to follow collection
+      DocumentReference followRef =  await _db.collection('follows').add({
+        'followerId': _db.doc('users/$userId'),
+        'followingId': _db.doc('users/$followingId'),
+        'createdAt': Timestamp.now(),
+      });
+
+      // Add to notifications collection
+      await _db.collection('notifications').add({
+        'UserId': _db.doc('users/$followingId'),
+        'NotificationTypeId': 4,
+        'Read': false,
+        'ReferenceId': _db.doc('notifications/$followRef'),
+        'CreatedAt': Timestamp.now(),
+      });
+    } catch (e) {
+      print("Error following user: $e");
     }
   }
 }

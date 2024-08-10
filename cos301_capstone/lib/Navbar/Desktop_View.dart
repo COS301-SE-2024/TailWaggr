@@ -1,5 +1,7 @@
+
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:animations/animations.dart';
 import 'package:cos301_capstone/Events/Events.dart';
 import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
@@ -9,9 +11,12 @@ import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:cos301_capstone/Notifications/Notifications.dart';
 import 'package:cos301_capstone/User_Profile/Desktop_View.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
+import 'package:cos301_capstone/services/Notifications/notifications.dart';
+import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DesktopNavbar extends StatefulWidget {
   const DesktopNavbar({super.key});
@@ -33,6 +38,33 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
   TextEditingController searchController = TextEditingController();
 
   bool isDarkMode = false;
+  int unreadNotificationsCount = 0;
+
+  final NotificationsServices _notificationsServices = NotificationsServices();
+  final AuthService _authService = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    _countUnreadNotifications();
+    profileDetails.isEditing.addListener(() {
+      setState(() {});
+    });
+  }
+
+  void _countUnreadNotifications() async {
+    try {
+      String? userId = await _authService.getCurrentUserId();
+      if (userId != null) {
+        int count = await _notificationsServices.countNewUnreadNotifs(userId);
+        setState(() {
+          unreadNotificationsCount = count;
+        });
+      }
+    } catch (e) {
+      print("Error counting unread notifications: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,14 +73,14 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
         Container(
           width: 250,
           padding: EdgeInsets.all(30),
-          color: ThemeSettings.primaryColor,
-          // decoration: BoxDecoration(
-          //   image: DecorationImage(
-          //     image: AssetImage("assets/images/pug.jpg"),
-          //     fit: BoxFit.cover,
-          //     colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
-          //   ),
-          // ),
+          // color: ThemeSettings.primaryColor,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/pug.jpg"),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
+            ),
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,13 +104,32 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                       ),
                     ],
                   ),
+                  IconButton(
+                    icon: Icon(Icons.help_outline, color: Colors.white),
+                    onPressed: () async {
+                      final Uri url = Uri.parse('https://docs.google.com/document/d/1TiRA697HTTGuLCOzq20es4q_fotXlDpTnVuov_7zNP0/edit?usp=sharing ');
+                      if (!await launchUrl(url)) {
+                        print('Could not launch $url');
+                      }
+                    },
+                  ),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Navbar_Icon(icon: Icons.home, text: "Home", page: Homepage()),
-                  Navbar_Icon(icon: Icons.notifications, text: "Notifications", page: Notifications()),
+                  Navbar_Icon(
+                    icon: Icons.notifications,
+                    text: "Notifications",
+                    page: Notifications(),
+                    badgeContent: unreadNotificationsCount > 0
+                        ? Text(
+                            '$unreadNotificationsCount',
+                            style: TextStyle(color: Colors.white),
+                          )
+                        : null,
+                  ),
                   GestureDetector(
                     onTap: () {
                       themeSettings.toggleSearchVisible();
@@ -178,7 +229,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                     padding: EdgeInsets.all(10),
                     child: Row(
                       children: [
-                        Icon(isDarkMode? Icons.dark_mode : Icons.light_mode, color: Colors.white),
+                        Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode, color: Colors.white),
                         SizedBox(width: 10),
                         Text("Toggle theme", style: TextStyle(color: Colors.white, fontSize: 20)),
                       ],

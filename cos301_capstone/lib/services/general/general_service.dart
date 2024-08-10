@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class GeneralService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   Future<List<Map<String, dynamic>>> getUserPets(String userId) async {
     try {
@@ -34,6 +36,15 @@ class GeneralService {
     } catch (e) {
       print("Error fetching pet: $e");
       return null; // Return null if an error occurs
+    }
+  }
+  Future<void> deleteImageFromStorage(String filePath) async {
+    try {
+      // Delete the image from Firebase Storage
+      await _storage.ref(filePath).delete();
+      print("Image deleted successfully from storage.");
+    } catch (e) {
+      print("Error deleting image from storage: $e");
     }
   }
 }
