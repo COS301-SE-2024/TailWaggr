@@ -26,9 +26,6 @@ class DesktopNavbar extends StatefulWidget {
 }
 
 class _DesktopNavbarState extends State<DesktopNavbar> {
-  List<Widget> pages = [
-    ProfileDesktop(),
-  ];
 
   Color containerColor = Colors.transparent;
   Color themeColor = Colors.transparent;
@@ -37,7 +34,6 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
 
   TextEditingController searchController = TextEditingController();
 
-  bool isDarkMode = false;
   int unreadNotificationsCount = 0;
 
   final NotificationsServices _notificationsServices = NotificationsServices();
@@ -241,6 +237,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   ),
                 ],
               ),
+            
             ],
           ),
         ),

@@ -54,6 +54,10 @@ class ThemeSelectState extends State<ThemeSelect> {
     super.initState();
     Map<Icon, String> initialEntry = {Icon(Icons.light_mode, color: themeSettings.navbarTextColour): widget.initialSelection};
     selectedTheme = initialEntry;
+
+    profileDetails.isEditing.addListener(() {
+      setState(() {});
+    });
   }
 
   @override

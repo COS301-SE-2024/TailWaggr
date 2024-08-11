@@ -102,6 +102,8 @@ class EditProfileVariables {
       null,
       usingImage && !usingDefaultImage ? sidebarImage : null,
     );
+
+    profileDetails.isEditing.value++;
   }
 }
 
