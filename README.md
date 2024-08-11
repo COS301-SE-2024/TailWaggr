@@ -32,7 +32,7 @@ You can view our technical installation manual [Here](docs/Technical_Installatio
 You can view our coding standards [Here](docs/CodingStandards.md)
 
 ## Software Requirements Specification
-You can view our SRS [Here](docs/SRS.md)
+You can view our SRS [Here](docs/srs.md)
 
 ## The Team
 
