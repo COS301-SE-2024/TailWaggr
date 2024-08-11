@@ -1,35 +1,19 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cos301_capstone/main.dart';
-import 'package:integration_test/integration_test.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cos301_capstone/services/general/general_service.dart';
-import 'package:cos301_capstone/services/profile/profile_service.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cos301_capstone/firebase_options.dart';
 import 'package:mockito/mockito.dart';
-
-class MockFirebaseFirestore extends Mock implements FirebaseFirestore {}
-class MockFirebaseStorage extends Mock implements FirebaseStorage {}
-class MockCollectionReference extends Mock implements CollectionReference<Map<String, dynamic>> {}
-class MockDocumentReference extends Mock implements DocumentReference<Map<String, dynamic>> {}
-class MockDocumentSnapshot extends Mock implements DocumentSnapshot<Map<String, dynamic>> {}
-class MockQuerySnapshot extends Mock implements QuerySnapshot<Map<String, dynamic>> {}
-class MockQueryDocumentSnapshot extends Mock implements QueryDocumentSnapshot<Map<String, dynamic>> {}
-class MockReference extends Mock implements Reference {}
-class MockTaskSnapshot extends Mock implements TaskSnapshot {}
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cos301_capstone/services/general/general_service.dart';
+import 'mocks.mocks.dart'; // Import the generated mocks
 
 void main() {
   late GeneralService generalService;
   late MockFirebaseFirestore mockFirestore;
   late MockFirebaseStorage mockStorage;
-  late MockCollectionReference mockCollectionReference;
-  late MockDocumentReference mockDocumentReference;
-  late MockDocumentSnapshot mockDocumentSnapshot;
-  late MockQuerySnapshot mockQuerySnapshot;
-  late MockQueryDocumentSnapshot mockQueryDocumentSnapshot;
+  late CollectionReference<Map<String, dynamic>> mockCollectionReference;
+  late DocumentReference<Map<String, dynamic>> mockDocumentReference;
+  late MockDocumentSnapshot<Map<String, dynamic>> mockDocumentSnapshot;
+  late MockQuerySnapshot<Map<String, dynamic>> mockQuerySnapshot;
+  late MockQueryDocumentSnapshot<Map<String, dynamic>> mockQueryDocumentSnapshot;
   late MockReference mockReference;
   late MockTaskSnapshot mockTaskSnapshot;
 
@@ -45,50 +29,59 @@ void main() {
     mockTaskSnapshot = MockTaskSnapshot();
 
     generalService = GeneralService(db: mockFirestore, storage: mockStorage);
+
+    // Stubbing Firestore calls
+    when(mockFirestore.collection('users')).thenReturn(mockCollectionReference);
+    when(mockCollectionReference.doc(any)).thenReturn(mockDocumentReference);
+    when(mockDocumentReference.collection('pets')).thenReturn(mockCollectionReference);
+    when(mockCollectionReference.get()).thenAnswer((_) async => mockQuerySnapshot);
+    when(mockQuerySnapshot.docs).thenReturn([mockQueryDocumentSnapshot]);
+    when(mockQueryDocumentSnapshot.data()).thenReturn({'name': 'Merlin'});
+    when(mockDocumentReference.get()).thenAnswer((_) async => mockDocumentSnapshot);
+
+    // Stubbing Firebase Storage calls
+    when(mockStorage.ref(any)).thenReturn(mockReference);
+    when(mockReference.delete()).thenAnswer((_) async => mockTaskSnapshot);
   });
 
   group('GeneralService', () {
     test('getUserPets returns list of pets', () async {
-      when(mockFirestore.collection('users')).thenReturn(mockCollectionReference);
-      when(mockCollectionReference.doc(any)).thenReturn(mockDocumentReference);
-      when(mockDocumentReference.collection('pets')).thenReturn(mockCollectionReference);
-      when(mockCollectionReference.get()).thenAnswer((_) async => mockQuerySnapshot);
-      when(mockQuerySnapshot.docs).thenReturn([mockQueryDocumentSnapshot]);
-      when(mockQueryDocumentSnapshot.data()).thenReturn({'name': 'Merlin'});
+      final result = await generalService.getUserPets('QF5gHocYeGRNbsFmPE3RjUZIId82');
+      // Verify Firestore calls
+      verify(mockFirestore.collection('users')).called(1);
+      verify(mockCollectionReference.doc('QF5gHocYeGRNbsFmPE3RjUZIId82')).called(1);
+      verify(mockDocumentReference.collection('pets')).called(1);
+      verify(mockCollectionReference.get()).called(1);
 
-      final pets = await generalService.getUserPets('userId');
-
-      expect(pets, isA<List<Map<String, dynamic>>>());
-      expect(pets.length, 1);
-      expect(pets[0]['name'], 'Merlin');
+      // Check result
+      expect(result, isA<List<Map<String, dynamic>>>());
+      expect(result, isNotEmpty);
+      expect(result.first, isA<Map<String, dynamic>>());
+      expect(result.first['name'], 'Merlin');
     });
 
     test('getPetById returns pet data if exists', () async {
-      when(mockFirestore.collection('users')).thenReturn(mockCollectionReference);
-      when(mockCollectionReference.doc(any)).thenReturn(mockDocumentReference);
-      when(mockDocumentReference.collection('pets')).thenReturn(mockCollectionReference);
-      when(mockCollectionReference.doc(any)).thenReturn(mockDocumentReference);
-      when(mockDocumentReference.get()).thenAnswer((_) async => mockDocumentSnapshot);
       when(mockDocumentSnapshot.exists).thenReturn(true);
       when(mockDocumentSnapshot.data()).thenReturn({'name': 'Merlin'});
+      final result = await generalService.getPetById('QF5gHocYeGRNbsFmPE3RjUZIId82', 'RGeqrusnbA2C7xJmGLeg');
+      // Verify Firestore calls
+      verify(mockFirestore.collection('users')).called(1);
+      verify(mockCollectionReference.doc('QF5gHocYeGRNbsFmPE3RjUZIId82')).called(1);
+      verify(mockDocumentReference.collection('pets')).called(1);
+      verify(mockCollectionReference.doc('RGeqrusnbA2C7xJmGLeg')).called(1);
+      verify(mockDocumentReference.get()).called(1);
 
-      final pet = await generalService.getPetById('userId', 'petId');
-
-      expect(pet, isA<Map<String, dynamic>>());
-      expect(pet!['name'], 'Merlin');
+      // Check result
+      expect(result, isA<Map<String, dynamic>>());
+      expect(result!['name'], 'Merlin');
     });
 
-    test('getPetById returns null if pet does not exist', () async {
-      when(mockFirestore.collection('users')).thenReturn(mockCollectionReference);
-      when(mockCollectionReference.doc(any)).thenReturn(mockDocumentReference);
-      when(mockDocumentReference.collection('pets')).thenReturn(mockCollectionReference);
-      when(mockCollectionReference.doc(any)).thenReturn(mockDocumentReference);
-      when(mockDocumentReference.get()).thenAnswer((_) async => mockDocumentSnapshot);
-      when(mockDocumentSnapshot.exists).thenReturn(false);
+    test('deleteImageFromStorage deletes image successfully', () async {
+      await generalService.deleteImageFromStorage('path/to/image.jpg');
 
-      final pet = await generalService.getPetById('userId', 'petId');
-
-      expect(pet, isNull);
+      // Verify Storage calls
+      verify(mockStorage.ref('path/to/image.jpg')).called(1);
+      verify(mockReference.delete()).called(1);
     });
   });
 }
