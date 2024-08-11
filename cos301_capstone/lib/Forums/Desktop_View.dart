@@ -171,6 +171,7 @@ class _DesktopForumsState extends State<DesktopForums> {
         context: context,
         builder: (context) {
           return AlertDialog(
+            backgroundColor: themeSettings.backgroundColor,
             title: Text("Reply to message"),
             content: TextField(
               onChanged: (value) {
@@ -179,7 +180,8 @@ class _DesktopForumsState extends State<DesktopForums> {
                   newReplyContent = value;
                 });
               },
-              decoration: InputDecoration(hintText: "Type your reply here"),
+              decoration: InputDecoration(hintText: "Type your reply here", hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.5))),
+              style: TextStyle(color: themeSettings.textColor),
             ),
             actions: <Widget>[
               TextButton(
@@ -473,6 +475,8 @@ class _DesktopForumsState extends State<DesktopForums> {
                       },
                       decoration: InputDecoration(
                         hintText: 'Type a message...',
+                        hintStyle: TextStyle(
+                            color: themeSettings.textColor.withOpacity(0.5)),
                         suffixIcon: IconButton(
                           icon: Icon(Icons.send),
                           onPressed: () async {
@@ -488,6 +492,7 @@ class _DesktopForumsState extends State<DesktopForums> {
                           },
                         ),
                       ),
+                      style: TextStyle(color: themeSettings.textColor),
                     ),
                   ],
                 ),
@@ -623,6 +628,7 @@ class _MessageViewState extends State<MessageView> {
                   },
                 ),
               ),
+              style: TextStyle(color: themeSettings.textColor),
             ),
           ],
         ),
