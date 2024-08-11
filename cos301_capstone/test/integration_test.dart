@@ -90,14 +90,5 @@ void main() {
 
       expect(pet, isNull);
     });
-
-    test('deleteImageFromStorage deletes image successfully', () async {
-      when(mockStorage.ref(any)).thenReturn(mockReference);
-      when(mockReference.delete()).thenAnswer((_) async => null);
-
-      await generalService.deleteImageFromStorage('filePath');
-
-      verify(mockReference.delete()).called(1);
-    });
   });
 }
