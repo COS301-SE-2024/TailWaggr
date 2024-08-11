@@ -1,12 +1,27 @@
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
+import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
+import 'package:cos301_capstone/services/Profile/profile_service.dart';
+import 'package:cos301_capstone/services/Notifications/notifications.dart';
+import 'package:cos301_capstone/services/Location/location_service.dart';
+import 'package:cos301_capstone/services/forum/forum.dart';
 import 'mocks.mocks.dart'; // Import the generated mocks
 
-void main() {
+void main(){
+  // TestWidgetsFlutterBinding.ensureInitialized();
   late GeneralService generalService;
+  late HomePageService homePageService;
+  late ProfileService profileService;
+  late NotificationsServices notificationsServices;
+  late LocationService locationService;
+  late ForumServices forumService;
   late MockFirebaseFirestore mockFirestore;
   late MockFirebaseStorage mockStorage;
   late CollectionReference<Map<String, dynamic>> mockCollectionReference;
@@ -16,6 +31,10 @@ void main() {
   late MockQueryDocumentSnapshot<Map<String, dynamic>> mockQueryDocumentSnapshot;
   late MockReference mockReference;
   late MockTaskSnapshot mockTaskSnapshot;
+
+  setUpAll(() async {
+      // await Firebase.initializeApp();
+    });
 
   setUp(() {
     mockFirestore = MockFirebaseFirestore();
@@ -29,16 +48,26 @@ void main() {
     mockTaskSnapshot = MockTaskSnapshot();
 
     generalService = GeneralService(db: mockFirestore, storage: mockStorage);
+    // homePageService = HomePageService(db: mockFirestore, storage: mockStorage);
+    profileService = ProfileService(db: mockFirestore, storage: mockStorage);
+    notificationsServices = NotificationsServices(db: mockFirestore);
+    locationService = LocationService(firestore: mockFirestore);
+    // forumService = ForumServices(db: mockFirestore);
 
     // Stubbing Firestore calls
     when(mockFirestore.collection('users')).thenReturn(mockCollectionReference);
     when(mockCollectionReference.doc(any)).thenReturn(mockDocumentReference);
     when(mockDocumentReference.collection('pets')).thenReturn(mockCollectionReference);
+    when(mockDocumentReference.collection('notifications')).thenReturn(mockCollectionReference);
+    when(mockDocumentReference.collection('messages')).thenReturn(mockCollectionReference);
+    when(mockDocumentReference.collection('forum')).thenReturn(mockCollectionReference);
+    when(mockFirestore.collection('forum')).thenReturn(mockCollectionReference);
+    when(mockFirestore.collection('posts')).thenReturn(mockCollectionReference);
+    when(mockFirestore.collection('profile')).thenReturn(mockCollectionReference);
+    when(mockFirestore.collection('users')).thenReturn(mockCollectionReference);
     when(mockCollectionReference.get()).thenAnswer((_) async => mockQuerySnapshot);
-    when(mockQuerySnapshot.docs).thenReturn([mockQueryDocumentSnapshot]);
-    when(mockQueryDocumentSnapshot.data()).thenReturn({'name': 'Merlin'});
     when(mockDocumentReference.get()).thenAnswer((_) async => mockDocumentSnapshot);
-
+    when(mockQuerySnapshot.docs).thenReturn([mockQueryDocumentSnapshot]);
     // Stubbing Firebase Storage calls
     when(mockStorage.ref(any)).thenReturn(mockReference);
     when(mockReference.delete()).thenAnswer((_) async => mockTaskSnapshot);
@@ -46,6 +75,7 @@ void main() {
 
   group('GeneralService', () {
     test('getUserPets returns list of pets', () async {
+      when(mockQueryDocumentSnapshot.data()).thenReturn({'name': 'Merlin'});
       final result = await generalService.getUserPets('QF5gHocYeGRNbsFmPE3RjUZIId82');
       // Verify Firestore calls
       verify(mockFirestore.collection('users')).called(1);
@@ -83,5 +113,46 @@ void main() {
       verify(mockStorage.ref('path/to/image.jpg')).called(1);
       verify(mockReference.delete()).called(1);
     });
+  });
+
+  // group('HomePageService', () {
+  //   String postId = '5KnN9GatvW0Dka9j8Dmv';
+  //   test('addPost adds post successfully', () async {
+  //     final platformFile = PlatformFile(
+  //       name: 'test.txt',
+  //       size: 1024,
+  //       bytes: Uint8List.fromList([/* file bytes here */]),
+  //     );
+  //     List<Map<String, dynamic>> petIds = [
+  //       {'id': 'RGeqrusnbA2C7xJmGLeg'},
+  //     ];
+  //     final result = await homePageService.addPost('Hello, world', platformFile, "Hello World", petIds);
+  //     // Verify Firestore calls
+  //     verify(mockFirestore.collection('posts')).called(1);
+  //     verify(mockCollectionReference.doc(any)).called(1);
+  //     // Check result
+  //     expect(result, true);
+  //   });
+  // });
+  group('ProfileService', () {
+    test('getUserDetails returns user data if exists', () async {
+      when(mockDocumentSnapshot.exists).thenReturn(true);
+      when(mockDocumentSnapshot.data()).thenReturn({'name': 'John Doe'});
+      final result = await profileService.getUserDetails('QF5gHocYeGRNbsFmPE3RjUZIId82');
+      // Verify Firestore calls
+      verify(mockFirestore.collection('users')).called(1);
+      verify(mockCollectionReference.doc('QF5gHocYeGRNbsFmPE3RjUZIId82')).called(1);
+      verify(mockDocumentReference.get()).called(1);
+
+      // Check result
+      expect(result, isA<Map<String, dynamic>>());
+      expect(result!['name'], 'John Doe');
+    });
+  });
+  group('NotificationsServices', () {
+  });
+  group('LocationService', () {
+  });
+  group('ForumServices', () {
   });
 }

@@ -8,9 +8,14 @@ import 'package:path/path.dart' as path;
 import 'package:cos301_capstone/services/general/general_service.dart';
 
 class ProfileService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  late final FirebaseFirestore _db;
+  late final FirebaseStorage _storage;
 
+  ProfileService({FirebaseFirestore? db, FirebaseStorage? storage}) {
+    _db = db ?? FirebaseFirestore.instance;
+    _storage = storage ?? FirebaseStorage.instance;
+  }
+  
   Future<Map<String, dynamic>?> getUserDetails(String userId) async {
     try {
       DocumentSnapshot doc = await _db.collection('users').doc(userId).get();

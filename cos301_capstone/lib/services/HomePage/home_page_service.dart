@@ -10,10 +10,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class HomePageService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  late final FirebaseFirestore _db;
+  late final FirebaseStorage _storage;
+  HomePageService({FirebaseFirestore? db, FirebaseStorage? storage}) {
+    _db = db ?? FirebaseFirestore.instance;
+    _storage = storage ?? FirebaseStorage.instance;
+  }
   NotificationsServices notif = NotificationsServices();
-
 
   Future<bool> addPost(
     String userId,

@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotificationsServices {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-
+  late final FirebaseFirestore _db;
+  NotificationsServices({FirebaseFirestore? db}) {
+    _db = db ?? FirebaseFirestore.instance;
+  }
   // Notification types
   // 1 = like, 2 = event, 3 = reply, 4 = follow
 
