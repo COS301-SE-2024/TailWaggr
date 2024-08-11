@@ -204,7 +204,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    themeSettings.toggleTheme();
+                    themeSettings.toggleTheme(!isDarkMode ? "Light" : "Dark");
                     isDarkMode = !isDarkMode;
                   });
                 },

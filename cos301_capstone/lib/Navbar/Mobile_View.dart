@@ -162,7 +162,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
             GestureDetector(
                 onTap: () {
                   setState(() {
-                    themeSettings.toggleTheme();
+                    themeSettings.toggleTheme(!isDarkMode ? "Light" : "Dark");
                     isDarkMode = !isDarkMode;
                   });
                 },

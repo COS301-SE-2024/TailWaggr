@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 // import 'package:cos301_capstone/Location/Desktop_View.dart';
@@ -24,6 +25,84 @@ class AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<AuthGate> {
+  void populateUserData() async {
+    Future<Map<String, dynamic>?> tempDetails = ProfileService().getUserDetails(FirebaseAuth.instance.currentUser!.uid);
+    tempDetails.then((value) {
+      profileDetails.name = value!['name'];
+      profileDetails.surname = value['surname'];
+      profileDetails.email = value['email'];
+      profileDetails.bio = value['bio'];
+      profileDetails.profilePicture = value['profilePictureUrl'];
+      profileDetails.location = value['location'];
+      profileDetails.themeMode = value['preferences']['themeMode'];
+
+      profileDetails.phone = value['phoneDetails']['phoneNumber'];
+      profileDetails.isoCode = value['phoneDetails']['isoCode'];
+      profileDetails.dialCode = value['phoneDetails']['dialCode'];
+      profileDetails.usingImage = value['preferences']['usingImage'];
+      profileDetails.usingDefaultImage = value['preferences']['usingDefaultImage'];
+      profileDetails.sidebarImage = value['sidebarImage'];
+
+      profileDetails.birthdate = formatDate(value['birthDate'].toDate());
+      profileDetails.setCustomColours({
+        "PrimaryColour": value['preferences']['Colours']['PrimaryColour'],
+        "SecondaryColour": value['preferences']['Colours']['SecondaryColour'],
+        "BackgroundColour": value['preferences']['Colours']['BackgroundColour'],
+        "TextColour": value['preferences']['Colours']['TextColour'],
+        "CardColour": value['preferences']['Colours']['CardColour'],
+        "NavbarTextColour": value['preferences']['Colours']['NavbarTextColour'],
+      });
+      themeSettings.toggleTheme(value['preferences']['themeMode']);
+    });
+
+    // Future<List<DocumentReference>> myPosts = ProfileService().getUserPosts(FirebaseAuth.instance.currentUser!.uid);
+    // myPosts.then((value) {
+    //   print(value);
+    // });
+  }
+
+  String getMonthAbbreviation(int month) {
+    switch (month) {
+      case 1:
+        return 'Jan';
+      case 2:
+        return 'Feb';
+      case 3:
+        return 'Mar';
+      case 4:
+        return 'Apr';
+      case 5:
+        return 'May';
+      case 6:
+        return 'Jun';
+      case 7:
+        return 'Jul';
+      case 8:
+        return 'Aug';
+      case 9:
+        return 'Sep';
+      case 10:
+        return 'Oct';
+      case 11:
+        return 'Nov';
+      case 12:
+        return 'Dec';
+      default:
+        return '';
+    }
+  }
+
+  String formatDate(DateTime date) {
+    return "${date.day} ${getMonthAbbreviation(date.month)} ${date.year}";
+  }
+
+  void populateUserPets() {
+    Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(FirebaseAuth.instance.currentUser!.uid);
+    pets.then((value) {
+      profileDetails.pets = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
@@ -39,32 +118,4 @@ class _AuthGateState extends State<AuthGate> {
       },
     );
   }
-}
-
-void populateUserData() async {
-  // print("Populating user data...");
-  // print(FirebaseAuth.instance.currentUser!.uid);
-
-  Future<Map<String, dynamic>?> tempDetails = ProfileService().getUserDetails(FirebaseAuth.instance.currentUser!.uid);
-  tempDetails.then((value) {
-    // print("User data populated successfully.");
-    // print(value);
-    profileDetails.name = value!['name'];
-    profileDetails.surname = value['surname'];
-    profileDetails.email = value['email'];
-    profileDetails.bio = value['bio'];
-    profileDetails.profilePicture = value['profilePictureUrl'];
-    profileDetails.location = value['location'];
-
-    if (value['preferences']['darkMode']) {
-      themeSettings.toggleTheme();
-    }
-  });
-}
-
-void populateUserPets() {
-  Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(FirebaseAuth.instance.currentUser!.uid);
-  pets.then((value) {
-    profileDetails.pets = value;
-  });
 }

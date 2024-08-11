@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_key_in_widget_constructors
 
+import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/User_Auth/Auth_Gate.dart';
 import 'package:cos301_capstone/firebase_options.dart';
 import 'package:cos301_capstone/services/Notifications/pushNotifications.dart';
@@ -26,9 +27,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'TailWaggr',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'Roboto',
-      ),
       home: const AuthGate(),
     );
   }

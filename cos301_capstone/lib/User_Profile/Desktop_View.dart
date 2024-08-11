@@ -3,6 +3,9 @@
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
+import 'package:cos301_capstone/Pets/Pet_Profile.dart';
+import 'package:cos301_capstone/services/general/general_service.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 
@@ -19,6 +22,15 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
     super.initState();
     profileDetails.isEditing.addListener(() {
       setState(() {});
+    });
+
+    PetProfileVariables.petEditted.addListener(() {
+      Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(profileDetails.userID);
+      pets.then((value) {
+        setState(() {
+          profileDetails.pets = value;
+        });
+      });
     });
   }
 
@@ -84,45 +96,20 @@ class _PostsContainerState extends State<PostsContainer> {
           color: themeSettings.cardColor,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: DefaultTabController(
-          length: 2,
+        child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TabBar(
-                dividerColor: Colors.transparent,
-                tabs: [
-                  Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.add_box_outlined),
-                        SizedBox(width: 10),
-                        Text("Posts"),
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.calendar_month),
-                        SizedBox(width: 10),
-                        Text("Events"),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Divider(),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    // Icon(Icons.add_box_outlined),
-                    ListOfPosts(),
-                    Icon(Icons.calendar_month),
-                  ],
+              Text(
+                "Posts",
+                style: TextStyle(
+                  fontSize: subHeadingTextSize,
+                  color: themeSettings.primaryColor,
                 ),
               ),
+              Divider(),
+              ListOfPosts(),
             ],
           ),
         ),
@@ -141,15 +128,11 @@ class ListOfPosts extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          for (var post in profileDetails.posts) ...[
+          for (var post in profileDetails.myPosts) ...[
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Row(
                 children: [
-                  // CircleAvatar(
-                  //   radius: 35,
-                  //   backgroundImage: NetworkImage(post["ImgUrl"]),
-                  // ),
                   SizedBox(
                     width: 175,
                     child: ClipRRect(
@@ -178,14 +161,17 @@ class ListOfPosts extends StatelessWidget {
                         Row(
                           children: [
                             for (var includedPet in post["PetIds"]) ...[
-                              Column(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 20,
-                                    backgroundImage: NetworkImage(includedPet['pictureUrl']),
-                                  ),
-                                  Text(includedPet['name'], style: TextStyle(fontSize: textSize)),
-                                ],
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage: NetworkImage(includedPet['pictureUrl']),
+                                    ),
+                                    Text(includedPet['name'], style: TextStyle(fontSize: textSize)),
+                                  ],
+                                ),
                               ),
                             ]
                           ],
@@ -231,7 +217,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
             SizedBox(width: 20),
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("${profileDetails.name} ${profileDetails.surname}", style: TextStyle(fontSize: subHeadingTextSize)),
                 Text(profileDetails.bio, style: TextStyle(fontSize: subBodyTextSize)),
@@ -435,15 +421,71 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
                 ),
               ),
               Divider(),
-              for (var pet in profileDetails.pets)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: PetProfileButton(
-                    petName: pet["name"],
-                    petBio: pet["bio"],
-                    petPicture: pet["pictureUrl"],
-                  ),
+              for (var pet in profileDetails.pets) ...[
+                OpenContainer(
+                  transitionDuration: Duration(milliseconds: 300),
+                  closedBuilder: (context, action) {
+                    return MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: PetProfileButton(
+                          petName: pet["name"],
+                          petBio: pet["bio"],
+                          petPicture: pet["pictureUrl"],
+                        ),
+                      ),
+                    );
+                  },
+                  closedColor: Colors.transparent,
+                  closedElevation: 0,
+                  openBuilder: (context, action) {
+                    return PetProfile(
+                      creatingNewPet: false,
+                      petName: pet["name"],
+                      petBio: pet["bio"],
+                      petBirthdate: pet["birthDate"],
+                      petProfilePicture: pet["pictureUrl"],
+                      petID: pet["petID"],
+                    );
+                  },
                 ),
+              ],
+              SizedBox(height: 20),
+              OpenContainer(
+                transitionDuration: Duration(milliseconds: 300),
+                closedBuilder: (context, action) {
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: DottedBorder(
+                      padding: EdgeInsets.all(20),
+                      borderType: BorderType.RRect,
+                      radius: Radius.circular(100),
+                      color: themeSettings.textColor,
+                      strokeWidth: 0.5,
+                      dashPattern: [5, 5], // Modify the dash pattern to make the border more spread out
+                      child: Row(
+                        children: [
+                          Icon(Icons.add, color: themeSettings.primaryColor, size: 30),
+                          SizedBox(width: 10),
+                          Text(
+                            "Add a new pet to your family",
+                            style: TextStyle(color: themeSettings.textColor),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+                closedColor: Colors.transparent,
+                closedElevation: 0,
+                openBuilder: (context, action) {
+                  return PetProfile(
+                    creatingNewPet: true,
+                  );
+                },
+              ),
+              SizedBox(height: 20),
             ],
           ),
         ),
@@ -480,13 +522,13 @@ class _PetProfileButtonState extends State<PetProfileButton> {
             children: [
               Text(
                 widget.petName,
-                style: TextStyle(fontSize: subHeadingTextSize),
+                style: TextStyle(fontSize: subHeadingTextSize, color: themeSettings.textColor),
                 overflow: TextOverflow.ellipsis,
               ),
               // SizedBox(height: 8),
               Text(
                 widget.petBio,
-                style: TextStyle(fontSize: subBodyTextSize),
+                style: TextStyle(fontSize: subBodyTextSize, color: themeSettings.textColor),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
               ),

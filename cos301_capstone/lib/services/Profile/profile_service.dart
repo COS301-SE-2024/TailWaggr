@@ -60,16 +60,17 @@ class ProfileService {
   /// - location: (geopoint) The user's geographical location.
   /// - name: (string) The user's first name.
   /// - preferences: (map) A map containing user preferences.
-  ///   - sidebarImage: (PlatformFile) The new sidebar image file.
+  ///   - themeMode: (String) The user's preferred theme mode (e.g., "light", "Dark", "Custom").
+  ///   - Colours: (map) A map containing user preferred colours.
+  ///     - PrimaryColour: (int) The color code for the primary color.
+  ///     - SecondaryColour: (int) The color code for the secondary color.
+  ///     - tertiaryColor: (int) The color code for the tertiary color.
+  ///     - BackgroundColour: (int) The color code for the background color.
+  ///     - TextColour: (int) The color code for the text color.
+  ///     - CardColour: (int) The color code for the card color.
+  ///     - NavbarTextColour: (number) The color code for the navbar text.
   ///   - usingImage: (bool) Whether the user is using an image.
-  ///   - color: (map) A map containing the user's preferred color scheme.
-  ///     - primary: (Int) The primary color.
-  ///     - secondary: (Int) The secondary color.
-  ///     - tertiary: (Int) The tertiary color.
-  ///     - background: (Int) The background color.
-  ///     - text: (Int) The text color.
-  ///     - cardColor: (Int) The card color.
-  ///     - sidebarColor: (Int) The sidebar color.
+  ///   - usingDefaultImage: (bool) Whether the user is using the default image.
   ///   - sidebarImage: (string) The URL of the sidebar image.
   ///   - themeMode: (string) whether light, dark or custom.
   /// - profileImage: (PlatformFile) The new profile image file.
@@ -163,7 +164,7 @@ class ProfileService {
         TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
         String imgUrl = await uploadTask.ref.getDownloadURL();
 
-        await _updatePetData(ownerId, docRef.id, {'pictureUrl': imgUrl});
+        await _updatePetData(ownerId, docRef.id, {'pictureUrl': imgUrl, 'petID': docRef.id});
       }
     } catch (e) {
       print("Error adding pet: $e");
