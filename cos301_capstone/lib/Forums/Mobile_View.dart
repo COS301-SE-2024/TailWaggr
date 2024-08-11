@@ -47,8 +47,7 @@ class _MobileForumsState extends State<MobileForums> {
 
   Future<void> _fetchForums() async {
     try {
-      List<Map<String, dynamic>>? fetchedForums =
-          await _forumServices.getForums();
+      List<Map<String, dynamic>>? fetchedForums = await _forumServices.getForums();
       if (!mounted) return;
       setState(() {
         forums = fetchedForums;
@@ -69,8 +68,7 @@ class _MobileForumsState extends State<MobileForums> {
     setState(() {
       selectedForumId = forumId;
       posts = null;
-      forumName =
-          forums!.firstWhere((forum) => forum['forumId'] == forumId)['Name'];
+      forumName = forums!.firstWhere((forum) => forum['forumId'] == forumId)['Name'];
       //uncomment after adding descriptions for each post:
       //forumDescription =
       //  forums!.firstWhere((forum) => forum['forumId'] == forumId)['Description'];
@@ -81,8 +79,7 @@ class _MobileForumsState extends State<MobileForums> {
 
   Future<void> _fetchPosts(String forumId) async {
     try {
-      List<Map<String, dynamic>>? fetchedPosts =
-          await _forumServices.getMessages(forumId);
+      List<Map<String, dynamic>>? fetchedPosts = await _forumServices.getMessages(forumId);
       if (!mounted) return;
       setState(() {
         posts = fetchedPosts;
@@ -101,13 +98,11 @@ class _MobileForumsState extends State<MobileForums> {
     if (posts == null || posts!.isEmpty) return;
 
     try {
-      Set<String> userIds =
-          posts!.map((post) => post['message']['UserId'] as String).toSet();
+      Set<String> userIds = posts!.map((post) => post['message']['UserId'] as String).toSet();
 
       for (String userId in userIds) {
         if (!userProfiles.containsKey(userId)) {
-          Map<String, dynamic>? profile =
-              await _profileServices.getUserDetails(userId);
+          Map<String, dynamic>? profile = await _profileServices.getUserDetails(userId);
           if (profile != null) {
             userProfiles[userId] = profile;
           }
@@ -136,9 +131,7 @@ class _MobileForumsState extends State<MobileForums> {
               children: [
                 Text(
                   "Forums",
-                  style: TextStyle(
-                      fontSize: subtitleTextSize,
-                      color: themeSettings.primaryColor),
+                  style: TextStyle(fontSize: subtitleTextSize, color: themeSettings.primaryColor),
                 ),
                 SizedBox(
                   height: 35,
@@ -148,18 +141,12 @@ class _MobileForumsState extends State<MobileForums> {
                       if (!mounted) return;
                       setState(() {
                         searchTerm = value;
-                        searchedForums = forums!
-                            .where((forum) => forum['Name']
-                                .toString()
-                                .toLowerCase()
-                                .contains(searchTerm.toLowerCase()))
-                            .toList();
+                        searchedForums = forums!.where((forum) => forum['Name'].toString().toLowerCase().contains(searchTerm.toLowerCase())).toList();
                       });
                     },
                     decoration: InputDecoration(
                       hintText: "Search for a forum",
-                      hintStyle: TextStyle(
-                          color: themeSettings.textColor.withOpacity(0.5)),
+                      hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.5)),
                       prefixIcon: Icon(Icons.search),
                     ),
                     style: TextStyle(color: themeSettings.textColor),
@@ -168,13 +155,9 @@ class _MobileForumsState extends State<MobileForums> {
                 ListView.builder(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  itemCount: searchTerm.isNotEmpty
-                      ? searchedForums!.length
-                      : forums!.length,
+                  itemCount: searchTerm.isNotEmpty ? searchedForums!.length : forums!.length,
                   itemBuilder: (context, index) {
-                    final forum = searchTerm.isNotEmpty
-                        ? searchedForums![index]
-                        : forums![index];
+                    final forum = searchTerm.isNotEmpty ? searchedForums![index] : forums![index];
                     return OpenContainer(
                       transitionDuration: Duration(milliseconds: 300),
                       tappable: false,
@@ -259,8 +242,7 @@ class __ForumViewState extends State<_ForumView> {
     if (newReplyContent != null && newReplyContent!.isNotEmpty) {
       try {
         String? userId = await _authService.getCurrentUserId();
-        await _forumServices.replyToMessage(
-            selectedForumId!, postId, userId!, newReplyContent!);
+        await _forumServices.replyToMessage(selectedForumId!, postId, userId!, newReplyContent!);
         _fetchPosts(selectedForumId!);
         setState(() {
           newReplyContent = '';
@@ -284,7 +266,8 @@ class __ForumViewState extends State<_ForumView> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text("Reply to message"),
+            backgroundColor: themeSettings.backgroundColor,
+            title: Text("Reply to message", style: TextStyle(color: themeSettings.textColor)),
             content: TextField(
               onChanged: (value) {
                 if (!mounted) return;
@@ -292,7 +275,8 @@ class __ForumViewState extends State<_ForumView> {
                   newReplyContent = value;
                 });
               },
-              decoration: InputDecoration(hintText: "Type your reply here"),
+              decoration: InputDecoration(hintText: "Type your reply here", hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.5))),
+              style: TextStyle(color: themeSettings.textColor),
             ),
             actions: <Widget>[
               TextButton(
@@ -330,8 +314,7 @@ class __ForumViewState extends State<_ForumView> {
     setState(() {
       selectedForumId = forumId;
       posts = null;
-      forumName =
-          forums!.firstWhere((forum) => forum['forumId'] == forumId)['Name'];
+      forumName = forums!.firstWhere((forum) => forum['forumId'] == forumId)['Name'];
       //uncomment after adding descriptions for each post:
       //forumDescription =
       //  forums!.firstWhere((forum) => forum['forumId'] == forumId)['Description'];
@@ -342,8 +325,7 @@ class __ForumViewState extends State<_ForumView> {
 
   Future<void> _fetchPosts(String forumId) async {
     try {
-      List<Map<String, dynamic>>? fetchedPosts =
-          await _forumServices.getMessages(forumId);
+      List<Map<String, dynamic>>? fetchedPosts = await _forumServices.getMessages(forumId);
       if (!mounted) return;
       setState(() {
         localPosts = fetchedPosts;
@@ -362,13 +344,11 @@ class __ForumViewState extends State<_ForumView> {
     if (posts == null || posts!.isEmpty) return;
 
     try {
-      Set<String> userIds =
-          posts!.map((post) => post['message']['UserId'] as String).toSet();
+      Set<String> userIds = posts!.map((post) => post['message']['UserId'] as String).toSet();
 
       for (String userId in userIds) {
         if (!userProfiles.containsKey(userId)) {
-          Map<String, dynamic>? profile =
-              await _profileServices.getUserDetails(userId);
+          Map<String, dynamic>? profile = await _profileServices.getUserDetails(userId);
           if (profile != null) {
             userProfiles[userId] = profile;
           }
@@ -385,8 +365,7 @@ class __ForumViewState extends State<_ForumView> {
     if (newMessageContent != null && newMessageContent!.isNotEmpty) {
       try {
         String? userId = await _authService.getCurrentUserId();
-        await _forumServices.createMessage(
-            selectedForumId!, userId!, newMessageContent!);
+        await _forumServices.createMessage(selectedForumId!, userId!, newMessageContent!);
         _fetchPosts(selectedForumId!);
         if (!mounted) return;
         setState(() {
@@ -402,8 +381,7 @@ class __ForumViewState extends State<_ForumView> {
   Future<void> _likeMessage(String postId) async {
     try {
       String? userId = await _authService.getCurrentUserId();
-      await _forumServices.toggleLikeOnMessage(
-          selectedForumId!, postId, userId!);
+      await _forumServices.toggleLikeOnMessage(selectedForumId!, postId, userId!);
       _fetchPosts(selectedForumId!);
     } catch (e) {
       print('Error liking message: $e');
@@ -468,18 +446,12 @@ class __ForumViewState extends State<_ForumView> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      userProfile?['userName'] ??
-                                          'Unknown User',
-                                      style: TextStyle(
-                                          fontSize: bodyTextSize,
-                                          color: themeSettings.textColor),
+                                      userProfile?['userName'] ?? 'Unknown User',
+                                      style: TextStyle(fontSize: bodyTextSize, color: themeSettings.textColor),
                                     ),
                                     Text(
-                                      post['message']?['Content'] ??
-                                          'No Content',
-                                      style: TextStyle(
-                                          fontSize: subBodyTextSize,
-                                          color: themeSettings.textColor),
+                                      post['message']?['Content'] ?? 'No Content',
+                                      style: TextStyle(fontSize: subBodyTextSize, color: themeSettings.textColor),
                                     ),
                                     SizedBox(height: 10),
                                     Row(
@@ -491,10 +463,7 @@ class __ForumViewState extends State<_ForumView> {
                                               print("Like button pressed");
                                               _likeMessage(postId);
 
-                                              ForumServices()
-                                                  .getLikesCount(
-                                                      selectedForumId!, postId)
-                                                  .then((value) {
+                                              ForumServices().getLikesCount(selectedForumId!, postId).then((value) {
                                                 setState(() {
                                                   numLikes = value.toString();
                                                 });
@@ -502,15 +471,11 @@ class __ForumViewState extends State<_ForumView> {
                                             },
                                             icon: Icon(
                                               Icons.favorite_border,
-                                              color:
-                                                  Colors.red.withOpacity(0.7),
+                                              color: Colors.red.withOpacity(0.7),
                                             ),
                                           ),
                                         ),
-                                        Text(numLikes,
-                                            style: TextStyle(
-                                                color: themeSettings.textColor
-                                                    .withOpacity(0.7))),
+                                        Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
                                         Spacer(),
                                         Tooltip(
                                           message: "Comment",
@@ -523,15 +488,11 @@ class __ForumViewState extends State<_ForumView> {
                                             },
                                             icon: Icon(
                                               Icons.comment,
-                                              color:
-                                                  Colors.blue.withOpacity(0.7),
+                                              color: Colors.blue.withOpacity(0.7),
                                             ),
                                           ),
                                         ),
-                                        Text(numReplies,
-                                            style: TextStyle(
-                                                color: themeSettings.textColor
-                                                    .withOpacity(0.7))),
+                                        Text(numReplies, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
                                       ],
                                     ),
                                   ],
@@ -563,8 +524,7 @@ class __ForumViewState extends State<_ForumView> {
               },
               decoration: InputDecoration(
                 hintText: 'Type a message...',
-                hintStyle:
-                    TextStyle(color: themeSettings.textColor.withOpacity(0.5)),
+                hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.5)),
                 suffixIcon: IconButton(
                   icon: Icon(Icons.send),
                   onPressed: () async {
@@ -580,6 +540,7 @@ class __ForumViewState extends State<_ForumView> {
                   },
                 ),
               ),
+              style: TextStyle(color: themeSettings.textColor),
             ),
           ],
         ),
@@ -617,10 +578,8 @@ class _MessageViewState extends State<MessageView> {
     if (newReplyContent.isNotEmpty) {
       try {
         String? userId = await widget.authService.getCurrentUserId();
-        await widget.forumServices
-            .replyToMessage(widget.forumId, postId, userId!, newReplyContent);
-        _fetchReplies(
-            widget.forumId, postId); // Call the method to refresh the posts
+        await widget.forumServices.replyToMessage(widget.forumId, postId, userId!, newReplyContent);
+        _fetchReplies(widget.forumId, postId); // Call the method to refresh the posts
         setState(() {
           _replyController.clear();
         });
@@ -641,8 +600,7 @@ class _MessageViewState extends State<MessageView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: themeSettings.backgroundColor,
-        title: Text('View Message',
-            style: TextStyle(color: themeSettings.primaryColor, fontSize: 30)),
+        title: Text('View Message', style: TextStyle(color: themeSettings.primaryColor, fontSize: 30)),
       ),
       body: Container(
         padding: const EdgeInsets.all(16.0),
@@ -652,10 +610,7 @@ class _MessageViewState extends State<MessageView> {
           children: [
             Text(
               userProfile?['userName'] ?? 'Unknown User',
-              style: TextStyle(
-                  fontSize: 24,
-                  color: themeSettings.primaryColor,
-                  fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 24, color: themeSettings.primaryColor, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
             Text(
@@ -691,16 +646,12 @@ class _MessageViewState extends State<MessageView> {
                       children: [
                         Text(
                           replyUserProfile?['userName'] ?? 'Unknown User',
-                          style: TextStyle(
-                              fontSize: bodyTextSize,
-                              color: themeSettings.textColor),
+                          style: TextStyle(fontSize: bodyTextSize, color: themeSettings.textColor),
                         ),
                         SizedBox(height: 5),
                         Text(
                           reply['Content'] ?? 'No Content',
-                          style: TextStyle(
-                              fontSize: subBodyTextSize,
-                              color: themeSettings.textColor),
+                          style: TextStyle(fontSize: subBodyTextSize, color: themeSettings.textColor),
                         ),
                       ],
                     ),
@@ -712,8 +663,7 @@ class _MessageViewState extends State<MessageView> {
               controller: _replyController,
               decoration: InputDecoration(
                 hintText: 'Type your reply here',
-                hintStyle:
-                    TextStyle(color: themeSettings.textColor.withOpacity(0.5)),
+                hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.5)),
                 suffixIcon: IconButton(
                   icon: Icon(Icons.send),
                   onPressed: () async {
@@ -721,6 +671,7 @@ class _MessageViewState extends State<MessageView> {
                   },
                 ),
               ),
+              style: TextStyle(color: themeSettings.textColor),
             ),
           ],
         ),
