@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Events/Events.dart';
 import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
@@ -7,7 +8,6 @@ import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:cos301_capstone/Notifications/Notifications.dart';
-import 'package:cos301_capstone/Search_Users/Mobile_View.dart';
 import 'package:cos301_capstone/User_Profile/Mobile_View.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,12 +21,6 @@ class MobileNavbar extends StatefulWidget {
 }
 
 class _MobileNavbarState extends State<MobileNavbar> {
-  List<Widget> pages = [
-    ProfileMobile(),
-    SearchUsersMobile(),
-  ];
-
-  bool isSearchVisible = false;
 
   Color containerColor = Colors.transparent;
   Color themeColor = Colors.transparent;
@@ -55,7 +49,7 @@ class _MobileNavbarState extends State<MobileNavbar> {
             // width: MediaQuery.of(context).size.width - (isSearchVisible ? 550 : 250),
             color: ThemeSettings.backgroundColor,
             padding: EdgeInsets.all(20),
-            child: pages[navbarIndexObserver.index],
+            child: ProfileMobile(),
           );
         },
       ),
@@ -75,7 +69,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
   Color searchColor = Colors.transparent;
   Color themeColor = Colors.transparent;
   bool isDarkMode = false;
-  
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -83,47 +77,25 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
       child: Container(
         padding: EdgeInsets.all(30),
         decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/images/pug.jpg"),
-              fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
-            ),
+          image: DecorationImage(
+            image: AssetImage("assets/images/pug.jpg"),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
           ),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundImage: NetworkImage(profileDetails.profilePicture),
-                ),
-                SizedBox(width: 20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      profileDetails.name,
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Navbar_Icon(icon: Icons.home, text: "Home", page: Homepage()),
-                Navbar_Icon(icon: Icons.search, text: "Search", page: SearchUsersMobile()),
                 Navbar_Icon(icon: Icons.notifications, text: "Notifications", page: Notifications()),
-                Navbar_Icon(icon: Icons.event, text: "Events", page: Events()),
                 Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: Location()),
                 Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                 Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile()),
+                Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),
               ],
             ),
             GestureDetector(
@@ -160,41 +132,62 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
               ),
             ),
             GestureDetector(
-                onTap: () {
+              onTap: () {
+                setState(() {
+                  themeSettings.toggleTheme(!isDarkMode ? "Light" : "Dark");
+                  isDarkMode = !isDarkMode;
+                });
+              },
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                onEnter: (event) {
                   setState(() {
-                    themeSettings.toggleTheme(!isDarkMode ? "Light" : "Dark");
-                    isDarkMode = !isDarkMode;
+                    themeColor = Colors.black.withOpacity(0.1);
                   });
                 },
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  onEnter: (event) {
-                    setState(() {
-                      themeColor = Colors.black.withOpacity(0.1);
-                    });
-                  },
-                  onExit: (event) {
-                    setState(() {
-                      themeColor = Colors.transparent;
-                    });
-                  },
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
-                    decoration: BoxDecoration(
-                      color: themeColor,
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    padding: EdgeInsets.all(10),
-                    child: Row(
-                      children: [
-                        Icon(isDarkMode? Icons.dark_mode : Icons.light_mode, color: Colors.white),
-                        SizedBox(width: 10),
-                        Text("Toggle theme", style: TextStyle(color: Colors.white, fontSize: 20)),
-                      ],
-                    ),
+                onExit: (event) {
+                  setState(() {
+                    themeColor = Colors.transparent;
+                  });
+                },
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 200),
+                  decoration: BoxDecoration(
+                    color: themeColor,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  padding: EdgeInsets.all(10),
+                  child: Row(
+                    children: [
+                      Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode, color: Colors.white),
+                      SizedBox(width: 10),
+                      Text("Toggle theme", style: TextStyle(color: Colors.white, fontSize: 20)),
+                    ],
                   ),
                 ),
               ),
+            ),
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 40,
+                  backgroundImage: NetworkImage(profileDetails.profilePicture),
+                ),
+                SizedBox(width: 20),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      profileDetails.name,
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ],
         ),
       ),

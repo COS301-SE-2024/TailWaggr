@@ -1,10 +1,9 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
-import 'package:cos301_capstone/services/Profile/profile.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -93,15 +92,6 @@ class Post extends StatefulWidget {
 
   @override
   State<Post> createState() => _PostState();
-
-  // {
-  //   CreatedAt: Timestamp(seconds=1718002008, nanoseconds=412000000),
-  //   ForumId: DocumentReference<Map<String, dynamic>>(forum/EvfTTsu9GjHxL1sZcZcx),
-  //   ParentId: null,
-  //   UserId: DocumentReference<Map<String, dynamic>>(users/y2RnaR2jdgeqqbfeG6yP0NLjmiP2),
-  //   ImgUrl: null,
-  //   Content: Goldens are so beautiful man
-  // }
 }
 
 class _PostState extends State<Post> {

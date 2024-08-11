@@ -44,6 +44,9 @@ class _AuthGateState extends State<AuthGate> {
       profileDetails.sidebarImage = value['sidebarImage'];
 
       profileDetails.birthdate = formatDate(value['birthDate'].toDate());
+      
+      themeSettings.toggleTheme(value['preferences']['themeMode']);
+
       profileDetails.setCustomColours({
         "PrimaryColour": value['preferences']['Colours']['PrimaryColour'],
         "SecondaryColour": value['preferences']['Colours']['SecondaryColour'],
@@ -52,7 +55,6 @@ class _AuthGateState extends State<AuthGate> {
         "CardColour": value['preferences']['Colours']['CardColour'],
         "NavbarTextColour": value['preferences']['Colours']['NavbarTextColour'],
       });
-      themeSettings.toggleTheme(value['preferences']['themeMode']);
     });
 
     // Future<List<DocumentReference>> myPosts = ProfileService().getUserPosts(FirebaseAuth.instance.currentUser!.uid);
