@@ -25,6 +25,7 @@ String? newMessageContent;
 String? newReplyContent;
 String? selectedPostId;
 String? forumName;
+String? forumDescription;
 Map<String, Map<String, dynamic>> userProfiles = {};
 
 class _DesktopForumsState extends State<DesktopForums> {
@@ -47,7 +48,8 @@ class _DesktopForumsState extends State<DesktopForums> {
 
   Future<void> _fetchForums() async {
     try {
-      List<Map<String, dynamic>>? fetchedForums = await _forumServices.getForums();
+      List<Map<String, dynamic>>? fetchedForums =
+          await _forumServices.getForums();
       if (!mounted) return;
       setState(() {
         forums = fetchedForums;
@@ -55,6 +57,7 @@ class _DesktopForumsState extends State<DesktopForums> {
         if (forums != null && forums!.isNotEmpty) {
           selectedForumId = forums!.first['forumId'];
           forumName = forums!.first['Name'];
+          forumDescription = forums!.first['Description'];
           _fetchPosts(selectedForumId!);
         }
       });
@@ -67,7 +70,11 @@ class _DesktopForumsState extends State<DesktopForums> {
     setState(() {
       selectedForumId = forumId;
       posts = null;
-      forumName = forums!.firstWhere((forum) => forum['forumId'] == forumId)['Name'];
+      forumName =
+          forums!.firstWhere((forum) => forum['forumId'] == forumId)['Name'];
+      //uncomment after adding descriptions for each post:
+      //forumDescription =
+        //  forums!.firstWhere((forum) => forum['forumId'] == forumId)['Description'];          
       isLoadingPosts = true;
     });
     _fetchPosts(forumId);
@@ -75,7 +82,8 @@ class _DesktopForumsState extends State<DesktopForums> {
 
   Future<void> _fetchPosts(String forumId) async {
     try {
-      List<Map<String, dynamic>>? fetchedPosts = await _forumServices.getMessages(forumId);
+      List<Map<String, dynamic>>? fetchedPosts =
+          await _forumServices.getMessages(forumId);
       if (!mounted) return;
       setState(() {
         posts = fetchedPosts;
@@ -94,11 +102,13 @@ class _DesktopForumsState extends State<DesktopForums> {
     if (posts == null || posts!.isEmpty) return;
 
     try {
-      Set<String> userIds = posts!.map((post) => post['message']['UserId'] as String).toSet();
+      Set<String> userIds =
+          posts!.map((post) => post['message']['UserId'] as String).toSet();
 
       for (String userId in userIds) {
         if (!userProfiles.containsKey(userId)) {
-          Map<String, dynamic>? profile = await _profileServices.getUserDetails(userId);
+          Map<String, dynamic>? profile =
+              await _profileServices.getUserDetails(userId);
           if (profile != null) {
             userProfiles[userId] = profile;
           }
@@ -115,7 +125,8 @@ class _DesktopForumsState extends State<DesktopForums> {
     if (newMessageContent != null && newMessageContent!.isNotEmpty) {
       try {
         String? userId = await _authService.getCurrentUserId();
-        await _forumServices.createMessage(selectedForumId!, userId!, newMessageContent!);
+        await _forumServices.createMessage(
+            selectedForumId!, userId!, newMessageContent!);
         _fetchPosts(selectedForumId!);
         if (!mounted) return;
         setState(() {
@@ -131,7 +142,8 @@ class _DesktopForumsState extends State<DesktopForums> {
   Future<void> _likeMessage(String postId) async {
     try {
       String? userId = await _authService.getCurrentUserId();
-      await _forumServices.toggleLikeOnMessage(selectedForumId!, postId, userId!);
+      await _forumServices.toggleLikeOnMessage(
+          selectedForumId!, postId, userId!);
       _fetchPosts(selectedForumId!);
     } catch (e) {
       print('Error liking message: $e');
@@ -142,7 +154,8 @@ class _DesktopForumsState extends State<DesktopForums> {
     if (newReplyContent != null && newReplyContent!.isNotEmpty) {
       try {
         String? userId = await _authService.getCurrentUserId();
-        await _forumServices.replyToMessage(selectedForumId!, postId, userId!, newReplyContent!);
+        await _forumServices.replyToMessage(
+            selectedForumId!, postId, userId!, newReplyContent!);
         _fetchPosts(selectedForumId!);
         setState(() {
           newReplyContent = '';
@@ -158,6 +171,7 @@ class _DesktopForumsState extends State<DesktopForums> {
         context: context,
         builder: (context) {
           return AlertDialog(
+            backgroundColor: themeSettings.backgroundColor,
             title: Text("Reply to message"),
             content: TextField(
               onChanged: (value) {
@@ -166,7 +180,8 @@ class _DesktopForumsState extends State<DesktopForums> {
                   newReplyContent = value;
                 });
               },
-              decoration: InputDecoration(hintText: "Type your reply here"),
+              decoration: InputDecoration(hintText: "Type your reply here", hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.5))),
+              style: TextStyle(color: themeSettings.textColor),
             ),
             actions: <Widget>[
               TextButton(
@@ -199,6 +214,7 @@ class _DesktopForumsState extends State<DesktopForums> {
       ),
     ));
   }
+
   // This method will be passed as a callback to MessageView
   void _onReplyAdded() {
     if (selectedForumId != null) {
@@ -235,11 +251,12 @@ class _DesktopForumsState extends State<DesktopForums> {
                       if (!mounted) return;
                       setState(() {
                         searchTerm = value;
-                        searchedForums = forums!.where((forum) =>
-                            forum['Name']
+                        searchedForums = forums!
+                            .where((forum) => forum['Name']
                                 .toString()
                                 .toLowerCase()
-                                .contains(searchTerm.toLowerCase())).toList();
+                                .contains(searchTerm.toLowerCase()))
+                            .toList();
                       });
                     },
                     decoration: InputDecoration(
@@ -248,15 +265,18 @@ class _DesktopForumsState extends State<DesktopForums> {
                           color: themeSettings.textColor.withOpacity(0.5)),
                       prefixIcon: Icon(Icons.search),
                     ),
-                    style: TextStyle(
-                        color: themeSettings.textColor),
+                    style: TextStyle(color: themeSettings.textColor),
                   ),
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: searchTerm.isNotEmpty ? searchedForums!.length : forums!.length,
+                    itemCount: searchTerm.isNotEmpty
+                        ? searchedForums!.length
+                        : forums!.length,
                     itemBuilder: (context, index) {
-                      final forum = searchTerm.isNotEmpty ? searchedForums![index] : forums![index];
+                      final forum = searchTerm.isNotEmpty
+                          ? searchedForums![index]
+                          : forums![index];
                       return GestureDetector(
                         onTap: () {
                           _selectForum(forum['forumId']);
@@ -308,6 +328,11 @@ class _DesktopForumsState extends State<DesktopForums> {
                           fontSize: subtitleTextSize,
                           color: themeSettings.primaryColor),
                     ),
+                    Text(
+                      forumDescription!,
+                      //"Hi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the wayHi guys, welcome to my minecraft tutorial. In today's tutorial I'm going to show you how to build a redstone flying machine. I really like plains by the way",
+                      style: TextStyle(color: themeSettings.textColor),
+                    ),
                     SizedBox(height: 20),
                     isLoadingPosts
                         ? Center(child: CircularProgressIndicator())
@@ -318,9 +343,12 @@ class _DesktopForumsState extends State<DesktopForums> {
                                   itemBuilder: (context, index) {
                                     final post = posts![index];
                                     final postId = post['messageId'];
-                                    var numLikes = post['likesCount'].toString();
-                                    final numReplies = post['repliesCount'].toString();
-                                    final userId = post['message']['UserId'] as String;
+                                    var numLikes =
+                                        post['likesCount'].toString();
+                                    final numReplies =
+                                        post['repliesCount'].toString();
+                                    final userId =
+                                        post['message']['UserId'] as String;
                                     final userProfile = userProfiles[userId];
 
                                     return GestureDetector(
@@ -328,30 +356,37 @@ class _DesktopForumsState extends State<DesktopForums> {
                                         _viewMessage(context, post);
                                       },
                                       child: Container(
-                                        margin: EdgeInsets.symmetric(vertical: 10),
+                                        margin:
+                                            EdgeInsets.symmetric(vertical: 10),
                                         padding: EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                           color: themeSettings.cardColor,
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                           border: Border.all(
                                             color: themeSettings.primaryColor,
                                             width: 2.0,
                                           ),
                                         ),
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              userProfile?['userName'] ?? 'Unknown User',
+                                              userProfile?['userName'] ??
+                                                  'Unknown User',
                                               style: TextStyle(
                                                   fontSize: bodyTextSize,
-                                                  color: themeSettings.textColor),
+                                                  color:
+                                                      themeSettings.textColor),
                                             ),
                                             Text(
-                                              post['message']?['Content'] ?? 'No Content',
+                                              post['message']?['Content'] ??
+                                                  'No Content',
                                               style: TextStyle(
                                                   fontSize: subBodyTextSize,
-                                                  color: themeSettings.textColor),
+                                                  color:
+                                                      themeSettings.textColor),
                                             ),
                                             SizedBox(height: 10),
                                             Row(
@@ -360,22 +395,33 @@ class _DesktopForumsState extends State<DesktopForums> {
                                                   message: "Like",
                                                   child: IconButton(
                                                     onPressed: () {
-                                                      print("Like button pressed");
+                                                      print(
+                                                          "Like button pressed");
                                                       _likeMessage(postId);
 
-                                                      ForumServices().getLikesCount(selectedForumId!, postId).then((value) {
+                                                      ForumServices()
+                                                          .getLikesCount(
+                                                              selectedForumId!,
+                                                              postId)
+                                                          .then((value) {
                                                         setState(() {
-                                                          numLikes = value.toString();
+                                                          numLikes =
+                                                              value.toString();
                                                         });
                                                       });
                                                     },
                                                     icon: Icon(
                                                       Icons.favorite_border,
-                                                      color: Colors.red.withOpacity(0.7),
+                                                      color: Colors.red
+                                                          .withOpacity(0.7),
                                                     ),
                                                   ),
                                                 ),
-                                                Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                                                Text(numLikes,
+                                                    style: TextStyle(
+                                                        color: themeSettings
+                                                            .textColor
+                                                            .withOpacity(0.7))),
                                                 Spacer(),
                                                 Tooltip(
                                                   message: "Comment",
@@ -388,11 +434,16 @@ class _DesktopForumsState extends State<DesktopForums> {
                                                     },
                                                     icon: Icon(
                                                       Icons.comment,
-                                                      color: Colors.blue.withOpacity(0.7),
+                                                      color: Colors.blue
+                                                          .withOpacity(0.7),
                                                     ),
                                                   ),
                                                 ),
-                                                Text(numReplies, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                                                Text(numReplies,
+                                                    style: TextStyle(
+                                                        color: themeSettings
+                                                            .textColor
+                                                            .withOpacity(0.7))),
                                               ],
                                             ),
                                           ],
@@ -424,6 +475,8 @@ class _DesktopForumsState extends State<DesktopForums> {
                       },
                       decoration: InputDecoration(
                         hintText: 'Type a message...',
+                        hintStyle: TextStyle(
+                            color: themeSettings.textColor.withOpacity(0.5)),
                         suffixIcon: IconButton(
                           icon: Icon(Icons.send),
                           onPressed: () async {
@@ -439,6 +492,7 @@ class _DesktopForumsState extends State<DesktopForums> {
                           },
                         ),
                       ),
+                      style: TextStyle(color: themeSettings.textColor),
                     ),
                   ],
                 ),
@@ -449,6 +503,7 @@ class _DesktopForumsState extends State<DesktopForums> {
     );
   }
 }
+
 class MessageView extends StatefulWidget {
   final Map<String, dynamic> post;
   final String forumId;
@@ -462,7 +517,7 @@ class MessageView extends StatefulWidget {
     required this.forumId,
     required this.userProfiles,
     required this.forumServices,
-    required this.authService, 
+    required this.authService,
     required this.onReplyAdded, // Initialize the callback
   });
 
@@ -478,8 +533,10 @@ class _MessageViewState extends State<MessageView> {
     if (newReplyContent.isNotEmpty) {
       try {
         String? userId = await widget.authService.getCurrentUserId();
-        await widget.forumServices.replyToMessage(widget.forumId, postId, userId!, newReplyContent);
-        _fetchReplies(widget.forumId,postId); // Call the method to refresh the posts
+        await widget.forumServices
+            .replyToMessage(widget.forumId, postId, userId!, newReplyContent);
+        _fetchReplies(
+            widget.forumId, postId); // Call the method to refresh the posts
         setState(() {
           _replyController.clear();
         });
@@ -489,7 +546,6 @@ class _MessageViewState extends State<MessageView> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -510,7 +566,9 @@ class _MessageViewState extends State<MessageView> {
             Text(
               userProfile?['userName'] ?? 'Unknown User',
               style: TextStyle(
-                  fontSize: 24, color: Colors.black, fontWeight: FontWeight.bold),
+                  fontSize: 24,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
             Text(
@@ -570,13 +628,14 @@ class _MessageViewState extends State<MessageView> {
                   },
                 ),
               ),
+              style: TextStyle(color: themeSettings.textColor),
             ),
           ],
         ),
       ),
     );
   }
-  
+
   void _fetchReplies(String forumId, String postId) {
     widget.forumServices.getReplies(forumId, postId).then((replies) {
       setState(() {
