@@ -2,9 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class GeneralService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
-
+  late final FirebaseFirestore _db;
+  late final FirebaseStorage _storage;
+  
+  GeneralService({FirebaseFirestore? db, FirebaseStorage? storage})
+    : _db = db ?? FirebaseFirestore.instance,
+      _storage = storage ?? FirebaseStorage.instance;
   Future<List<Map<String, dynamic>>> getUserPets(String userId) async {
     try {
       // Access the user's "pets" subcollection

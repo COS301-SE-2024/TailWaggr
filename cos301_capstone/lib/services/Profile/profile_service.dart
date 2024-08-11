@@ -42,11 +42,11 @@ class ProfileService {
   }
 
   Future<List<Map<String, dynamic>>> getUserPets(String userId) async {
-    try {
-      QuerySnapshot snapshot = await _db.collection('users').doc(userId).collection('pets').get();
-      return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-    } catch (e) {
-      print("Error fetching user pets: $e");
+    try{
+      return GeneralService().getUserPets(userId);
+    }
+    catch(e){
+      print("Error fetching pets: $e");
       return [];
     }
   }
