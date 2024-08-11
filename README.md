@@ -23,7 +23,7 @@ You can view our tech stack [Here](https://docs.google.com/document/d/11uUHFuaqj
 You can view our architecture [Here](docs/Architecture.md)
 
 ## User Manual
-You can view our user manual [Here](docs/UserManual.md)
+You can view our user manual [Here](https://docs.google.com/document/d/1TiRA697HTTGuLCOzq20es4q_fotXlDpTnVuov_7zNP0/edit)
 
 ## Technical Installation Manual
 You can view our technical installation manual [Here](docs/Technical_Installation.md)
