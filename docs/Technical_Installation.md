@@ -8,10 +8,12 @@ TailWaggr is a comprehensive pet management application designed to enhance the 
 
 Before installing TailWaggr, ensure the following software is installed on your system:
 
-- **Git**: For cloning the repository.
-- **Flutter SDK**: The core framework for running and building Flutter applications.
-- **Dart SDK**: Required for Flutter development.
+- **Git**: For cloning the repository. (Version: 2.30.0 or later)
+- **Flutter SDK**: The core framework for running and building Flutter applications. (Version: 2.10.0 or later)
+- **Dart SDK**: Required for Flutter development. (Version: 2.16.0 or later)
 - **Android Studio or Visual Studio Code**: Recommended IDEs for Flutter development.
+  - **Android Studio**: (Version: 2021.1.1 or later)
+  - **Visual Studio Code**: (Version: 1.60.0 or later)
 
 ### Installing Prerequisites
 
@@ -38,8 +40,11 @@ Before installing TailWaggr, ensure the following software is installed on your 
     ```bash
     flutter pub get
     ```
+    The above command will install all the dependencies specified in the `pubspec.yaml` file.
 4. **Run the Application**:
     To run Tailwaggr, use the following command:
     ```bash
     flutter run
     ```
+5. **User Manual**:
+    Refer to the [User Manual](https://docs.google.com/document/d/1TiRA697HTTGuLCOzq20es4q_fotXlDpTnVuov_7zNP0/edit) for detailed instructions on using TailWaggr.
