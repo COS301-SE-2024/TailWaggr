@@ -20,20 +20,21 @@ class _LocationDesktopState extends State<LocationDesktop> {
   final ScrollController _scrollController = ScrollController();
   late GoogleMapController _googleMapController;
 
-  
-
   @override
   void initState() {
     super.initState();
 
-    populateData() async {
-      await LocationVAF.initializeLocation();
-      await LocationVAF.getVets(LocationVAF.myLocation.target, 100);
-      await LocationVAF.getPetSitters(LocationVAF.myLocation.target, 100);
-      setState(() {});
-    }
+    try {
+      populateData() async {
+        await LocationVAF.getVets(LocationVAF.myLocation.target, 100);
+        await LocationVAF.getPetSitters(LocationVAF.myLocation.target, 100);
+        setState(() {});
+      }
 
-    populateData();
+      populateData();
+    } catch (e) {
+      print("Error initializing location: $e");
+    }
   }
 
   @override
@@ -48,6 +49,23 @@ class _LocationDesktopState extends State<LocationDesktop> {
     } finally {
       _scrollController.dispose();
       super.dispose();
+    }
+  }
+
+  Future<void> panCameraToLocation(double lat, double long) async {
+    print("Panning camera to location: $lat, $long");
+    print("Google Map Controller: $_googleMapController");
+    try {
+      await _googleMapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(lat, long),
+            zoom: 15.0,
+          ),
+        ),
+      );
+    } catch (e) {
+      print("Error panning camera: $e");
     }
   }
 
@@ -86,6 +104,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                       ),
                     ),
                   ),
+                  style: TextStyle(color: themeSettings.textColor),
                 ),
               ),
               SizedBox(width: 20.0),
@@ -116,6 +135,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                       ),
                     ),
                   ),
+                  style: TextStyle(color: themeSettings.textColor),
                 ),
               ),
               MouseRegion(
@@ -163,7 +183,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                         child: GestureDetector(
                           onTap: () async {
                             try {
-                              LocationVAF.panCameraToLocation(vet.location.latitude, vet.location.longitude, _googleMapController);
+                              panCameraToLocation(vet.location.latitude, vet.location.longitude);
                             } catch (e) {
                               print("Error getting directions: $e");
                             }
@@ -208,7 +228,6 @@ class _LocationDesktopState extends State<LocationDesktop> {
   }
 
   Widget searchPetSitters() {
-
     return Container(
       padding: const EdgeInsets.all(20.0),
       child: Column(
@@ -243,6 +262,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                       ),
                     ),
                   ),
+                  style: TextStyle(color: themeSettings.textColor),
                 ),
               ),
               SizedBox(width: 20.0),
@@ -273,6 +293,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                       ),
                     ),
                   ),
+                  style: TextStyle(color: themeSettings.textColor),
                 ),
               ),
               MouseRegion(
@@ -320,7 +341,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                         child: GestureDetector(
                           onTap: () async {
                             try {
-                              LocationVAF.panCameraToLocation(petSitter.location.latitude, petSitter.location.longitude, _googleMapController);
+                              panCameraToLocation(petSitter.location.latitude, petSitter.location.longitude);
                             } catch (e) {
                               print("Error getting directions: $e");
                             }
@@ -429,22 +450,13 @@ class _LocationDesktopState extends State<LocationDesktop> {
                           borderRadius: BorderRadius.circular(20.0),
                           child: GoogleMap(
                             style: mapStyle,
-                            onMapCreated: (controller) {
-                              _googleMapController = controller;
-                            },
                             initialCameraPosition: LocationVAF.myLocation,
                             markers: LocationVAF.markers,
+                            onMapCreated: (GoogleMapController controller) {
+                              _googleMapController = controller;
+                            },
                             myLocationButtonEnabled: true,
                             zoomControlsEnabled: true,
-                            polylines: {
-                              if (LocationVAF.polylineResult.points.isNotEmpty)
-                                Polyline(
-                                  polylineId: const PolylineId('polyline'),
-                                  color: themeSettings.primaryColor,
-                                  width: 4, // Change the line thickness here
-                                  points: LocationVAF.polylineResult.points.map((e) => LatLng(e.latitude, e.longitude)).toList(),
-                                ),
-                            },
                           ),
                         );
                       },
