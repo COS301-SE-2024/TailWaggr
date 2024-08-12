@@ -37,10 +37,10 @@ The system is set up using a litany of microservices to implement functions, not
 
 ## Architectural quality requirements
 - **Availability:** This requirement is important for ensuring that users have round-the-clock access to the service, with minimal interruptions. The system should have at least 99% uptime for all essential services (notably database access for reading and making posts).
-- **Usability:** Refers to the ease of use of the app for most users, permitting a pleasant user experience. The app and web interfaces should function smoothly on most devices, dynamically resizing interface elements to fit a reasonable variety of modern screen sizes.
+- **Usability:** Refers to the ease of use of the app for most users, permitting a pleasant user experience. The app and web interfaces should function smoothly on most devices, dynamically resizing interface elements to fit a reasonable variety of modern screen sizes. It should be compatible with any mobile device with a 6.1in screen or larger as well as all laptops and computers.
 - **Scalability:** The system must be able to adapt to any reasonable number of users. Backend functionality should be implemented in part through Firebase’s functions, ensuring smooth horizontal scaling. The system should be able to handle at least 30 requests per second. 
-- **Performance:** Users must not be inconvenienced by having the app slow down their phones or crash. Firebase queries (especially database queries) should be optimised to only return the minimum data needed to fulfil a request, to avoid wasting bandwidth and memory on loading unnecessary information. 
-- **Security:** The confidentiality of users' personal information should be maintained. Firestore Security rules should be used to ensure that users do not have access to sensitive data, using role-based access control.
+- **Performance:** Users must not be inconvenienced by having the app slow down their phones or crash. Firebase queries (especially database queries) should be optimised to only return the minimum data needed to fulfil a request, to avoid wasting bandwidth and memory on loading unnecessary information. The app should load within a second of starting under sufficient internet conditions.
+- **Security:** The confidentiality of users' personal information should be maintained. Firestore Security rules should be used to ensure that users do not have access to sensitive data, using role-based access control. Should a breach occur that results in the loss of user data, we aim for a mean time-to-repair of two hours or below.
 
 ## Architectural design and pattern
 Design Decision justifications:
