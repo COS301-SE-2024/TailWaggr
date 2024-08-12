@@ -18,30 +18,34 @@ class LocationService {
   Future<List<User>> _getUsersByRoleWithinRadius(GeoPoint userLocation, double radius, String userType) async {
     List<User> usersWithinRadius = [];
 
-    Query usersSnapshot = await _firestore.collection('users').where('userType', isEqualTo: userType);
+    try {
+      Query usersSnapshot = await _firestore.collection('users').where('userType', isEqualTo: userType);
 
-    QuerySnapshot<Object?> usersData = await usersSnapshot.get();
-    for (var doc in usersData.docs) {
-      print(doc.data());
-      User user = User(
-        id: doc.id,
-        name: doc['name'],
-        userType: doc['userType'],
-        location: doc['location'],
-      );
-      double distance = Geolocator.distanceBetween(
-        userLocation.latitude,
-        userLocation.longitude,
-        user.location.latitude,
-        user.location.longitude,
-      );
+      QuerySnapshot<Object?> usersData = await usersSnapshot.get();
+      for (var doc in usersData.docs) {
+        print(doc.data());
+        User user = User(
+          id: doc.id,
+          name: doc['name'],
+          userType: doc['userType'],
+          location: doc['location'],
+        );
+        double distance = Geolocator.distanceBetween(
+          userLocation.latitude,
+          userLocation.longitude,
+          user.location.latitude,
+          user.location.longitude,
+        );
 
-      user.addDistance(distance/1000);
-      user.addEmail(doc['email']);
+        user.addDistance(distance / 1000);
+        user.addEmail(doc['email']);
 
-      if ((distance / 1000) <= radius) {
-        usersWithinRadius.add(user);
+        if ((distance / 1000) <= radius) {
+          usersWithinRadius.add(user);
+        }
       }
+    } catch (e) {
+      print("Error getting users: $e");
     }
 
     return usersWithinRadius;

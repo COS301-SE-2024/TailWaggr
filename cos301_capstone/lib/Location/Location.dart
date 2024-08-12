@@ -104,13 +104,6 @@ class LocationVAF {
     }
 
     print('Fetched polyline result');
-
-    // if (polylineResult.points.isNotEmpty) {
-    //   polylineResult.points.clear();
-    //   for (var point in polylineResult.points) {
-    //     polylineResult.points.add(PointLatLng(point.latitude, point.longitude));
-    //   }
-    // }
   }
 
   static double calculateZoomLevel(LatLngBounds bounds, BuildContext context) {
@@ -145,22 +138,6 @@ class LocationVAF {
     return zoomLevel;
   }
 
-  static Future<void> panCameraToLocation(double lat, double long, GoogleMapController googleMapController) async {
-    print("Panning camera to location");
-    try {
-      await googleMapController.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(lat, long),
-            zoom: 15.0,
-          ),
-        ),
-      );
-    } catch (e) {
-      print("Error panning camera: $e");
-    }
-  }
-
   String getDistanceFromMe(double lat, double long) {
     double distanceInKilometers = (Geolocator.distanceBetween(lat, long, myLocation.target.latitude, myLocation.target.longitude) / 1000);
     if (distanceInKilometers < 1000) {
@@ -171,30 +148,34 @@ class LocationVAF {
   }
 
   static Future<List<User>> getVets(LatLng userLocation, double radius) async {
-    print("Getting vets");
-    vetList.clear();
-    List<User> vets = await LocationService().getVets(userLocation, radius);
-    for (User vet in vets) {
-      vetList.add(vet);
-      markers.add(
-        Marker(
-          markerId: MarkerId(vet.id),
-          position: LatLng(vet.location.latitude, vet.location.longitude),
-          infoWindow: InfoWindow(
-            title: vet.name,
-            snippet: "Get directions ${vet.distance.toStringAsFixed(2)}km",
-            onTap: () async {
-              print("Navigating to google maps");
-              final Uri url = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=${vet.location.latitude},${vet.location.longitude}');
-              if (!await launchUrl(url)) {
-                print('Could not launch $url');
-              }
-            },
+    try {
+      vetList.clear();
+      List<User> vets = await LocationService().getVets(userLocation, radius);
+      for (User vet in vets) {
+        vetList.add(vet);
+        markers.add(
+          Marker(
+            markerId: MarkerId(vet.id),
+            position: LatLng(vet.location.latitude, vet.location.longitude),
+            infoWindow: InfoWindow(
+              title: vet.name,
+              snippet: "Get directions ${vet.distance.toStringAsFixed(2)}km",
+              onTap: () async {
+                print("Navigating to google maps");
+                final Uri url = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=${vet.location.latitude},${vet.location.longitude}');
+                if (!await launchUrl(url)) {
+                  print('Could not launch $url');
+                }
+              },
+            ),
           ),
-        ),
-      );
+        );
+      }
+      return vets;
+    } catch (e) {
+      print("Error getting vets: $e");
+      return [];
     }
-    return vets;
   }
 
   static Future<List<User>> getPetSitters(LatLng userLocation, double radius) async {

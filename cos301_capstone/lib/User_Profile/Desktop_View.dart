@@ -222,28 +222,6 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                 Text("${profileDetails.name} ${profileDetails.surname}", style: TextStyle(fontSize: subHeadingTextSize)),
                 Text(profileDetails.bio, style: TextStyle(fontSize: subBodyTextSize)),
                 SizedBox(height: 20),
-                OpenContainer(
-                  transitionDuration: Duration(milliseconds: 300),
-                  closedBuilder: (context, action) {
-                    return Container(
-                      padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-                      decoration: BoxDecoration(
-                        color: themeSettings.primaryColor,
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: Text(
-                        "Edit Profile",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    );
-                  },
-                  closedColor: Colors.transparent,
-                  closedElevation: 0,
-                  openBuilder: (context, action) {
-                    return EditProfile();
-                  },
-                ),
-                SizedBox(height: 20),
                 Text("Profile Details", style: TextStyle(fontSize: bodyTextSize, color: themeSettings.primaryColor)),
                 Divider(),
                 Container(
