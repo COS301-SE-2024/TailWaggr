@@ -20,7 +20,7 @@ You can view our project board [Here](https://github.com/orgs/COS301-SE-2024/pro
 You can view our tech stack [Here](https://docs.google.com/document/d/11uUHFuaqj6Mx52eWC4wKD2fOWFQbhcgVURP3L99YpWo/edit)
 
 ## Architecture
-You can view our architecture [Here](docs/Architecture.md)
+You can view our architecture [Here](docs/architecture.md)
 
 ## User Manual
 You can view our user manual [Here](https://docs.google.com/document/d/1TiRA697HTTGuLCOzq20es4q_fotXlDpTnVuov_7zNP0/edit)
