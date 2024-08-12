@@ -3,7 +3,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationService {
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late final FirebaseFirestore _firestore;
+  LocationService({FirebaseFirestore? firestore}) {
+    _firestore = firestore ?? FirebaseFirestore.instance;
+  }
 
   Future<List<User>> getVets(LatLng userLocation, double radius) async {
     GeoPoint geoPoint = GeoPoint(userLocation.latitude, userLocation.longitude);

@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/services/Notifications/notifications.dart';
 
 class ForumServices {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  late final FirebaseFirestore _db;
+  ForumServices({FirebaseFirestore? db}) {
+    _db = db ?? FirebaseFirestore.instance;
+  }
   NotificationsServices notif = NotificationsServices();
 
   /// Creates a new forum in the database.
