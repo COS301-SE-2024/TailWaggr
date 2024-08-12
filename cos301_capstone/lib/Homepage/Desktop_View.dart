@@ -1,9 +1,10 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
+import 'package:cos301_capstone/services/profile/profile_service.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,25 @@ class PostContainer extends StatefulWidget {
 
 class _PostContainerState extends State<PostContainer> {
   @override
+  void initState() {
+    super.initState();
+
+    Future<void> getPosts() async {
+      Future<List<Map<String, dynamic>>> posts = HomePageService().getPosts();
+      posts.then((value) {
+        setState(() {
+          profileDetails.posts = value;
+        });
+      });
+    }
+
+    homepageVAF.postPosted.addListener(() async {
+      await getPosts();
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       width: (MediaQuery.of(context).size.width - 250) * 0.7,
@@ -56,7 +76,10 @@ class _PostContainerState extends State<PostContainer> {
         child: Column(
           children: [
             for (int i = 0; i < profileDetails.posts.length; i++) ...{
-              Post(postDetails: profileDetails.posts[i]),
+              Post(
+                postDetails: profileDetails.posts[i],
+                key: ValueKey(i),
+              ),
               Divider(),
             },
           ],
@@ -73,77 +96,67 @@ class Post extends StatefulWidget {
 
   @override
   State<Post> createState() => _PostState();
-
-  // {
-  //   CreatedAt: Timestamp(seconds=1718002008, nanoseconds=412000000),
-  //   ForumId: DocumentReference<Map<String, dynamic>>(forum/EvfTTsu9GjHxL1sZcZcx),
-  //   ParentId: null,
-  //   UserId: DocumentReference<Map<String, dynamic>>(users/y2RnaR2jdgeqqbfeG6yP0NLjmiP2),
-  //   ImgUrl: null,
-  //   Content: Goldens are so beautiful man
-  // }
 }
 
 class _PostState extends State<Post> {
   String numLikes = "0";
   String numViews = "0";
-
+  String numComments = "0";
+  String newReplyContent = "";
+  List<Map<String, dynamic>> comments = [];
+  final HomePageService _homePageService = HomePageService();
   @override
   void initState() {
     super.initState();
-    void getLikes() async {
-      Future<int> likes = HomePageService().getLikesCount(widget.postDetails['PostId']);
-      likes.then((value) {
-        setState(() {
-          numLikes = value.toString();
-        });
-      });
-    }
-
     getLikes();
-
-    void getViews() async {
-      HomePageService().addViewToPost(widget.postDetails['PostId'], profileDetails.userID);
-      Future<int> views = HomePageService().getViewsCount(widget.postDetails['PostId']);
-      views.then((value) {
-        setState(() {
-          numViews = value.toString();
-        });
-      });
-    }
-
     getViews();
+    getCommentCount();
   }
 
-  String getMonthAbbreviation(int month) {
-    switch (month) {
-      case 1:
-        return 'Jan';
-      case 2:
-        return 'Feb';
-      case 3:
-        return 'Mar';
-      case 4:
-        return 'Apr';
-      case 5:
-        return 'May';
-      case 6:
-        return 'Jun';
-      case 7:
-        return 'Jul';
-      case 8:
-        return 'Aug';
-      case 9:
-        return 'Sep';
-      case 10:
-        return 'Oct';
-      case 11:
-        return 'Nov';
-      case 12:
-        return 'Dec';
-      default:
-        return '';
+  void getLikes() async {
+    Future<int> likes = HomePageService().getLikesCount(widget.postDetails['PostId']);
+    likes.then((value) {
+      setState(() {
+        numLikes = value.toString();
+      });
+    });
+  }
+
+  void getViews() async {
+    HomePageService().addViewToPost(widget.postDetails['PostId'], profileDetails.userID);
+    Future<int> views = HomePageService().getViewsCount(widget.postDetails['PostId']);
+    views.then((value) {
+      setState(() {
+        numViews = value.toString();
+      });
+    });
+  }
+
+  void getCommentCount() async {
+    Future<int> commentCount = HomePageService().getCommentsCount(widget.postDetails['PostId']);
+    commentCount.then((value) {
+      setState(() {
+        numComments = value.toString();
+      });
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getComments() async {
+    List<Map<String, dynamic>> commentsList = await HomePageService().getComments(widget.postDetails['PostId']);
+    for (int i = 0; i < commentsList.length; i++) {
+      Map<String, dynamic> comment = commentsList[i];
+      Map<String, dynamic>? profileDetails = await ProfileService().getUserDetails(comment['userId']);
+      // print("Profile Details: $profileDetails");
+      comment['name'] = profileDetails!['name'];
+      comment['pictureUrl'] = profileDetails['profilePictureUrl'];
+      commentsList[i] = comment;
+      print(commentsList[i]);
+      print("");
     }
+
+    commentsList.sort((a, b) => a['commentedAt'].compareTo(b['commentedAt']));
+
+    return commentsList;
   }
 
   String formatDate() {
@@ -152,15 +165,225 @@ class _PostState extends State<Post> {
     return "${date.day} $month ${date.year}";
   }
 
+  Future<void> _replyToMessage(String postId) async {
+    if (newReplyContent.isNotEmpty) {
+      try {
+        _homePageService.addCommentToPost(postId, profileDetails.userID, newReplyContent);
+        //_PostContainerState()._fetchPosts();//refresh the posts
+        setState(() {
+          newReplyContent = '';
+          numComments = (int.parse(numComments) + 1).toString();
+        });
+      } catch (e) {
+        print('Error replying to post: $e');
+      }
+    }
+  }
+
+  Future<void> showDialogBox(BuildContext context) async {
+    try {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: themeSettings.cardColor,
+            content: Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Top Section: Post Details
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage: NetworkImage(widget.postDetails['pictureUrl'] ?? profileDetails.profilePicture),
+                        ),
+                        SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.postDetails['name'] ?? 'Unknown',
+                              style: TextStyle(
+                                color: themeSettings.textColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              "Posted on ${formatDate()}",
+                              style: TextStyle(
+                                color: themeSettings.textColor.withOpacity(0.7),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      widget.postDetails['Content'] ?? 'No content',
+                      style: TextStyle(
+                        color: themeSettings.textColor,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Divider(),
+
+                    // Scrollable Comments Section
+                    Flexible(
+                      child: SingleChildScrollView(
+                        child: FutureBuilder<List<Map<String, dynamic>>>(
+                          future: getComments(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (snapshot.hasError) {
+                              return Text("Error loading comments", style: TextStyle(color: Colors.red));
+                            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return Text("No comments available", style: TextStyle(color: themeSettings.textColor));
+                            } else {
+                              List<Map<String, dynamic>> comments = snapshot.data!;
+
+                              return Column(
+                                children: comments.map((comment) {
+                                  return Container(
+                                    margin: EdgeInsets.only(top: 10),
+                                    child: Row(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: NetworkImage(comment['pictureUrl'] ?? profileDetails.profilePicture),
+                                        ),
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                comment['name'] ?? 'Unknown',
+                                                style: TextStyle(
+                                                  color: themeSettings.textColor,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              Text(
+                                                comment['comment'] ?? 'No content',
+                                                style: TextStyle(
+                                                  color: themeSettings.textColor.withOpacity(0.7),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: 10),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage: NetworkImage(profileDetails.profilePicture),
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            onChanged: (value) {
+                              if (!mounted) return;
+                              setState(() {
+                                newReplyContent = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Post your reply",
+                              hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
+                              filled: true,
+                              fillColor: Colors.transparent,
+                            ),
+                            style: TextStyle(color: themeSettings.textColor),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: themeSettings.primaryColor),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  await _replyToMessage(widget.postDetails['PostId']);
+                  Navigator.of(context).pop();
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: themeSettings.primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                ),
+                child: Text(
+                  "Reply",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print("Error fetching post details: $e");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('An error occurred while fetching post details.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: MediaQuery.of(context).size.width * 0.5 - 290,
-          // color: const Color.fromARGB(179, 0, 0, 0),
+          width: MediaQuery.of(context).size.width * 0.25,
           padding: EdgeInsets.only(right: 20),
-          height: 300,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -168,14 +391,14 @@ class _PostState extends State<Post> {
                 children: [
                   CircleAvatar(
                     radius: 20,
-                    backgroundImage: NetworkImage(profileDetails.profilePicture),
+                    backgroundImage: NetworkImage(widget.postDetails["pictureUrl"]),
                   ),
                   SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        profileDetails.name,
+                        widget.postDetails["name"],
                         style: TextStyle(
                           color: themeSettings.textColor,
                         ),
@@ -192,38 +415,38 @@ class _PostState extends State<Post> {
               ),
               SizedBox(height: 20),
               Text(
-                widget.postDetails["Content"],
+                widget.postDetails["Content"] ?? 'No content',
                 style: TextStyle(
                   color: themeSettings.textColor,
                 ),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 4,
               ),
-              Spacer(),
-              if (widget.postDetails['PetIds'].length != 0) ...[
+              SizedBox(height: 20),
+              if (widget.postDetails['PetIds'] != null && widget.postDetails['PetIds'].length != 0) ...[
                 Text(
                   "Pets included in this post: ",
                   style: TextStyle(
                     color: themeSettings.textColor.withOpacity(0.7),
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 5),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      for (var pet in profileDetails.pets) ...[
+                      for (var pet in widget.postDetails['PetIds']) ...[
                         Container(
                           margin: EdgeInsets.only(right: 10),
                           child: Column(
                             children: [
                               CircleAvatar(
                                 radius: 20,
-                                backgroundImage: NetworkImage(pet["pictureUrl"]),
+                                backgroundImage: NetworkImage(pet["pictureUrl"] ?? profileDetails.profilePicture),
                               ),
                               SizedBox(height: 5),
                               Text(
-                                pet["name"],
+                                pet["name"] ?? 'Unnamed pet',
                                 style: TextStyle(color: themeSettings.textColor),
                               ),
                             ],
@@ -234,63 +457,69 @@ class _PostState extends State<Post> {
                   ),
                 ),
               ],
-              Spacer(),
-              Row(
-                children: [
-                  Tooltip(
-                    message: "Like",
-                    child: IconButton(
-                      onPressed: () {
-                        HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
-
-                        HomePageService().getLikesCount(widget.postDetails['PostId']).then((value) {
-                          setState(() {
-                            numLikes = value.toString();
-                          });
-                        });
-                      },
-                      icon: Icon(
-                        Icons.favorite_border,
-                        color: Colors.red.withOpacity(0.7),
-                      ),
-                    ),
-                  ),
-                  Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
-                  Spacer(),
-                  Tooltip(
-                    message: "Comment",
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.comment,
-                        color: Colors.blue.withOpacity(0.7),
-                      ),
-                    ),
-                  ),
-                  Text("0", style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
-                  Spacer(),
-                  Tooltip(
-                    message: "Views",
-                    child: Icon(
-                      Icons.bar_chart,
-                      color: Colors.green.withOpacity(0.7),
-                    ),
-                  ),
-                  Text(numViews, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
-                ],
-              ),
             ],
           ),
         ),
-        Spacer(),
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Image.network(
-            widget.postDetails["ImgUrl"],
-            width: (MediaQuery.of(context).size.width - 400) * 0.3,
-            height: 300,
+            widget.postDetails["ImgUrl"] ?? profileDetails.profilePicture,
+            width: 300,
+            height: 200,
             fit: BoxFit.cover,
           ),
+        ),
+        SizedBox(width: 30),
+        Column(
+          children: [
+            Tooltip(
+              message: "Like",
+              child: IconButton(
+                onPressed: () {
+                  HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
+                  HomePageService().getLikesCount(widget.postDetails['PostId']).then((value) {
+                    setState(() {
+                      numLikes = value.toString();
+                    });
+                  });
+                },
+                icon: Icon(
+                  Icons.pets_outlined,
+                  color: Colors.red.withOpacity(0.7),
+                ),
+              ),
+            ),
+            Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+            SizedBox(height: 20),
+            Tooltip(
+              message: "Comment",
+              child: IconButton(
+                onPressed: () async {
+                  showDialogBox(context);
+                  // await getCommments();
+                  HomePageService().getCommentsCount(widget.postDetails['PostId']).then((value) {
+                    setState(() {
+                      numComments = value.toString();
+                    });
+                  });
+                },
+                icon: Icon(
+                  Icons.comment,
+                  color: Colors.blue.withOpacity(0.7),
+                ),
+              ),
+            ),
+            Text(numComments, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+            SizedBox(height: 20),
+            Tooltip(
+              message: "Views",
+              child: Icon(
+                Icons.bar_chart,
+                color: Colors.green.withOpacity(0.7),
+              ),
+            ),
+            Text(numViews, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+          ],
         ),
       ],
     );
@@ -317,15 +546,16 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
     super.initState();
 
     void getPets() async {
-      Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(FirebaseAuth.instance.currentUser!.uid);
-      pets.then((value) {
-        setState(() {
-          profileDetails.pets = value;
-          print("Pets: ${profileDetails.pets}");
-          for (var _ in profileDetails.pets) {
-            petAdded.add(false);
-          }
-        });
+      if (!profileDetails.pets.isNotEmpty) {
+        print("Pets not found. Fetching pets...");
+        List<Map<String, dynamic>> pets = await GeneralService().getUserPets(FirebaseAuth.instance.currentUser!.uid);
+        profileDetails.pets = pets;
+      }
+
+      setState(() {
+        for (var _ in profileDetails.pets) {
+          petAdded.add(false);
+        }
       });
     }
 
@@ -655,6 +885,8 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                       removePet.clear();
                       postText = "Post";
                     });
+
+                    homepageVAF.postPosted.value = !homepageVAF.postPosted.value;
                   } else {
                     setState(() {
                       errorText = "An error occurred while posting";
@@ -676,12 +908,13 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
               ),
             ),
             SizedBox(height: 20),
-            if (errorVisible) ...[
-              Text(
+            Visibility(
+              visible: errorVisible,
+              child: Text(
                 errorText,
                 style: TextStyle(color: Colors.red),
               ),
-            ],
+            ),
           ],
         ),
       ),

@@ -19,6 +19,21 @@ You can view our project board [Here](https://github.com/orgs/COS301-SE-2024/pro
 ## Tech Stack
 You can view our tech stack [Here](https://docs.google.com/document/d/11uUHFuaqj6Mx52eWC4wKD2fOWFQbhcgVURP3L99YpWo/edit)
 
+## Architecture
+You can view our architecture [Here](docs/architecture.md)
+
+## User Manual
+You can view our user manual [Here](https://docs.google.com/document/d/1TiRA697HTTGuLCOzq20es4q_fotXlDpTnVuov_7zNP0/edit)
+
+## Technical Installation Manual
+You can view our technical installation manual [Here](docs/Technical_Installation.md)
+
+## Coding Standards
+You can view our coding standards [Here](docs/CodingStandards.md)
+
+## Software Requirements Specification
+You can view our SRS [Here](docs/srs.md)
+
 ## The Team
 
 | Name             | Role            | Description                                                                                                | Photo                                       | LinkedIn                                                                                         |

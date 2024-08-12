@@ -28,11 +28,9 @@ void main() {
      * 3. Profile
      * 4. Logout
      */
-    final searchText = find.text('Search');
     final locateText = find.text('Locate');
     final profileText = find.text('Profile');
     final logoutText = find.text('Logout');
-    expect(searchText, findsOneWidget);
     expect(locateText, findsOneWidget);
     expect(profileText, findsOneWidget);
     expect(logoutText, findsOneWidget);
@@ -94,11 +92,9 @@ void main() {
      * 3. Profile
      * 4. Logout
      */
-    final searchText = find.text('Search');
     final locateText = find.text('Locate');
     final profileText = find.text('Profile');
     final logoutText = find.text('Logout');
-    expect(searchText, findsOneWidget);
     expect(locateText, findsOneWidget);
     expect(profileText, findsOneWidget);
     expect(logoutText, findsOneWidget);
@@ -171,10 +167,8 @@ void main() {
      * 3. Profile
      * 4. Logout
      */
-    final searchText = find.text('Search');
     final profileText = find.text('Profile');
     final logoutText = find.text('Logout');
-    expect(searchText, findsOneWidget);
     expect(profileText, findsOneWidget);
     expect(logoutText, findsOneWidget);
 

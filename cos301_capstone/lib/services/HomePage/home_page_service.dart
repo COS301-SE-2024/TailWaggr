@@ -1,14 +1,22 @@
 import 'dart:io';
+import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
+import 'package:cos301_capstone/services/general/general_service.dart';
 
+import 'package:cos301_capstone/services/Notifications/notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class HomePageService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  late final FirebaseFirestore _db;
+  late final FirebaseStorage _storage;
+  HomePageService({FirebaseFirestore? db, FirebaseStorage? storage}) {
+    _db = db ?? FirebaseFirestore.instance;
+    _storage = storage ?? FirebaseStorage.instance;
+  }
+  NotificationsServices notif = NotificationsServices();
 
   Future<bool> addPost(
     String userId,
@@ -38,6 +46,8 @@ class HomePageService {
       // Retrieve the photo URL
       String imgUrl = await uploadTask.ref.getDownloadURL();
 
+      String profilePhoto = profileDetails.profilePicture.replaceAll('"', '');
+
 
       // Create a map for the post data, including the imgUrl
       final postData = {
@@ -46,6 +56,8 @@ class HomePageService {
         'CreatedAt': DateTime.now(),
         'ImgUrl': imgUrl, // Use the uploaded photo URL
         'PetIds': petIds,
+        'pictureUrl' : profilePhoto,
+        'name' : profileDetails.name
       };
       DocumentReference postRef = await _db.collection('posts').add(postData);
 
@@ -89,12 +101,19 @@ class HomePageService {
 
   Future<bool> deletePost(String postId) async {
     try {
-      // Delete the post from the "posts" collection
+      // Step 1: Retrieve the post document to get the image file path
+      DocumentSnapshot postSnapshot = await _db.collection('posts').doc(postId).get();
+      String filePath = (postSnapshot.data() as Map<String, dynamic>)['imagePath'];
+  
+      // Step 2: Call deleteImageFromStorage with the retrieved file path
+      await GeneralService().deleteImageFromStorage(filePath);
+      
+      // Step 3: Delete the post document from Firestore
       await _db.collection('posts').doc(postId).delete();
-      print("Post deleted successfully.");
-      return true; // Return true if the post is deleted successfully
+      print("Post and associated image deleted successfully.");
+      return true; // Return true if the post and image are deleted successfully
     } catch (e) {
-      print("Error deleting post: $e");
+      print("Error deleting post or image: $e");
       return false; // Return false if an error occurs
     }
   }
@@ -106,6 +125,9 @@ class HomePageService {
 
       // Convert each document to a map and add it to a list
       final posts = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+      // Sort the posts from newest to oldest based on the 'CreatedAt' field
+      posts.sort((a, b) => b['CreatedAt'].compareTo(a['CreatedAt']));
 
       print("Posts fetched successfully.");
       return posts; // Return the list of posts
@@ -127,16 +149,19 @@ class HomePageService {
         'likedAt': DateTime.now(),
         // Additional like information can go here
       });
+       //add like notification
+        notif.createLikePostNotification(postId, userId);
     }
   }
   Future<void> addCommentToPost(String postId, String userId, String comment) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
-    await postRef.collection('comments').add({
+    DocumentReference<Map<String, dynamic>> commentRef = await postRef.collection('comments').add({
       'userId': userId, // Storing the userId of the commenter
       'comment': comment, // Storing the actual comment text
       'commentedAt': DateTime.now(), // Storing the timestamp of the comment
       // Additional comment information can go here
     });
+    notif.createCommentPostNotification(postId, userId, commentRef.id);
   }
   Future<void> addViewToPost(String postId, String userId) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);

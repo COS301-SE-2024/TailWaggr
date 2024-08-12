@@ -1,29 +1,25 @@
 // ignore_for_file: file_names
 
+import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 
-const titleTextSize = 56.0;
-const subtitleTextSize = 40.0;
-const subHeadingTextSize = 30.0;
-const bodyTextSize = 20.0;
-const subBodyTextSize = 16.0;
-const textSize = 14.0;
+var titleTextSize = 56.0;
+var subtitleTextSize = 40.0;
+var subHeadingTextSize = 30.0;
+var bodyTextSize = 20.0;
+var subBodyTextSize = 16.0;
+var textSize = 14.0;
 
 class ThemeSettings {
-  // static Color _primaryColor = Color(0xFF6D2480);
-  // static Color _secondaryColor = Color(0xFF9C89FF);
-  // static Color _tertiaryColor = Color(0xFF99CCED);
-  // static Color _backgroundColor = Colors.white10;
-  // static Color _textColor = Colors.black;
-  // static Color _cardColor = Colors.white;
-
   static Color _primaryColor = Color(0XFFbc6c25);
-  static Color _secondaryColor = Color(0xFF9C89FF);
+  static Color _secondaryColor = Color(0xFF606c38);
   static Color _tertiaryColor = Color(0xFF99CCED);
-  static Color _backgroundColor = Color.fromARGB(255, 246, 247, 251);
+  static Color _backgroundColor = Color(0xFFEFF3FC);
   static Color _textColor = Colors.black;
   static Color _cardColor = Colors.white;
+  static Color _navbarTextColour = Colors.white;
 
   static var _themeMode = "Light";
 
@@ -34,40 +30,53 @@ class ThemeSettings {
   static Color get textColor => _textColor;
   static Color get cardColor => _cardColor;
   static String get themeMode => _themeMode;
+  static Color get navbarTextColour => _navbarTextColour;
 
-  static void toggleTheme() {
-    if (_themeMode == "Light") {
-      // _primaryColor = Color.fromARGB(255, 56, 0, 76);
-      // _secondaryColor = Color(0xFF9C89FF);
-      // _tertiaryColor = Color(0xFF99CCED);
-      // _backgroundColor = Colors.black;
-      // _textColor = Colors.white;
-      // _cardColor = Color(0XFF141414);
-
+  static Future<void> toggleTheme(String themeMode) async {
+    if (themeMode == "Dark") {
+      _themeMode = "Dark";
       _primaryColor = Color(0XFFbc6c25);
-      _secondaryColor = Color(0xFF9C89FF);
+      _secondaryColor = Color(0xFF606c38);
       _tertiaryColor = Color(0xFF99CCED);
       _backgroundColor = Colors.black;
       _textColor = Colors.white;
       _cardColor = Color(0XFF141414);
-
-      _themeMode = "Dark";
-    } else if (_themeMode == "Dark") {
-      // _primaryColor = Color(0xFF6D2480);
-      // _secondaryColor = Color(0xFF9C89FF);
-      // _tertiaryColor = Color(0xFF99CCED);
-      // _backgroundColor = Color(0xFFEFF3FC);
-      // _textColor = Colors.black;
-      // _cardColor = Colors.white;
-
+    } else if (themeMode == "Light") {
+      _themeMode = "Light";
       _primaryColor = Color(0XFFbc6c25);
-      _secondaryColor = Color(0xFF9C89FF);
+      _secondaryColor = Color(0xFF606c38);
       _tertiaryColor = Color(0xFF99CCED);
       _backgroundColor = Color(0xFFEFF3FC);
       _textColor = Colors.black;
       _cardColor = Colors.white;
+    } else if (themeMode == "Custom") {
+      _themeMode = "Custom";
+    }
 
-      _themeMode = "Light";
+    if (profileDetails.customColours['PrimaryColour'] != null) {
+      try {
+        await ProfileService().updateProfile(
+            profileDetails.userID,
+            {
+              "preferences": {
+                "themeMode": _themeMode,
+                "Colours": {
+                  "PrimaryColour": profileDetails.customColours['PrimaryColour'],
+                  "SecondaryColour": profileDetails.customColours['SecondaryColour'],
+                  "BackgroundColour": profileDetails.customColours['BackgroundColour'],
+                  "TextColour": profileDetails.customColours['TextColour'],
+                  "CardColour": profileDetails.customColours['CardColour'],
+                  "NavbarTextColour": profileDetails.customColours['NavbarTextColour'],
+                },
+                "usingDefaultImage": profileDetails.usingDefaultImage,
+                "usingImage": profileDetails.usingImage,
+              },
+            },
+            null,
+            null);
+      } catch (e) {
+        print(e);
+      }
     }
   }
 
@@ -75,6 +84,34 @@ class ThemeSettings {
   static bool get searchVisible => _searchVisible;
   static void toggleSearchVisible() {
     _searchVisible = !_searchVisible;
+  }
+
+  static void setPrimaryColor(Color color) {
+    _primaryColor = color;
+  }
+
+  static void setSecondaryColor(Color color) {
+    _secondaryColor = color;
+  }
+
+  static void setTertiaryColor(Color color) {
+    _tertiaryColor = color;
+  }
+
+  static void setBackgroundColor(Color color) {
+    _backgroundColor = color;
+  }
+
+  static void setTextColor(Color color) {
+    _textColor = color;
+  }
+
+  static void setCardColor(Color color) {
+    _cardColor = color;
+  }
+
+  static void setNavbarTextColour(Color color) {
+    _navbarTextColour = color;
   }
 }
 
@@ -86,15 +123,51 @@ class ThemeSettingsObserver extends ChangeNotifier {
   Color get textColor => ThemeSettings.textColor;
   Color get cardColor => ThemeSettings.cardColor;
   String get themeMode => ThemeSettings.themeMode;
+  Color get navbarTextColour => ThemeSettings.navbarTextColour;
 
-  void toggleTheme() {
-    ThemeSettings.toggleTheme();
+  void toggleTheme(String themeMode) {
+    ThemeSettings.toggleTheme(themeMode);
     notifyListeners();
   }
 
   bool get searchVisible => ThemeSettings.searchVisible;
   void toggleSearchVisible() {
     ThemeSettings.toggleSearchVisible();
+    notifyListeners();
+  }
+
+  void setPrimaryColor(Color color) {
+    ThemeSettings.setPrimaryColor(color);
+    notifyListeners();
+  }
+
+  void setSecondaryColor(Color color) {
+    ThemeSettings.setSecondaryColor(color);
+    notifyListeners();
+  }
+
+  void setTertiaryColor(Color color) {
+    ThemeSettings.setTertiaryColor(color);
+    notifyListeners();
+  }
+
+  void setBackgroundColor(Color color) {
+    ThemeSettings.setBackgroundColor(color);
+    notifyListeners();
+  }
+
+  void setTextColor(Color color) {
+    ThemeSettings.setTextColor(color);
+    notifyListeners();
+  }
+
+  void setCardColor(Color color) {
+    ThemeSettings.setCardColor(color);
+    notifyListeners();
+  }
+
+  void setNavbarTextColour(Color color) {
+    ThemeSettings.setNavbarTextColour(color);
     notifyListeners();
   }
 }
@@ -106,36 +179,40 @@ class ProfileDetails {
   String surname = "";
   String userID = FirebaseAuth.instance.currentUser!.uid;
   String bio = "";
-  String email = "johndoe@gmail.com";
-  String phone = "012 345 6789";
-  String dialCode = "+27";
-  String isoCode = "ZA";
+  String email = "";
+  String phone = "";
+  String dialCode = "";
+  String isoCode = "";
   String location = "1234 Street Name, City, Country";
-  String birthdate = "January 1, 2000";
+  String birthdate = "";
   String profilePicture = "https://st3.depositphotos.com/4060975/17707/v/450/depositphotos_177073010-stock-illustration-male-vector-icon.jpg";
   String userType = "Veterinarian";
-
-  // Age: 3, 
-  // pictureUrl: gs://tailwaggr.appspot.com/forum_images/Golden2.jpg, 
-  // bio: Good boy, 
-  // type: dog, 
-  // name: Fluffy
-
+  String themeMode = "Light";
+  String sidebarImage = "";
+  bool usingImage = false;
+  bool usingDefaultImage = true;
+  ValueNotifier<int> isEditing = ValueNotifier(0);
   List pets = [];
-  
-  List notifications = [
-    Notification(DateTime(2024, 1, 2), "Friend Request", "Jane Doe", ""),
-    Notification(DateTime(2024, 1, 1), "Like", "John Smith", ""),
-    Notification(DateTime(2023, 1, 4), "Comment", "Alice Johnson", ""),
-    Notification(DateTime(2023, 1, 3), "Following", "Bob Brown", ""),
-    Notification(DateTime(2022, 1, 2), "Like", "Emily Johnson", ""),
-    Notification(DateTime(2021, 12, 31), "Comment", "Michael Smith", ""),
-    Notification(DateTime(2021, 12, 30), "Friend Request", "Sarah Brown", ""),
-  ];
-
+  List notifications = [];
   List<Map<String, dynamic>> posts = [];
+  List<Map<String, dynamic>> myPosts = [];
+  Map<String, dynamic> customColours = {};
 
+  void setCustomColours(Map<String, dynamic> colours) {
+    customColours = colours;
 
+    print("Theme Mode: ${themeSettings.themeMode}");
+
+    if (themeSettings.themeMode == "Custom") {
+      print("Setting custom colours");
+      ThemeSettings.setPrimaryColor(Color(colours['PrimaryColour']));
+      ThemeSettings.setSecondaryColor(Color(colours['SecondaryColour']));
+      ThemeSettings.setBackgroundColor(Color(colours['BackgroundColour']));
+      ThemeSettings.setTextColor(Color(colours['TextColour']));
+      ThemeSettings.setCardColor(Color(colours['CardColour']));
+      ThemeSettings.setNavbarTextColour(Color(colours['NavbarTextColour']));
+    }
+  }
 }
 
 class Notification {
@@ -152,37 +229,37 @@ class Notification {
     String year = date.year.toString();
     return '$day $month $year';
   }
-
-  String getMonthAbbreviation(int month) {
-    switch (month) {
-      case 1:
-        return 'Jan';
-      case 2:
-        return 'Feb';
-      case 3:
-        return 'Mar';
-      case 4:
-        return 'Apr';
-      case 5:
-        return 'May';
-      case 6:
-        return 'Jun';
-      case 7:
-        return 'Jul';
-      case 8:
-        return 'Aug';
-      case 9:
-        return 'Sep';
-      case 10:
-        return 'Oct';
-      case 11:
-        return 'Nov';
-      case 12:
-        return 'Dec';
-      default:
-        return '';
-    }
-  }
 }
 
 ProfileDetails profileDetails = ProfileDetails();
+
+String getMonthAbbreviation(int month) {
+  switch (month) {
+    case 1:
+      return 'Jan';
+    case 2:
+      return 'Feb';
+    case 3:
+      return 'Mar';
+    case 4:
+      return 'Apr';
+    case 5:
+      return 'May';
+    case 6:
+      return 'Jun';
+    case 7:
+      return 'Jul';
+    case 8:
+      return 'Aug';
+    case 9:
+      return 'Sep';
+    case 10:
+      return 'Oct';
+    case 11:
+      return 'Nov';
+    case 12:
+      return 'Dec';
+    default:
+      return '';
+  }
+}

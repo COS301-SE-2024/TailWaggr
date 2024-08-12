@@ -25,8 +25,10 @@ class _HomepageState extends State<Homepage> {
     void getPosts() async {
       Future<List<Map<String, dynamic>>> posts = HomePageService().getPosts();
       posts.then((value) {
-        for (var post in value) {
-          print(post);
+        for (Map<String, dynamic> post in value) {
+          if (post['UserId'] == profileDetails.userID) {
+            profileDetails.myPosts.add(post);
+          }
         }
         setState(() {
           profileDetails.posts = value;
@@ -39,34 +41,50 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListenableBuilder(
-        listenable: themeSettings,
-        builder: (BuildContext context, Widget? child) {
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth > 1100) {
-                return DesktopHomepage();
-              } else if (constraints.maxWidth > 800) {
-                return TabletHomepage();
-              } else {
-                return Scaffold(
-                  drawer: NavbarDrawer(),
-                  appBar: AppBar(
-                    backgroundColor: themeSettings.primaryColor,
-                    title: Text(
-                      "TailWaggr",
-                      style: TextStyle(
-                        color: Colors.white,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        fontFamily: 'Roboto',
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          focusColor: themeSettings.primaryColor,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            borderSide: BorderSide(color: themeSettings.primaryColor),
+          ),
+        ),
+      ),
+      home: Scaffold(
+        body: ListenableBuilder(
+          listenable: themeSettings,
+          builder: (BuildContext context, Widget? child) {
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth > 1100) {
+                  return DesktopHomepage();
+                } else if (constraints.maxWidth > 800) {
+                  return TabletHomepage();
+                } else {
+                  return Scaffold(
+                    drawer: NavbarDrawer(),
+                    appBar: AppBar(
+                      backgroundColor: themeSettings.primaryColor,
+                      title: Text(
+                        "TailWaggr",
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
-                  body: MobileHomepage(),
-                );
-              }
-            },
-          );
-        },
+                    body: MobileHomepage(),
+                  );
+                }
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -153,3 +171,9 @@ class ImagePicker {
 }
 
 ImagePicker imagePicker = ImagePicker();
+
+class HomepageVAF {
+  ValueNotifier<bool> postPosted = ValueNotifier<bool>(false);
+}
+
+HomepageVAF homepageVAF = HomepageVAF();
