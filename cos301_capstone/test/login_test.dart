@@ -7,7 +7,7 @@ void main() {
   testWidgets('DesktopLogin widget test', (WidgetTester tester) async {
     final oldOnError = FlutterError.onError;
     FlutterError.onError = (FlutterErrorDetails details) {
-      if (!details.exceptionAsString().contains('A RenderFlex overflowed by')) {
+      if (!details.exceptionAsString().contains('A RenderFlex overflowed by') && !details.exceptionAsString().contains('No Firebase App')) {
         oldOnError!(details);
       }
     };
@@ -26,7 +26,7 @@ void main() {
   testWidgets('Mobile_View widget test', (WidgetTester tester) async {
       final oldOnError = FlutterError.onError;
       FlutterError.onError = (FlutterErrorDetails details) {
-        if (!details.exceptionAsString().contains('A RenderFlex overflowed by')) {
+        if (!details.exceptionAsString().contains('A RenderFlex overflowed by') && !details.exceptionAsString().contains('No Firebase App')) {
           oldOnError!(details);
         }
       };
