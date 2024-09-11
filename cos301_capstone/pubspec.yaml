@@ -60,6 +60,7 @@ dependencies:
   syncfusion_flutter_datepicker: ^26.2.7
   syncfusion_flutter_core: ^26.2.7
   dropdown_button2: ^2.3.9
+  accordion: ^2.6.0
 
 dev_dependencies:
   flutter_test:
