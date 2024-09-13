@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cos301_capstone/Forgot_Password/Forgot_Password.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Location/Location.dart';
@@ -83,7 +84,8 @@ class _AuthGateState extends State<AuthGate> {
 
           return Homepage();
         }
-        return Login();
+        // return Login();
+        return ForgotPassword();
       },
     );
   }
