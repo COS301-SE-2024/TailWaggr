@@ -84,8 +84,7 @@ class _AuthGateState extends State<AuthGate> {
 
           return Homepage();
         }
-        // return Login();
-        return ForgotPassword();
+        return Login();
       },
     );
   }
