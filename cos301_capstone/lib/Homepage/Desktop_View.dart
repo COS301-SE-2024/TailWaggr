@@ -4,8 +4,10 @@ import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
+import 'package:cos301_capstone/services/imageApi/imageApi.dart';
 import 'package:cos301_capstone/services/profile/profile_service.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -848,17 +850,50 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     return;
                   }
 
-                  if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
-                    print("Image: ${imagePicker.filesNotifier.value![0].name}");
-                  } else {
-                    print("No image selected");
+                // Check if image is selected
+                if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
+                  print("Image: ${imagePicker.filesNotifier.value![0].name}");
+                  print("Image details: ${imagePicker.filesNotifier.value![0]}");
+                  print("calling image moderation API");
+
+                  // Step 1: Call image moderation API using the selected file
+                  ImageApi imageApi = ImageApi();
+                  PlatformFile selectedFile = imagePicker.filesNotifier.value![0];  // Get the selected image
+
+                  // Step 2: Call image moderation API
+                  var moderationResult = await imageApi.uploadImage(selectedFile);  // Pass PlatformFile directly
+
+                  // Step 3: Check the moderation result
+                  if (moderationResult.containsKey('error')) {
+                    print('Image moderation failed: ${moderationResult['error']}');
                     setState(() {
-                      errorText = "No image selected";
+                      errorText = 'Image moderation failed';
                       errorVisible = true;
-                      postText = "Post";
                     });
                     return;
+                  } else if (moderationResult['porn'] == true || moderationResult['drug'] == true || moderationResult['gore'] == true) {
+                    print('Image contains inappropriate content.');
+                    setState(() {
+                      errorText = 'Image contains inappropriate content.';
+                      errorVisible = true;
+                    });
+                    return;
+                  } else {
+                    print('Image moderation passed.');
+                    print(moderationResult);
+                    setState(() {
+                      errorText = 'Image moderation failed';
+                      errorVisible = true;
+                    });
+                    // Proceed with the next steps (e.g., uploading image, adding post)
                   }
+                } else {
+                  print("No image selected");
+                  setState(() {
+                    errorText = "No image selected";
+                    errorVisible = true;
+                  });
+                }
 
                   List<Map<String, dynamic>> petIds = [];
 
