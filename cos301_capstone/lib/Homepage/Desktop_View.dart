@@ -850,50 +850,63 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     return;
                   }
 
-                // Check if image is selected
-                if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
-                  print("Image: ${imagePicker.filesNotifier.value![0].name}");
-                  print("Image details: ${imagePicker.filesNotifier.value![0]}");
-                  print("calling image moderation API");
+                  // Check if image is selected and moderate image
+                  if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
+                    print("Image: ${imagePicker.filesNotifier.value![0].name}");
+                    print("Image details: ${imagePicker.filesNotifier.value![0]}");
+                    print("calling image moderation API");
 
-                  // Step 1: Call image moderation API using the selected file
-                  ImageApi imageApi = ImageApi();
-                  PlatformFile selectedFile = imagePicker.filesNotifier.value![0];  // Get the selected image
+                    // Step 1: Call image moderation API using the selected file
+                    ImageApi imageApi = ImageApi();
+                    PlatformFile selectedFile = imagePicker.filesNotifier.value![0];  // Get the selected image
 
-                  // Step 2: Call image moderation API
-                  var moderationResult = await imageApi.uploadImage(selectedFile);  // Pass PlatformFile directly
+                    // Step 2: Call image moderation API
+                    var moderationResult = await imageApi.uploadImage(selectedFile);  // Pass PlatformFile directly
 
-                  // Step 3: Check the moderation result
-                  if (moderationResult.containsKey('error')) {
-                    print('Image moderation failed: ${moderationResult['error']}');
-                    setState(() {
-                      errorText = 'Image moderation failed';
-                      errorVisible = true;
-                    });
-                    return;
-                  } else if (moderationResult['porn'] == true || moderationResult['drug'] == true || moderationResult['gore'] == true) {
-                    print('Image contains inappropriate content.');
-                    setState(() {
-                      errorText = 'Image contains inappropriate content.';
-                      errorVisible = true;
-                    });
-                    return;
+                    // Step 3: Check the moderation result
+                    if (moderationResult.containsKey('error')) {
+                      print('Image moderation failed: ${moderationResult['error']}');
+                      setState(() {
+                        errorText = 'Image moderation failed';
+                        errorVisible = true;
+                      });
+                      throw Exception('Terminating due to image moderation failure');
+                    } else {
+                      // Parse the moderation results based on the structure of the response JSON
+                      bool pornContent = moderationResult['porn_moderation']['porn_content'];
+                      bool drugContent = moderationResult['drug_moderation']['drug_content'];
+                      bool goreContent = moderationResult['gore_moderation']['gore_content'];
+                      bool suggestiveNudity = moderationResult['suggestive_nudity_moderation']['suggestive_nudity_content'];
+                      bool weaponContent = moderationResult['weapon_moderation']['weapon_content'];
+
+                      // Check if any inappropriate content was found
+                      if (pornContent || drugContent || goreContent || suggestiveNudity || weaponContent) {
+                        print('Image contains inappropriate content.');
+                        setState(() {
+                          errorText = 'Image contains inappropriate content.';
+                          errorVisible = true;
+                        });
+                        throw Exception('Terminating due to inappropriate content in image');
+                      } else {
+                        print('Image moderation passed.');
+                        print(moderationResult);
+
+                        // Set success message
+                        setState(() {
+                          errorText = "Image moderation passed.";
+                          errorVisible = true;
+                        });
+
+                        // Proceed with the next steps (e.g., uploading image, adding post)
+                      }
+                    }
                   } else {
-                    print('Image moderation passed.');
-                    print(moderationResult);
+                    print("No image selected");
                     setState(() {
-                      errorText = 'Image moderation failed';
+                      errorText = "No image selected";
                       errorVisible = true;
                     });
-                    // Proceed with the next steps (e.g., uploading image, adding post)
                   }
-                } else {
-                  print("No image selected");
-                  setState(() {
-                    errorText = "No image selected";
-                    errorVisible = true;
-                  });
-                }
 
                   List<Map<String, dynamic>> petIds = [];
 

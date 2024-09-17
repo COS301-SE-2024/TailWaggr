@@ -11,7 +11,7 @@ class ImageApi {
 
     // Add the necessary fields for the API request
     request.fields['API_KEY'] = 'Dv08sITGmtiEaVbDDcpHlVVztctmqmDf'; // Replace with your actual API key
-    request.fields['task'] = 'porn_moderation,drug_moderation,gore_moderation'; // Tasks for moderation
+    request.fields['task'] = 'porn_moderation,drug_moderation,gore_moderation,suggestive_nudity_moderation,weapon_moderation,drug_moderation'; // Tasks for moderation
     request.fields['origin_id'] = 'xxxxxxxxx';  // Optional, replace with unique ID if needed
     request.fields['reference_id'] = 'yyyyyyyy';  // Optional, use as needed
 
@@ -26,9 +26,11 @@ class ImageApi {
       // Send the request
       var response = await request.send();
       if (response.statusCode == 200) {
+        print(response);
         // Get the response data
         var responseData = await http.Response.fromStream(response);
         var jsonResponse = jsonDecode(responseData.body);
+        print(jsonResponse);
         return jsonResponse;
       } else {
         print('Failed to upload image. Status code: ${response.statusCode}');
