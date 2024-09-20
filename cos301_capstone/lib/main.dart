@@ -16,8 +16,8 @@ Future<void> main() async {
   );
   
   // Fetch vets when the app starts
-  // final vetService = VetService(firebaseFunctionUrl: 'https://us-central1-tailwaggr.cloudfunctions.net/getVets');
-  // await vetService.fetchAndStoreVets("-28.284535, 24.402177", 50000);
+  final vetService = VetService(firebaseFunctionUrl: 'https://us-central1-tailwaggr.cloudfunctions.net/getVets');
+  await vetService.fetchAndStoreVets("-25.751065353022884, 28.24424206468121", 100000);
 
 
   runApp(const MyApp());

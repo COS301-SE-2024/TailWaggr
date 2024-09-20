@@ -13,7 +13,7 @@ exports.getVets = functions.https.onRequest((req, res) => {
   corsHandler(req, res, async () => {
     const location = req.query.location;
     const radius = req.query.radius;
-    const type = req.query.type || "animal_hospital";
+    const type = req.query.type || "veterinary_care";
     const googleMapsUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
     const params = {
       location: location,
