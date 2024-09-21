@@ -1,37 +1,34 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
 
 class ImageApi {
-  // Image moderation function for web
   Future<Map<String, dynamic>> uploadImage(PlatformFile platformFile) async {
-    // Use the actual PicPurify URL (you might need CORS proxy for testing in browsers)
-    var picpurifyUrl = 'https://cors-anywhere.herokuapp.com/https://www.picpurify.com/analyse/1.1'; // CORS proxy used for testing, remove if not needed
-    var request = http.MultipartRequest('POST', Uri.parse(picpurifyUrl));
+    var localFunctionUrl = 'https://us-central1-tailwaggr.cloudfunctions.net/api/proxy';
 
-    // Add the necessary fields for the API request
-    request.fields['API_KEY'] = 'Dv08sITGmtiEaVbDDcpHlVVztctmqmDf'; // Replace with your actual API key
-    request.fields['task'] = 'porn_moderation,drug_moderation,gore_moderation,suggestive_nudity_moderation,weapon_moderation,drug_moderation'; // Tasks for moderation
-    request.fields['origin_id'] = 'xxxxxxxxx';  // Optional, replace with unique ID if needed
-    request.fields['reference_id'] = 'yyyyyyyy';  // Optional, use as needed
+    // Convert file to base64
+    String base64Image = base64Encode(platformFile.bytes!);
 
-    // Add the image data as bytes
-    request.files.add(http.MultipartFile.fromBytes(
-      'file_image',
-      platformFile.bytes!,  // Use the bytes from the PlatformFile
-      filename: platformFile.name  // Ensure the correct filename is passed
-    ));
-
+    // Prepare request body
+    var requestBody = {
+      'API_KEY': 'Dv08sITGmtiEaVbDDcpHlVVztctmqmDf',
+      'task': 'porn_moderation,drug_moderation,gore_moderation,suggestive_nudity_moderation,weapon_moderation,drug_moderation',
+      'origin_id': 'some_origin_id',
+      'reference_id': 'some_reference_id',
+      'file_image': base64Image,  // Send base64 image
+      'filename': platformFile.name, // Send the filename
+    };
+    
     try {
-      // Send the request
-      var response = await request.send();
+      var response = await http.post(
+        Uri.parse(localFunctionUrl),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(requestBody),
+      );
+
       if (response.statusCode == 200) {
-        print(response);
-        // Get the response data
-        var responseData = await http.Response.fromStream(response);
-        var jsonResponse = jsonDecode(responseData.body);
-        print(jsonResponse);
-        return jsonResponse;
+        return jsonDecode(response.body);
       } else {
         print('Failed to upload image. Status code: ${response.statusCode}');
         return {'error': 'Failed to upload image'};
