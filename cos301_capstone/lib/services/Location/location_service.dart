@@ -8,9 +8,21 @@ class LocationService {
     _firestore = firestore ?? FirebaseFirestore.instance;
   }
 
-  Future<List<User>> getVets(LatLng userLocation, double radius) async {
+  Future<List<Map<String, dynamic>>> getVets(LatLng userLocation, double radius) async {
     GeoPoint geoPoint = GeoPoint(userLocation.latitude, userLocation.longitude);
-    return _getUsersByRoleWithinRadius(geoPoint, radius, 'vet');
+    try {
+      // Access the user's "pets" subcollection
+      final querySnapshot = await _firestore.collection('vets').get();
+
+      // Convert each document to a map and add it to a list
+      final vets = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+      print("Vets fetched successfully.");
+      return vets; // Return the list of pets
+    } catch (e) {
+      print("Error fetching vets: $e");
+      return []; // Return an empty list if an error occurs
+    }
   }
 
   Future<List<User>> getPetKeepers(LatLng userLocation, double radius) async {
@@ -74,7 +86,6 @@ class LocationService {
     return matchingUsers; // Return the list of matching users
   }
 }
-
 class User {
   final String id;
   final String name;
