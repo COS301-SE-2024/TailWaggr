@@ -9,10 +9,11 @@ class ForumServices {
   NotificationsServices notif = NotificationsServices();
 
   /// Creates a new forum in the database.
-  Future<DocumentReference<Object?>> createForum({
-    String? name, // forum name
-    String? userId // userId of forum owner
-  }) async {
+  Future<DocumentReference<Object?>> createForum(
+    String name, // forum name
+    String userId, // userId of forum owner
+    String des // forum description
+  ) async {
     try {
       // Get imgUrl
       DocumentSnapshot postDoc = await _db.collection('profile').doc(userId).get();
@@ -26,6 +27,7 @@ class ForumServices {
         'CreatedAt': now,
         'ImgUrl': imgUrl,
         'Name': name,
+        'Description': des,
         'UserId': userId
       });
       print('Forum created successfully.');

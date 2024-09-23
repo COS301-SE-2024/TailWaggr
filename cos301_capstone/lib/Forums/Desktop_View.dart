@@ -31,6 +31,8 @@ Map<String, Map<String, dynamic>> userProfiles = {};
 class _DesktopForumsState extends State<DesktopForums> {
   TextEditingController forumSearchController = TextEditingController();
   TextEditingController messageController = TextEditingController();
+  TextEditingController forumNameController = TextEditingController();
+  TextEditingController forumDescriptionController = TextEditingController();
   bool isLoadingPosts = false;
 
   @override
@@ -223,6 +225,51 @@ class _DesktopForumsState extends State<DesktopForums> {
     }
   }
 
+  void _createForum() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Create a Forum'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: forumNameController,
+                decoration: InputDecoration(labelText: 'Forum Name'),
+              ),
+              SizedBox(height: 10),
+              TextField(
+                controller: forumDescriptionController,
+                decoration: InputDecoration(labelText: 'Description'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                String name = forumNameController.text;
+                String? userId = await _authService.getCurrentUserId();
+                String description = forumDescriptionController.text;
+
+                if (name.isNotEmpty && description.isNotEmpty) {
+                  await _forumServices.createForum(name,userId!,description);
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text('Create'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -266,6 +313,23 @@ class _DesktopForumsState extends State<DesktopForums> {
                       prefixIcon: Icon(Icons.search),
                     ),
                     style: TextStyle(color: themeSettings.textColor),
+                  ),
+                ),
+                //create sized box to create a forum
+                SizedBox(
+                  height: 40,
+                  child: ElevatedButton(
+                     onPressed: _createForum,
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all<Color>(
+                          themeSettings.primaryColor),
+                    ),
+                    child: Text(
+                      "Create a forum",
+                      style: TextStyle(
+                        color: themeSettings.textColor,
+                      ),
+                    ),
                   ),
                 ),
                 Expanded(
