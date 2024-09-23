@@ -3,6 +3,9 @@ const admin = require("firebase-admin");
 const axios = require("axios");
 const cors = require("cors");
 const vision = require("@google-cloud/vision");
+const {onObjectFinalized} = require("firebase-functions/v2/storage");
+const {getStorage} = require("firebase-admin/storage");
+const logger = require("firebase-functions/logger");
 const visionClient = new vision.ImageAnnotatorClient();
 
 admin.initializeApp();
@@ -33,24 +36,46 @@ exports.getVets = functions.https.onRequest((req, res) => {
     }
   });
 });
-exports.imageLabeling = functions.storage.object().onFinalize(async (object) => {
-  const filePath = object.name;  // The file path in Firebase Storage
-  const bucketName = object.bucket;
-  
-  // Perform label detection using Google Cloud Vision API
-  const [result] = await visionClient.labelDetection(`gs://${bucketName}/${filePath}`);
-  const labels = result.labelAnnotations.map(label => label.description);
-  
-  // Save the labels to Firestore
-  await admin.firestore().collection('images').add({
-    filePath: filePath,
-    labels: labels,
-  });
 
-  console.log(`Image ${filePath} processed with labels: ${labels}`);
+exports.imageLabeling = onObjectFinalized(async (object) => {
+  const filePath = object.data.name;  // Use object.data.name to get the file path
+  const bucketName = object.data.bucket;
+  
+  console.log('Received object:', object);  // Log the entire object
+  console.log(`Processing image at: ${filePath}`);
+
+  if (!filePath) {
+    console.error("File path is undefined. Skipping Firestore update.");
+    return;
+  }
+
+  try {
+    // Perform label detection using Google Cloud Vision API
+    const [result] = await visionClient.labelDetection(`gs://${bucketName}/${filePath}`);
+    const labels = result.labelAnnotations.map(label => label.description);
+
+    console.log(`Labels detected: ${labels}`);
+
+    // Ensure labels array is not empty
+    if (!labels || labels.length === 0) {
+      console.error("No labels detected or labels array is empty.");
+      return;
+    }
+
+    // Save the labels to Firestore
+    await admin.firestore().collection('images').add({
+      filePath: filePath,  // Ensure filePath is valid
+      labels: labels,      // Ensure labels are valid
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    console.log(`Labels saved to Firestore for image: ${filePath}`);
+  } catch (error) {
+    console.error("Error during image labeling or Firestore save:", error);
+  }
 });
 
-exports.safeSearchImageOnUpload = functions.storage.object().onFinalize(async (object) => {
+exports.safeSearchImageOnUpload = onObjectFinalized(async (object) => {
   const filePath = object.name;  // Path to the uploaded image in Firebase Storage
   const bucketName = object.bucket;
 
@@ -86,7 +111,6 @@ exports.safeSearchImageOnUpload = functions.storage.object().onFinalize(async (o
     console.log(`Image ${filePath} passed SafeSearch check.`);
   }
 });
-
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (reason, promise) => {
