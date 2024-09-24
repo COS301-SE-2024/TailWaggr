@@ -8,7 +8,7 @@ class LocationService {
     _firestore = firestore ?? FirebaseFirestore.instance;
   }
 
-  Future<List<Map<String, dynamic>>> getVets(LatLng userLocation, double radius) async {
+  Future<List<Vet>> getVets(LatLng userLocation, double radius) async {
     GeoPoint geoPoint = GeoPoint(userLocation.latitude, userLocation.longitude);
     try {
       // Access the user's "pets" subcollection
@@ -18,7 +18,8 @@ class LocationService {
       final vets = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
 
       print("Vets fetched successfully.");
-      return vets; // Return the list of pets
+      List<Vet> vetList = vets.map((vetData) => Vet.fromFirestore(vetData)).toList();
+      return vetList; // Return the list of pets
     } catch (e) {
       print("Error fetching vets: $e");
       return []; // Return an empty list if an error occurs
@@ -106,7 +107,6 @@ class User {
       distance: firestoreDoc['distance'],
     );
   }
-
   void addDistance(double indistance) {
     distance = indistance;
   }
@@ -117,5 +117,20 @@ class User {
 
   void addPhone(String inphone) {
     phone = inphone;
+  }
+}
+class Vet{
+  final String name;
+  final GeoPoint location;
+  final String placeId;
+
+  Vet({required this.name, required this.location, required this.placeId});
+
+  factory Vet.fromFirestore(Map<String, dynamic> firestoreDoc) {
+    return Vet(
+      name: firestoreDoc['name'],
+      location: firestoreDoc['location'],
+      placeId: firestoreDoc['place_id'],
+    );
   }
 }
