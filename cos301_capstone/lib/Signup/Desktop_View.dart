@@ -3,6 +3,7 @@
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Login/Login.dart';
 import 'package:cos301_capstone/Signup/Signup.dart';
+import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -258,9 +259,11 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                           SignupButtonText = "Creating Account...";
                         });
                         try {
-                          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                            email: signupVariables.signUpEmailController.text,
-                            password: signupVariables.signUpPasswordController.text,
+                          await AuthService().signUp(
+                            signupVariables.signUpEmailController.text,
+                            signupVariables.signUpPasswordController.text,
+                            signupVariables.signUpFirstNameController.text,
+                            signupVariables.signUpLastNameController.text,
                           );
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'weak-password') {
