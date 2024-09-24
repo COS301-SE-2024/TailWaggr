@@ -8,9 +8,14 @@ import 'package:path/path.dart' as path;
 import 'package:cos301_capstone/services/general/general_service.dart';
 
 class ProfileService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  late final FirebaseFirestore _db;
+  late final FirebaseStorage _storage;
 
+  ProfileService({FirebaseFirestore? db, FirebaseStorage? storage}) {
+    _db = db ?? FirebaseFirestore.instance;
+    _storage = storage ?? FirebaseStorage.instance;
+  }
+  
   Future<Map<String, dynamic>?> getUserDetails(String userId) async {
     try {
       DocumentSnapshot doc = await _db.collection('users').doc(userId).get();
@@ -42,11 +47,11 @@ class ProfileService {
   }
 
   Future<List<Map<String, dynamic>>> getUserPets(String userId) async {
-    try {
-      QuerySnapshot snapshot = await _db.collection('users').doc(userId).collection('pets').get();
-      return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-    } catch (e) {
-      print("Error fetching user pets: $e");
+    try{
+      return GeneralService().getUserPets(userId);
+    }
+    catch(e){
+      print("Error fetching pets: $e");
       return [];
     }
   }
@@ -77,7 +82,7 @@ class ProfileService {
   /// - surname: (string) The user's surname.
   /// - userName: (string) The user's username.
   /// - userType: (string) The type of user (e.g., "pet_keeper").
-  Future<void> updateProfile(String userId, Map<String, dynamic> updatedData, PlatformFile? profileImage, PlatformFile? sidebarImage) async {
+  Future<bool> updateProfile(String userId, Map<String, dynamic> updatedData, PlatformFile? profileImage, PlatformFile? sidebarImage) async {
     try {
       // Update profile data
       await _db.collection('users').doc(userId).update(updatedData);
@@ -121,8 +126,10 @@ class ProfileService {
 
         await _updateProfileData(userId, {'sidebarImage': sidebarImgUrl});
       }
+      return true;
     } catch (e) {
       print("Error updating profile: $e");
+      return false;
     }
   }
 
@@ -149,7 +156,7 @@ class ProfileService {
   /// - birthDate: (timestamp) The pet's birth date.
   /// - name: (string) The pet's name.
   /// - profileImage: (PlatformFile) The new profile image file.
-  Future<void> addPet(String ownerId, Map<String, dynamic> petData, PlatformFile? profileImage) async {
+  Future<bool> addPet(String ownerId, Map<String, dynamic> petData, PlatformFile? profileImage) async {
     try {
       DocumentReference docRef = await _db.collection('users').doc(ownerId).collection('pets').add(petData);
 
@@ -166,11 +173,13 @@ class ProfileService {
 
         await _updatePetData(ownerId, docRef.id, {'pictureUrl': imgUrl, 'petID': docRef.id});
       }
+      return true;
     } catch (e) {
       print("Error adding pet: $e");
+      return false;
     }
   }
-  Future<void> deletePet(String ownerId, String petId) async {
+  Future<bool> deletePet(String ownerId, String petId) async {
     try {
       // Delete the pet profile image
       String? petImageUrl = await getPetProfile(ownerId, petId).then((value) => value?['pictureUrl']);
@@ -180,8 +189,10 @@ class ProfileService {
       // Delete the pet document
       await _db.collection('users').doc(ownerId).collection('pets').doc(petId).delete();
       print("Pet deleted successfully.");
+      return true;
     } catch (e) {
       print("Error deleting pet: $e");
+      return false;
     }
   }
 
@@ -198,7 +209,7 @@ class ProfileService {
   /// - birthDate: (timestamp) The pet's birth date.
   /// - name: (string) The pet's name.
   /// - profileImage: (PlatformFile) The new profile image file.
-  Future<void> updatePet(String userID, String petId, Map<String, dynamic> updatedData, PlatformFile? profileImage) async {
+  Future<bool> updatePet(String userID, String petId, Map<String, dynamic> updatedData, PlatformFile? profileImage) async {
     try {
       await _db.collection('users').doc(userID).collection('pets').doc(petId).update(updatedData);
 
@@ -221,8 +232,10 @@ class ProfileService {
 
         await _updatePetData(userID, petId, {'pictureUrl': imgUrl});
       }
+      return true;
     } catch (e) {
       print("Error updating pet: $e");
+      return false;
     }
   }
 }

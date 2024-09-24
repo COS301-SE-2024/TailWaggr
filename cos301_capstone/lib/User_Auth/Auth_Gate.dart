@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
+import 'package:cos301_capstone/Location/Location.dart';
 // import 'package:cos301_capstone/Location/Desktop_View.dart';
 // import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/Login/Login.dart';
@@ -33,7 +34,7 @@ class _AuthGateState extends State<AuthGate> {
       profileDetails.email = value['email'];
       profileDetails.bio = value['bio'];
       profileDetails.profilePicture = value['profilePictureUrl'];
-      profileDetails.location = value['location'];
+      profileDetails.location = value['address'];
       profileDetails.themeMode = value['preferences']['themeMode'];
 
       profileDetails.phone = value['phoneDetails']['phoneNumber'];
@@ -44,6 +45,9 @@ class _AuthGateState extends State<AuthGate> {
       profileDetails.sidebarImage = value['sidebarImage'];
 
       profileDetails.birthdate = formatDate(value['birthDate'].toDate());
+      
+      themeSettings.toggleTheme(value['preferences']['themeMode']);
+
       profileDetails.setCustomColours({
         "PrimaryColour": value['preferences']['Colours']['PrimaryColour'],
         "SecondaryColour": value['preferences']['Colours']['SecondaryColour'],
@@ -52,44 +56,9 @@ class _AuthGateState extends State<AuthGate> {
         "CardColour": value['preferences']['Colours']['CardColour'],
         "NavbarTextColour": value['preferences']['Colours']['NavbarTextColour'],
       });
-      themeSettings.toggleTheme(value['preferences']['themeMode']);
     });
 
-    // Future<List<DocumentReference>> myPosts = ProfileService().getUserPosts(FirebaseAuth.instance.currentUser!.uid);
-    // myPosts.then((value) {
-    //   print(value);
-    // });
-  }
-
-  String getMonthAbbreviation(int month) {
-    switch (month) {
-      case 1:
-        return 'Jan';
-      case 2:
-        return 'Feb';
-      case 3:
-        return 'Mar';
-      case 4:
-        return 'Apr';
-      case 5:
-        return 'May';
-      case 6:
-        return 'Jun';
-      case 7:
-        return 'Jul';
-      case 8:
-        return 'Aug';
-      case 9:
-        return 'Sep';
-      case 10:
-        return 'Oct';
-      case 11:
-        return 'Nov';
-      case 12:
-        return 'Dec';
-      default:
-        return '';
-    }
+    await LocationVAF.initializeLocation();
   }
 
   String formatDate(DateTime date) {

@@ -26,19 +26,17 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
   void initState() {
     super.initState();
 
-    populateData() async {
-      await LocationVAF.initializeLocation();
-      await LocationVAF.getVets(LocationVAF.myLocation.target, 100);
-      await LocationVAF.getPetSitters(LocationVAF.myLocation.target, 100);
-      setState(() {});
+    try {
+      populateData() async {
+        await LocationVAF.getVets(LocationVAF.myLocation.target, 100);
+        await LocationVAF.getPetSitters(LocationVAF.myLocation.target, 100);
+        setState(() {});
+      }
+
+      populateData();
+    } catch (e) {
+      print("Error initializing location: $e");
     }
-
-    populateData();
-
-    _animationController = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 300),
-    );
   }
 
   @override
@@ -52,8 +50,23 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
       print("Error disposing Google Map Controller: $e");
     } finally {
       _scrollController.dispose();
-      _animationController.dispose();
       super.dispose();
+    }
+  }
+  Future<void> panCameraToLocation(double lat, double long) async {
+    print("Panning camera to location: $lat, $long");
+    print("Google Map Controller: $_googleMapController");
+    try {
+      await _googleMapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(lat, long),
+            zoom: 15.0,
+          ),
+        ),
+      );
+    } catch (e) {
+      print("Error panning camera: $e");
     }
   }
 
@@ -103,6 +116,7 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
                     ),
                   ),
                 ),
+                style: TextStyle(color: themeSettings.textColor),
               ),
             ),
             SizedBox(height: 10.0),
@@ -133,6 +147,7 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
                     ),
                   ),
                 ),
+                style: TextStyle(color: themeSettings.textColor),
               ),
             ),
             SizedBox(height: 10.0),
@@ -161,7 +176,7 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
                 ),
               ),
             ),
-            for (User vet in LocationVAF.vetList) ...[
+            for (Vet vet in LocationVAF.vetList) ...[
               Container(
                 margin: EdgeInsets.only(right: 50, bottom: 20),
                 decoration: BoxDecoration(
@@ -172,7 +187,7 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
                   child: GestureDetector(
                     onTap: () async {
                       try {
-                        await LocationVAF.panCameraToLocation(vet.location.latitude, vet.location.longitude, _googleMapController);
+                        await panCameraToLocation(vet.location.latitude, vet.location.longitude);
                         
                         // setState(() {
                           // toggleCardExpansion();
@@ -189,11 +204,7 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
                           style: TextStyle(color: themeSettings.textColor),
                         ),
                         Text(
-                          "Email: ${vet.email == '' ? 'No email provided' : vet.email}",
-                          style: TextStyle(color: themeSettings.textColor),
-                        ),
-                        Text(
-                          "Phone number: ${vet.phone == '' ? 'No phone number provided' : vet.phone}",
+                          "Address: ${vet.address == '' ? 'No Address provided' : vet.address}",
                           style: TextStyle(color: themeSettings.textColor),
                         ),
                         Text(
@@ -252,6 +263,7 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
                     ),
                   ),
                 ),
+                style: TextStyle(color: themeSettings.textColor),
               ),
             ),
             SizedBox(height: 10.0),
@@ -282,6 +294,7 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
                     ),
                   ),
                 ),
+                style: TextStyle(color: themeSettings.textColor),
               ),
             ),
             SizedBox(height: 10.0),
@@ -320,7 +333,7 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
                   child: GestureDetector(
                     onTap: () async {
                       try {
-                        LocationVAF.panCameraToLocation(petSitter.location.latitude, petSitter.location.longitude, _googleMapController);
+                        panCameraToLocation(petSitter.location.latitude, petSitter.location.longitude);
                       } catch (e) {
                         print("Error getting directions: $e");
                       }
