@@ -226,44 +226,94 @@ class _DesktopForumsState extends State<DesktopForums> {
   }
 
   void _createForum() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10), // Optional: to round the corners
+        ),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.4,  // Set width to 40% of the screen width
+          height: MediaQuery.of(context).size.height * 0.4, // Set height to 40% of the screen height
+          child: Padding(
+            padding: const EdgeInsets.all(20), // Add padding inside the dialog
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Create a Forum',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 20),
+                TextField(
+                  controller: forumNameController,
+                  decoration: InputDecoration(labelText: 'Forum Name'),
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  controller: forumDescriptionController,
+                  decoration: InputDecoration(labelText: 'Description'),
+                  maxLines: 2,
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Cancel'),
+                    ),
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () async {
+                        String name = forumNameController.text;
+                        String? userId = await _authService.getCurrentUserId();
+                        String description = forumDescriptionController.text;
+
+                        if (name.isNotEmpty && description.isNotEmpty) {
+                          await _forumServices.createForum(name, userId!, description);
+                          _fetchForums();
+                          forumDescriptionController.clear();
+                          forumNameController.clear();
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      child: Text('Create'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+  void _deleteForum(String forumId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Create a Forum'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: forumNameController,
-                decoration: InputDecoration(labelText: 'Forum Name'),
-              ),
-              SizedBox(height: 10),
-              TextField(
-                controller: forumDescriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
-              ),
-            ],
-          ),
+          title: Text('Delete Forum'),
+          content: Text('Are you sure you want to delete this forum?'),
           actions: [
-            TextButton(
-              onPressed: () async {
-                String name = forumNameController.text;
-                String? userId = await _authService.getCurrentUserId();
-                String description = forumDescriptionController.text;
-
-                if (name.isNotEmpty && description.isNotEmpty) {
-                  await _forumServices.createForum(name,userId!,description);
-                  Navigator.of(context).pop();
-                }
-              },
-              child: Text('Create'),
-            ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
               child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await _forumServices.deleteForum(forumId);
+                _fetchForums();
+                Navigator.of(context).pop();
+              },
+              child: Text('Delete'),
             ),
           ],
         );
@@ -315,60 +365,118 @@ class _DesktopForumsState extends State<DesktopForums> {
                     style: TextStyle(color: themeSettings.textColor),
                   ),
                 ),
-                //create sized box to create a forum
-                SizedBox(
-                  height: 40,
-                  child: ElevatedButton(
-                     onPressed: _createForum,
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all<Color>(
-                          themeSettings.primaryColor),
-                    ),
-                    child: Text(
-                      "Create a forum",
+               Expanded(
+  child: ListView.builder(
+    itemCount: searchTerm.isNotEmpty
+        ? searchedForums!.length
+        : forums!.length,
+    itemBuilder: (context, index) {
+      final forum = searchTerm.isNotEmpty
+          ? searchedForums![index]
+          : forums![index];
+      final userId = forum['UserId'] as String;
+      final userProf = userProfiles[userId];
+      final creatorUsername = userProf?['name'] ?? 'Unknown';
+      final numberOfMessages = forum['messagesCount'] ?? 0;
+
+      return GestureDetector(
+        onTap: () {
+          _selectForum(forum['forumId']);
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 10),
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: themeSettings.cardColor,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: themeSettings.primaryColor,
+              width: 2.0,
+            ),
+          ),
+          child: Row(
+            children: [
+              // Forum Icon or Placeholder
+              Icon(
+                Icons.forum, // You can customize this to be any icon you want
+                size: 40,
+                color: themeSettings.primaryColor,
+              ),
+              SizedBox(width: 15),
+              // Forum Name and Details
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      forum['Name'],
                       style: TextStyle(
+                        fontSize: bodyTextSize,
+                        fontWeight: FontWeight.bold,
                         color: themeSettings.textColor,
                       ),
                     ),
+                    SizedBox(height: 5),
+                    Text(
+                      'Messages: $numberOfMessages',
+                      style: TextStyle(
+                        fontSize: bodyTextSize - 2,
+                        color: themeSettings.textColor.withOpacity(0.7),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      'Creator: $creatorUsername',
+                      style: TextStyle(
+                        fontSize: bodyTextSize - 2,
+                        color: themeSettings.textColor.withOpacity(0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              if (userId == profileDetails.userID)
+              PopupMenuButton(
+                icon: Icon(Icons.more_vert),
+                onSelected: (value) {
+                  if (value == 'delete') {
+                    _deleteForum(forum['forumId']);
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Text('Delete Forum'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  ),
+),
+
+              SizedBox(height: 20), // Space between list and button
+              Align(
+                alignment: Alignment.center,
+                child: ElevatedButton.icon(
+                  onPressed: _createForum,
+                  icon: Icon(Icons.add, size: 28),  // Add + icon
+                  label: Text(
+                    "Create Forum",
+                    style: TextStyle(fontSize: 18,color: Colors.white), // Increase text size
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(200, 50), backgroundColor: themeSettings.primaryColor, // Button color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8), // Rounded corners
+                    ),
                   ),
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: searchTerm.isNotEmpty
-                        ? searchedForums!.length
-                        : forums!.length,
-                    itemBuilder: (context, index) {
-                      final forum = searchTerm.isNotEmpty
-                          ? searchedForums![index]
-                          : forums![index];
-                      return GestureDetector(
-                        onTap: () {
-                          _selectForum(forum['forumId']);
-                        },
-                        child: Container(
-                          height: 100,
-                          margin: EdgeInsets.symmetric(vertical: 10),
-                          padding: EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: themeSettings.cardColor,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: themeSettings.primaryColor,
-                              width: 2.0,
-                            ),
-                          ),
-                          child: Text(
-                            forum['Name'],
-                            style: TextStyle(
-                              fontSize: bodyTextSize,
-                              color: themeSettings.textColor,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+              ),
               ],
             ),
           ),
@@ -437,7 +545,7 @@ class _DesktopForumsState extends State<DesktopForums> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              userProfile?['userName'] ??
+                                              userProfile?['name'] ??
                                                   'Unknown User',
                                               style: TextStyle(
                                                   fontSize: bodyTextSize,

@@ -16,8 +16,8 @@ class ForumServices {
   ) async {
     try {
       // Get imgUrl
-      DocumentSnapshot postDoc = await _db.collection('profile').doc(userId).get();
-      if (!postDoc.exists) throw Exception("Post not found");
+      DocumentSnapshot postDoc = await _db.collection('users').doc(userId).get();
+      if (!postDoc.exists) throw Exception("user not found");
       Map<String, dynamic> postData = postDoc.data() as Map<String, dynamic>;
       String imgUrl = postData['ImgUrl'] ?? '';
 
@@ -38,6 +38,15 @@ class ForumServices {
     }
   }
 
+  /// Deletes a forum from the database.
+  Future<void> deleteForum(String forumId) async {
+    try {
+      await _db.collection('forum').doc(forumId).delete();
+    } catch (e) {
+      print('Error deleting forum: $e');
+      throw Exception('Failed to delete forum.');
+    }
+  }
   /// Retrieves all forums from the database.
   Future<List<Map<String, dynamic>>?> getForums() async {
     try {
@@ -47,9 +56,15 @@ class ForumServices {
       for (DocumentSnapshot doc in forumsSnapshot.docs) {
         Map<String, dynamic>? forumData = doc.data() as Map<String, dynamic>?;
         if (forumData != null) {
+          QuerySnapshot messagesSnapshot = await _db
+          .collection('forum')
+          .doc(doc.id)
+          .collection('messages')
+          .get();
           forums.add({
             'forumId': doc.id,
             ...forumData,
+            'messagesCount': messagesSnapshot.docs.length,
           });
         }
       }
