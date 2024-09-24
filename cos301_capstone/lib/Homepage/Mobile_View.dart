@@ -532,6 +532,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextField(
+            key: Key('post-text-key'),
             controller: postController,
             decoration: InputDecoration(
               labelText: "What's on your mind",
@@ -566,6 +567,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
             ),
           ] else ...[
             Container(
+              key: Key('add-photo-button'),
               decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
               child: GestureDetector(
                 onTap: () => imagePicker.pickFiles(),

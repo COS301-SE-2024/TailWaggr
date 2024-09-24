@@ -151,7 +151,7 @@ ThemeSettingsObserver themeSettings = ThemeSettingsObserver();
 class ProfileDetails {
   String name = "";
   String surname = "";
-  String userID = FirebaseAuth.instance.currentUser!.uid;
+  String userID = FirebaseAuth.instance.currentUser != null ? FirebaseAuth.instance.currentUser!.uid : "";  
   String bio = "";
   String email = "";
   String phone = "";
@@ -201,6 +201,11 @@ class ProfileDetails {
     ThemeSettings.setTextColor(Color(colours['TextColour']));
     ThemeSettings.setCardColor(Color(colours['CardColour']));
     ThemeSettings.setNavbarTextColour(Color(colours['NavbarTextColour']));
+  }
+
+  @override
+  String toString() {
+    return 'Name: $name, Surname: $surname, UserID: $userID';
   }
 }
 

@@ -9,19 +9,6 @@ SignupVariables signupVariables = SignupVariables();
 SignupMethods signupMethods = SignupMethods();
 
 class SignupVariables {
-  // Login details
-  late TextEditingController signUpEmailController;
-  late TextEditingController signUpPasswordController;
-  late TextEditingController signUpConfirmPasswordController;
-
-  // Personal details
-  late TextEditingController signUpFirstNameController;
-  late TextEditingController signUpLastNameController;
-  late TextEditingController signUpBioController;
-
-  // Additional info
-  late TextEditingController signUpPhoneNumberController;
-  late TextEditingController signUpAddressController;
 
   static int _StateIndex = 0;
   static int get StateIndex => _StateIndex;
@@ -45,16 +32,16 @@ class SignupMethods {
     return password == confirmPassword;
   }
 
-  static bool checkPersonalDetails() {
-    if (signupVariables.signUpFirstNameController.text.isEmpty) {
-      return false;
-    } else if (signupVariables.signUpLastNameController.text.isEmpty) {
-      return false;
-    } else if (signupVariables.signUpBioController.text.isEmpty) {
-      return false;
-    }
-    return true;
-  }
+  // static bool checkPersonalDetails() {
+  //   if (signUpFirstNameController.text.isEmpty) {
+  //     return false;
+  //   } else if (signUpLastNameController.text.isEmpty) {
+  //     return false;
+  //   } else if (signUpBioController.text.isEmpty) {
+  //     return false;
+  //   }
+  //   return true;
+  // }
 }
 
 class SignupObserver with ChangeNotifier {
@@ -73,25 +60,6 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  
-  @override
-  void initState() {
-    // Login details
-    signupVariables.signUpEmailController = TextEditingController();
-    signupVariables.signUpPasswordController = TextEditingController();
-    signupVariables.signUpConfirmPasswordController = TextEditingController();
-
-    // Personal details
-    signupVariables.signUpFirstNameController = TextEditingController();
-    signupVariables.signUpLastNameController = TextEditingController();
-    signupVariables.signUpBioController = TextEditingController();
-
-    // Additional info
-    signupVariables.signUpPhoneNumberController = TextEditingController();
-    signupVariables.signUpAddressController = TextEditingController();
-
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {

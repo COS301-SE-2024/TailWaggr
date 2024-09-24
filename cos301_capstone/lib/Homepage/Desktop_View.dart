@@ -75,7 +75,7 @@ class _PostContainerState extends State<PostContainer> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-              for (int i = 0; i < profileDetails.posts.length; i++) ...{
+            for (int i = 0; i < profileDetails.posts.length; i++) ...{
               Post(postDetails: profileDetails.posts[i]),
               Divider(),
             },
@@ -117,7 +117,7 @@ class _PostState extends State<Post> {
     getViews();
     getComments();
   }
-  
+
   void getLikes() async {
     Future<int> likes = HomePageService().getLikesCount(widget.postDetails['PostId']);
     likes.then((value) {
@@ -136,6 +136,7 @@ class _PostState extends State<Post> {
       });
     });
   }
+
   void getComments() async {
     Future<int> comments = HomePageService().getCommentsCount(widget.postDetails['PostId']);
     comments.then((value) {
@@ -144,6 +145,7 @@ class _PostState extends State<Post> {
       });
     });
   }
+
   String getMonthAbbreviation(int month) {
     switch (month) {
       case 1:
@@ -180,12 +182,13 @@ class _PostState extends State<Post> {
     String month = getMonthAbbreviation(date.month);
     return "${date.day} $month ${date.year}";
   }
-    Future<void> _replyToMessage(String postId) async {
-    if ( newReplyContent.isNotEmpty) {
+
+  Future<void> _replyToMessage(String postId) async {
+    if (newReplyContent.isNotEmpty) {
       try {
-        _homePageService.addCommentToPost( postId, profileDetails.userID, newReplyContent);
+        _homePageService.addCommentToPost(postId, profileDetails.userID, newReplyContent);
         //_PostContainerState()._fetchPosts();//refresh the posts
-        setState(() { 
+        setState(() {
           newReplyContent = '';
         });
       } catch (e) {
@@ -193,153 +196,153 @@ class _PostState extends State<Post> {
       }
     }
   }
+
   Future<void> showDialogBox(BuildContext context) async {
-  try {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Container(
-            width: MediaQuery.of(context).size.width * 0.5,
-            height: MediaQuery.of(context).size.height * 0.6,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Spacer(flex: 1),
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundImage: NetworkImage( widget.postDetails['pictureUrl'] ?? profileDetails.profilePicture),
-                      ),
-                      SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.postDetails['name'] ?? 'Unknown',
-                            style: TextStyle(
-                              color: themeSettings.textColor,
-                              fontWeight: FontWeight.bold,
+    try {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Spacer(flex: 1),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage: NetworkImage(widget.postDetails['pictureUrl'] ?? profileDetails.profilePicture),
+                        ),
+                        SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.postDetails['name'] ?? 'Unknown',
+                              style: TextStyle(
+                                color: themeSettings.textColor,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          Text(
-                            "Posted on ${formatDate()}",
-                            style: TextStyle(
-                              color: themeSettings.textColor.withOpacity(0.7),
+                            Text(
+                              "Posted on ${formatDate()}",
+                              style: TextStyle(
+                                color: themeSettings.textColor.withOpacity(0.7),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Spacer(flex: 2),
-                  Text(
-                    widget.postDetails['Content'] ?? 'No content',
-                    style: TextStyle(
-                      color: themeSettings.textColor,
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                  Spacer(flex: 2),
-                  SizedBox(height: 20),
-                  if (widget.postDetails['ImgUrl'] != null)
-                    Image.network(
-                      widget.postDetails['ImgUrl'],
-                      height: 95,
-                      width: double.infinity,
-                      fit: BoxFit.fitHeight,
-                    ),
-                  Divider(),
-                  SizedBox(height: 10), // Reduced space
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundImage: NetworkImage(profileDetails.profilePicture),
+                    Spacer(flex: 2),
+                    Text(
+                      widget.postDetails['Content'] ?? 'No content',
+                      style: TextStyle(
+                        color: themeSettings.textColor,
                       ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: TextField(
-                          onChanged: (value) {
-                            if (!mounted) return;
-                            setState(() {
-                              newReplyContent = value;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            hintText: "Post your reply",
-                            hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
+                    ),
+                    Spacer(flex: 2),
+                    SizedBox(height: 20),
+                    if (widget.postDetails['ImgUrl'] != null)
+                      Image.network(
+                        widget.postDetails['ImgUrl'],
+                        height: 95,
+                        width: double.infinity,
+                        fit: BoxFit.fitHeight,
+                      ),
+                    Divider(),
+                    SizedBox(height: 10), // Reduced space
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage: NetworkImage(profileDetails.profilePicture),
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            onChanged: (value) {
+                              if (!mounted) return;
+                              setState(() {
+                                newReplyContent = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Post your reply",
+                              hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Spacer(flex: 1),
-                ],
-              ),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                "Cancel",
-                style: TextStyle(color: themeSettings.primaryColor),
-              ),
-            ),
-            TextButton(
-              onPressed: () async {
-                await _replyToMessage(widget.postDetails['PostId']);
-                Navigator.of(context).pop();
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: themeSettings.primaryColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
+                      ],
+                    ),
+                    Spacer(flex: 1),
+                  ],
                 ),
               ),
-              child: Text(
-                "Reply",
-                style: TextStyle(color: Colors.white),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: themeSettings.primaryColor),
+                ),
               ),
-            ),
-          ],
-        );
-      },
-    );
-  } catch (e) {
-    print("Error fetching post details: $e");
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: Text('An error occurred while fetching post details.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
+              TextButton(
+                onPressed: () async {
+                  await _replyToMessage(widget.postDetails['PostId']);
+                  Navigator.of(context).pop();
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: themeSettings.primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                ),
+                child: Text(
+                  "Reply",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print("Error fetching post details: $e");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('An error occurred while fetching post details.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -430,7 +433,7 @@ class _PostState extends State<Post> {
                     message: "Like",
                     child: IconButton(
                       onPressed: () {
-                        HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID); 
+                        HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
                         HomePageService().getLikesCount(widget.postDetails['PostId']).then((value) {
                           setState(() {
                             numLikes = value.toString();
@@ -552,6 +555,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
+              key: Key('post-text-key'),
               controller: postController,
               decoration: InputDecoration(
                 labelText: "What's on your mind",
@@ -586,6 +590,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
               ),
             ] else ...[
               Container(
+                key: Key('add-photo-button'),
                 decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
                 child: GestureDetector(
                   onTap: () => imagePicker.pickFiles(),
