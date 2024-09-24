@@ -176,7 +176,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
                 ),
               ),
             ),
-            for (User vet in LocationVAF.vetList) ...[
+            for (Vet vet in LocationVAF.vetList) ...[
               Container(
                 margin: EdgeInsets.only(right: 50, bottom: 20),
                 decoration: BoxDecoration(
@@ -204,11 +204,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
                           style: TextStyle(color: themeSettings.textColor),
                         ),
                         Text(
-                          "Email: ${vet.email == '' ? 'No email provided' : vet.email}",
-                          style: TextStyle(color: themeSettings.textColor),
-                        ),
-                        Text(
-                          "Phone number: ${vet.phone == '' ? 'No phone number provided' : vet.phone}",
+                          "Address: ${vet.address == '' ? 'No Address provided' : vet.address}",
                           style: TextStyle(color: themeSettings.textColor),
                         ),
                         Text(
