@@ -45,7 +45,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
       }
       super.dispose();
     } catch (e) {
-      print("Error disposing Google Map Controller: $e");
+      // print("Error disposing Google Map Controller: $e");
     } finally {
       _scrollController.dispose();
       super.dispose();
@@ -81,6 +81,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                 width: 400,
                 margin: EdgeInsets.only(bottom: 10.0),
                 child: TextField(
+                  key: Key("search-vets-input"),
                   controller: LocationVAF.searchVetsController,
                   decoration: InputDecoration(
                     labelText: "Search Veterinary Clinics",
@@ -112,6 +113,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                 width: 200,
                 padding: EdgeInsets.only(bottom: 10.0),
                 child: TextField(
+                  key: Key("search-vets-distance-input"),
                   controller: LocationVAF.searchDistanceController,
                   decoration: InputDecoration(
                     labelText: "Distance (km)",
@@ -139,6 +141,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                 ),
               ),
               MouseRegion(
+                key: Key("apply-filters-button"),
                 cursor: SystemMouseCursors.click,
                 child: GestureDetector(
                   onTap: () async {
@@ -235,6 +238,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                 width: 400,
                 margin: EdgeInsets.only(bottom: 10.0),
                 child: TextField(
+                  key: Key("search-pet-sitters-input"),
                   controller: LocationVAF.searchPetSittersController,
                   decoration: InputDecoration(
                     labelText: "Search Pet Sitters",
@@ -266,6 +270,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                 width: 200,
                 padding: EdgeInsets.only(bottom: 10.0),
                 child: TextField(
+                  key: Key("search-pet-sitters-distance-input"),
                   controller: LocationVAF.searchPetSittersDistanceController,
                   decoration: InputDecoration(
                     labelText: "Distance (km)",
@@ -400,6 +405,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     child: DefaultTabController(
+                      key: Key('tabController'),
                       length: 2,
                       child: Column(
                         children: [
@@ -407,13 +413,20 @@ class _LocationDesktopState extends State<LocationDesktop> {
                             labelColor: themeSettings.primaryColor,
                             indicatorColor: themeSettings.secondaryColor,
                             tabs: [
-                              Tab(text: 'Veterinary Clinics'),
-                              Tab(text: 'Pet Sitters'),
+                              Tab(
+                                key: Key('vetsTab'),
+                                text: 'Veterinary Clinics',
+                              ),
+                              Tab(
+                                key: Key('petSittersTab'),
+                                text: 'Pet Sitters',
+                              ),
                             ],
                           ),
                           SizedBox(
                             height: 200.0,
                             child: TabBarView(
+                              key: Key('tabBarView'),
                               physics: NeverScrollableScrollPhysics(),
                               children: [
                                 searchVets(),
@@ -445,6 +458,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                         return ClipRRect(
                           borderRadius: BorderRadius.circular(20.0),
                           child: GoogleMap(
+                            key: Key('googleMap'),
                             style: mapStyle,
                             initialCameraPosition: LocationVAF.myLocation,
                             markers: LocationVAF.markers,

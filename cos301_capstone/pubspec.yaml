@@ -59,6 +59,7 @@ dependencies:
   firebase_messaging: ^14.9.4
   syncfusion_flutter_datepicker: ^26.2.7
   syncfusion_flutter_core: ^26.2.7
+  dropdown_button2: ^2.3.9
 
 dev_dependencies:
   flutter_test:

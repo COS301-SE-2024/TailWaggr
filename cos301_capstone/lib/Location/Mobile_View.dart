@@ -47,7 +47,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
       }
       super.dispose();
     } catch (e) {
-      print("Error disposing Google Map Controller: $e");
+      // print("Error disposing Google Map Controller: $e");
     } finally {
       _scrollController.dispose();
       super.dispose();
@@ -93,6 +93,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
               width: double.infinity,
               margin: EdgeInsets.only(bottom: 10.0),
               child: TextField(
+                key: Key("search-vets-input"),
                 controller: LocationVAF.searchVetsController,
                 decoration: InputDecoration(
                   labelText: "Search Veterinary Clinics",
@@ -124,6 +125,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
               width: double.infinity,
               padding: EdgeInsets.only(bottom: 10.0),
               child: TextField(
+                key: Key("search-vets-distance-input"),
                 controller: LocationVAF.searchDistanceController,
                 decoration: InputDecoration(
                   labelText: "Distance (km)",
@@ -152,6 +154,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
             ),
             SizedBox(height: 10.0),
             MouseRegion(
+              key: Key("apply-filters-button"),
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: () async {
@@ -240,6 +243,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
               width: double.infinity,
               margin: EdgeInsets.only(bottom: 10.0),
               child: TextField(
+                key: Key("search-pet-sitters-input"),
                 controller: LocationVAF.searchPetSittersController,
                 decoration: InputDecoration(
                   labelText: "Search Pet Sitters",
@@ -271,6 +275,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
               width: double.infinity,
               padding: EdgeInsets.only(bottom: 10.0),
               child: TextField(
+                key: Key("search-pet-sitters-distance-input"),
                 controller: LocationVAF.searchPetSittersDistanceController,
                 decoration: InputDecoration(
                   labelText: "Distance (km)",
@@ -411,6 +416,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
                       Visibility(
                         visible: !cardExpanded,
                         child: DefaultTabController(
+                           key: Key('tabController'),
                           length: 2,
                           child: Column(
                             children: [
@@ -418,13 +424,20 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
                                 labelColor: themeSettings.primaryColor,
                                 indicatorColor: themeSettings.secondaryColor,
                                 tabs: [
-                                  Tab(text: 'Veterinary Clinics'),
-                                  Tab(text: 'Pet Sitters'),
+                                 Tab(
+                                    key: Key('vetsTab'),
+                                    text: 'Veterinary Clinics',
+                                  ),
+                                  Tab(
+                                    key: Key('petSittersTab'),
+                                    text: 'Pet Sitters',
+                                  ),
                                 ],
                               ),
                               SizedBox(
                                 height: MediaQuery.of(context).size.height / 2 - 110,
                                 child: TabBarView(
+                                  key: Key('tabBarView'),
                                   physics: NeverScrollableScrollPhysics(),
                                   children: [
                                     searchVets(),
