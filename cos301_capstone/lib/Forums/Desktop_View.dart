@@ -317,166 +317,176 @@ void _selectForum(String forumId) {
       },
     );
   }
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: themeSettings.backgroundColor,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DesktopNavbar(),
-          Container(
-            padding: EdgeInsets.all(20),
-            width: MediaQuery.of(context).size.width * 0.38,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Forums",
-                  style: TextStyle(
-                      fontSize: subtitleTextSize,
-                      color: themeSettings.primaryColor),
-                ),
-                SizedBox(
-                  height: 35,
-                  child: TextField(
-                    controller: forumSearchController,
-                    onChanged: (value) {
-                      if (!mounted) return;
-                      setState(() {
-                        searchTerm = value;
-                        searchedForums = forums!
-                            .where((forum) => forum['Name']
-                                .toString()
-                                .toLowerCase()
-                                .contains(searchTerm.toLowerCase()))
-                            .toList();
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: "Search for a forum",
-                      hintStyle: TextStyle(
-                          color: themeSettings.textColor.withOpacity(0.5)),
-                      prefixIcon: Icon(Icons.search),
-                    ),
-                    style: TextStyle(color: themeSettings.textColor),
-                  ),
-                ),
-               Expanded(
-  child: ListView.builder(
-    itemCount: searchTerm.isNotEmpty
-        ? searchedForums!.length
-        : forums!.length,
-    itemBuilder: (context, index) {
-      final forum = searchTerm.isNotEmpty
-          ? searchedForums![index]
-          : forums![index];
-      final userId = forum['UserId'] as String;
-      final userProf = userProfiles[userId];
-      final creatorUsername = userProf?['name'] ?? 'Unknown';
-      final numberOfMessages = forum['messagesCount'] ?? 0;
-
-      return GestureDetector(
-        onTap: () {
-          _selectForum(forum['forumId']);
-        },
-        child: Container(
-          margin: EdgeInsets.symmetric(vertical: 10),
+ @override
+Widget build(BuildContext context) {
+  return Container(
+    color: themeSettings.backgroundColor,
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DesktopNavbar(),
+        Container(
           padding: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: themeSettings.cardColor,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: themeSettings.primaryColor,
-              width: 2.0,
-            ),
-          ),
-          child: Row(
+          width: MediaQuery.of(context).size.width * 0.38,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Forum Icon or Placeholder
-              Icon(
-                Icons.forum, // You can customize this to be any icon you want
-                size: 40,
-                color: themeSettings.primaryColor,
-              ),
-              SizedBox(width: 15),
-              // Forum Name and Details
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      forum['Name'],
+              // Row containing the "Forums" title and the button
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Forums",
+                    style: TextStyle(
+                      fontSize: subtitleTextSize,
+                      color: themeSettings.primaryColor,
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: _createForum,
+                    icon: Icon(Icons.add, size: 28), // Add icon
+                    label: Text(
+                      "Create Forum",
                       style: TextStyle(
-                        fontSize: bodyTextSize,
-                        fontWeight: FontWeight.bold,
-                        color: themeSettings.textColor,
+                        fontSize: 16, // Slightly reduce font size
+                        color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 5),
-                    Text(
-                      'Messages: $numberOfMessages',
-                      style: TextStyle(
-                        fontSize: bodyTextSize - 2,
-                        color: themeSettings.textColor.withOpacity(0.7),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(180, 50), // Adjust button size
+                      backgroundColor: themeSettings.primaryColor, // Button color
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8), // Rounded corners
                       ),
                     ),
-                    SizedBox(height: 5),
-                    Text(
-                      'Creator: $creatorUsername',
-                      style: TextStyle(
-                        fontSize: bodyTextSize - 2,
-                        color: themeSettings.textColor.withOpacity(0.7),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              if (userId == profileDetails.userID)
-              PopupMenuButton(
-                icon: Icon(Icons.more_vert),
-                onSelected: (value) {
-                  if (value == 'delete') {
-                    _deleteForum(forum['forumId']);
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Text('Delete Forum'),
                   ),
                 ],
+              ),
+              SizedBox(height: 15), // Space between the row and the search box
+              
+              // Search box
+              SizedBox(
+                height: 35,
+                child: TextField(
+                  controller: forumSearchController,
+                  onChanged: (value) {
+                    if (!mounted) return;
+                    setState(() {
+                      searchTerm = value;
+                      searchedForums = forums!
+                          .where((forum) => forum['Name']
+                              .toString()
+                              .toLowerCase()
+                              .contains(searchTerm.toLowerCase()))
+                          .toList();
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Search for a forum",
+                    hintStyle: TextStyle(
+                        color: themeSettings.textColor.withOpacity(0.5)),
+                    prefixIcon: Icon(Icons.search),
+                  ),
+                  style: TextStyle(color: themeSettings.textColor),
+                ),
+              ),
+              
+              // Forum list
+              Expanded(
+                child: ListView.builder(
+                  itemCount: searchTerm.isNotEmpty
+                      ? searchedForums!.length
+                      : forums!.length,
+                  itemBuilder: (context, index) {
+                    final forum = searchTerm.isNotEmpty
+                        ? searchedForums![index]
+                        : forums![index];
+                    final userId = forum['UserId'] as String;
+                    final userProf = userProfiles[userId];
+                    final creatorUsername = userProf?['name'] ?? 'Unknown';
+                    final numberOfMessages = forum['messagesCount'] ?? 0;
+
+                    return GestureDetector(
+                      onTap: () {
+                        _selectForum(forum['forumId']);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(vertical: 10),
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: themeSettings.cardColor,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: themeSettings.primaryColor,
+                            width: 2.0,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.forum, // Forum icon
+                              size: 40,
+                              color: themeSettings.primaryColor,
+                            ),
+                            SizedBox(width: 15),
+                            // Forum details
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    forum['Name'],
+                                    style: TextStyle(
+                                      fontSize: bodyTextSize,
+                                      fontWeight: FontWeight.bold,
+                                      color: themeSettings.textColor,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    'Messages: $numberOfMessages',
+                                    style: TextStyle(
+                                      fontSize: bodyTextSize - 2,
+                                      color: themeSettings.textColor.withOpacity(0.7),
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    'Creator: $creatorUsername',
+                                    style: TextStyle(
+                                      fontSize: bodyTextSize - 2,
+                                      color: themeSettings.textColor.withOpacity(0.7),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Delete button for the creator
+                            if (userId == profileDetails.userID)
+                              PopupMenuButton(
+                                icon: Icon(Icons.more_vert),
+                                onSelected: (value) {
+                                  if (value == 'delete') {
+                                    _deleteForum(forum['forumId']);
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                    value: 'delete',
+                                    child: Text('Delete Forum'),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),
         ),
-      );
-    },
-  ),
-),
-
-              SizedBox(height: 20), // Space between list and button
-              Align(
-                alignment: Alignment.center,
-                child: ElevatedButton.icon(
-                  onPressed: _createForum,
-                  icon: Icon(Icons.add, size: 28),  // Add + icon
-                  label: Text(
-                    "Create Forum",
-                    style: TextStyle(fontSize: 18,color: Colors.white), // Increase text size
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(200, 50), backgroundColor: themeSettings.primaryColor, // Button color
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8), // Rounded corners
-                    ),
-                  ),
-                ),
-              ),
-              ],
-            ),
-          ),
           Container(
             width: MediaQuery.of(context).size.width * 0.0015,
             padding: EdgeInsets.all(20),
