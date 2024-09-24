@@ -49,38 +49,35 @@ class _DesktopForumsState extends State<DesktopForums> {
   }
 
   Future<void> _fetchForums() async {
-    try {
-      List<Map<String, dynamic>>? fetchedForums =
-          await _forumServices.getForums();
-      if (!mounted) return;
-      setState(() {
-        forums = fetchedForums;
-        searchedForums = forums;
-        if (forums != null && forums!.isNotEmpty) {
-          selectedForumId = forums!.first['forumId'];
-          forumName = forums!.first['Name'];
-          forumDescription = forums!.first['Description'];
-          _fetchPosts(selectedForumId!);
-        }
-      });
-    } catch (e) {
-      print('Error fetching forums: $e');
-    }
-  }
-
-  void _selectForum(String forumId) {
+  try {
+    List<Map<String, dynamic>>? fetchedForums = await _forumServices.getForums();
+    if (!mounted) return;
     setState(() {
-      selectedForumId = forumId;
-      posts = null;
-      forumName =
-          forums!.firstWhere((forum) => forum['forumId'] == forumId)['Name'];
-      //uncomment after adding descriptions for each post:
-      //forumDescription =
-        //  forums!.firstWhere((forum) => forum['forumId'] == forumId)['Description'];          
-      isLoadingPosts = true;
+      forums = fetchedForums ?? [];
+      searchedForums = forums;
+      if (forums!.isNotEmpty) {
+        selectedForumId = forums?.first['forumId'] ?? '';
+        forumName = forums?.first['Name'] ?? 'Unknown';
+        forumDescription = forums?.first['Description'] ?? 'No description available';
+        _fetchPosts(selectedForumId!);
+      }
     });
-    _fetchPosts(forumId);
+  } catch (e) {
+    print('Error fetching forums: $e');
   }
+}
+
+void _selectForum(String forumId) {
+  setState(() {
+    selectedForumId = forumId;
+    posts = null;
+    var selectedForum = forums?.firstWhere((forum) => forum['forumId'] == forumId, orElse: () => {});
+    forumName = selectedForum?['Name'] ?? 'Unknown';
+    forumDescription = selectedForum?['Description'] ?? 'No description available';
+    isLoadingPosts = true;
+  });
+  _fetchPosts(forumId);
+}
 
   Future<void> _fetchPosts(String forumId) async {
     try {
