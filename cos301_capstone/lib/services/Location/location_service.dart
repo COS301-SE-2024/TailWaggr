@@ -19,6 +19,15 @@ class LocationService {
 
       print("Vets fetched successfully.");
       List<Vet> vetList = vets.map((vetData) => Vet.fromFirestore(vetData)).toList();
+      for (Vet vet in vetList) {
+        double distance = Geolocator.distanceBetween(
+          geoPoint.latitude,
+          geoPoint.longitude,
+          vet.location.latitude,
+          vet.location.longitude,
+        );
+        vet.addDistance(distance / 1000);
+      }
       return vetList; // Return the list of pets
     } catch (e) {
       print("Error fetching vets: $e");
@@ -104,7 +113,6 @@ class User {
       name: firestoreDoc['name'],
       userType: firestoreDoc['userType'],
       location: firestoreDoc['location'],
-      distance: firestoreDoc['distance'],
     );
   }
   void addDistance(double indistance) {
@@ -123,6 +131,7 @@ class Vet{
   final String name;
   final GeoPoint location;
   final String placeId;
+  double distance = 0.0;
 
   Vet({required this.name, required this.location, required this.placeId});
 
@@ -132,5 +141,8 @@ class Vet{
       location: firestoreDoc['location'],
       placeId: firestoreDoc['place_id'],
     );
+  }
+  void addDistance(double indistance) {
+    distance = indistance;
   }
 }
