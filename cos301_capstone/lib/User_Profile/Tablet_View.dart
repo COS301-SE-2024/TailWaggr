@@ -413,7 +413,7 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
   @override
   void initState() {
     super.initState();
-    print("State being called");
+    // print("State being called");
   }
 
   @override

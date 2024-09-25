@@ -16,7 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class LocationVAF {
   static final Set<Marker> markers = {};
-  static List<User> vetList = [];
+  static List<Vet> vetList = [];
   static List<User> petKeeperList = [];
   static CameraPosition myLocation = CameraPosition(
     target: LatLng(-28.284535, 24.402177),
@@ -146,23 +146,44 @@ class LocationVAF {
 
     return "${(Geolocator.distanceBetween(lat, long, myLocation.target.latitude, myLocation.target.longitude) / 1000).toStringAsFixed(2)} km";
   }
-
-  static Future<List<User>> getVets(LatLng userLocation, double radius) async {
+  /*
+  address
+  "40 Johannes Ramokhoase Street, Pretoria"
+  (string)
+  location
+  (map)
+    lat
+    -25.7438048
+    (number)
+    lng
+    28.1796809
+    (number)
+  name
+  "Kruvet Pharmaceuticals"
+  (string)
+  place_id
+  "ChIJ65pWPm1ilR4RCSYg1HZA-Qg"
+  */
+  static Future<List<Vet>> getVets(LatLng userLocation, double radius) async {
     try {
       vetList.clear();
-      List<User> vets = await LocationService().getVets(userLocation, radius);
-      for (User vet in vets) {
+      List<Vet> vets = await LocationService().getVets(userLocation, radius);
+      
+      for (Vet vet in vets) {
         vetList.add(vet);
+
         markers.add(
           Marker(
-            markerId: MarkerId(vet.id),
+            markerId: MarkerId(vet.placeId),
             position: LatLng(vet.location.latitude, vet.location.longitude),
             infoWindow: InfoWindow(
               title: vet.name,
-              snippet: "Get directions ${vet.distance.toStringAsFixed(2)}km",
+              snippet: "Get directions",
               onTap: () async {
-                print("Navigating to google maps");
-                final Uri url = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=${vet.location.latitude},${vet.location.longitude}');
+                print("Navigating to Google Maps");
+                final Uri url = Uri.parse(
+                  'https://www.google.com/maps/dir/?api=1&destination=${vet.location.latitude},${vet.location.longitude}'
+                );
                 if (!await launchUrl(url)) {
                   print('Could not launch $url');
                 }
