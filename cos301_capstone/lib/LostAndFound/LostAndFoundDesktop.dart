@@ -24,35 +24,13 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
       "petName": "Bella",
       "lastSeen": "2021-09-01",
       "location": GeoPoint(-25.751065353022884, 28.24424206468121),
-      "potentialSightings": [
-        {
-          "seenDate": "2021-09-01",
-          "location": GeoPoint(-25.751065, 28.2443),
-        },
-        {
-          "seenDate": "2021-09-02",
-          "location": GeoPoint(-25.7511, 28.2442),
-        },
-        {
-          "seenDate": "2021-09-03",
-          "location": GeoPoint(-25.7510, 28.2441),
-        },
-      ]
+      "potentialSightings": []
     },
     {
       "petName": "Max",
       "lastSeen": "2021-09-05",
       "location": GeoPoint(-26.2041028, 28.0473051),
-      "potentialSightings": [
-        {
-          "seenDate": "2021-09-06",
-          "location": GeoPoint(-26.2041, 28.0473),
-        },
-        {
-          "seenDate": "2021-09-07",
-          "location": GeoPoint(-26.2040, 28.0472),
-        },
-      ]
+      "potentialSightings": []
     },
     {
       "petName": "Lucy",
@@ -257,7 +235,6 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
   }
 
   void _showPopupMenu() {
-
     void setLostPet(int index) {
       setState(() {
         for (int i = 0; i < selectedLostPet.length; i++) {
@@ -347,8 +324,6 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
       },
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -453,6 +428,30 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
                           ),
                         ),
                       ),
+                      if (selectedPet.value != -1) ...[
+                        MouseRegion(
+                          key: Key("add-sighting-button"),
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: () async {},
+                            child: Container(
+                              height: 48,
+                              margin: EdgeInsets.only(bottom: 10, left: 20),
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              decoration: BoxDecoration(
+                                color: themeSettings.primaryColor,
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "Add sighting",
+                                  style: TextStyle(color: Colors.white, fontSize: 16.0),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                   Divider(),
@@ -480,27 +479,27 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
 
                             String? mapStyle = snapshot.data;
 
-                            // return Text("Placeholder for Google Map");
+                            return Text("Placeholder for Google Map");
 
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: GoogleMap(
-                                key: Key('googleMap'),
-                                style: mapStyle,
-                                initialCameraPosition: LocationVAF.myLocation,
-                                markers: markers.toSet(),
-                                onMapCreated: (GoogleMapController controller) {
-                                  print("Google Map Controller created");
-                                  _googleMapController = controller;
+                            // return ClipRRect(
+                            //   borderRadius: BorderRadius.circular(20.0),
+                            //   child: GoogleMap(
+                            //     key: Key('googleMap'),
+                            //     style: mapStyle,
+                            //     initialCameraPosition: LocationVAF.myLocation,
+                            //     markers: markers.toSet(),
+                            //     onMapCreated: (GoogleMapController controller) {
+                            //       print("Google Map Controller created");
+                            //       _googleMapController = controller;
 
-                                  if (selectedPet.value != -1) {
-                                    panCameraToLocation(pets[selectedPet.value]["location"].latitude, pets[selectedPet.value]["location"].longitude);
-                                  }
-                                },
-                                myLocationButtonEnabled: true,
-                                zoomControlsEnabled: true,
-                              ),
-                            );
+                            //       if (selectedPet.value != -1) {
+                            //         panCameraToLocation(pets[selectedPet.value]["location"].latitude, pets[selectedPet.value]["location"].longitude);
+                            //       }
+                            //     },
+                            //     myLocationButtonEnabled: true,
+                            //     zoomControlsEnabled: true,
+                            //   ),
+                            // );
                           },
                         ),
                       ),
@@ -616,6 +615,9 @@ class _ListOfPetsState extends State<ListOfPets> {
                     ),
                   ),
                 ),
+              ],
+              if (selectedPet["potentialSightings"] == null || selectedPet["potentialSightings"].isEmpty) ...[
+                Text("No sightings found", style: TextStyle(color: themeSettings.textColor)),
               ],
             ],
           ),

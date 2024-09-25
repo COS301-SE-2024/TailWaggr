@@ -370,7 +370,6 @@ class _LostAndFoundMobileState extends State<LostAndFoundMobile> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -471,6 +470,30 @@ class _LostAndFoundMobileState extends State<LostAndFoundMobile> {
                       ),
                     ),
                   ),
+                 if (selectedPet.value != -1) ...[
+                    MouseRegion(
+                      key: Key("add-sighting-button"),
+                      cursor: SystemMouseCursors.click,
+                      child: GestureDetector(
+                        onTap: () async {},
+                        child: Container(
+                          height: 48,
+                          margin: EdgeInsets.only(bottom: 10, left: 20),
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                            color: themeSettings.primaryColor,
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Add sighting",
+                              style: TextStyle(color: Colors.white, fontSize: 16.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
               Divider(),
@@ -489,32 +512,34 @@ class _LostAndFoundMobileState extends State<LostAndFoundMobile> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     }
-        
+
                     if (snapshot.hasError) {
                       return Center(child: Text('Error loading map style'));
                     }
-        
+
                     String? mapStyle = snapshot.data;
-        
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(5.0),
-                      child: GoogleMap(
-                        key: Key('googleMap'),
-                        style: mapStyle,
-                        initialCameraPosition: LocationVAF.myLocation,
-                        markers: markers.toSet(),
-                        onMapCreated: (GoogleMapController controller) {
-                          print("Google Map Controller created");
-                          _googleMapController = controller;
-        
-                          if (selectedPet.value != -1) {
-                            panCameraToLocation(pets[selectedPet.value]["location"].latitude, pets[selectedPet.value]["location"].longitude);
-                          }
-                        },
-                        myLocationButtonEnabled: true,
-                        zoomControlsEnabled: true,
-                      ),
-                    );
+
+                    return Text("Google maps placeholder");
+
+                    // return ClipRRect(
+                    //   borderRadius: BorderRadius.circular(5.0),
+                    //   child: GoogleMap(
+                    //     key: Key('googleMap'),
+                    //     style: mapStyle,
+                    //     initialCameraPosition: LocationVAF.myLocation,
+                    //     markers: markers.toSet(),
+                    //     onMapCreated: (GoogleMapController controller) {
+                    //       print("Google Map Controller created");
+                    //       _googleMapController = controller;
+
+                    //       if (selectedPet.value != -1) {
+                    //         panCameraToLocation(pets[selectedPet.value]["location"].latitude, pets[selectedPet.value]["location"].longitude);
+                    //       }
+                    //     },
+                    //     myLocationButtonEnabled: true,
+                    //     zoomControlsEnabled: true,
+                    //   ),
+                    // );
                   },
                 ),
               )
@@ -636,6 +661,9 @@ class _ListOfPetsState extends State<ListOfPets> {
                           ),
                         ),
                       ),
+                    ],
+                    if (selectedPet["potentialSightings"] == null || selectedPet["potentialSightings"].isEmpty) ...[
+                      Text("No sightings found", style: TextStyle(color: themeSettings.textColor)),
                     ],
                   ],
                 ),
