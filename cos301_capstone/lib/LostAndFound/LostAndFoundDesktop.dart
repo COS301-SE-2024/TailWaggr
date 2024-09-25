@@ -480,27 +480,27 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
 
                             String? mapStyle = snapshot.data;
 
-                            return Text("Placeholder for Google Map");
+                            // return Text("Placeholder for Google Map");
 
-                            // return ClipRRect(
-                            //   borderRadius: BorderRadius.circular(20.0),
-                            //   child: GoogleMap(
-                            //     key: Key('googleMap'),
-                            //     style: mapStyle,
-                            //     initialCameraPosition: LocationVAF.myLocation,
-                            //     markers: markers.toSet(),
-                            //     onMapCreated: (GoogleMapController controller) {
-                            //       print("Google Map Controller created");
-                            //       _googleMapController = controller;
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(20.0),
+                              child: GoogleMap(
+                                key: Key('googleMap'),
+                                style: mapStyle,
+                                initialCameraPosition: LocationVAF.myLocation,
+                                markers: markers.toSet(),
+                                onMapCreated: (GoogleMapController controller) {
+                                  print("Google Map Controller created");
+                                  _googleMapController = controller;
 
-                            //       if (selectedPet.value != -1) {
-                            //         panCameraToLocation(pets[selectedPet.value]["location"].latitude, pets[selectedPet.value]["location"].longitude);
-                            //       }
-                            //     },
-                            //     myLocationButtonEnabled: true,
-                            //     zoomControlsEnabled: true,
-                            //   ),
-                            // );
+                                  if (selectedPet.value != -1) {
+                                    panCameraToLocation(pets[selectedPet.value]["location"].latitude, pets[selectedPet.value]["location"].longitude);
+                                  }
+                                },
+                                myLocationButtonEnabled: true,
+                                zoomControlsEnabled: true,
+                              ),
+                            );
                           },
                         ),
                       ),
