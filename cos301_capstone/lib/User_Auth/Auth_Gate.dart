@@ -8,6 +8,7 @@ import 'package:cos301_capstone/Location/Location.dart';
 // import 'package:cos301_capstone/Location/Desktop_View.dart';
 // import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/Login/Login.dart';
+import 'package:cos301_capstone/LostAndFound/LostAndFound.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
 // import 'package:cos301_capstone/Navbar/Navbar.dart';
@@ -46,7 +47,7 @@ class _AuthGateState extends State<AuthGate> {
       profileDetails.sidebarImage = value['sidebarImage'];
 
       profileDetails.birthdate = formatDate(value['birthDate'].toDate());
-      
+
       themeSettings.toggleTheme(value['preferences']['themeMode']);
 
       profileDetails.setCustomColours({
@@ -82,7 +83,8 @@ class _AuthGateState extends State<AuthGate> {
           populateUserData();
           populateUserPets();
 
-          return Homepage();
+          // return Homepage();
+          return LostAndFound();
         }
         return Login();
       },

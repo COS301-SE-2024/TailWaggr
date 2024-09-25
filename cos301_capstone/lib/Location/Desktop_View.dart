@@ -461,7 +461,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                             key: Key('googleMap'),
                             style: mapStyle,
                             initialCameraPosition: LocationVAF.myLocation,
-                            markers: LocationVAF.markers,
+                            // markers: LocationVAF.markers,
                             onMapCreated: (GoogleMapController controller) {
                               _googleMapController = controller;
                             },

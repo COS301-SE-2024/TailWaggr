@@ -6,6 +6,7 @@ import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Location/Location.dart';
+import 'package:cos301_capstone/LostAndFound/LostAndFound.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:cos301_capstone/Notifications/Notifications.dart';
 import 'package:cos301_capstone/User_Profile/Mobile_View.dart';
@@ -125,6 +126,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                 Navbar_Icon(icon: Icons.home, text: "Home", page: Homepage()),
                 Navbar_Icon(icon: Icons.notifications, text: "Notifications", page: Notifications()),
                 Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: Location()),
+                Navbar_Icon(icon: Icons.map_sharp, text: "Lost and Found", page: LostAndFound()),
                 Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                 Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile()),
                 Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),
