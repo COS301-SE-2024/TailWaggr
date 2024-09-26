@@ -79,7 +79,7 @@ void _selectForum(String forumId) {
   _fetchPosts(forumId);
 }
 
-  Future<void> _fetchPosts(String forumId) async {
+  Future<void> _fetchPosts(String forumId) async { 
     try {
       List<Map<String, dynamic>>? fetchedPosts =
           await _forumServices.getMessages(forumId);
@@ -227,6 +227,7 @@ void _selectForum(String forumId) {
     context: context,
     builder: (BuildContext context) {
       return Dialog(
+        backgroundColor: themeSettings.backgroundColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10), // Optional: to round the corners
         ),
@@ -240,17 +241,17 @@ void _selectForum(String forumId) {
               children: [
                 Text(
                   'Create a Forum',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: themeSettings.primaryColor),
                 ),
                 SizedBox(height: 20),
                 TextField(
                   controller: forumNameController,
-                  decoration: InputDecoration(labelText: 'Forum Name'),
+                  decoration: InputDecoration(labelText: 'Forum Name',labelStyle: TextStyle(color: themeSettings.textColor)),
                 ),
                 SizedBox(height: 10),
                 TextField(
                   controller: forumDescriptionController,
-                  decoration: InputDecoration(labelText: 'Description'),
+                  decoration: InputDecoration(labelText: 'Description',labelStyle: TextStyle(color: themeSettings.textColor)),
                   maxLines: 2,
                 ),
                 SizedBox(height: 20),
@@ -261,7 +262,10 @@ void _selectForum(String forumId) {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text('Cancel'),
+                      child: Text(
+                  "Cancel",
+                  style: TextStyle(color: themeSettings.primaryColor),
+                )
                     ),
                     SizedBox(width: 10),
                     ElevatedButton(
@@ -278,7 +282,16 @@ void _selectForum(String forumId) {
                           Navigator.of(context).pop();
                         }
                       },
-                      child: Text('Create'),
+                       style: TextButton.styleFrom(
+                  backgroundColor: themeSettings.primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                ),
+                      child: Text(
+                  "Create",
+                  style: TextStyle(color: Colors.white),
+                ),
                     ),
                   ],
                 ),
@@ -290,34 +303,192 @@ void _selectForum(String forumId) {
     },
   );
 }
-  void _deleteForum(String forumId) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Delete Forum'),
-          content: Text('Are you sure you want to delete this forum?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
+ void _deleteForum(String forumId) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        backgroundColor: themeSettings.backgroundColor,
+          shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10), // Optional: to round the corners
+        ),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.4,  // Set width to 40% of the screen width
+          height: MediaQuery.of(context).size.height * 0.3 , // Adjust width
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Delete Forum',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: themeSettings.primaryColor,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Are you sure you want to delete this forum?',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: themeSettings.textColor,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(color: themeSettings.primaryColor),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () async {
+                        await _forumServices.deleteForum(forumId);
+                        _fetchForums();
+                        Navigator.of(context).pop();
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: themeSettings.primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        ),
+                      ),
+                      child: Text(
+                        'Delete',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: () async {
-                await _forumServices.deleteForum(forumId);
-                _fetchForums();
-                Navigator.of(context).pop();
-              },
-              child: Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
+          ),
+        ),
+      );
+    },
+  );
+}
+
+String formatDateTime(DateTime dateTime) {
+  final now = DateTime.now();
+  final difference = now.difference(dateTime);
+
+  if (difference.inDays > 0) {
+    return formatFullDate(dateTime);
+  } else if (difference.inHours > 0) {
+    return '${difference.inHours}h${difference.inHours > 1 ? 's' : ''} ago';
+  } else if (difference.inMinutes > 0) {
+    return '${difference.inMinutes}m${difference.inMinutes > 1 ? 's' : ''} ago';
+  } else if (difference.inSeconds > 0) {
+    return '${difference.inSeconds}s${difference.inSeconds > 1 ? 's' : ''} ago';
+  } else {
+    return 'Just now';
   }
- @override
+}
+
+String formatFullDate(DateTime dateTime) {
+  return "${dateTime.day} ${_getMonthName(dateTime.month)} ${dateTime.year}";
+}
+
+String _getMonthName(int month) {
+  const monthNames = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+  return monthNames[month - 1];
+}
+
+void _muteMessage(String postId, String userId) {
+  // Implement mute message functionality
+}
+void _deleteMessage(String postId) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        backgroundColor: themeSettings.backgroundColor,
+          shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10), // Optional: to round the corners
+        ),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.4,  // Set width to 40% of the screen width
+          height: MediaQuery.of(context).size.height * 0.3, // Adjust width
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Delete Post',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: themeSettings.primaryColor,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Are you sure you want to delete this post?',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: themeSettings.textColor,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        _fetchPosts(selectedForumId!);
+                      },
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(color: themeSettings.primaryColor),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () async {
+                        await _forumServices.deleteMessage(selectedForumId!, postId);
+                        _fetchPosts(selectedForumId!);
+                        Navigator.of(context).pop();
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: themeSettings.primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        ),
+                      ),
+                      child: Text(
+                        'Delete',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+@override
 Widget build(BuildContext context) {
   return Container(
     color: themeSettings.backgroundColor,
@@ -342,22 +513,17 @@ Widget build(BuildContext context) {
                       color: themeSettings.primaryColor,
                     ),
                   ),
-                  ElevatedButton.icon(
+                  ElevatedButton(
                     onPressed: _createForum,
-                    icon: Icon(Icons.add, size: 28), // Add icon
-                    label: Text(
-                      "Create Forum",
-                      style: TextStyle(
-                        fontSize: 16, // Slightly reduce font size
-                        color: Colors.white,
-                      ),
-                    ),
                     style: ElevatedButton.styleFrom(
-                      minimumSize: Size(180, 50), // Adjust button size
+                      minimumSize: Size(60, 60), // Size of the circular button
                       backgroundColor: themeSettings.primaryColor, // Button color
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8), // Rounded corners
-                      ),
+                      shape: CircleBorder(), // Circular shape
+                    ),
+                    child: Icon(
+                      Icons.add, // Use an appropriate icon
+                      size: 30, // Adjust icon size
+                      color: Colors.white, // Icon color
                     ),
                   ),
                 ],
@@ -404,7 +570,6 @@ Widget build(BuildContext context) {
                     final userId = forum['UserId'] as String;
                     final userProf = userProfiles[userId];
                     final creatorUsername = userProf?['name'] ?? 'Unknown';
-                    final numberOfMessages = forum['messagesCount'] ?? 0;
 
                     return GestureDetector(
                       onTap: () {
@@ -444,27 +609,26 @@ Widget build(BuildContext context) {
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    'Messages: $numberOfMessages',
-                                    style: TextStyle(
-                                      fontSize: bodyTextSize - 2,
-                                      color: themeSettings.textColor.withOpacity(0.7),
-                                    ),
-                                  ),
-                                  SizedBox(height: 5),
-                                  Text(
                                     'Creator: $creatorUsername',
                                     style: TextStyle(
                                       fontSize: bodyTextSize - 2,
                                       color: themeSettings.textColor.withOpacity(0.7),
                                     ),
-                                  ),
+                                  ), 
                                 ],
                               ),
                             ),
-                            // Delete button for the creator
+                            // Last updated time
+                            Text(
+                              formatDateTime(forum['lastUpdated']),
+                              style: TextStyle(
+                                color: themeSettings.textColor.withOpacity(0.7),
+                              ),
+                            ),//last updated
+                               // Delete button for the creator
                             if (userId == profileDetails.userID)
                               PopupMenuButton(
-                                icon: Icon(Icons.more_vert),
+                                icon: Icon(Icons.more_vert, color: themeSettings.primaryColor),
                                 onSelected: (value) {
                                   if (value == 'delete') {
                                     _deleteForum(forum['forumId']);
@@ -479,6 +643,7 @@ Widget build(BuildContext context) {
                               ),
                           ],
                         ),
+                        
                       ),
                     );
                   },
@@ -517,121 +682,171 @@ Widget build(BuildContext context) {
                         ? Center(child: CircularProgressIndicator())
                         : posts != null && posts!.isNotEmpty
                             ? Expanded(
-                                child: ListView.builder(
-                                  itemCount: posts!.length,
-                                  itemBuilder: (context, index) {
-                                    final post = posts![index];
-                                    final postId = post['messageId'];
-                                    var numLikes =
-                                        post['likesCount'].toString();
-                                    final numReplies =
-                                        post['repliesCount'].toString();
-                                    final userId =
-                                        post['message']['UserId'] as String;
-                                    final userProfile = userProfiles[userId];
+                              child: ListView.builder(
+                                itemCount: posts!.length,
+                                itemBuilder: (context, index) {
+                                  final post = posts![index];
+                                  final postId = post['messageId'];
+                                  var numLikes = post['likesCount'].toString();
+                                  final numReplies = post['repliesCount'].toString();
+                                  final userId = post['message']['UserId'] as String;
+                                  final userProfile = userProfiles[userId];
+                                  final userProfilePic = userProfile?['profilePictureUrl'] ?? profileDetails.profilePicture; // Add default URL for profile picture
+                                  final userName = userProfile?['name'] ?? 'Unknown User';
+                                  final postTime = formatDateTime(post['message']['CreatedAt'].toDate()); 
 
-                                    return GestureDetector(
-                                      onTap: () {
-                                        _viewMessage(context, post);
-                                      },
-                                      child: Container(
-                                        margin:
-                                            EdgeInsets.symmetric(vertical: 10),
-                                        padding: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          color: themeSettings.cardColor,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                            color: themeSettings.primaryColor,
-                                            width: 2.0,
-                                          ),
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              userProfile?['name'] ??
-                                                  'Unknown User',
-                                              style: TextStyle(
-                                                  fontSize: bodyTextSize,
-                                                  color:
-                                                      themeSettings.textColor),
-                                            ),
-                                            Text(
-                                              post['message']?['Content'] ??
-                                                  'No Content',
-                                              style: TextStyle(
-                                                  fontSize: subBodyTextSize,
-                                                  color:
-                                                      themeSettings.textColor),
-                                            ),
-                                            SizedBox(height: 10),
-                                            Row(
-                                              children: [
-                                                Tooltip(
-                                                  message: "Like",
-                                                  child: IconButton(
-                                                    onPressed: () {
-                                                      print(
-                                                          "Like button pressed");
-                                                      _likeMessage(postId);
-
-                                                      ForumServices()
-                                                          .getLikesCount(
-                                                              selectedForumId!,
-                                                              postId)
-                                                          .then((value) {
-                                                        setState(() {
-                                                          numLikes =
-                                                              value.toString();
-                                                        });
-                                                      });
-                                                    },
-                                                    icon: Icon(
-                                                      Icons.favorite_border,
-                                                      color: Colors.red
-                                                          .withOpacity(0.7),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Text(numLikes,
-                                                    style: TextStyle(
-                                                        color: themeSettings
-                                                            .textColor
-                                                            .withOpacity(0.7))),
-                                                Spacer(),
-                                                Tooltip(
-                                                  message: "Comment",
-                                                  child: IconButton(
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        selectedPostId = postId;
-                                                      });
-                                                      showDialogBox(context);
-                                                    },
-                                                    icon: Icon(
-                                                      Icons.comment,
-                                                      color: Colors.blue
-                                                          .withOpacity(0.7),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Text(numReplies,
-                                                    style: TextStyle(
-                                                        color: themeSettings
-                                                            .textColor
-                                                            .withOpacity(0.7))),
-                                              ],
-                                            ),
-                                          ],
+                                  return GestureDetector(
+                                    onTap: () {
+                                      _viewMessage(context, post);
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.symmetric(vertical: 10),
+                                      padding: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: themeSettings.cardColor,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          color: themeSettings.primaryColor,
+                                          width: 2.0,
                                         ),
                                       ),
-                                    );
-                                  },
-                                ),
-                              )
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          // User profile picture, name, and time row
+                                          Row(
+                                            children: [
+                                              CircleAvatar(
+                                                backgroundImage: NetworkImage(userProfilePic),
+                                                radius: 20,
+                                              ),
+                                              SizedBox(width: 10),
+                                              // Name and time with dot separator
+                                              Expanded(
+                                                child: Row(
+                                                  children: [
+                                                    Text(
+                                                      userName,
+                                                      style: TextStyle(
+                                                        fontSize: bodyTextSize,
+                                                        fontWeight: FontWeight.bold,
+                                                        color: themeSettings.textColor,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 5),
+                                                    Text(
+                                                      '•',
+                                                      style: TextStyle(
+                                                        fontSize: bodyTextSize,
+                                                        color: themeSettings.textColor.withOpacity(0.7),
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 5),
+                                                    Text(
+                                                      postTime,
+                                                      style: TextStyle(
+                                                        fontSize: bodyTextSize - 2,
+                                                        color: themeSettings.textColor.withOpacity(0.7),
+                                                      ),
+                                                    ),
+                                                    Spacer(),
+                                                    // Delete button for the creator
+                                                    if (userId == profileDetails.userID)
+                                                      PopupMenuButton(
+                                                        icon: Icon(Icons.more_vert, color: themeSettings.primaryColor),
+                                                        onSelected: (value) {
+                                                          if (value == 'delete') {
+                                                            _deleteMessage(postId);
+                                                          }
+                                                          else if (value == 'mute') {
+                                                            _muteMessage(postId,userId);
+                                                          }
+                                                        },
+                                                        itemBuilder: (context) => [
+                                                          PopupMenuItem(
+                                                            value: 'delete',
+                                                            child: Text('Delete Post'),
+                                                          ),
+                                                          // option to mute notifications from this message
+                                                          PopupMenuItem(
+                                                            value: 'mute',
+                                                            child: Text('Mute Notifications'),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 10),
+                                          // Post content
+                                          Text(
+                                            post['message']?['Content'] ?? 'No Content',
+                                            style: TextStyle(
+                                              fontSize: subBodyTextSize,
+                                              color: themeSettings.textColor,
+                                            ),
+                                          ),
+                                          SizedBox(height: 10),
+                                          // Like and Comment buttons row
+                                          Row(
+                                            children: [
+                                              Tooltip(
+                                                message: "Like",
+                                                child: IconButton(
+                                                  onPressed: () {
+                                                    print("Like button pressed");
+                                                    _likeMessage(postId);
+                                                    ForumServices().getLikesCount(selectedForumId!, postId).then((value) {
+                                                      setState(() {
+                                                        numLikes = value.toString();
+                                                      });
+                                                    });
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.pets_outlined,
+                                                    color: Colors.red.withOpacity(0.7),
+                                                  ),
+                                                ),
+                                              ),
+                                              Text(
+                                                numLikes,
+                                                style: TextStyle(
+                                                  color: themeSettings.textColor.withOpacity(0.7),
+                                                ),
+                                              ),
+                                              Spacer(),
+                                              Tooltip(
+                                                message: "Comment",
+                                                child: IconButton(
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      selectedPostId = postId;
+                                                    });
+                                                    showDialogBox(context);
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.comment,
+                                                    color: Colors.blue.withOpacity(0.7),
+                                                  ),
+                                                ),
+                                              ),
+                                              Text(
+                                                numReplies,
+                                                style: TextStyle(
+                                                  color: themeSettings.textColor.withOpacity(0.7),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
                             : Center(
                                 child: Text(
                                   'No posts available',
@@ -682,14 +897,13 @@ Widget build(BuildContext context) {
     );
   }
 }
-
 class MessageView extends StatefulWidget {
   final Map<String, dynamic> post;
   final String forumId;
   final Map<String, Map<String, dynamic>> userProfiles;
   final ForumServices forumServices;
   final AuthService authService;
-  final VoidCallback onReplyAdded; // Add the callback parameter
+  final VoidCallback onReplyAdded;
 
   MessageView({
     required this.post,
@@ -697,7 +911,7 @@ class MessageView extends StatefulWidget {
     required this.userProfiles,
     required this.forumServices,
     required this.authService,
-    required this.onReplyAdded, // Initialize the callback
+    required this.onReplyAdded,
   });
 
   @override
@@ -708,23 +922,55 @@ class _MessageViewState extends State<MessageView> {
   final TextEditingController _replyController = TextEditingController();
 
   Future<void> _replyToMessage(String postId) async {
-    String? newReplyContent = _replyController.text;
+    String newReplyContent = _replyController.text;
     if (newReplyContent.isNotEmpty) {
       try {
         String? userId = await widget.authService.getCurrentUserId();
-        await widget.forumServices
-            .replyToMessage(widget.forumId, postId, userId!, newReplyContent);
-        _fetchReplies(
-            widget.forumId, postId); // Call the method to refresh the posts
+        await widget.forumServices.replyToMessage(
+          widget.forumId,
+          postId,
+          userId!,
+          newReplyContent,
+        );
+        _fetchReplies(widget.forumId, postId); // Refresh posts
         setState(() {
           _replyController.clear();
         });
-        widget.onReplyAdded(); // Trigger the callback to notify DesktopForums
+        widget.onReplyAdded(); // Notify callback
       } catch (e) {
         print('Error replying to message: $e');
       }
     }
   }
+  String formatDateTime(DateTime dateTime) {
+  final now = DateTime.now();
+  final difference = now.difference(dateTime);
+
+  if (difference.inDays > 0) {
+    return formatFullDate(dateTime);
+  } else if (difference.inHours > 0) {
+    return '${difference.inHours}h${difference.inHours > 1 ? 's' : ''} ago';
+  } else if (difference.inMinutes > 0) {
+    return '${difference.inMinutes}m${difference.inMinutes > 1 ? 's' : ''} ago';
+  } else if (difference.inSeconds > 0) {
+    return '${difference.inSeconds}s${difference.inSeconds > 1 ? 's' : ''} ago';
+  } else {
+    return 'Just now';
+  }
+}
+
+String formatFullDate(DateTime dateTime) {
+  return "${dateTime.day} ${_getMonthName(dateTime.month)} ${dateTime.year}";
+}
+
+String _getMonthName(int month) {
+  const monthNames = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+  return monthNames[month - 1];
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -732,32 +978,73 @@ class _MessageViewState extends State<MessageView> {
     final userId = widget.post['message']['UserId'] as String;
     final userProfile = widget.userProfiles[userId];
     final replies = widget.post['replies'] ?? [];
+    final postTime = formatDateTime(widget.post['message']['CreatedAt'].toDate());
 
     return Scaffold(
       appBar: AppBar(
         title: Text('View Message'),
+        backgroundColor: themeSettings.primaryColor,
       ),
+      backgroundColor: themeSettings.backgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              userProfile?['userName'] ?? 'Unknown User',
-              style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage: NetworkImage(userProfile?['profilePictureUrl'] ?? 'default_profile_picture.png'),
+                  radius: 25,
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        userProfile?['userName'] ?? 'Unknown User',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: themeSettings.textColor,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                          Icon(Icons.access_time, size: 16, color: themeSettings.textColor.withOpacity(0.7)),
+                          SizedBox(width: 5),
+                          Text(
+                            postTime,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: themeSettings.textColor.withOpacity(0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 15),
             Text(
               widget.post['message']?['Content'] ?? 'No Content',
-              style: TextStyle(fontSize: 18, color: Colors.black),
+              style: TextStyle(
+                fontSize: 16,
+                color: themeSettings.textColor,
+              ),
             ),
             SizedBox(height: 20),
             Text(
               'Replies',
-              style: TextStyle(fontSize: 22, color: Colors.black),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: themeSettings.primaryColor,
+              ),
             ),
             Expanded(
               child: ListView.builder(
@@ -766,29 +1053,67 @@ class _MessageViewState extends State<MessageView> {
                   final reply = replies[index];
                   final replyUserId = reply['UserId'] as String;
                   final replyUserProfile = widget.userProfiles[replyUserId];
+                  final replyTime = formatDateTime(reply['CreatedAt'].toDate());
 
                   return Container(
                     margin: EdgeInsets.symmetric(vertical: 10),
                     padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
+                      color: themeSettings.cardColor,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: Colors.grey,
+                        color: themeSettings.primaryColor.withOpacity(0.5),
                         width: 1.0,
                       ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          replyUserProfile?['userName'] ?? 'Unknown User',
-                          style: TextStyle(fontSize: 18, color: Colors.black),
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              backgroundImage: NetworkImage(replyUserProfile?['profilePictureUrl'] ?? 'default_profile_picture.png'),
+                              radius: 20,
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    replyUserProfile?['userName'] ?? 'Unknown User',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: themeSettings.textColor,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.access_time, size: 14, color: themeSettings.textColor.withOpacity(0.7)),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        replyTime,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: themeSettings.textColor.withOpacity(0.7),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 5),
+                        SizedBox(height: 10),
                         Text(
                           reply['Content'] ?? 'No Content',
-                          style: TextStyle(fontSize: 16, color: Colors.black),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: themeSettings.textColor.withOpacity(0.9),
+                          ),
                         ),
                       ],
                     ),
@@ -799,12 +1124,19 @@ class _MessageViewState extends State<MessageView> {
             TextField(
               controller: _replyController,
               decoration: InputDecoration(
-                hintText: 'Type your reply here',
+                hintText: 'Type your reply here...',
+                hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.5)),
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.send),
+                  icon: Icon(Icons.send, color: themeSettings.primaryColor),
                   onPressed: () async {
                     await _replyToMessage(postId);
                   },
+                ),
+                filled: true,
+                fillColor: themeSettings.backgroundColor,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
                 ),
               ),
               style: TextStyle(color: themeSettings.textColor),
@@ -814,6 +1146,8 @@ class _MessageViewState extends State<MessageView> {
       ),
     );
   }
+
+
 
   void _fetchReplies(String forumId, String postId) {
     widget.forumServices.getReplies(forumId, postId).then((replies) {
