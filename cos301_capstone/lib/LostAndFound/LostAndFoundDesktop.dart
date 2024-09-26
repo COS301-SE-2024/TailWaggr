@@ -19,6 +19,11 @@ class LostAndFoundDesktop extends StatefulWidget {
 
 class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
   late GoogleMapController _googleMapController;
+  late TextEditingController searchDistanceController;
+  String applyFiltersButtonText = "Apply Filters";
+  String reportSightingText = "Report Sighting";
+
+  bool fetchingPets = false;
 
   List<Pet> pets = [];
 
@@ -32,67 +37,13 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
   Pet? lostPet;
   List<bool> selectedLostPet = [];
 
-  Future<void> getPetsAndSetMarkers() async {
-    pets = await LostAndFoundService().getLostPetsNearby(LocationVAF.myLocation.target, 200);
-
-    setState(() {
-      markers.clear();
-      markers.add(
-        Marker(
-          markerId: MarkerId("My Location"),
-          position: LatLng(LocationVAF.myLocation.target.latitude, LocationVAF.myLocation.target.longitude),
-          infoWindow: InfoWindow(
-            title: "My Location",
-            snippet: "You are here",
-          ),
-        ),
-      );
-      for (Pet pet in pets) {
-        markers.add(
-          Marker(
-            markerId: MarkerId(pet.petId),
-            position: LatLng(pet.lastSeenLocation.latitude, pet.lastSeenLocation.longitude),
-            infoWindow: InfoWindow(
-              title: pet.petName,
-              snippet: "Last seen: ${pet.lastSeen}",
-            ),
-          ),
-        );
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
 
-    getPetsAndSetMarkers();
+    searchDistanceController = TextEditingController(text: "20");
 
-    // setState(() {
-    //   markers.clear();
-    //   markers.add(
-    //     Marker(
-    //       markerId: MarkerId("My Location"),
-    //       position: LatLng(LocationVAF.myLocation.target.latitude, LocationVAF.myLocation.target.longitude),
-    //       infoWindow: InfoWindow(
-    //         title: "My Location",
-    //         snippet: "You are here",
-    //       ),
-    //     ),
-    //   );
-    //   for (Pet pet in pets) {
-    //     markers.add(
-    //       Marker(
-    //         markerId: MarkerId(pet.petId),
-    //         position: LatLng(pet.lastSeenLocation.latitude, pet.lastSeenLocation.longitude),
-    //         infoWindow: InfoWindow(
-    //           title: pet.petName,
-    //           snippet: "Last seen: ${pet.lastSeen}",
-    //         ),
-    //       ),
-    //     );
-    //   }
-    // });
+    getPetsAndSetMarkers(20);
 
     selectedPet.addListener(() {
       setMarkers(selectedPet.value);
@@ -107,6 +58,22 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
         selectedLostPet.add(false);
       }
     });
+  }
+
+  @override
+  void dispose() {
+    try {
+      // if (mounted) {
+      // print("Disposing Google Map Controller");
+      _googleMapController.dispose();
+      // }
+      super.dispose();
+    } catch (e) {
+      // print("Error disposing Google Map Controller: $e");
+    } finally {
+      searchDistanceController.dispose();
+      super.dispose();
+    }
   }
 
   void setMarkers(int index) {
@@ -177,22 +144,6 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
     } catch (e) {
       print("Error panning camera: $e");
       print("Location that shouldve been panned to: $lat, $long");
-    }
-  }
-
-  @override
-  void dispose() {
-    try {
-      // if (mounted) {
-      // print("Disposing Google Map Controller");
-      _googleMapController.dispose();
-      // }
-      super.dispose();
-    } catch (e) {
-      // print("Error disposing Google Map Controller: $e");
-    } finally {
-      // _scrollController.dispose();
-      super.dispose();
     }
   }
 
@@ -272,11 +223,25 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
               child: Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
-                // Add your logic to report the lost pet here
-                if (selectedPet != null) {
-                  // Use selectedPet to report
+              onPressed: () async {
+                if (selectedLostPet.contains(true)) {
+                  for (int i = 0; i < selectedLostPet.length; i++) {
+                    if (selectedLostPet[i]) {
+                      try {
+                        await LostAndFoundService().reportPetMissing(
+                          profileDetails.pets[i]["petID"],
+                          LocationVAF.myLocation.target,
+                          profileDetails.userID,
+                        );
+                        getPetsAndSetMarkers(double.parse(searchDistanceController.text));
+                      } catch (e) {
+                        print("Error reporting lost pet: $e");
+                      }
+                      break;
+                    }
+                  }
                 }
+
                 Navigator.of(context).pop();
               },
               child: Text('Report'),
@@ -285,6 +250,44 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
         );
       },
     );
+  }
+
+  Future<void> getPetsAndSetMarkers(double distance) async {
+    setState(() {
+      fetchingPets = true;
+    });
+
+    pets = await LostAndFoundService().getLostPetsNearby(LocationVAF.myLocation.target, distance);
+
+    setState(() {
+      markers.clear();
+      markers.add(
+        Marker(
+          markerId: MarkerId("My Location"),
+          position: LatLng(LocationVAF.myLocation.target.latitude, LocationVAF.myLocation.target.longitude),
+          infoWindow: InfoWindow(
+            title: "My Location",
+            snippet: "You are here",
+          ),
+        ),
+      );
+      for (Pet pet in pets) {
+        markers.add(
+          Marker(
+            markerId: MarkerId(pet.petId),
+            position: LatLng(pet.lastSeenLocation.latitude, pet.lastSeenLocation.longitude),
+            infoWindow: InfoWindow(
+              title: pet.petName,
+              snippet: "Last seen: ${pet.lastSeen}",
+            ),
+          ),
+        );
+      }
+    });
+
+    setState(() {
+      fetchingPets = false;
+    });
   }
 
   @override
@@ -342,7 +345,7 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
                         padding: EdgeInsets.only(bottom: 10.0),
                         child: TextField(
                           key: Key("search-lost-pets-distance-input"),
-                          // controller: LocationVAF.searchDistanceController,
+                          controller: searchDistanceController,
                           decoration: InputDecoration(
                             labelText: "Distance (km)",
                             labelStyle: TextStyle(
@@ -372,7 +375,43 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
                         key: Key("apply-filters-button"),
                         cursor: SystemMouseCursors.click,
                         child: GestureDetector(
-                          onTap: () async {},
+                          onTap: () async {
+                            if (applyFiltersButtonText == "Applying Filters...") {
+                              return;
+                            }
+
+                            setState(() {
+                              applyFiltersButtonText = "Applying Filters...";
+                            });
+
+                            if (searchDistanceController.text.isEmpty) {
+                              return;
+                            }
+
+                            // check that there are only numbers in the input using regex
+                            RegExp regex = RegExp(r'^[0-9]+$');
+                            if (!regex.hasMatch(searchDistanceController.text)) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Please enter a valid distance'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+
+                              setState(() {
+                                applyFiltersButtonText = "Apply Filters";
+                              });
+                              return;
+                            }
+
+                            double distance = double.parse(searchDistanceController.text);
+
+                            await getPetsAndSetMarkers(distance);
+
+                            setState(() {
+                              applyFiltersButtonText = "Apply Filters";
+                            });
+                          },
                           child: Container(
                             height: 48,
                             margin: EdgeInsets.only(bottom: 10, left: 20),
@@ -383,7 +422,7 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
                             ),
                             child: Center(
                               child: Text(
-                                "Apply Filters",
+                                applyFiltersButtonText,
                                 style: TextStyle(color: Colors.white, fontSize: 16.0),
                               ),
                             ),
@@ -395,7 +434,40 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
                           key: Key("add-sighting-button"),
                           cursor: SystemMouseCursors.click,
                           child: GestureDetector(
-                            onTap: () async {},
+                            onTap: () async {
+                              if (reportSightingText == "Reporting Sighting...") {
+                                return;
+                              }
+
+                              setState(() {
+                                reportSightingText = "Reporting Sighting...";
+                              });
+
+                              try {
+                                Pet pet = pets[selectedPet.value];
+
+                                await LostAndFoundService().reportPetSighting(pet.petId, profileDetails.userID, LocationVAF.myLocation.target);
+                                await getPetsAndSetMarkers(double.parse(searchDistanceController.text));
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Sighting reported successfully'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Failed to report sighting'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+
+                              setState(() {
+                                reportSightingText = "Report Sighting";
+                              });
+                            },
                             child: Container(
                               height: 48,
                               margin: EdgeInsets.only(bottom: 10, left: 20),
@@ -406,7 +478,7 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
                               ),
                               child: Center(
                                 child: Text(
-                                  "Add sighting",
+                                  reportSightingText,
                                   style: TextStyle(color: Colors.white, fontSize: 16.0),
                                 ),
                               ),
@@ -419,42 +491,23 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
                   Divider(),
                   Row(
                     children: [
-                      StreamBuilder<List<Pet>>(
-                        stream: Stream.fromFuture(LostAndFoundService().getLostPetsNearby(LocationVAF.myLocation.target, 200)),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return Container(
-                              margin: EdgeInsets.only(right: 10),
-                              width: (MediaQuery.of(context).size.width - 290) / 3,
-                              height: MediaQuery.of(context).size.height - 197.0,
-                              child: Center(child: Column(
-                                children: [
-                                  Text("Fetching pets..."),
-                                  CircularProgressIndicator(),
-                                ],
-                              )),
-                            );
-                          } else if (snapshot.hasError) {
-                            return Center(child: Text('Error fetching pets'));
-                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return Center(child: Text('No pets found'));
-                          } else {
-                            pets = snapshot.data!;
-                            return ListOfPets(
-                              pets: pets,
-                              markers: markers,
-                              selectedPet: selectedPet,
-                              selectedLocation: selectedLocation,
-                            );
-                          }
-                        },
-                      ),
-                      // ListOfPets(
-                      //   pets: pets,
-                      //   markers: markers,
-                      //   selectedPet: selectedPet,
-                      //   selectedLocation: selectedLocation,
-                      // ),
+                      if (fetchingPets) ...[
+                        Container(
+                          margin: EdgeInsets.only(right: 10),
+                          width: (MediaQuery.of(context).size.width - 290) / 3,
+                          height: MediaQuery.of(context).size.height - 197.0,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                      ] else ...[
+                        ListOfPets(
+                          pets: pets,
+                          markers: markers,
+                          selectedPet: selectedPet,
+                          selectedLocation: selectedLocation,
+                        ),
+                      ],
                       SizedBox(
                         width: (MediaQuery.of(context).size.width - 290) / 3 * 2 - 30,
                         height: MediaQuery.of(context).size.height - 197.0,
@@ -471,27 +524,27 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
 
                             String? mapStyle = snapshot.data;
 
-                            return Text("Placeholder for Google Map");
+                            // return Text("Placeholder for Google Map");
 
-                            //   return ClipRRect(
-                            //     borderRadius: BorderRadius.circular(20.0),
-                            //     child: GoogleMap(
-                            //       key: Key('googleMap'),
-                            //       style: mapStyle,
-                            //       initialCameraPosition: LocationVAF.myLocation,
-                            //       markers: markers.toSet(),
-                            //       onMapCreated: (GoogleMapController controller) {
-                            //         print("Google Map Controller created");
-                            //         _googleMapController = controller;
+                              return ClipRRect(
+                                borderRadius: BorderRadius.circular(20.0),
+                                child: GoogleMap(
+                                key: Key('googleMap'),
+                                style: mapStyle,
+                                initialCameraPosition: LocationVAF.myLocation,
+                                markers: markers.toSet(),
+                                onMapCreated: (GoogleMapController controller) {
+                                  print("Google Map Controller created");
+                                  _googleMapController = controller;
 
-                            //         if (selectedPet.value != -1) {
-                            //           panCameraToLocation(pets[selectedPet.value]["location"].latitude, pets[selectedPet.value]["location"].longitude);
-                            //         }
-                            //       },
-                            //       myLocationButtonEnabled: true,
-                            //       zoomControlsEnabled: true,
-                            //     ),
-                            //   );
+                                  if (selectedPet.value != -1) {
+                                    panCameraToLocation(pets[selectedPet.value].lastSeenLocation.latitude, pets[selectedPet.value].lastSeenLocation.longitude);
+                                  }
+                                },
+                                myLocationButtonEnabled: true,
+                                zoomControlsEnabled: true,
+                              ),
+                              );
                           },
                         ),
                       ),
@@ -550,6 +603,10 @@ class _ListOfPetsState extends State<ListOfPets> {
     widget.selectedPet.value = -1;
   }
 
+  String formatDate(DateTime date) {
+    return "${date.day}/${date.month}/${date.year}";
+  }
+
   @override
   Widget build(BuildContext context) {
     if (petSelected) {
@@ -598,7 +655,7 @@ class _ListOfPetsState extends State<ListOfPets> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Date: ${sightings.lastSeen}", style: TextStyle(color: themeSettings.textColor)),
+                              Text("Date: ${formatDate(sightings.lastSeen)}", style: TextStyle(color: themeSettings.textColor)),
                               Text("Location: ${sightings.locationFound.latitude}, ${sightings.locationFound.longitude}", style: TextStyle(color: themeSettings.textColor)),
                             ],
                           ),
@@ -641,14 +698,38 @@ class _ListOfPetsState extends State<ListOfPets> {
                         children: [
                           CircleAvatar(
                             radius: 40,
-                            // backgroundImage: AssetImage("assets/images/dog.png"),
+                            backgroundImage: NetworkImage(pet.pictureUrl),
                           ),
                           SizedBox(width: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(pet.petName, style: TextStyle(color: themeSettings.textColor, fontSize: 24)),
-                              Text("Last seen: ${pet.lastSeen}", style: TextStyle(color: themeSettings.textColor)),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Text(pet.petName, style: TextStyle(color: themeSettings.textColor, fontSize: 24)),
+                                  if (pet.ownerId == profileDetails.userID) ...[
+                                    SizedBox(width: 10),
+                                    TextButton(
+                                      style: ButtonStyle(
+                                        backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                                      ),
+                                      onPressed: () async {
+                                        await LostAndFoundService().reportPetFound(pet.petId);
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('Pet reported found'),
+                                            backgroundColor: Colors.green,
+                                          ),
+                                        );
+                                      },
+                                      child: Text("Report Found", style: TextStyle(color: Colors.white)),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              Text("Last seen: ${formatDate(pet.lastSeen!)}", style: TextStyle(color: themeSettings.textColor)),
                               Text("Sightings: ${pet.sightings.length}", style: TextStyle(color: themeSettings.textColor)),
                             ],
                           ),
@@ -657,7 +738,10 @@ class _ListOfPetsState extends State<ListOfPets> {
                     ),
                   ),
                 ),
-              ]
+              ],
+              if (widget.pets.isEmpty) ...[
+                Text("No pets found", style: TextStyle(color: themeSettings.textColor)),
+              ],
             ],
           ),
         ),

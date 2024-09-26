@@ -10,6 +10,8 @@ class Pet {
   double distance;
   final String petName;
   final List<Sighting> sightings;
+  String pictureUrl;
+  String ownerId;
 
   Pet({
     required this.petId,
@@ -19,16 +21,15 @@ class Pet {
     this.distance = 0.0,
     required this.petName,
     this.sightings = const [],
+    this.pictureUrl = '',
+    this.ownerId = '',
   });
 
-  factory Pet.fromDocument(DocumentSnapshot doc, {String petName = 'Unknown'}) {
- List<dynamic> sightingsData = doc['sightings'] ?? [];
+  factory Pet.fromDocument(DocumentSnapshot doc, {String petName = 'Unknown', String petPictureUrl = ''}) {
+    List<dynamic> sightingsData = doc['sightings'] ?? [];
 
-  // Filter out any invalid or empty sightings (e.g., empty strings)
-  List<Sighting> sightingsList = sightingsData
-      .where((s) => s is Map<String, dynamic> && s.isNotEmpty)
-      .map((s) => Sighting.fromMap(s))
-      .toList();
+    // Filter out any invalid or empty sightings (e.g., empty strings)
+    List<Sighting> sightingsList = sightingsData.where((s) => s is Map<String, dynamic> && s.isNotEmpty).map((s) => Sighting.fromMap(s)).toList();
 
     return Pet(
       petId: doc['petID'],
@@ -37,6 +38,8 @@ class Pet {
       lastSeenLocation: doc['lastSeenLocation'],
       petName: petName,
       sightings: sightingsList,
+      pictureUrl: petPictureUrl,
+      ownerId: doc['ownerId'],
     );
   }
 
@@ -44,7 +47,6 @@ class Pet {
     distance = indistance;
   }
 }
-
 
 // Class to represent a pet sighting
 class Sighting {
@@ -71,7 +73,7 @@ class LostAndFoundService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Report a pet missing
-  Future<void> reportPetMissing(String petId, LatLng loc,String ownerId) async {
+  Future<void> reportPetMissing(String petId, LatLng loc, String ownerId) async {
     try {
       GeoPoint location = GeoPoint(loc.latitude, loc.longitude);
       DocumentReference petRef = _firestore.collection('lostPets').doc(petId);
@@ -106,7 +108,7 @@ class LostAndFoundService {
             'locationFound': location, // Geopoint
           }
         ]),
-        'lastSeenLocation': location, // Update last seen location
+        // 'lastSeenLocation': location, // Update last seen location
         'lastSeen': now, // Update last seen timestamp
       });
 
@@ -115,56 +117,56 @@ class LostAndFoundService {
       print('Error reporting pet sighting: $e');
     }
   }
-Future<List<Pet>> getLostPetsNearby(LatLng userLocation, double radius) async {
-  List<Pet> petsWithinRadius = [];
 
-  try {
-    // Get all lost pets from the database
-    QuerySnapshot lostPetsSnapshot = await _firestore
-        .collection('lostPets')
-        .where('found', isEqualTo: false)
-        .get();
+  Future<List<Pet>> getLostPetsNearby(LatLng userLocation, double radius) async {
+    List<Pet> petsWithinRadius = [];
 
-    for (var doc in lostPetsSnapshot.docs) {
-      GeoPoint lastSeenLocation = doc['lastSeenLocation'];
-      double distance = Geolocator.distanceBetween(
-        userLocation.latitude,
-        userLocation.longitude,
-        lastSeenLocation.latitude,
-        lastSeenLocation.longitude,
-      );
+    try {
+      // Get all lost pets from the database
+      QuerySnapshot lostPetsSnapshot = await _firestore.collection('lostPets').where('found', isEqualTo: false).get();
 
-      print('Distance to pet ${doc['petID']}: ${distance / 1000} km');
+      for (var doc in lostPetsSnapshot.docs) {
+        GeoPoint lastSeenLocation = doc['lastSeenLocation'];
+        double distance = Geolocator.distanceBetween(
+          userLocation.latitude,
+          userLocation.longitude,
+          lastSeenLocation.latitude,
+          lastSeenLocation.longitude,
+        );
 
-      if ((distance / 1000) <= radius) {
-        String petId = doc['petID'];
+        // print('Distance to pet ${doc['petID']}: ${distance / 1000} km');
 
-        // Fetch pet details from the user's sub-collection
-        String petName = await _getPetNameById(petId,doc['ownerId']);
-        Pet pet = Pet.fromDocument(doc, petName: petName);
-        pet.addDistance(distance / 1000);
-        petsWithinRadius.add(pet);
+        if ((distance / 1000) <= radius) {
+          String petId = doc['petID'];
+
+          // Fetch pet details from the user's sub-collection
+          DocumentSnapshot? petDetails = await _getPetNameById(petId, doc['ownerId']);
+          String petName = petDetails!['name'] ?? 'Unknown';
+          String pictureUrl = petDetails['pictureUrl'] ?? '';
+          Pet pet = Pet.fromDocument(doc, petName: petName, petPictureUrl: pictureUrl);
+          pet.addDistance(distance / 1000);
+          petsWithinRadius.add(pet);
+        }
       }
+
+      // print('Found ${petsWithinRadius.length} lost pets within $radius km of user location.');
+    } catch (e) {
+      print('Error fetching lost pets: $e');
     }
 
-    print('Found ${petsWithinRadius.length} lost pets within $radius km of user location.');
-  } catch (e) {
-    print('Error fetching lost pets: $e');
+    return petsWithinRadius;
   }
-
-  return petsWithinRadius;
-}
 
 // Helper function to get the pet name from users' sub-collection
-Future<String> _getPetNameById(String petId,String ownerId) async {
-  try {
-    DocumentSnapshot petDoc = await _firestore.collection('users').doc(ownerId).collection('pets').doc(petId).get();
-    return petDoc['name'];
-  } catch (e) {
-    print('Error fetching pet name: $e');
-    return 'Unknown';
+  Future<DocumentSnapshot?> _getPetNameById(String petId, String ownerId) async {
+    try {
+      return await _firestore.collection('users').doc(ownerId).collection('pets').doc(petId).get();
+    } catch (e) {
+      print('Error fetching pet name: $e');
+      return null;
+    }
   }
-}
+
   //report a pet found and remove it from the lost pets collection
   Future<void> reportPetFound(String petId) async {
     try {
