@@ -66,10 +66,37 @@ class LocationService {
       return []; // Return an empty list if an error occurs
     }
   }
+    Future<List<Vet>> getVetsByName(String name) async {
+    String searchLowerBound = name;
+    String searchUpperBound = name + '\uf8ff';
+    var vetQuerySnapshot = await _firestore.collection('vets').where('name', isGreaterThanOrEqualTo: searchLowerBound).where('name', isLessThanOrEqualTo: searchUpperBound).get();
+    List<Vet> matchingVets = [];
+
+    for (var doc in vetQuerySnapshot.docs) {
+      Vet vet = Vet.fromFirestore(doc.data());
+      matchingVets.add(vet); // Add vet to the list
+    }
+
+    return matchingVets; // Return the list of matching vets
+  }
 
   Future<List<User>> getPetKeepers(LatLng userLocation, double radius) async {
     GeoPoint geoPoint = GeoPoint(userLocation.latitude, userLocation.longitude);
     return _getUsersByRoleWithinRadius(geoPoint, radius, 'pet_keeper');
+  }
+  
+  Future<List<User>> getPetKeepersByName(String name) async {
+    String searchLowerBound = name;
+    String searchUpperBound = name + '\uf8ff';
+    var petKeeperQuerySnapshot = await _firestore.collection('users').where('name', isGreaterThanOrEqualTo: searchLowerBound).where('name', isLessThanOrEqualTo: searchUpperBound).where('userType', isEqualTo: 'pet_keeper').get();
+    List<User> matchingPetKeepers = [];
+
+    for (var doc in petKeeperQuerySnapshot.docs) {
+      User petKeeper = User.fromFirestore(doc.data());
+      matchingPetKeepers.add(petKeeper); // Add pet keeper to the list
+    }
+
+    return matchingPetKeepers; // Return the list of matching pet keepers
   }
 
   Future<List<User>> _getUsersByRoleWithinRadius(GeoPoint userLocation, double radius, String userType) async {
