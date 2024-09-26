@@ -60,6 +60,7 @@ dependencies:
   syncfusion_flutter_datepicker: ^26.2.7
   syncfusion_flutter_core: ^26.2.7
   dropdown_button2: ^2.3.9
+  accordion: ^2.6.0
 
 dev_dependencies:
   flutter_test:
@@ -73,11 +74,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
-  mockito: ^5.0.0
+  mockito: ^5.4.4
   covadge: any
   coverage: ^1.0.0
   lint: ^1.0.0
-  build_runner: ^2.1.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
