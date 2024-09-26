@@ -25,50 +25,46 @@ class HomePageService {
     List<Map<String, dynamic>> petIds,
   ) async {
     try {
-
-      // Generate a unique file name for the photo
-      String photoFileName = 'posts/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(platformFile.name)}';
-
-
+      // Create a map for the initial post data without the photo URL and postId
+      final postData = {
+        'UserId': userId,
+        'Content': content,
+        'CreatedAt': DateTime.now(),
+        'ImgUrl': '', // Placeholder for the photo URL
+        'PetIds': petIds,
+        'pictureUrl': profileDetails.profilePicture.replaceAll('"', ''),
+        'name': profileDetails.name
+      };
+  
+      // Add the initial post data to Firestore to get the postId
+      DocumentReference postRef = await _db.collection('posts').add(postData);
+      String postId = postRef.id;
+  
+      // Generate a unique file name for the photo including the postId
+      String photoFileName = 'posts/${userId}_${postId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(platformFile.name)}';
+  
       // Convert PlatformFile to Uint8List (byte data)
       Uint8List? fileBytes = platformFile.bytes;
       if (fileBytes == null) {
         throw Exception("File data is null");
       }
-
+  
       // Set metadata to force the MIME type to be image/jpeg
       SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
-
+  
       // Upload the photo to Firebase Storage
       TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
-
-
+  
       // Retrieve the photo URL
       String imgUrl = await uploadTask.ref.getDownloadURL();
-
-      String profilePhoto = profileDetails.profilePicture.replaceAll('"', '');
-
-
-      // Create a map for the post data, including the imgUrl
-      final postData = {
-        'UserId': userId,
-        'Content': content,
-        'CreatedAt': DateTime.now(),
-        'ImgUrl': imgUrl, // Use the uploaded photo URL
-        'PetIds': petIds,
-        'pictureUrl' : profilePhoto,
-        'name' : profileDetails.name
-      };
-      DocumentReference postRef = await _db.collection('posts').add(postData);
-
-
-      // Update postData to include postId
-      postData['PostId'] = postRef.id;
-
-      // Update the document with the new postData including the postId
+  
+      // Update postData to include the photo URL and postId
+      postData['ImgUrl'] = imgUrl;
+      postData['PostId'] = postId;
+  
+      // Update the document with the new postData including the photo URL and postId
       await postRef.set(postData);
-
-      print("Likes and comments subcollections initialized");
+  
       print("Post added successfully with photo.");
       return true; // Return true if the post is added successfully
     } catch (e) {

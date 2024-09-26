@@ -40,7 +40,7 @@ exports.getVets = functions.https.onRequest((req, res) => {
 exports.imageLabeling = onObjectFinalized(async (object) => {
   const filePath = object.data.name;  // Use object.data.name to get the file path
   const bucketName = object.data.bucket;
-  
+
   console.log('Received object:', object);  // Log the entire object
   console.log(`Processing image at: ${filePath}`);
 
@@ -62,14 +62,35 @@ exports.imageLabeling = onObjectFinalized(async (object) => {
       return;
     }
 
-    // Save the labels to Firestore
-    await admin.firestore().collection('images').add({
-      filePath: filePath,  // Ensure filePath is valid
-      labels: labels,      // Ensure labels are valid
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    // Define the regular expression pattern
+    const regExp = new RegExp('posts/[^_]+_([^_]+)_\\d+');
 
-    console.log(`Labels saved to Firestore for image: ${filePath}`);
+    // Apply the pattern to the filePath
+    const match = regExp.exec(filePath);
+
+    if (match && match[1]) {
+      const postId = match[1];
+      console.log(`Extracted postId: ${postId}`);
+
+      // Update the post document with the labels
+      await admin.firestore().collection('posts').doc(postId).update({
+        labels: labels,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      console.log(`Labels updated in Firestore for post: ${postId}`);
+    } else {
+      console.log("File is not a post. Saving labels to a new Firestore document.");
+
+      // Save the labels to Firestore in a new document
+      await admin.firestore().collection('images').add({
+        filePath: filePath,  // Ensure filePath is valid
+        labels: labels,      // Ensure labels are valid
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      console.log(`Labels saved to Firestore for image: ${filePath}`);
+    }
   } catch (error) {
     console.error("Error during image labeling or Firestore save:", error);
   }
