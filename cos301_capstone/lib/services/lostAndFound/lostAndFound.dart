@@ -161,5 +161,17 @@ Future<String> _getPetNameById(String petId,String ownerId) async {
     return 'Unknown';
   }
 }
+  //report a pet found and remove it from the lost pets collection
+  Future<void> reportPetFound(String petId) async {
+    try {
+      DocumentReference petRef = _firestore.collection('lostPets').doc(petId);
+      await petRef.update({
+        'found': true,
+      });
 
+      print('Pet $petId has been reported found.');
+    } catch (e) {
+      print('Error reporting pet found: $e');
+    }
+  }
 }
