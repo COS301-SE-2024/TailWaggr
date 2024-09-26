@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';class Pet {
+import 'package:geolocator/geolocator.dart';
+
+class Pet {
   final String petId;
   final bool found;
   final DateTime? lastSeen;
@@ -65,7 +67,7 @@ class Sighting {
   }
 }
 
-class LostAndFound {
+class LostAndFoundService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Report a pet missing
@@ -131,6 +133,8 @@ Future<List<Pet>> getLostPetsNearby(LatLng userLocation, double radius) async {
         lastSeenLocation.latitude,
         lastSeenLocation.longitude,
       );
+
+      print('Distance to pet ${doc['petID']}: ${distance / 1000} km');
 
       if ((distance / 1000) <= radius) {
         String petId = doc['petID'];

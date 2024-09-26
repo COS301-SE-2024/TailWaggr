@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
+import 'package:cos301_capstone/services/lostAndFound/lostAndFound.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -19,76 +20,7 @@ class LostAndFoundDesktop extends StatefulWidget {
 class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
   late GoogleMapController _googleMapController;
 
-  final List<Map<String, dynamic>> pets = [
-    {
-      "petName": "Bella",
-      "lastSeen": "2021-09-01",
-      "location": GeoPoint(-25.751065353022884, 28.24424206468121),
-      "potentialSightings": []
-    },
-    {
-      "petName": "Max",
-      "lastSeen": "2021-09-05",
-      "location": GeoPoint(-26.2041028, 28.0473051),
-      "potentialSightings": []
-    },
-    {
-      "petName": "Lucy",
-      "lastSeen": "2021-08-20",
-      "location": GeoPoint(-33.9248685, 18.4240553),
-      "potentialSightings": [
-        {
-          "seenDate": "2021-08-21",
-          "location": GeoPoint(-33.9249, 18.4240),
-        },
-      ]
-    },
-    {
-      "petName": "Charlie",
-      "lastSeen": "2021-07-15",
-      "location": GeoPoint(-34.603722, -58.381592),
-      "potentialSightings": [
-        {
-          "seenDate": "2021-07-16",
-          "location": GeoPoint(-34.6037, -58.3815),
-        },
-        {
-          "seenDate": "2021-07-17",
-          "location": GeoPoint(-34.6038, -58.3814),
-        },
-        {
-          "seenDate": "2021-07-18",
-          "location": GeoPoint(-34.6039, -58.3813),
-        },
-      ]
-    },
-    {
-      "petName": "Milo",
-      "lastSeen": "2021-06-10",
-      "location": GeoPoint(51.5074, -0.1278),
-      "potentialSightings": [
-        {
-          "seenDate": "2021-06-11",
-          "location": GeoPoint(51.5073, -0.1277),
-        },
-      ]
-    },
-    {
-      "petName": "Rocky",
-      "lastSeen": "2021-10-25",
-      "location": GeoPoint(40.712776, -74.005974),
-      "potentialSightings": [
-        {
-          "seenDate": "2021-10-26",
-          "location": GeoPoint(40.7127, -74.0060),
-        },
-        {
-          "seenDate": "2021-10-27",
-          "location": GeoPoint(40.7128, -74.0059),
-        },
-      ]
-    }
-  ];
+  List<Pet> pets = [];
 
   final List<Marker> markers = [];
 
@@ -97,12 +29,11 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
 
   bool mapControllerLoaded = false;
 
-  Map<String, dynamic> lostPet = {};
+  Pet? lostPet;
   List<bool> selectedLostPet = [];
 
-  @override
-  void initState() {
-    super.initState();
+  Future<void> getPetsAndSetMarkers() async {
+    pets = await LostAndFoundService().getLostPetsNearby(LocationVAF.myLocation.target, 200);
 
     setState(() {
       markers.clear();
@@ -116,19 +47,52 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
           ),
         ),
       );
-      for (Map<String, dynamic> pet in pets) {
+      for (Pet pet in pets) {
         markers.add(
           Marker(
-            markerId: MarkerId(pet["petName"]),
-            position: LatLng(pet["location"].latitude, pet["location"].longitude),
+            markerId: MarkerId(pet.petId),
+            position: LatLng(pet.lastSeenLocation.latitude, pet.lastSeenLocation.longitude),
             infoWindow: InfoWindow(
-              title: pet["petName"],
-              snippet: "Last seen: ${pet["lastSeen"]}",
+              title: pet.petName,
+              snippet: "Last seen: ${pet.lastSeen}",
             ),
           ),
         );
       }
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    getPetsAndSetMarkers();
+
+    // setState(() {
+    //   markers.clear();
+    //   markers.add(
+    //     Marker(
+    //       markerId: MarkerId("My Location"),
+    //       position: LatLng(LocationVAF.myLocation.target.latitude, LocationVAF.myLocation.target.longitude),
+    //       infoWindow: InfoWindow(
+    //         title: "My Location",
+    //         snippet: "You are here",
+    //       ),
+    //     ),
+    //   );
+    //   for (Pet pet in pets) {
+    //     markers.add(
+    //       Marker(
+    //         markerId: MarkerId(pet.petId),
+    //         position: LatLng(pet.lastSeenLocation.latitude, pet.lastSeenLocation.longitude),
+    //         infoWindow: InfoWindow(
+    //           title: pet.petName,
+    //           snippet: "Last seen: ${pet.lastSeen}",
+    //         ),
+    //       ),
+    //     );
+    //   }
+    // });
 
     selectedPet.addListener(() {
       setMarkers(selectedPet.value);
@@ -159,39 +123,39 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
         ),
       );
       if (selectedPet.value == -1) {
-        for (Map<String, dynamic> pet in pets) {
+        for (Pet pet in pets) {
           markers.add(
             Marker(
-              markerId: MarkerId(pet["petName"]),
-              position: LatLng(pet["location"].latitude, pet["location"].longitude),
+              markerId: MarkerId(pet.petId),
+              position: LatLng(pet.lastSeenLocation.latitude, pet.lastSeenLocation.longitude),
               infoWindow: InfoWindow(
-                title: pet["petName"],
-                snippet: "Last seen: ${pet["lastSeen"]}",
+                title: pet.petName,
+                snippet: "Last seen: ${pet.lastSeen}",
               ),
             ),
           );
         }
       } else {
-        Map<String, dynamic> pet = pets[index];
+        Pet pet = pets[index];
         markers.add(
           Marker(
-            markerId: MarkerId(pet["petName"]),
-            position: LatLng(pet["location"].latitude, pet["location"].longitude),
+            markerId: MarkerId(pet.petId),
+            position: LatLng(pet.lastSeenLocation.latitude, pet.lastSeenLocation.longitude),
             infoWindow: InfoWindow(
-              title: pet["petName"],
-              snippet: "Last seen: ${pet["lastSeen"]}",
+              title: pet.petName,
+              snippet: "Last seen: ${pet.lastSeen}",
             ),
           ),
         );
 
-        for (Map<String, dynamic> sighting in pet["potentialSightings"]) {
+        for (Sighting sighting in pet.sightings) {
           markers.add(
             Marker(
-              markerId: MarkerId(sighting["seenDate"]),
-              position: LatLng(sighting["location"].latitude, sighting["location"].longitude),
+              markerId: MarkerId(sighting.founderId),
+              position: LatLng(sighting.locationFound.latitude, sighting.locationFound.longitude),
               infoWindow: InfoWindow(
-                title: pet["petName"],
-                snippet: "Seen on: ${sighting["seenDate"]}",
+                title: pet.petName,
+                snippet: "Seen on: ${sighting.lastSeen}",
               ),
             ),
           );
@@ -455,12 +419,42 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
                   Divider(),
                   Row(
                     children: [
-                      ListOfPets(
-                        pets: pets,
-                        markers: markers,
-                        selectedPet: selectedPet,
-                        selectedLocation: selectedLocation,
+                      StreamBuilder<List<Pet>>(
+                        stream: Stream.fromFuture(LostAndFoundService().getLostPetsNearby(LocationVAF.myLocation.target, 200)),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Container(
+                              margin: EdgeInsets.only(right: 10),
+                              width: (MediaQuery.of(context).size.width - 290) / 3,
+                              height: MediaQuery.of(context).size.height - 197.0,
+                              child: Center(child: Column(
+                                children: [
+                                  Text("Fetching pets..."),
+                                  CircularProgressIndicator(),
+                                ],
+                              )),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(child: Text('Error fetching pets'));
+                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Center(child: Text('No pets found'));
+                          } else {
+                            pets = snapshot.data!;
+                            return ListOfPets(
+                              pets: pets,
+                              markers: markers,
+                              selectedPet: selectedPet,
+                              selectedLocation: selectedLocation,
+                            );
+                          }
+                        },
                       ),
+                      // ListOfPets(
+                      //   pets: pets,
+                      //   markers: markers,
+                      //   selectedPet: selectedPet,
+                      //   selectedLocation: selectedLocation,
+                      // ),
                       SizedBox(
                         width: (MediaQuery.of(context).size.width - 290) / 3 * 2 - 30,
                         height: MediaQuery.of(context).size.height - 197.0,
@@ -479,25 +473,25 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
 
                             return Text("Placeholder for Google Map");
 
-                          //   return ClipRRect(
-                          //     borderRadius: BorderRadius.circular(20.0),
-                          //     child: GoogleMap(
-                          //       key: Key('googleMap'),
-                          //       style: mapStyle,
-                          //       initialCameraPosition: LocationVAF.myLocation,
-                          //       markers: markers.toSet(),
-                          //       onMapCreated: (GoogleMapController controller) {
-                          //         print("Google Map Controller created");
-                          //         _googleMapController = controller;
+                            //   return ClipRRect(
+                            //     borderRadius: BorderRadius.circular(20.0),
+                            //     child: GoogleMap(
+                            //       key: Key('googleMap'),
+                            //       style: mapStyle,
+                            //       initialCameraPosition: LocationVAF.myLocation,
+                            //       markers: markers.toSet(),
+                            //       onMapCreated: (GoogleMapController controller) {
+                            //         print("Google Map Controller created");
+                            //         _googleMapController = controller;
 
-                          //         if (selectedPet.value != -1) {
-                          //           panCameraToLocation(pets[selectedPet.value]["location"].latitude, pets[selectedPet.value]["location"].longitude);
-                          //         }
-                          //       },
-                          //       myLocationButtonEnabled: true,
-                          //       zoomControlsEnabled: true,
-                          //     ),
-                          //   );
+                            //         if (selectedPet.value != -1) {
+                            //           panCameraToLocation(pets[selectedPet.value]["location"].latitude, pets[selectedPet.value]["location"].longitude);
+                            //         }
+                            //       },
+                            //       myLocationButtonEnabled: true,
+                            //       zoomControlsEnabled: true,
+                            //     ),
+                            //   );
                           },
                         ),
                       ),
@@ -521,7 +515,7 @@ class ListOfPets extends StatefulWidget {
     required this.selectedPet,
     required this.selectedLocation,
   });
-  final List<Map<String, dynamic>> pets;
+  final List<Pet> pets;
   final List<Marker> markers;
   final ValueNotifier<int> selectedPet;
   final ValueNotifier<GeoPoint> selectedLocation;
@@ -531,14 +525,14 @@ class ListOfPets extends StatefulWidget {
 
 class _ListOfPetsState extends State<ListOfPets> {
   bool petSelected = false;
-  Map<String, dynamic> selectedPet = {};
+  Pet? selectedPet;
 
   @override
   void initState() {
     super.initState();
   }
 
-  void setSelectedPet(Map<String, dynamic> pet) {
+  void setSelectedPet(Pet pet) {
     setState(() {
       selectedPet = pet;
       petSelected = true;
@@ -550,7 +544,7 @@ class _ListOfPetsState extends State<ListOfPets> {
   void clearSelectedPet() {
     setState(() {
       petSelected = false;
-      selectedPet = {};
+      selectedPet = null;
     });
 
     widget.selectedPet.value = -1;
@@ -582,15 +576,15 @@ class _ListOfPetsState extends State<ListOfPets> {
                     ),
                   ),
                   SizedBox(width: 10),
-                  Text("Sightings for ${selectedPet["petName"]}", style: TextStyle(color: themeSettings.textColor, fontSize: 24)),
+                  Text("Sightings for ${selectedPet?.petName}", style: TextStyle(color: themeSettings.textColor, fontSize: 24)),
                 ],
               ),
-              for (Map<String, dynamic> sightings in selectedPet["potentialSightings"]) ...[
+              for (Sighting sightings in selectedPet!.sightings) ...[
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
                   child: GestureDetector(
                     onTap: () {
-                      widget.selectedLocation.value = sightings["location"];
+                      widget.selectedLocation.value = sightings.locationFound;
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(vertical: 10),
@@ -604,8 +598,8 @@ class _ListOfPetsState extends State<ListOfPets> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Date: ${sightings["seenDate"]}", style: TextStyle(color: themeSettings.textColor)),
-                              Text("Location: ${sightings["location"].latitude}, ${sightings["location"].longitude}", style: TextStyle(color: themeSettings.textColor)),
+                              Text("Date: ${sightings.lastSeen}", style: TextStyle(color: themeSettings.textColor)),
+                              Text("Location: ${sightings.locationFound.latitude}, ${sightings.locationFound.longitude}", style: TextStyle(color: themeSettings.textColor)),
                             ],
                           ),
                         ],
@@ -614,7 +608,7 @@ class _ListOfPetsState extends State<ListOfPets> {
                   ),
                 ),
               ],
-              if (selectedPet["potentialSightings"] == null || selectedPet["potentialSightings"].isEmpty) ...[
+              if (selectedPet == null || selectedPet!.sightings.isEmpty) ...[
                 Text("No sightings found", style: TextStyle(color: themeSettings.textColor)),
               ],
             ],
@@ -629,7 +623,7 @@ class _ListOfPetsState extends State<ListOfPets> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              for (Map<String, dynamic> pet in widget.pets) ...[
+              for (Pet pet in widget.pets) ...[
                 MouseRegion(
                   key: Key("pet-${widget.pets.indexOf(pet)}"),
                   cursor: SystemMouseCursors.click,
@@ -653,9 +647,9 @@ class _ListOfPetsState extends State<ListOfPets> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(pet["petName"], style: TextStyle(color: themeSettings.textColor, fontSize: 24)),
-                              Text("Last seen: ${pet["lastSeen"]}", style: TextStyle(color: themeSettings.textColor)),
-                              Text("Sightings: ${pet["potentialSightings"].length}", style: TextStyle(color: themeSettings.textColor)),
+                              Text(pet.petName, style: TextStyle(color: themeSettings.textColor, fontSize: 24)),
+                              Text("Last seen: ${pet.lastSeen}", style: TextStyle(color: themeSettings.textColor)),
+                              Text("Sightings: ${pet.sightings.length}", style: TextStyle(color: themeSettings.textColor)),
                             ],
                           ),
                         ],
