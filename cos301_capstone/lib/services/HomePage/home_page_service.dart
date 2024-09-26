@@ -132,6 +132,33 @@ class HomePageService {
       return []; // Return an empty list if an error occurs
     }
   }
+  Future<List<Map<String, dynamic>>> getPostsByLabels(List<String> words) async {
+    try {
+      // Fetch the posts from the "posts" collection
+      final querySnapshot = await _db.collection('posts').get();
+
+      // Convert each document to a map and add it to a list
+      final posts = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+      // Filter posts based on matching labels
+      final filteredPosts = posts.where((post) {
+        final labels = post['labels'] as List<dynamic>?;
+        if (labels == null) return false;
+
+        // Check if any of the labels match the words entered by the user
+        return words.any((word) => labels.contains(word));
+      }).toList();
+
+      // Sort the filtered posts from newest to oldest based on the 'CreatedAt' field
+      filteredPosts.sort((a, b) => b['CreatedAt'].compareTo(a['CreatedAt']));
+
+      print("Posts fetched and filtered successfully.");
+      return filteredPosts; // Return the filtered list of posts
+    } catch (e) {
+      print("Error fetching posts: $e");
+      return []; // Return an empty list if an error occurs
+    }
+  }
   Future<void> toggleLikeOnPost(String postId, String userId) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
     DocumentSnapshot likeSnapshot = await postRef.collection('likes').doc(userId).get();
