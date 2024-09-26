@@ -142,8 +142,6 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
       for (int i = 0; i < profileDetails.pets.length; i++) {
         selectedLostPet.add(false);
       }
-
-      print("Selected Lost Pet: $selectedLostPet");
     });
   }
 
@@ -222,12 +220,12 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
   void dispose() {
     try {
       // if (mounted) {
-      print("Disposing Google Map Controller");
+      // print("Disposing Google Map Controller");
       _googleMapController.dispose();
       // }
       super.dispose();
     } catch (e) {
-      print("Error disposing Google Map Controller: $e");
+      // print("Error disposing Google Map Controller: $e");
     } finally {
       // _scrollController.dispose();
       super.dispose();
@@ -479,27 +477,27 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
 
                             String? mapStyle = snapshot.data;
 
-                            return Text("Placeholder for Google Map");
+                            // return Text("Placeholder for Google Map");
 
-                            // return ClipRRect(
-                            //   borderRadius: BorderRadius.circular(20.0),
-                            //   child: GoogleMap(
-                            //     key: Key('googleMap'),
-                            //     style: mapStyle,
-                            //     initialCameraPosition: LocationVAF.myLocation,
-                            //     markers: markers.toSet(),
-                            //     onMapCreated: (GoogleMapController controller) {
-                            //       print("Google Map Controller created");
-                            //       _googleMapController = controller;
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(20.0),
+                              child: GoogleMap(
+                                key: Key('googleMap'),
+                                style: mapStyle,
+                                initialCameraPosition: LocationVAF.myLocation,
+                                markers: markers.toSet(),
+                                onMapCreated: (GoogleMapController controller) {
+                                  print("Google Map Controller created");
+                                  _googleMapController = controller;
 
-                            //       if (selectedPet.value != -1) {
-                            //         panCameraToLocation(pets[selectedPet.value]["location"].latitude, pets[selectedPet.value]["location"].longitude);
-                            //       }
-                            //     },
-                            //     myLocationButtonEnabled: true,
-                            //     zoomControlsEnabled: true,
-                            //   ),
-                            // );
+                                  if (selectedPet.value != -1) {
+                                    panCameraToLocation(pets[selectedPet.value]["location"].latitude, pets[selectedPet.value]["location"].longitude);
+                                  }
+                                },
+                                myLocationButtonEnabled: true,
+                                zoomControlsEnabled: true,
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -633,6 +631,7 @@ class _ListOfPetsState extends State<ListOfPets> {
             children: [
               for (Map<String, dynamic> pet in widget.pets) ...[
                 MouseRegion(
+                  key: Key("pet-${widget.pets.indexOf(pet)}"),
                   cursor: SystemMouseCursors.click,
                   child: GestureDetector(
                     onTap: () {

@@ -83,8 +83,7 @@ class _AuthGateState extends State<AuthGate> {
           populateUserData();
           populateUserPets();
 
-          // return Homepage();
-          return LostAndFound();
+          return Homepage();
         }
         return Login();
       },
