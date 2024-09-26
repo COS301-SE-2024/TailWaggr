@@ -174,10 +174,10 @@ class _MobileForumsState extends State<MobileForums> {
                               decoration: BoxDecoration(
                                 color: themeSettings.cardColor,
                                 borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: themeSettings.primaryColor,
-                                  width: 2.0,
-                                ),
+                                // border: Border.all(
+                                //   color: themeSettings.primaryColor,
+                                //   width: 2.0,
+                                // ),
                               ),
                               child: Text(
                                 forum['Name'],
@@ -437,10 +437,10 @@ class __ForumViewState extends State<_ForumView> {
                                 decoration: BoxDecoration(
                                   color: themeSettings.cardColor,
                                   borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: themeSettings.primaryColor,
-                                    width: 2.0,
-                                  ),
+                                  // border: Border.all(
+                                  //   color: themeSettings.primaryColor,
+                                  //   width: 2.0,
+                                  // ),
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -636,10 +636,10 @@ class _MessageViewState extends State<MessageView> {
                     decoration: BoxDecoration(
                       color: themeSettings.cardColor,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: themeSettings.primaryColor,
-                        width: 2.0,
-                      ),
+                      // border: Border.all(
+                      //   color: themeSettings.primaryColor,
+                      //   width: 2.0,
+                      // ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
