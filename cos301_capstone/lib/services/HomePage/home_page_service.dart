@@ -227,8 +227,27 @@ class HomePageService {
     return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
   }
   Future<List<String>> getPostLabels(String postId) async {
-    DocumentReference postRef = _db.collection('posts').doc(postId);
-    final querySnapshot = await postRef.collection('labels').get();
-    return querySnapshot.docs.map((doc) => doc.id).toList();
+    try {
+      // Fetch the document for the given postId from the "posts" collection
+      DocumentSnapshot docSnapshot = await _db.collection('posts').doc(postId).get();
+
+      // Check if the document exists
+      if (docSnapshot.exists) {
+        // Extract the labels array from the document data
+        List<dynamic> labels = docSnapshot.get('labels');
+
+        // Convert the dynamic list to a list of strings
+        List<String> labelsList = labels.cast<String>();
+
+        print("Labels fetched successfully for post: $postId");
+        return labelsList;
+      } else {
+        print("Post not found for postId: $postId");
+        return [];
+      }
+    } catch (e) {
+      print("Error fetching labels for post: $e");
+      return [];
+    }
   }
 }
