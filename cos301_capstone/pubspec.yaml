@@ -62,6 +62,7 @@ dependencies:
   syncfusion_flutter_datepicker: ^26.2.7
   syncfusion_flutter_core: ^26.2.7
   dropdown_button2: ^2.3.9
+  top_snackbar_flutter: ^3.1.0
 
 
 dev_dependencies:
