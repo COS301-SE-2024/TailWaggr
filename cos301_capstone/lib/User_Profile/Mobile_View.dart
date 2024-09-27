@@ -5,6 +5,7 @@ import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/Pets/Pet_Profile.dart';
+import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -479,68 +480,98 @@ class _PostsContainerState extends State<PostsContainer> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           for (var post in profileDetails.myPosts) ...[
-            IntrinsicHeight(
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        post["ImgUrl"],
-                        width: MediaQuery.of(context).size.width,
-                        // height: 300,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      post["Content"],
-                      style: TextStyle(
-                        color: themeSettings.textColor,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 4,
-                    ),
-                    SizedBox(height: 20),
-                    if (post['PetIds'].length > 0) ...[
-                      Text(
-                        "Pets included in this post: ",
-                        style: TextStyle(
-                          color: themeSettings.textColor.withOpacity(0.7),
+            Stack(
+              children: [
+                IntrinsicHeight(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            post["ImgUrl"],
+                            width: MediaQuery.of(context).size.width,
+                            // height: 300,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            for (var pet in post['PetIds']) ...[
-                              Container(
-                                margin: EdgeInsets.only(right: 10),
-                                child: Column(
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 20,
-                                      backgroundImage: NetworkImage(pet["pictureUrl"]),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Text(
-                                      pet["name"],
-                                      style: TextStyle(color: themeSettings.textColor),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ],
+                        SizedBox(height: 20),
+                        Text(
+                          post["Content"],
+                          style: TextStyle(
+                            color: themeSettings.textColor,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 4,
                         ),
-                      ),
-                    ],
-                  ],
+                        SizedBox(height: 20),
+                        if (post['PetIds'].length > 0) ...[
+                          Text(
+                            "Pets included in this post: ",
+                            style: TextStyle(
+                              color: themeSettings.textColor.withOpacity(0.7),
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                for (var pet in post['PetIds']) ...[
+                                  Container(
+                                    margin: EdgeInsets.only(right: 10),
+                                    child: Column(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: NetworkImage(pet["pictureUrl"]),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          pet["name"],
+                                          style: TextStyle(color: themeSettings.textColor),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  child: IconButton(
+                    icon: Icon(Icons.delete, color: themeSettings.primaryColor),
+                    onPressed: () async {
+                      print("PostId: ${post["PostId"]}");
+
+                      bool deleted = await HomePageService().deletePost(post["PostId"]);
+
+                      if (deleted) {
+                        print("Post deleted successfully.");
+                        setState(() {
+                          profileDetails.myPosts.remove(post);
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Failed to delete post'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
             Divider(),
           ],

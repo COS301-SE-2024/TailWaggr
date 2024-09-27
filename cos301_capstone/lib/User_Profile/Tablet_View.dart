@@ -5,6 +5,7 @@ import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/Pets/Pet_Profile.dart';
+import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -566,6 +567,28 @@ class _PostsContainerState extends State<PostsContainer> {
                       ],
                     ),
                   ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: themeSettings.primaryColor),
+                    onPressed: () async {
+                      print("PostId: ${post["PostId"]}");
+
+                      bool deleted = await HomePageService().deletePost(post["PostId"]);
+
+                      if (deleted) {
+                        print("Post deleted successfully.");
+                        setState(() {
+                          profileDetails.myPosts.remove(post);
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Failed to delete post'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                  )
                 ],
               ),
             ),

@@ -166,8 +166,21 @@ class LocationVAF {
   */
   static Future<List<Vet>> getVets(LatLng userLocation, double radius) async {
     try {
+      markers.clear();
       vetList.clear();
       List<Vet> vets = await LocationService().getVets(userLocation, radius);
+      
+      if (searchVetsController.text.isNotEmpty) {
+        vets = vets.where((vet) => vet.name.toLowerCase().contains(searchVetsController.text.toLowerCase())).toList();
+      }
+
+      markers.add(
+        Marker(
+          markerId: MarkerId('current_location'),
+          position: userLocation,
+          infoWindow: InfoWindow(title: 'Current Location'),
+        ),
+      );
       
       for (Vet vet in vets) {
         vetList.add(vet);
