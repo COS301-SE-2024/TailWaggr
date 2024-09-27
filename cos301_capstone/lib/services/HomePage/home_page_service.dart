@@ -226,4 +226,9 @@ class HomePageService {
     final querySnapshot = await postRef.collection('comments').get();
     return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
   }
+  Future<List<String>> getPostLabels(String postId) async {
+    DocumentReference postRef = _db.collection('posts').doc(postId);
+    final querySnapshot = await postRef.collection('labels').get();
+    return querySnapshot.docs.map((doc) => doc.id).toList();
+  }
 }
