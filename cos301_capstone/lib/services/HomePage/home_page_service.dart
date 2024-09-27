@@ -9,6 +9,9 @@ import 'package:cos301_capstone/services/Notifications/notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 class HomePageService {
   late final FirebaseFirestore _db;
   late final FirebaseStorage _storage;
@@ -250,4 +253,18 @@ class HomePageService {
       return [];
     }
   }
+  Future<List<String>> getWikiLinks(List<String> labels) async {
+    List<String> wikiLinks = [];
+    
+    for (String label in labels) {
+      // Create a Wikipedia link directly for each label
+      String formattedLabel = label.replaceAll(' ', '_'); // Replace spaces with underscores
+      String link = 'https://en.wikipedia.org/wiki/$formattedLabel';
+      
+      wikiLinks.add(link);
+    }
+    
+    return wikiLinks;
+  }
+
 }
