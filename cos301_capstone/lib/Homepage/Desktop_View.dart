@@ -896,17 +896,17 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
-                                  color: Colors.white,
+                                  color: themeSettings.textColor, // Customize text color
                                 ),
                               ),
                               SizedBox(height: 8),
                               Text(
                                 moderationResult['message'],  // Full message
-                                style: TextStyle(color: Colors.white), // Customize text color
+                                style: TextStyle(color: themeSettings.textColor), // Customize text color
                               ),
                             ],
                           ),
-                          duration: Duration(seconds: 25),  // Increase the duration if needed
+                          duration: Duration(seconds: 20),  // Increase the duration if needed
                           behavior: SnackBarBehavior.floating,  // Makes the snackbar floating
                         ),
                       );

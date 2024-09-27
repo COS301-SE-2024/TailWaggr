@@ -24,27 +24,27 @@ class ImageFilter {
         bool hasInappropriateContent = false;
 
         if (pornContent) {
-          warningMessage += "• Pornographic content.\n";
+          warningMessage += "Pornographic content.\n";
           warningMessage += "Looks like you're in the wrong place for OnlyFans content!\n";
           hasInappropriateContent = true;
         }
         if (drugContent) {
-          warningMessage += "• Drug-related content.\n";
+          warningMessage += "Drug-related content.\n";
           warningMessage += "Are you trying to sell drugs on TailWaggr?\n If you need help with substance abuse, please reach out to a professional.\n Here are some helplines: 0800 12 13 14 or 0800 21 22 23\n";
           hasInappropriateContent = true;
         }
         if (goreContent) {
-          warningMessage += "• Violent or gory content.\n";
+          warningMessage += "Violent or gory content.\n";
           warningMessage += "In the case of self-harm, please reach out to someone for help.\nHere are some helplines: 0800 12 13 14 or 0800 21 22 23, or visit https://www.sadag.org/\n";
           hasInappropriateContent = true;
         }
         if (suggestiveNudity) {
-          warningMessage += "• Suggestive nudity.\n";
+          warningMessage += "Suggestive nudity.\n";
           warningMessage += "Sir/madam you're in the wrong place for advertising your onlyfans content\nPlease keep it PG-13, this is a family-friendly app.\n";
           hasInappropriateContent = true;
         }
         if (weaponContent) {
-          warningMessage += "• Weapons or dangerous objects.\n";
+          warningMessage += "Weapons or dangerous objects.\n";
           warningMessage += "Are you trying to start a war on TailWaggr?\nPlease keep it peaceful, we're all friends here, no need for weapons.\n";
           hasInappropriateContent = true;
         }
