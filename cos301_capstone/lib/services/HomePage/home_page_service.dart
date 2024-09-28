@@ -66,7 +66,7 @@ class HomePageService {
       postData['PostId'] = postId;
   
       // Update the document with the new postData including the photo URL and postId
-      await postRef.set(postData);
+      await postRef.set(postData, SetOptions(merge: true));
   
       print("Post added successfully with photo.");
       return true; // Return true if the post is added successfully
