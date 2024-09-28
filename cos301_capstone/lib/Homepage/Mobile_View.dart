@@ -7,7 +7,7 @@ import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
-import 'package:cos301_capstone/services/imageApi/imageApi.dart';
+import 'package:cos301_capstone/services/imageApi/imageFilter.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -542,6 +542,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
   TextEditingController postController = TextEditingController();
   bool selectingPet = false;
   List<bool> removePet = [];
+  ImageFilter imageFilter = ImageFilter();
 
   @override
   void initState() {
@@ -839,54 +840,78 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                 }
 
                   // Check if image is selected and moderate image
+                  // Check if image is selected and moderate image
                   if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
                     print("Image: ${imagePicker.filesNotifier.value![0].name}");
                     print("Image details: ${imagePicker.filesNotifier.value![0]}");
-                    print("calling image moderation API");
-
-                    // Step 1: Call image moderation API using the selected file
-                    ImageApi imageApi = ImageApi();
-                    PlatformFile selectedFile = imagePicker.filesNotifier.value![0];  // Get the selected image
-
-                    // Step 2: Call image moderation API
-                    var moderationResult = await imageApi.uploadImage(selectedFile);  // Pass PlatformFile directly
-
-                    // Step 3: Check the moderation result
-                    if (moderationResult.containsKey('error')) {
-                      print('Image moderation failed: ${moderationResult['error']}');
+                    print("calling image filter");
+                    Map<String, dynamic> moderationResult = await imageFilter.moderateImage(imagePicker.filesNotifier.value![0]);
+                    print("Moderation result: $moderationResult");
+                    //create dialog box for moderation
+                    if (moderationResult['status'] == 'error') {
+                      // Show error dialog
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Error'),
+                            content: Text(moderationResult['message']),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              )
+                            ],
+                          );
+                        },
+                      );
+                    } else if (moderationResult['status'] == 'fail') {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.redAccent, // Customize color if needed
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "🔞 Warning!",  // Title
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: themeSettings.textColor, // Customize text color
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                moderationResult['message'],  // Full message
+                                style: TextStyle(color: themeSettings.textColor), // Customize text color
+                              ),
+                            ],
+                          ),
+                          duration: Duration(seconds: 20),  // Increase the duration if needed
+                          behavior: SnackBarBehavior.floating,  // Makes the snackbar floating
+                        ),
+                      );
+                      //prevent the post from being uploaded
                       setState(() {
-                        errorText = 'Image moderation failed';
+                        errorText = "Inappropriate content detected";
                         errorVisible = true;
+                        postText = "Post";
+                        postController.clear();
+                        imagePicker.clearCachedFiles();
+                        petIncludeCounter = 0;
+                        petList.clear();
+                        petAdded.clear();
+                        removePet.clear();
+                        postText = "Post";
                       });
-                      throw Exception('Terminating due to image moderation failure');
+                      //stop image from being uploaded
+                      return;
                     } else {
-                      // Parse the moderation results based on the structure of the response JSON
-                      bool pornContent = moderationResult['porn_moderation']['porn_content'];
-                      bool drugContent = moderationResult['drug_moderation']['drug_content'];
-                      bool goreContent = moderationResult['gore_moderation']['gore_content'];
-                      bool suggestiveNudity = moderationResult['suggestive_nudity_moderation']['suggestive_nudity_content'];
-                      bool weaponContent = moderationResult['weapon_moderation']['weapon_content'];
-
-                      // Check if any inappropriate content was found
-                      if (pornContent || drugContent || goreContent || suggestiveNudity || weaponContent) {
-                        print('Image contains inappropriate content.');
-                        setState(() {
-                          errorText = 'Image contains inappropriate content.';
-                          errorVisible = true;
-                        });
-                        throw Exception('Terminating due to inappropriate content in image');
-                      } else {
-                        print('Image moderation passed.');
-                        print(moderationResult);
-
-                        // Set success message
-                        setState(() {
-                          errorText = "Image moderation passed.";
-                          errorVisible = true;
-                        });
-
-                        // Proceed with the next steps (e.g., uploading image, adding post)
-                      }
+                      // Image is clean, proceed with uploading
+                      // Proceed with uploading the image
+                      print("Proceeding to upload image...");
                     }
                   } else {
                     print("No image selected");
@@ -895,6 +920,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                       errorVisible = true;
                     });
                   }
+
 
                 List<Map<String, dynamic>> petIds = [];
 
