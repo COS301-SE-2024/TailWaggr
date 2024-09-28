@@ -4,6 +4,7 @@ import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/Pets/Pet_Profile.dart';
+import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -118,9 +119,14 @@ class _PostsContainerState extends State<PostsContainer> {
   }
 }
 
-class ListOfPosts extends StatelessWidget {
+class ListOfPosts extends StatefulWidget {
   const ListOfPosts({super.key});
 
+  @override
+  State<ListOfPosts> createState() => _ListOfPostsState();
+}
+
+class _ListOfPostsState extends State<ListOfPosts> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -179,6 +185,28 @@ class ListOfPosts extends StatelessWidget {
                       ],
                     ),
                   ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: themeSettings.primaryColor),
+                    onPressed: () async {
+                      print("PostId: ${post["PostId"]}");
+
+                      bool deleted = await HomePageService().deletePost(post["PostId"]);
+
+                      if (deleted) {
+                        print("Post deleted successfully.");
+                        setState(() {
+                          profileDetails.myPosts.remove(post);
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Failed to delete post'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                  )
                 ],
               ),
             ),
@@ -201,6 +229,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(20),
+      height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
         color: themeSettings.cardColor,
         borderRadius: BorderRadius.circular(10),

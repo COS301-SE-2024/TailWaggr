@@ -1,62 +1,125 @@
-import 'package:cos301_capstone/Notifications/NotificationCard.dart';
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Navbar/Mobile_View.dart';
+import 'package:cos301_capstone/Notifications/Desktop_View.dart' as desktopNotifications;
+import 'package:cos301_capstone/Notifications/Mobile_View.dart';
+import 'package:cos301_capstone/Notifications/Tablet_View.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+
+import 'mockUIFirebaseApp.dart';
+
+class MockProfileDetails extends Mock implements ProfileDetails {}
+
+/// Tests for the notifications page
+/// clear && flutter test test/notifications_test.dart
 
 void main() {
+  setupFirebaseAuthMocks();
+
+  setUpAll(() async {
+    await Firebase.initializeApp();
+  });
+
+  Widget createWidgetForTesting({required Widget child}) {
+    return MaterialApp(
+      home: Scaffold(body: child),
+    );
+  }
+
+  String formatDate(Timestamp timeStamp) {
+    DateTime date = timeStamp.toDate();
+    String month = getMonthAbbreviation(date.month);
+    return "${date.day.toString()} $month ${date.year.toString()}";
+  }
+
+  void testFunction(String str) {}
+
+  testWidgets('Desktop Notifications builds correctly', (WidgetTester tester) async {
     // Ignore overflow errors
     final oldOnError = FlutterError.onError;
     FlutterError.onError = (FlutterErrorDetails details) {
-      if (!details.exceptionAsString().contains('A RenderFlex overflowed by')) {
+      if (!details.exceptionAsString().contains('A RenderFlex overflowed by') && !details.exceptionAsString().contains('HTTP request failed, statusCode: 400')) {
         oldOnError!(details);
       }
     };
-  testWidgets('NotificationCard displays content and date correctly', (WidgetTester tester) async {
-    // Arrange
-    final notification = {
-      'Read': false,
-      'CreatedAt': DateTime.now(),
-      'AvatarUrl': 'https://example.com/avatar.png',
-      'Content': 'This is a notification content',
-      'NotificationTypeId': 1,
-    };
-    formatDate(DateTime date) => "${date.day}/${date.month}/${date.year}";
 
-    // Act
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: NotificationCard(notification: notification, formatDate: formatDate),
-        ),
-      ),
+    // await tester.pumpWidget(MaterialApp(home: User_Profile()));
+    await tester.pumpWidget(const MaterialApp(home: desktopNotifications.DesktopNotifications()));
+
+    expect(find.byKey(Key('loading-notifications')), findsOneWidget);
+
+    await tester.pumpWidget(const MaterialApp(home: desktopNotifications.DesktopNotifications()));
+
+    final state = tester.state<desktopNotifications.DesktopNotificationsState>(
+      find.byType(desktopNotifications.DesktopNotifications),
     );
 
-    // Assert
-    expect(find.text('This is a notification content'), findsOneWidget);
-    expect(find.byType(CircleAvatar), findsOneWidget);
-    expect(find.text('View Message'), findsOneWidget);
+    // Manually set the notifications
+    state.notifications = [
+      {
+        "AvatarUrlId": "testId1",
+        "Content": "testContent1",
+        "CreatedAt": Timestamp.fromDate(DateTime(2024, 12, 1)),
+        "NotificationTypeId": 1,
+        "Read": false,
+        "ReferenceId": "testIdRef1",
+        "UserId": "testUserId1",
+      },
+      {
+        "AvatarUrlId": "testId2",
+        "Content": "testContent2",
+        "CreatedAt": Timestamp.fromDate(DateTime(2024, 12, 2)),
+        "NotificationTypeId": 2,
+        "Read": false,
+        "ReferenceId": "testIdRef2",
+        "UserId": "testUserId2",
+      }
+    ];
+    state.hasNewNotifications = true; // Update this as needed
+
+    await tester.pump();
+
+    expect(find.text("Notifications"), findsOneWidget);
   });
 
-  testWidgets('NotificationCard shows correct button based on notification type', (WidgetTester tester) async {
-    // Arrange
-    final notificationWithPost = {
-      'Read': false,
-      'CreatedAt': DateTime.now(),
-      'AvatarUrl': 'https://example.com/avatar.png',
-      'Content': 'This is a post notification',
-      'NotificationTypeId': 5,
+  testWidgets('Desktop Notification Card builds correctly', (WidgetTester tester) async {
+    // Ignore overflow errors
+    final oldOnError = FlutterError.onError;
+    FlutterError.onError = (FlutterErrorDetails details) {
+      if (!details.exceptionAsString().contains('A RenderFlex overflowed by') && !details.exceptionAsString().contains('HTTP request failed, statusCode: 400')) {
+        oldOnError!(details);
+      }
     };
-    final formatDate = (DateTime date) => "${date.day}/${date.month}/${date.year}";
 
-    // Act
+    Map<String, dynamic> notification = {
+      "AvatarUrlId": "testId",
+      "Content": "testContent",
+      "CreatedAt": Timestamp.fromDate(DateTime(2024, 12, 1)),
+      "NotificationTypeId": 3,
+      "Read": false,
+      "ReferenceId": "testIdRef",
+      "UserId": "testUserId",
+    };
+
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: NotificationCard(notification: notificationWithPost, formatDate: formatDate),
+        home: Material(
+          child: desktopNotifications.NotificationCard(
+            notification: notification,
+            formatDate: formatDate,
+            onMarkAsRead: testFunction,
+          ),
         ),
       ),
     );
 
-    // Assert
-    expect(find.text('View Post'), findsOneWidget);
+    expect(find.text('1 Dec 2024'), findsOneWidget);
+    expect(find.text('testContent'), findsOneWidget);
+    expect(find.byKey(Key('view-message')), findsOneWidget);
   });
 }

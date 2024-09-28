@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_const_literals_to_create_immutables, non_constant_identifier_names
 
+import 'package:cos301_capstone/Forgot_Password/Forgot_Password.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Signup/Signup.dart';
 import 'package:cos301_capstone/services/auth/auth.dart';
@@ -34,13 +35,14 @@ class _DesktopLoginState extends State<DesktopLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: themeSettings.backgroundColor,
       body: Center(
         child: IntrinsicWidth(
           child: IntrinsicHeight(
             child: Container(
               padding: EdgeInsets.all(30),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: themeSettings.cardColor,
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
@@ -194,19 +196,38 @@ class _DesktopLoginState extends State<DesktopLogin> {
                               ),
                             ),
                           ),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.25,
-                            alignment: Alignment.centerRight,
-                            child: GestureDetector(
-                              onTap: () {
-                                // Call signInWithGoogle() here
-                                _authService.signInWithGoogle();
-                              },
-                              child: Text(
-                                "Sign in with Google",
-                                style: TextStyle(color: Colors.grey),
+                          Row(
+                            children: [
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => ForgotPassword()),
+                                    );
+                                  },
+                                  child: Text(
+                                    "Forgot Password?",
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
                               ),
-                            ),
+                              Spacer(),
+                              Container(
+                                alignment: Alignment.centerRight,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    // Call signInWithGoogle() here
+                                    _authService.signInWithGoogle();
+                                  },
+                                  child: Text(
+                                    "Sign in with Google",
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           SizedBox(height: 20),
                           SizedBox(
