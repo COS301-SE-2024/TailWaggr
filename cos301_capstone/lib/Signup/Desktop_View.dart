@@ -297,10 +297,10 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                         });
                         try {
                           await AuthService().signUp(
-                            signupVariables.signUpEmailController.text,
-                            signupVariables.signUpPasswordController.text,
-                            signupVariables.signUpFirstNameController.text,
-                            signupVariables.signUpLastNameController.text,
+                            signUpEmailController.text,
+                            signUpPasswordController.text,
+                            signUpFirstNameController.text,
+                            signUpLastNameController.text,
                           );
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'weak-password') {

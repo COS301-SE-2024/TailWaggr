@@ -15,7 +15,6 @@ class Mobile_Signup extends StatefulWidget {
 }
 
 class _Mobile_SignupState extends State<Mobile_Signup> {
-
   bool Confirm_Password_Visible = false;
   bool Password_Visible = false;
   bool ErrorTextVisible = false;
@@ -36,7 +35,7 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
   late TextEditingController signUpPhoneNumberController;
   late TextEditingController signUpAddressController;
 
-   @override
+  @override
   void initState() {
     // Login details
     signUpEmailController = TextEditingController();
@@ -110,7 +109,9 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
                 TextField(
                   key: Key("signup-last-name-key"),
                   controller: signUpLastNameController,
@@ -192,7 +193,9 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
                 TextField(
                   key: Key("signup-confirm-password-key"),
                   controller: signUpConfirmPasswordController,
@@ -267,8 +270,7 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                           errorText = "Please enter a valid Password";
                           ErrorTextVisible = true;
                         });
-                      } else if (signUpConfirmPasswordController.text.isEmpty ||
-                          !SignupMethods.checkConfirmPassword(signUpPasswordController.text, signUpConfirmPasswordController.text)) {
+                      } else if (signUpConfirmPasswordController.text.isEmpty || !SignupMethods.checkConfirmPassword(signUpPasswordController.text, signUpConfirmPasswordController.text)) {
                         setState(() {
                           errorText = "Please make sure your passwords match";
                           ErrorTextVisible = true;
@@ -279,10 +281,10 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                         });
                         try {
                           await AuthService().signUp(
-                            signupVariables.signUpEmailController.text,
-                            signupVariables.signUpPasswordController.text,
-                            signupVariables.signUpFirstNameController.text,
-                            signupVariables.signUpLastNameController.text,
+                            signUpEmailController.text,
+                            signUpPasswordController.text,
+                            signUpFirstNameController.text,
+                            signUpLastNameController.text,
                           );
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'weak-password') {

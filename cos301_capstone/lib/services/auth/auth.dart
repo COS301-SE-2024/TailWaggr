@@ -18,7 +18,7 @@ class AuthService {
       return null;
     }
   }
-  
+
   Future<User?> signUp(String email, String password, String name, String surname) async {
     try {
       // Check if the user already exists
@@ -37,7 +37,26 @@ class AuthService {
           'name': name,
           'surname': surname,
           'email': email,
-          'userType': 'pet_owner'
+          'userType': 'pet_owner',
+          'profilePictureUrl': '',
+          'phoneDetails': {
+            'phoneNumber': '',
+            'isoCode': '',
+            'dialCode': '',
+          },
+          'preferences': {
+            'Colours': {
+              'BackgroundColour': 4278190080,
+              'CardColour': 4279505940,
+              'NavbarTextColour': 4294967295,
+              'PrimaryColour': 4283302026,
+              'SecondaryColour': 4279522048,
+              'TextColour': 4294967295,
+            },
+            'themeMode': 'light',
+            'usingDefaultImage': true,
+            'usingImage': false
+          },
         });
       }
       return user;
@@ -64,23 +83,24 @@ class AuthService {
     }
   }
 
-Future<String?> getUserByAuthId(String authId) async {
-  try {
-    // Query the collection to find a document where the 'authId' field matches the provided authId
-    DocumentSnapshot snapshot =  await _db.collection('users').doc(authId).get();
-    
-    if (snapshot.exists) {
- // Return the document ID of the first document found
-      return snapshot.id;
-    } else {
-      print("No user found for the given authId.");
+  Future<String?> getUserByAuthId(String authId) async {
+    try {
+      // Query the collection to find a document where the 'authId' field matches the provided authId
+      DocumentSnapshot snapshot = await _db.collection('users').doc(authId).get();
+
+      if (snapshot.exists) {
+        // Return the document ID of the first document found
+        return snapshot.id;
+      } else {
+        print("No user found for the given authId.");
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
       return null;
     }
-  } catch (e) {
-    print("Error fetching user data: $e");
-    return null;
   }
-}
+
   Future<User?> signInWithGoogle() async {
     try {
       // Trigger the Google authentication flow
