@@ -402,7 +402,9 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                         BorderSide(color: themeSettings.primaryColor),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      AuthService().signInWithGoogle();
+                    },
                     child: Text("Sign up with Google", style: TextStyle(color: themeSettings.primaryColor)),
                   ),
                 ),

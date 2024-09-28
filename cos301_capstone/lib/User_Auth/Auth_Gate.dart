@@ -38,6 +38,7 @@ class _AuthGateState extends State<AuthGate> {
       profileDetails.profilePicture = value['profilePictureUrl'];
       profileDetails.location = value['location'];
       profileDetails.themeMode = value['preferences']['themeMode'];
+      profileDetails.userType = value['userType'];
 
       profileDetails.phone = value['phoneDetails']['phoneNumber'];
       profileDetails.isoCode = value['phoneDetails']['isoCode'];

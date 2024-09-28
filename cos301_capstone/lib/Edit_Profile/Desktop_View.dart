@@ -127,10 +127,15 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
   bool isDatePickerVisible = false;
   bool isPhoneValid = true;
 
+  ImagePicker imagePickerLocal = ImagePicker();
+
   @override
   void initState() {
     super.initState();
-    imagePicker.filesNotifier.addListener(() {});
+    imagePickerLocal.filesNotifier.addListener(() {
+      setState(() {
+      });
+    });
   }
 
   @override
@@ -144,12 +149,13 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
                 cursor: SystemMouseCursors.click,
                 child: GestureDetector(
                   onTap: () async {
-                    imagePicker.pickFiles();
+                    imagePickerLocal.pickFiles();
                   },
                   child: CircleAvatar(
                     radius: 75,
-                    // backgroundImage: AssetImage("assets/images/profile.jpg"),
-                    backgroundImage: NetworkImage(profileDetails.profilePicture),
+                    backgroundImage: imagePickerLocal.filesNotifier.value != null && imagePickerLocal.filesNotifier.value!.isNotEmpty
+                        ? MemoryImage(imagePickerLocal.filesNotifier.value![0].bytes!)
+                        : NetworkImage(profileDetails.profilePicture) as ImageProvider,
                   ),
                 ),
               ),
@@ -341,7 +347,7 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
                     print("Phone number is invalid");
                   }
                 : () async {
-                    await EditProfileVariables.updatePersonalDetails(context);
+                    await EditProfileVariables.updatePersonalDetails(context, imagePickerLocal);
                   },
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),

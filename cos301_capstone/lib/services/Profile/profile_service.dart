@@ -89,6 +89,9 @@ class ProfileService {
 
       // Update profile image
       if (profileImage != null) {
+
+        print("Profile image isnt null");
+
         String profilePhotoFileName = 'profile_images/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(profileImage.name)}';
         Uint8List? profileFileBytes = profileImage.bytes;
         if (profileFileBytes == null) {
@@ -100,7 +103,8 @@ class ProfileService {
 
         // Delete the old profile image
         String? oldProfileImageUrl = await getUserDetails(userId).then((value) => value?['profilePictureUrl']);
-        if (oldProfileImageUrl != null) {
+        print("Old profile image url: $oldProfileImageUrl");
+        if (oldProfileImageUrl != null && oldProfileImageUrl != "") {
           await _storage.refFromURL(oldProfileImageUrl).delete();
         }
 
