@@ -203,7 +203,13 @@ class _Navbar_IconState extends State<Navbar_Icon> {
                 children: [
                   Icon(widget.icon, color: Colors.white),
                   SizedBox(width: 10),
-                  Text(widget.text, style: TextStyle(color: Colors.white, fontSize: 20)),
+                  Expanded(
+                    child: Text(
+                      widget.text,
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                      overflow: TextOverflow.visible,
+                    ),
+                  ),
                 ],
               ),
             ),

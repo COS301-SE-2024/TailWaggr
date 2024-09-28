@@ -22,6 +22,39 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
   String errorText = '';
   String SignupButtonText = "Create Account";
 
+  // Login details
+  late TextEditingController signUpEmailController;
+  late TextEditingController signUpPasswordController;
+  late TextEditingController signUpConfirmPasswordController;
+
+  // Personal details
+  late TextEditingController signUpFirstNameController;
+  late TextEditingController signUpLastNameController;
+  late TextEditingController signUpBioController;
+
+  // Additional info
+  late TextEditingController signUpPhoneNumberController;
+  late TextEditingController signUpAddressController;
+
+   @override
+  void initState() {
+    // Login details
+    signUpEmailController = TextEditingController();
+    signUpPasswordController = TextEditingController();
+    signUpConfirmPasswordController = TextEditingController();
+
+    // Personal details
+    signUpFirstNameController = TextEditingController();
+    signUpLastNameController = TextEditingController();
+    signUpBioController = TextEditingController();
+
+    // Additional info
+    signUpPhoneNumberController = TextEditingController();
+    signUpAddressController = TextEditingController();
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +89,8 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                 ),
                 SizedBox(height: 20),
                 TextField(
-                  controller: signupVariables.signUpFirstNameController,
+                  key: Key("signup-first-name-key"),
+                  controller: signUpFirstNameController,
                   decoration: InputDecoration(
                     labelText: "First Name",
                     labelStyle: TextStyle(
@@ -78,7 +112,8 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                 ),
                 SizedBox(height: 20,),
                 TextField(
-                  controller: signupVariables.signUpLastNameController,
+                  key: Key("signup-last-name-key"),
+                  controller: signUpLastNameController,
                   decoration: InputDecoration(
                     labelText: "Last Name",
                     labelStyle: TextStyle(
@@ -100,7 +135,8 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                 ),
                 SizedBox(height: 20),
                 TextField(
-                  controller: signupVariables.signUpEmailController,
+                  key: Key("signup-email-key"),
+                  controller: signUpEmailController,
                   decoration: InputDecoration(
                     labelText: "Email",
                     labelStyle: TextStyle(
@@ -122,7 +158,8 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                 ),
                 SizedBox(height: 20),
                 TextField(
-                  controller: signupVariables.signUpPasswordController,
+                  key: Key("signup-password-key"),
+                  controller: signUpPasswordController,
                   obscureText: !Password_Visible,
                   obscuringCharacter: "*",
                   decoration: InputDecoration(
@@ -157,7 +194,8 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                 ),
                 SizedBox(height: 20,),
                 TextField(
-                  controller: signupVariables.signUpConfirmPasswordController,
+                  key: Key("signup-confirm-password-key"),
+                  controller: signUpConfirmPasswordController,
                   obscureText: !Confirm_Password_Visible,
                   obscuringCharacter: "*",
                   decoration: InputDecoration(
@@ -214,23 +252,23 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () async {
-                      if (signupVariables.signUpFirstNameController.text.isEmpty || signupVariables.signUpLastNameController.text.isEmpty) {
+                      if (signUpFirstNameController.text.isEmpty || signUpLastNameController.text.isEmpty) {
                         setState(() {
                           errorText = "Please make sure your first and last name are filled in";
                           ErrorTextVisible = true;
                         });
-                      } else if (signupVariables.signUpEmailController.text.isEmpty || !SignupMethods.checkEmail(signupVariables.signUpEmailController.text)) {
+                      } else if (signUpEmailController.text.isEmpty || !SignupMethods.checkEmail(signUpEmailController.text)) {
                         setState(() {
                           errorText = "Please enter a valid email address";
                           ErrorTextVisible = true;
                         });
-                      } else if (signupVariables.signUpPasswordController.text.isEmpty || !SignupMethods.checkPassword(signupVariables.signUpPasswordController.text)) {
+                      } else if (signUpPasswordController.text.isEmpty || !SignupMethods.checkPassword(signUpPasswordController.text)) {
                         setState(() {
                           errorText = "Please enter a valid Password";
                           ErrorTextVisible = true;
                         });
-                      } else if (signupVariables.signUpConfirmPasswordController.text.isEmpty ||
-                          !SignupMethods.checkConfirmPassword(signupVariables.signUpPasswordController.text, signupVariables.signUpConfirmPasswordController.text)) {
+                      } else if (signUpConfirmPasswordController.text.isEmpty ||
+                          !SignupMethods.checkConfirmPassword(signUpPasswordController.text, signUpConfirmPasswordController.text)) {
                         setState(() {
                           errorText = "Please make sure your passwords match";
                           ErrorTextVisible = true;

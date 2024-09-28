@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -8,9 +10,61 @@ class LocationService {
     _firestore = firestore ?? FirebaseFirestore.instance;
   }
 
-  Future<List<User>> getVets(LatLng userLocation, double radius) async {
+  Future<List<Vet>> getVets(LatLng userLocation, double radius) async {
     GeoPoint geoPoint = GeoPoint(userLocation.latitude, userLocation.longitude);
-    return _getUsersByRoleWithinRadius(geoPoint, radius, 'vet');
+    try {
+      // Access the user's "pets" subcollection
+      Query querySnapshot = await _firestore.collection('vets');
+      QuerySnapshot<Object?> vetsData = await querySnapshot.get();
+      List<Vet> vetList = [];
+      for (var doc in vetsData.docs) {
+
+        // Convert location map to GeoPoint
+        Map<String, dynamic> locationMap = doc['location'];
+        GeoPoint locationGeoPoint = GeoPoint(locationMap['lat'], locationMap['lng']);
+
+        Vet vet = Vet(
+          name: doc['name'],
+          // location: doc['location'],
+          location: locationGeoPoint,
+          address: doc['address'],
+          placeId: doc['place_id'],
+        );
+
+        double distance = Geolocator.distanceBetween(
+          geoPoint.latitude,
+          geoPoint.longitude,
+          vet.location.latitude,
+          vet.location.longitude,
+        );
+
+        vet.addDistance(distance / 1000);
+
+        if ((distance / 1000) <= radius) {
+          vetList.add(vet);
+        }
+      }
+
+      // // Convert each document to a map and add it to a list
+      // final vets = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+      // log("Vets fetched successfully.");
+      // List<Vet> vetList = vets.map((vetData) => Vet.fromFirestore(vetData)).toList();
+      // for (Vet vet in vetList) {
+      //   log(vet.name);
+      //   double distance = Geolocator.distanceBetween(
+      //     geoPoint.latitude,
+      //     geoPoint.longitude,
+      //     vet.location.latitude,
+      //     vet.location.longitude,
+      //   );
+      //   vet.addDistance(distance / 1000);
+      // }
+      return vetList; // Return the list of pets
+    } catch (e) {
+      print("Error fetching vets: $e");
+      return []; // Return an empty list if an error occurs
+    }
   }
 
   Future<List<User>> getPetKeepers(LatLng userLocation, double radius) async {
@@ -74,7 +128,6 @@ class LocationService {
     return matchingUsers; // Return the list of matching users
   }
 }
-
 class User {
   final String id;
   final String name;
@@ -92,10 +145,8 @@ class User {
       name: firestoreDoc['name'],
       userType: firestoreDoc['userType'],
       location: firestoreDoc['location'],
-      distance: firestoreDoc['distance'],
     );
   }
-
   void addDistance(double indistance) {
     distance = indistance;
   }
@@ -106,5 +157,26 @@ class User {
 
   void addPhone(String inphone) {
     phone = inphone;
+  }
+}
+class Vet{
+  final String name;
+  final GeoPoint location;
+  final String placeId;
+  final String address;
+  double distance = 0.0;
+
+  Vet({required this.name, required this.location, required this.address, required this.placeId});
+
+  factory Vet.fromFirestore(Map<String, dynamic> firestoreDoc) {
+    return Vet(
+      name: firestoreDoc['name'],
+      location: firestoreDoc['location'],
+      address: firestoreDoc['address'],
+      placeId: firestoreDoc['place_id'],
+    );
+  }
+  void addDistance(double indistance) {
+    distance = indistance;
   }
 }
