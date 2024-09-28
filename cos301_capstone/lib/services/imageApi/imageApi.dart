@@ -12,7 +12,6 @@ class ImageApi {
 
     // Prepare request body
     var requestBody = {
-      'API_KEY': 'Dv08sITGmtiEaVbDDcpHlVVztctmqmDf',
       'task': 'porn_moderation,drug_moderation,gore_moderation,suggestive_nudity_moderation,weapon_moderation,drug_moderation',
       'origin_id': 'some_origin_id',
       'reference_id': 'some_reference_id',
