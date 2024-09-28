@@ -514,7 +514,7 @@ class _PostState extends State<Post> {
             Tooltip(
               message: "Views",
               child: Icon(
-                Icons.bar_chart,
+                Icons.remove_red_eye,
                 color: Colors.green.withOpacity(0.7),
               ),
             ),

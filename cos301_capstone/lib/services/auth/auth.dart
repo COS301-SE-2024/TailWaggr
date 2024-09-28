@@ -37,8 +37,12 @@ class AuthService {
           'name': name,
           'surname': surname,
           'email': email,
+          'bio': '',
+          'birthDate': DateTime.now(),
+          'location': '',
           'userType': 'pet_owner',
           'profilePictureUrl': '',
+          'sidebarImage': '',
           'phoneDetails': {
             'phoneNumber': '',
             'isoCode': '',
@@ -127,12 +131,37 @@ class AuthService {
         // Check if the user is new and create a Firestore document if so
         DocumentSnapshot userDoc = await _db.collection('users').doc(user.uid).get();
         if (!userDoc.exists) {
+          String name = user.displayName!.split(' ')[0];
+          String surname = user.displayName!.split(' ')[1];
           // If the user does not exist in Firestore, create a new user document
           await _db.collection('users').doc(user.uid).set({
-            'name': user.displayName,
-            'surname': '', // Adjust as needed, Google sign-in may not provide surname
+            'name': name,
+            'surname': surname,
             'email': user.email,
-            'typeUser': 'pet_owner'
+            'bio': '',
+            'birthDate': DateTime.now(),
+            'location': '',
+            'userType': 'pet_owner',
+            'profilePictureUrl': '',
+            'sidebarImage': '',
+            'phoneDetails': {
+              'phoneNumber': '',
+              'isoCode': '',
+              'dialCode': '',
+            },
+            'preferences': {
+              'Colours': {
+                'BackgroundColour': 4278190080,
+                'CardColour': 4279505940,
+                'NavbarTextColour': 4294967295,
+                'PrimaryColour': 4283302026,
+                'SecondaryColour': 4279522048,
+                'TextColour': 4294967295,
+              },
+              'themeMode': 'light',
+              'usingDefaultImage': true,
+              'usingImage': false
+            },
           });
         }
       }

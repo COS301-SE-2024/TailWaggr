@@ -186,7 +186,7 @@ class ProfileDetails {
   String location = "1234 Street Name, City, Country";
   String birthdate = "";
   String profilePicture = "https://st3.depositphotos.com/4060975/17707/v/450/depositphotos_177073010-stock-illustration-male-vector-icon.jpg";
-  String userType = "Veterinarian";
+  String userType = "";
   String themeMode = "Light";
   String sidebarImage = "";
   bool usingImage = false;

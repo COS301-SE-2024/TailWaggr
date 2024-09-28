@@ -34,7 +34,7 @@ class EditProfileVariables {
     profileDetails.birthdate = "${p0.day} ${getMonthAbbreviation(p0.month)} ${p0.year}";
   }
 
-  static Future<void> updatePersonalDetails(context) async {
+  static Future<void> updatePersonalDetails(context, imagePicker) async {
     profileDetails.name = EditProfileVariables.nameController.text;
     profileDetails.surname = EditProfileVariables.surnameController.text;
     profileDetails.bio = EditProfileVariables.bioController.text;

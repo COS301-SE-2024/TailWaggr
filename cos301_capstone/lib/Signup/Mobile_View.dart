@@ -386,7 +386,9 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                         BorderSide(color: themeSettings.primaryColor),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      AuthService().signInWithGoogle();
+                    },
                     child: Text("Sign up with Google", style: TextStyle(color: themeSettings.primaryColor)),
                   ),
                 ),
