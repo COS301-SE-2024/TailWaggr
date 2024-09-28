@@ -16,6 +16,9 @@ import 'mocks.mocks.dart'; // Import the generated mocks
 
 void main(){
   // TestWidgetsFlutterBinding.ensureInitialized();
+  String postId = '5KnN9GatvW0Dka9j8Dmv';
+  String userId = 'QF5gHocYeGRNbsFmPE3RjUZIId82';
+  String petId = 'RGeqrusnbA2C7xJmGLeg';
   late GeneralService generalService;
   late HomePageService homePageService;
   late ProfileService profileService;
@@ -76,10 +79,10 @@ void main(){
   group('GeneralService', () {
     test('getUserPets returns list of pets', () async {
       when(mockQueryDocumentSnapshot.data()).thenReturn({'name': 'Merlin'});
-      final result = await generalService.getUserPets('QF5gHocYeGRNbsFmPE3RjUZIId82');
+      final result = await generalService.getUserPets('userId');
       // Verify Firestore calls
       verify(mockFirestore.collection('users')).called(1);
-      verify(mockCollectionReference.doc('QF5gHocYeGRNbsFmPE3RjUZIId82')).called(1);
+      verify(mockCollectionReference.doc('userId')).called(1);
       verify(mockDocumentReference.collection('pets')).called(1);
       verify(mockCollectionReference.get()).called(1);
 
@@ -93,12 +96,12 @@ void main(){
     test('getPetById returns pet data if exists', () async {
       when(mockDocumentSnapshot.exists).thenReturn(true);
       when(mockDocumentSnapshot.data()).thenReturn({'name': 'Merlin'});
-      final result = await generalService.getPetById('QF5gHocYeGRNbsFmPE3RjUZIId82', 'RGeqrusnbA2C7xJmGLeg');
+      final result = await generalService.getPetById('userId', 'petId');
       // Verify Firestore calls
       verify(mockFirestore.collection('users')).called(1);
-      verify(mockCollectionReference.doc('QF5gHocYeGRNbsFmPE3RjUZIId82')).called(1);
+      verify(mockCollectionReference.doc('userId')).called(1);
       verify(mockDocumentReference.collection('pets')).called(1);
-      verify(mockCollectionReference.doc('RGeqrusnbA2C7xJmGLeg')).called(1);
+      verify(mockCollectionReference.doc('petId')).called(1);
       verify(mockDocumentReference.get()).called(1);
 
       // Check result
@@ -116,7 +119,7 @@ void main(){
   });
 
   // group('HomePageService', () {
-  //   String postId = '5KnN9GatvW0Dka9j8Dmv';
+  //   String postId = 'postId';
   //   test('addPost adds post successfully', () async {
   //     final platformFile = PlatformFile(
   //       name: 'test.txt',
@@ -124,7 +127,7 @@ void main(){
   //       bytes: Uint8List.fromList([/* file bytes here */]),
   //     );
   //     List<Map<String, dynamic>> petIds = [
-  //       {'id': 'RGeqrusnbA2C7xJmGLeg'},
+  //       {'id': 'petId'},
   //     ];
   //     final result = await homePageService.addPost('Hello, world', platformFile, "Hello World", petIds);
   //     // Verify Firestore calls
@@ -138,15 +141,89 @@ void main(){
     test('getUserDetails returns user data if exists', () async {
       when(mockDocumentSnapshot.exists).thenReturn(true);
       when(mockDocumentSnapshot.data()).thenReturn({'name': 'John Doe'});
-      final result = await profileService.getUserDetails('QF5gHocYeGRNbsFmPE3RjUZIId82');
+      final result = await profileService.getUserDetails('userId');
       // Verify Firestore calls
       verify(mockFirestore.collection('users')).called(1);
-      verify(mockCollectionReference.doc('QF5gHocYeGRNbsFmPE3RjUZIId82')).called(1);
+      verify(mockCollectionReference.doc('userId')).called(1);
       verify(mockDocumentReference.get()).called(1);
 
       // Check result
       expect(result, isA<Map<String, dynamic>>());
       expect(result!['name'], 'John Doe');
+    });
+    test('getPetProfile returns pet data if exists', () async {
+      when(mockDocumentSnapshot.exists).thenReturn(true);
+      when(mockDocumentSnapshot.data()).thenReturn({'name': 'Merlin'});
+      final result = await profileService.getPetProfile('userId', 'petId');
+      // Verify Firestore calls
+      verify(mockFirestore.collection('users')).called(1);
+      verify(mockCollectionReference.doc('userId')).called(1);
+      verify(mockDocumentReference.collection('pets')).called(1);
+      verify(mockCollectionReference.doc('petId')).called(1);
+      verify(mockDocumentReference.get()).called(1);
+
+      // Check result
+      expect(result, isA<Map<String, dynamic>>());
+      expect(result!['name'], 'Merlin');
+    });
+    test('updateProfile updates user data successfully', () async {
+      Map<String, dynamic> userDetails = {
+        'name': 'John Doe',
+      };
+      final result = await profileService.updateProfile(userId, userDetails, null, null);
+      // Verify Firestore calls
+      verify(mockFirestore.collection('users')).called(1);
+      verify(mockCollectionReference.doc(any)).called(1);
+      verify(mockDocumentReference.update({'name': 'John Doe'})).called(1);
+
+      // Check result
+      expect(result, true);
+    });
+    // test('addPet adds pet data successfully', () async {
+    //   Map<String, dynamic> petDetails = {
+    //     'name': 'Merlin',
+    //   };
+    //   PlatformFile? image = PlatformFile(
+    //     name: 'test.jpg',
+    //     size: 1024,
+    //     bytes: Uint8List.fromList([/* file bytes here */]),
+    //   );  
+    //   final result = await profileService.addPet(userId, petDetails, image);
+    //   // Verify Firestore calls
+    //   verify(mockFirestore.collection('users')).called(1);
+    //   verify(mockCollectionReference.doc(userId)).called(1);
+    //   verify(mockDocumentReference.collection('pets')).called(1);
+    //   verify(mockCollectionReference.add({'name': 'Merlin'})).called(1);
+
+    //   // Check result
+    //   expect(result, true);
+    // });
+    test('updatePetProfile updates pet data successfully', () async {
+      Map<String, dynamic> petDetails = {
+        'name': 'Merlin',
+      };
+      final result = await profileService.updatePet(userId, petId, petDetails, null);
+      // Verify Firestore calls
+      verify(mockFirestore.collection('users')).called(1);
+      verify(mockCollectionReference.doc(userId)).called(1);
+      verify(mockDocumentReference.collection('pets')).called(1);
+      verify(mockCollectionReference.doc(petId)).called(1);
+      verify(mockDocumentReference.update({'name': 'Merlin'})).called(1);
+
+      // Check result
+      expect(result, true);
+    });
+    test('deletePetProfile deletes pet data successfully', () async {
+      final result = await profileService.deletePet(userId, petId);
+      // Verify Firestore calls
+      verify(mockFirestore.collection('users')).called(2);
+      verify(mockCollectionReference.doc(userId)).called(2);
+      verify(mockDocumentReference.collection('pets')).called(2);
+      verify(mockCollectionReference.doc(petId)).called(2);
+      verify(mockDocumentReference.delete()).called(1);
+
+      // Check result
+      expect(result, true);
     });
   });
   group('NotificationsServices', () {

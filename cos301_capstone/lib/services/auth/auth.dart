@@ -18,15 +18,22 @@ class AuthService {
       return null;
     }
   }
-
+  
   Future<User?> signUp(String email, String password, String name, String surname) async {
     try {
+      // Check if the user already exists
+      QuerySnapshot userQuery = await _db.collection('users').where('email', isEqualTo: email).get();
+      if (userQuery.docs.isNotEmpty) {
+        print('User already exists');
+        return null;
+      }
+
+      // Create a new user
       UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       User? user = result.user;
 
       if (user != null) {
         await _db.collection('users').doc(user.uid).set({
-          'authId': user.uid,
           'name': name,
           'surname': surname,
           'email': email,
@@ -60,11 +67,11 @@ class AuthService {
 Future<String?> getUserByAuthId(String authId) async {
   try {
     // Query the collection to find a document where the 'authId' field matches the provided authId
-    QuerySnapshot snapshot = await _db.collection('users').where('authId', isEqualTo: authId).get();
+    DocumentSnapshot snapshot =  await _db.collection('users').doc(authId).get();
     
-    if (snapshot.docs.isNotEmpty) {
+    if (snapshot.exists) {
  // Return the document ID of the first document found
-      return snapshot.docs.first.id;
+      return snapshot.id;
     } else {
       print("No user found for the given authId.");
       return null;
@@ -102,7 +109,6 @@ Future<String?> getUserByAuthId(String authId) async {
         if (!userDoc.exists) {
           // If the user does not exist in Firestore, create a new user document
           await _db.collection('users').doc(user.uid).set({
-            'authId': user.uid,
             'name': user.displayName,
             'surname': '', // Adjust as needed, Google sign-in may not provide surname
             'email': user.email,
