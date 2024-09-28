@@ -18,7 +18,6 @@ class LocationService {
       QuerySnapshot<Object?> vetsData = await querySnapshot.get();
       List<Vet> vetList = [];
       for (var doc in vetsData.docs) {
-
         // Convert location map to GeoPoint
         Map<String, dynamic> locationMap = doc['location'];
         GeoPoint locationGeoPoint = GeoPoint(locationMap['lat'], locationMap['lng']);
@@ -67,9 +66,42 @@ class LocationService {
     }
   }
 
+  Future<List<Vet>> getVetsByName(String name) async {
+    String searchLowerBound = name;
+    String searchUpperBound = name + '\uf8ff';
+    var vetQuerySnapshot = await _firestore.collection('vets').where('name', isGreaterThanOrEqualTo: searchLowerBound).where('name', isLessThanOrEqualTo: searchUpperBound).get();
+    List<Vet> matchingVets = [];
+
+    for (var doc in vetQuerySnapshot.docs) {
+      Vet vet = Vet.fromFirestore(doc.data());
+      matchingVets.add(vet); // Add vet to the list
+    }
+
+    return matchingVets; // Return the list of matching vets
+  }
+
   Future<List<User>> getPetKeepers(LatLng userLocation, double radius) async {
     GeoPoint geoPoint = GeoPoint(userLocation.latitude, userLocation.longitude);
     return _getUsersByRoleWithinRadius(geoPoint, radius, 'pet_keeper');
+  }
+
+  Future<List<User>> getPetKeepersByName(String name) async {
+    String searchLowerBound = name;
+    String searchUpperBound = name + '\uf8ff';
+    var petKeeperQuerySnapshot = await _firestore
+        .collection('users')
+        .where('name', isGreaterThanOrEqualTo: searchLowerBound)
+        .where('name', isLessThanOrEqualTo: searchUpperBound)
+        .where('userType', isEqualTo: 'pet_keeper')
+        .get();
+    List<User> matchingPetKeepers = [];
+
+    for (var doc in petKeeperQuerySnapshot.docs) {
+      User petKeeper = User.fromFirestore(doc.data());
+      matchingPetKeepers.add(petKeeper); // Add pet keeper to the list
+    }
+
+    return matchingPetKeepers; // Return the list of matching pet keepers
   }
 
   Future<List<User>> _getUsersByRoleWithinRadius(GeoPoint userLocation, double radius, String userType) async {
@@ -128,6 +160,7 @@ class LocationService {
     return matchingUsers; // Return the list of matching users
   }
 }
+
 class User {
   final String id;
   final String name;
@@ -159,7 +192,8 @@ class User {
     phone = inphone;
   }
 }
-class Vet{
+
+class Vet {
   final String name;
   final GeoPoint location;
   final String placeId;

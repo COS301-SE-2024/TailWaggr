@@ -355,6 +355,36 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                     ),
                   ],
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 200,
+                      height: 1,
+                      color: Colors.grey,
+                    ),
+                    Text("Or sign up with"),
+                    Container(
+                      width: 200,
+                      height: 1,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                SizedBox(
+                  width: 600,
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(themeSettings.cardColor),
+                      side: WidgetStateProperty.all(
+                        BorderSide(color: themeSettings.primaryColor),
+                      ),
+                    ),
+                    onPressed: () {},
+                    child: Text("Sign up with Google", style: TextStyle(color: themeSettings.primaryColor)),
+                  ),
+                ),
               ],
             ),
           ),

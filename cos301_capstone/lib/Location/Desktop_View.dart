@@ -145,8 +145,20 @@ class _LocationDesktopState extends State<LocationDesktop> {
                 cursor: SystemMouseCursors.click,
                 child: GestureDetector(
                   onTap: () async {
-                    await LocationVAF.getVets(LocationVAF.myLocation.target, double.parse(LocationVAF.searchDistanceController.text));
-                    setState(() {});
+                    try {
+                      await LocationVAF.getVets(LocationVAF.myLocation.target, double.parse(LocationVAF.searchDistanceController.text));
+                      setState(() {});
+                    } catch (e) {
+                      if (e is FormatException) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Please enter a valid distance.'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                      print("Error applying filters: $e");
+                    }
                   },
                   child: Container(
                     height: 48,
@@ -159,6 +171,38 @@ class _LocationDesktopState extends State<LocationDesktop> {
                     child: Center(
                       child: Text(
                         "Apply Filters",
+                        style: TextStyle(color: Colors.white, fontSize: 16.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              MouseRegion(
+                key: Key("clear-filters-button"),
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () async {
+                    try {
+                      LocationVAF.searchDistanceController.text = "100";
+                      LocationVAF.searchVetsController.text = "";
+                      setState(() {});
+                      await LocationVAF.getVets(LocationVAF.myLocation.target, 100);
+                      setState(() {});
+                    } catch (e) {
+                      print("Error applying filters: $e");
+                    }
+                  },
+                  child: Container(
+                    height: 48,
+                    margin: EdgeInsets.only(bottom: 10, left: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: themeSettings.primaryColor,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Clear Filters",
                         style: TextStyle(color: Colors.white, fontSize: 16.0),
                       ),
                     ),

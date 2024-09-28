@@ -53,6 +53,7 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
       super.dispose();
     }
   }
+
   Future<void> panCameraToLocation(double lat, double long) async {
     print("Panning camera to location: $lat, $long");
     print("Google Map Controller: $_googleMapController");
@@ -83,7 +84,7 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
 
   Widget searchVets() {
     return Container(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.only(top: 10.0),
       width: MediaQuery.of(context).size.width - 290.0,
       child: SingleChildScrollView(
         child: Column(
@@ -153,31 +154,79 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
               ),
             ),
             SizedBox(height: 10.0),
-            MouseRegion(
-              key: Key("apply-filters-button"),
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: () async {
-                  await LocationVAF.getVets(LocationVAF.myLocation.target, double.parse(LocationVAF.searchDistanceController.text));
-                  setState(() {});
-                },
-                child: Container(
-                  height: 48,
-                  width: double.infinity,
-                  margin: EdgeInsets.only(bottom: 10),
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: themeSettings.primaryColor,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Apply Filters",
-                      style: TextStyle(color: Colors.white, fontSize: 16.0),
+            Row(
+              children: [
+                MouseRegion(
+                  key: Key("apply-filters-button"),
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () async {
+                      try {
+                        await LocationVAF.getVets(LocationVAF.myLocation.target, double.parse(LocationVAF.searchDistanceController.text));
+                        setState(() {});
+                      } catch (e) {
+                        if (e is FormatException) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Please enter a valid distance.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                        print("Error applying filters: $e");
+                      }
+                    },
+                    child: Container(
+                      height: 48,
+                      // width: double.infinity,
+                      margin: EdgeInsets.only(bottom: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: themeSettings.primaryColor,
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Apply Filters",
+                          style: TextStyle(color: Colors.white, fontSize: 16.0),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+                MouseRegion(
+                  key: Key("clear-filters-button"),
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () async {
+                      try {
+                        LocationVAF.searchDistanceController.text = "100";
+                        LocationVAF.searchVetsController.text = "";
+                        setState(() {});
+                        await LocationVAF.getVets(LocationVAF.myLocation.target, 100);
+                        setState(() {});
+                      } catch (e) {
+                        print("Error applying filters: $e");
+                      }
+                    },
+                    child: Container(
+                      height: 48,
+                      margin: EdgeInsets.only(bottom: 10, left: 20),
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: themeSettings.primaryColor,
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Clear Filters",
+                          style: TextStyle(color: Colors.white, fontSize: 16.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             for (Vet vet in LocationVAF.vetList) ...[
               Container(
@@ -191,9 +240,9 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
                     onTap: () async {
                       try {
                         await panCameraToLocation(vet.location.latitude, vet.location.longitude);
-                        
+
                         // setState(() {
-                          // toggleCardExpansion();
+                        // toggleCardExpansion();
                         // });
                       } catch (e) {
                         print("Error getting directions: $e");
@@ -485,13 +534,13 @@ class _LocationTabletState extends State<LocationTablet> with SingleTickerProvid
                           if (snapshot.connectionState == ConnectionState.waiting) {
                             return Center(child: CircularProgressIndicator());
                           }
-                
+
                           if (snapshot.hasError) {
                             return Center(child: Text('Error loading map style'));
                           }
-                
+
                           String? mapStyle = snapshot.data;
-                
+
                           return ClipRRect(
                             borderRadius: BorderRadius.circular(20.0),
                             child: GoogleMap(

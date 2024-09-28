@@ -103,7 +103,7 @@ class HomePageService {
     try {
       // Step 1: Retrieve the post document to get the image file path
       DocumentSnapshot postSnapshot = await _db.collection('posts').doc(postId).get();
-      String filePath = (postSnapshot.data() as Map<String, dynamic>)['imagePath'];
+      String filePath = (postSnapshot.data() as Map<String, dynamic>)['ImgUrl'];
   
       // Step 2: Call deleteImageFromStorage with the retrieved file path
       await GeneralService().deleteImageFromStorage(filePath);
