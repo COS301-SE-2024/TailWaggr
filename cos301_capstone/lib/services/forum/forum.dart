@@ -61,10 +61,14 @@ class ForumServices {
           .doc(doc.id)
           .collection('messages')
           .get();
+
+          //get recent message Timestamp
+          DateTime recentMessage = this.getRecentMessage(messagesSnapshot.docs);
           forums.add({
             'forumId': doc.id,
             ...forumData,
             'messagesCount': messagesSnapshot.docs.length,
+            'lastUpdated': recentMessage,
           });
         }
       }
@@ -75,7 +79,15 @@ class ForumServices {
       return null;
     }
   }
-
+  //delete message
+  Future<void> deleteMessage(String forumId, String messageId) async {
+    try {
+      await _db.collection('forum').doc(forumId).collection('messages').doc(messageId).delete();
+    } catch (e) {
+      print('Error deleting message: $e');
+      throw Exception('Failed to delete message.');
+    }
+  }
   /// Retrieves messages associated with a forum including likes and replies.
   Future<List<Map<String, dynamic>>?> getMessages(String forumId) async {
     try {
@@ -245,4 +257,16 @@ class ForumServices {
       return null;
     }
 }
+
+  DateTime getRecentMessage(List<QueryDocumentSnapshot<Object?>> docs) {
+    DateTime recentMessage = DateTime(2021);
+    for (var doc in docs) {
+      Map<String, dynamic> messageData = doc.data() as Map<String, dynamic>;
+      DateTime messageTime = messageData['CreatedAt'].toDate();
+      if (messageTime.isAfter(recentMessage)) {
+        recentMessage = messageTime;
+      }
+    }
+    return recentMessage;
+  }
 }

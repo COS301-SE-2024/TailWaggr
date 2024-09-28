@@ -23,6 +23,7 @@ class _HomepageState extends State<Homepage> {
     super.initState();
 
     void getPosts() async {
+      profileDetails.myPosts.clear();
       Future<List<Map<String, dynamic>>> posts = HomePageService().getPosts();
       posts.then((value) {
         for (Map<String, dynamic> post in value) {
