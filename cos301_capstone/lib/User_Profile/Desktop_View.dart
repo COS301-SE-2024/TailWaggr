@@ -229,6 +229,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(20),
+      height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
         color: themeSettings.cardColor,
         borderRadius: BorderRadius.circular(10),
