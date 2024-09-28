@@ -10,9 +10,9 @@ app.use(express.json());  // To parse JSON body
 
 app.post('/proxy', async (req, res) => {
   try {
-    const { API_KEY, task, origin_id, reference_id, file_image, filename } = req.body;
+    const { task, origin_id, reference_id, file_image, filename } = req.body;
     //log fields
-    console.log('API_KEY:', API_KEY);
+    const API_KEY = 'Dv08sITGmtiEaVbDDcpHlVVztctmqmDf';
     console.log('task:', task);
     console.log('origin_id:', origin_id);
     console.log('reference_id:', reference_id);
