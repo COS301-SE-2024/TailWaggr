@@ -9,6 +9,9 @@ import 'package:cos301_capstone/services/Notifications/notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 class HomePageService {
   late final FirebaseFirestore _db;
   late final FirebaseStorage _storage;
@@ -25,50 +28,46 @@ class HomePageService {
     List<Map<String, dynamic>> petIds,
   ) async {
     try {
-
-      // Generate a unique file name for the photo
-      String photoFileName = 'posts/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(platformFile.name)}';
-
-
+      // Create a map for the initial post data without the photo URL and postId
+      final postData = {
+        'UserId': userId,
+        'Content': content,
+        'CreatedAt': DateTime.now(),
+        'ImgUrl': '', // Placeholder for the photo URL
+        'PetIds': petIds,
+        'pictureUrl': profileDetails.profilePicture.replaceAll('"', ''),
+        'name': profileDetails.name
+      };
+  
+      // Add the initial post data to Firestore to get the postId
+      DocumentReference postRef = await _db.collection('posts').add(postData);
+      String postId = postRef.id;
+  
+      // Generate a unique file name for the photo including the postId
+      String photoFileName = 'posts/${userId}_${postId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(platformFile.name)}';
+  
       // Convert PlatformFile to Uint8List (byte data)
       Uint8List? fileBytes = platformFile.bytes;
       if (fileBytes == null) {
         throw Exception("File data is null");
       }
-
+  
       // Set metadata to force the MIME type to be image/jpeg
       SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
-
+  
       // Upload the photo to Firebase Storage
       TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
-
-
+  
       // Retrieve the photo URL
       String imgUrl = await uploadTask.ref.getDownloadURL();
-
-      String profilePhoto = profileDetails.profilePicture.replaceAll('"', '');
-
-
-      // Create a map for the post data, including the imgUrl
-      final postData = {
-        'UserId': userId,
-        'Content': content,
-        'CreatedAt': DateTime.now(),
-        'ImgUrl': imgUrl, // Use the uploaded photo URL
-        'PetIds': petIds,
-        'pictureUrl' : profilePhoto,
-        'name' : profileDetails.name
-      };
-      DocumentReference postRef = await _db.collection('posts').add(postData);
-
-
-      // Update postData to include postId
-      postData['PostId'] = postRef.id;
-
-      // Update the document with the new postData including the postId
+  
+      // Update postData to include the photo URL and postId
+      postData['ImgUrl'] = imgUrl;
+      postData['PostId'] = postId;
+  
+      // Update the document with the new postData including the photo URL and postId
       await postRef.set(postData);
-
-      print("Likes and comments subcollections initialized");
+  
       print("Post added successfully with photo.");
       return true; // Return true if the post is added successfully
     } catch (e) {
@@ -131,6 +130,33 @@ class HomePageService {
 
       print("Posts fetched successfully.");
       return posts; // Return the list of posts
+    } catch (e) {
+      print("Error fetching posts: $e");
+      return []; // Return an empty list if an error occurs
+    }
+  }
+  Future<List<Map<String, dynamic>>> getPostsByLabels(List<String> words) async {
+    try {
+      // Fetch the posts from the "posts" collection
+      final querySnapshot = await _db.collection('posts').get();
+
+      // Convert each document to a map and add it to a list
+      final posts = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+      // Filter posts based on matching labels
+      final filteredPosts = posts.where((post) {
+        final labels = post['labels'] as List<dynamic>?;
+        if (labels == null) return false;
+
+        // Check if any of the labels match the words entered by the user
+        return words.any((word) => labels.contains(word));
+      }).toList();
+
+      // Sort the filtered posts from newest to oldest based on the 'CreatedAt' field
+      filteredPosts.sort((a, b) => b['CreatedAt'].compareTo(a['CreatedAt']));
+
+      print("Posts fetched and filtered successfully.");
+      return filteredPosts; // Return the filtered list of posts
     } catch (e) {
       print("Error fetching posts: $e");
       return []; // Return an empty list if an error occurs
@@ -203,4 +229,42 @@ class HomePageService {
     final querySnapshot = await postRef.collection('comments').get();
     return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
   }
+  Future<List<String>> getPostLabels(String postId) async {
+    try {
+      // Fetch the document for the given postId from the "posts" collection
+      DocumentSnapshot docSnapshot = await _db.collection('posts').doc(postId).get();
+
+      // Check if the document exists
+      if (docSnapshot.exists) {
+        // Extract the labels array from the document data
+        List<dynamic> labels = docSnapshot.get('labels');
+
+        // Convert the dynamic list to a list of strings
+        List<String> labelsList = labels.cast<String>();
+
+        print("Labels fetched successfully for post: $postId");
+        return labelsList;
+      } else {
+        print("Post not found for postId: $postId");
+        return [];
+      }
+    } catch (e) {
+      print("Error fetching labels for post: $e");
+      return [];
+    }
+  }
+  Future<List<String>> getWikiLinks(List<String> labels) async {
+    List<String> wikiLinks = [];
+    
+    for (String label in labels) {
+      // Create a Wikipedia link directly for each label
+      String formattedLabel = label.replaceAll(' ', '_'); // Replace spaces with underscores
+      String link = 'https://en.wikipedia.org/wiki/$formattedLabel';
+      
+      wikiLinks.add(link);
+    }
+    
+    return wikiLinks;
+  }
+
 }
