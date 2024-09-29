@@ -825,7 +825,7 @@ Widget build(BuildContext context) {
                                                     Colors.red.withOpacity(0.7),
                                                     BlendMode.srcIn,
                                                   ),
-                                                  child: Image.asset('images/paw1.png'),
+                                                  child: Image.asset('assets/images/paw1.png'),
                                                 ),
                                               ),
                                           ),
