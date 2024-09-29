@@ -179,6 +179,11 @@ class HomePageService {
         notif.createLikePostNotification(postId, userId);
     }
   }
+  Future<bool> checkIfUserLikedPost(String postId, String userId) async {
+    DocumentReference postRef = _db.collection('posts').doc(postId);
+    DocumentSnapshot likeSnapshot = await postRef.collection('likes').doc(userId).get();
+    return likeSnapshot.exists;
+  }
   Future<void> addCommentToPost(String postId, String userId, String comment) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
     DocumentReference<Map<String, dynamic>> commentRef = await postRef.collection('comments').add({

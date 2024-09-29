@@ -1,4 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
+// import 'dart:ffi';
+
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
@@ -8,6 +10,7 @@ import 'package:cos301_capstone/services/profile/profile_service.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class DesktopHomepage extends StatefulWidget {
   const DesktopHomepage({super.key});
@@ -103,6 +106,7 @@ class _PostState extends State<Post> {
   String numViews = "0";
   String numComments = "0";
   String newReplyContent = "";
+  bool isLiked = false;
   List<Map<String, dynamic>> comments = [];
   final HomePageService _homePageService = HomePageService();
   @override
@@ -111,6 +115,7 @@ class _PostState extends State<Post> {
     getLikes();
     getViews();
     getCommentCount();
+    checkIfLiked();
   }
 
   void getLikes() async {
@@ -138,6 +143,12 @@ class _PostState extends State<Post> {
       setState(() {
         numComments = value.toString();
       });
+    });
+  }
+  void checkIfLiked() async {
+    bool liked = await HomePageService().checkIfUserLikedPost(widget.postDetails['PostId'], profileDetails.userID);
+    setState(() {
+      isLiked = liked;
     });
   }
 
@@ -470,23 +481,36 @@ class _PostState extends State<Post> {
           ),
         ),
         SizedBox(width: 30),
-        Column(
+               Column(
           children: [
             Tooltip(
               message: "Like",
               child: IconButton(
-                onPressed: () {
-                  HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
-                  HomePageService().getLikesCount(widget.postDetails['PostId']).then((value) {
-                    setState(() {
-                      numLikes = value.toString();
-                    });
+                onPressed: () async {
+                  await HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
+                  bool liked = await HomePageService().checkIfUserLikedPost(widget.postDetails['PostId'], profileDetails.userID);
+                  int likesCount = await HomePageService().getLikesCount(widget.postDetails['PostId']);
+                  setState(() {
+                    isLiked = liked;
+                    numLikes = likesCount.toString();
                   });
                 },
-                icon: Icon(
-                  Icons.pets_outlined,
-                  color: Colors.red.withOpacity(0.7),
-                ),
+                icon: isLiked
+                    ? Icon(
+                        Icons.pets,
+                        color: Colors.red.withOpacity(0.7),
+                      )
+                    : SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            Colors.red.withOpacity(0.7),
+                            BlendMode.srcIn,
+                          ),
+                          child: Image.asset('assets/images/paw1.png'),
+                        ),
+                      ),
               ),
             ),
             Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
