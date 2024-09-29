@@ -86,7 +86,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: max((MediaQuery.of(context).size.height - 190) / 4, 100),
+              height: 50,
               child: Row(
                 children: [
                   CircleAvatar(
@@ -105,9 +105,10 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
               ),
             ),
             SizedBox(
-              height: max((MediaQuery.of(context).size.height - 190) / 4 * 3, 300),
+              height: max(MediaQuery.of(context).size.height - 300, 370),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Navbar_Icon(icon: Icons.home, text: "Home", page: Homepage()),
                   Navbar_Icon(
@@ -129,8 +130,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                 ],
               ),
             ),
-            Container(
-              color: Colors.red,
+            SizedBox(
               height: 190,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
