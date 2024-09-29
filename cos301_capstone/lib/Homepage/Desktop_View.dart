@@ -75,8 +75,7 @@ class _PostContainerState extends State<PostContainer> {
     }
 
     try {
-      List<Map<String, dynamic>> fetchedPosts =
-          await HomePageService().getPosts(words: labels, isLoadMore: getMore);
+      List<Map<String, dynamic>> fetchedPosts = await HomePageService().getPosts(words: labels, isLoadMore: getMore);
 
       setState(() {
         if (getMore) {
@@ -136,8 +135,7 @@ class _PostContainerState extends State<PostContainer> {
                       topLeft: Radius.circular(10),
                       bottomLeft: Radius.circular(10),
                     ),
-                    borderSide:
-                        BorderSide(color: Color.fromARGB(255, 255, 148, 25)),
+                    borderSide: BorderSide(color: Color.fromARGB(255, 255, 148, 25)),
                   ),
                 ),
                 onSubmitted: (value) async {
@@ -182,8 +180,7 @@ class _PostContainerState extends State<PostContainer> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                if (isInitialLoading)
-                  Center(child: CircularProgressIndicator()), // Loading indicator for initial load
+                if (isInitialLoading) Center(child: CircularProgressIndicator()), // Loading indicator for initial load
                 for (int i = 0; i < profileDetails.posts.length; i++) ...[
                   Post(
                     postDetails: profileDetails.posts[i],
@@ -240,8 +237,7 @@ class _PostState extends State<Post> {
   }
 
   void getLikes() async {
-    Future<int> likes =
-        HomePageService().getLikesCount(widget.postDetails['PostId']);
+    Future<int> likes = HomePageService().getLikesCount(widget.postDetails['PostId']);
     likes.then((value) {
       setState(() {
         numLikes = value.toString();
@@ -250,10 +246,8 @@ class _PostState extends State<Post> {
   }
 
   void getViews() async {
-    HomePageService()
-        .addViewToPost(widget.postDetails['PostId'], profileDetails.userID);
-    Future<int> views =
-        HomePageService().getViewsCount(widget.postDetails['PostId']);
+    HomePageService().addViewToPost(widget.postDetails['PostId'], profileDetails.userID);
+    Future<int> views = HomePageService().getViewsCount(widget.postDetails['PostId']);
     views.then((value) {
       setState(() {
         numViews = value.toString();
@@ -262,8 +256,7 @@ class _PostState extends State<Post> {
   }
 
   void getCommentCount() async {
-    Future<int> commentCount =
-        HomePageService().getCommentsCount(widget.postDetails['PostId']);
+    Future<int> commentCount = HomePageService().getCommentsCount(widget.postDetails['PostId']);
     commentCount.then((value) {
       setState(() {
         numComments = value.toString();
@@ -272,23 +265,19 @@ class _PostState extends State<Post> {
   }
 
   void checkIfLiked() async {
-    bool liked = await HomePageService().checkIfUserLikedPost(
-        widget.postDetails['PostId'], profileDetails.userID);
+    bool liked = await HomePageService().checkIfUserLikedPost(widget.postDetails['PostId'], profileDetails.userID);
     setState(() {
       isLiked = liked;
     });
   }
 
   Future<List<Map<String, dynamic>>> getComments() async {
-    List<Map<String, dynamic>> commentsList =
-        await HomePageService().getComments(widget.postDetails['PostId']);
+    List<Map<String, dynamic>> commentsList = await HomePageService().getComments(widget.postDetails['PostId']);
     for (int i = 0; i < commentsList.length; i++) {
       Map<String, dynamic> comment = commentsList[i];
-      Map<String, dynamic>? profileDetails =
-          await ProfileService().getUserDetails(comment['userId']);
+      Map<String, dynamic>? profileDetails = await ProfileService().getUserDetails(comment['userId']);
       // print("Profile Details: $profileDetails");
-      comment['name'] =
-          profileDetails!['name'] + ' ' + profileDetails['surname'];
+      comment['name'] = profileDetails!['name'] + ' ' + profileDetails['surname'];
       comment['pictureUrl'] = profileDetails['profilePictureUrl'];
       commentsList[i] = comment;
       print(commentsList[i]);
@@ -317,8 +306,7 @@ class _PostState extends State<Post> {
   Future<void> _replyToMessage(String postId) async {
     if (newReplyContent.isNotEmpty) {
       try {
-        _homePageService.addCommentToPost(
-            postId, profileDetails.userID, newReplyContent);
+        _homePageService.addCommentToPost(postId, profileDetails.userID, newReplyContent);
         //_PostContainerState()._fetchPosts();//refresh the posts
         setState(() {
           newReplyContent = '';
@@ -334,21 +322,16 @@ class _PostState extends State<Post> {
     final homePageService = HomePageService();
 
     // Fetch post labels and wiki links asynchronously
-    List<String> postLabels =
-        await homePageService.getPostLabels(widget.postDetails['PostId']);
+    List<String> postLabels = await homePageService.getPostLabels(widget.postDetails['PostId']);
     List<String> wikiLinks = await homePageService.getWikiLinks(postLabels);
 
     // Fetch users who liked the post
-    List<String> likedUsers =
-        await homePageService.getLikes(widget.postDetails['PostId']);
+    List<String> likedUsers = await homePageService.getLikes(widget.postDetails['PostId']);
     List<Map<String, dynamic>> likedUsersList = [];
     for (String userId in likedUsers) {
-      Map<String, dynamic>? profileDetails =
-          await ProfileService().getUserDetails(userId);
+      Map<String, dynamic>? profileDetails = await ProfileService().getUserDetails(userId);
       likedUsersList.add({
-        'username': (profileDetails?['name'] ?? 'Unknown') +
-            ' ' +
-            (profileDetails?['surname'] ?? ''),
+        'username': (profileDetails?['name'] ?? 'Unknown') + ' ' + (profileDetails?['surname'] ?? ''),
         'pictureUrl': profileDetails?['profilePictureUrl'] ?? '',
         'userId': userId,
       });
@@ -364,8 +347,7 @@ class _PostState extends State<Post> {
     };
   }
 
-  final GlobalKey<NavigatorState> _loadingDialogKey =
-      GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> _loadingDialogKey = GlobalKey<NavigatorState>();
 
   Future<void> showPostDetails(BuildContext context) async {
     // Show loading indicator
@@ -385,8 +367,7 @@ class _PostState extends State<Post> {
       final postDetails = await fetchPostData();
       // Close the loading indicator
       if (_loadingDialogKey.currentContext != null) {
-        Navigator.of(_loadingDialogKey.currentContext!)
-            .pop(); // Ensure the loading dialog is closed
+        Navigator.of(_loadingDialogKey.currentContext!).pop(); // Ensure the loading dialog is closed
       }
 
       // Show post details dialog
@@ -408,9 +389,7 @@ class _PostState extends State<Post> {
                       children: [
                         CircleAvatar(
                           radius: 20,
-                          backgroundImage: NetworkImage(
-                              widget.postDetails['pictureUrl'] ??
-                                  profileDetails.profilePicture),
+                          backgroundImage: NetworkImage(widget.postDetails['pictureUrl'] ?? profileDetails.profilePicture),
                         ),
                         SizedBox(width: 10),
                         Column(
@@ -456,21 +435,17 @@ class _PostState extends State<Post> {
                       Wrap(
                         spacing: 8.0, // Adds some space between the labels
                         children: [
-                          for (int i = 0;
-                              i < postDetails['postLabels'].length;
-                              i++) ...[
+                          for (int i = 0; i < postDetails['postLabels'].length; i++) ...[
                             InkWell(
                               onTap: () async {
-                                final Uri url =
-                                    Uri.parse(postDetails['wikiLinks'][i]);
+                                final Uri url = Uri.parse(postDetails['wikiLinks'][i]);
                                 if (!await launchUrl(url)) {
                                   print('Could not launch $url');
                                 }
                               },
                               child: Chip(
                                 label: Text(postDetails['postLabels'][i]),
-                                backgroundColor:
-                                    themeSettings.primaryColor.withOpacity(0.7),
+                                backgroundColor: themeSettings.primaryColor.withOpacity(0.7),
                               ),
                             ),
                           ],
@@ -496,20 +471,14 @@ class _PostState extends State<Post> {
                             InkWell(
                               onTap: () {
                                 // Handle profile click
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => User_Profile(
-                                            userId: user['userId'])));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: user['userId'])));
                               },
                               child: Chip(
                                 avatar: CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(user['pictureUrl'] ?? ''),
+                                  backgroundImage: NetworkImage(user['pictureUrl'] ?? ''),
                                 ),
                                 label: Text(user['username'] ?? 'Unknown'),
-                                backgroundColor:
-                                    themeSettings.primaryColor.withOpacity(0.7),
+                                backgroundColor: themeSettings.primaryColor.withOpacity(0.7),
                               ),
                             ),
                           ],
@@ -519,8 +488,7 @@ class _PostState extends State<Post> {
                     ],
 
                     // Pets included in the post
-                    if (postDetails['PetIds'] != null &&
-                        postDetails['PetIds'].length != 0) ...[
+                    if (postDetails['PetIds'] != null && postDetails['PetIds'].length != 0) ...[
                       Text(
                         "Pets included in this post:",
                         style: TextStyle(
@@ -541,15 +509,13 @@ class _PostState extends State<Post> {
                                     CircleAvatar(
                                       radius: 20,
                                       backgroundImage: NetworkImage(
-                                        pet["pictureUrl"] ??
-                                            profileDetails.profilePicture,
+                                        pet["pictureUrl"] ?? profileDetails.profilePicture,
                                       ),
                                     ),
                                     SizedBox(height: 5),
                                     Text(
                                       pet["name"] ?? 'Unnamed pet',
-                                      style: TextStyle(
-                                          color: themeSettings.textColor),
+                                      style: TextStyle(color: themeSettings.textColor),
                                     ),
                                   ],
                                 ),
@@ -580,8 +546,7 @@ class _PostState extends State<Post> {
     } catch (e) {
       print("Error fetching post details: $e");
       if (_loadingDialogKey.currentContext != null) {
-        Navigator.of(_loadingDialogKey.currentContext!)
-            .pop(); // Close the loading dialog if an error occurs
+        Navigator.of(_loadingDialogKey.currentContext!).pop(); // Close the loading dialog if an error occurs
       }
 
       // Show error dialog
@@ -625,9 +590,7 @@ class _PostState extends State<Post> {
                       children: [
                         CircleAvatar(
                           radius: 20,
-                          backgroundImage: NetworkImage(
-                              widget.postDetails['pictureUrl'] ??
-                                  profileDetails.profilePicture),
+                          backgroundImage: NetworkImage(widget.postDetails['pictureUrl'] ?? profileDetails.profilePicture),
                         ),
                         SizedBox(width: 10),
                         Column(
@@ -666,23 +629,17 @@ class _PostState extends State<Post> {
                         child: FutureBuilder<List<Map<String, dynamic>>>(
                           future: getComments(),
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
                               return Padding(
                                 padding: const EdgeInsets.all(20),
                                 child: CircularProgressIndicator(),
                               );
                             } else if (snapshot.hasError) {
-                              return Text("Error loading comments",
-                                  style: TextStyle(color: Colors.red));
-                            } else if (!snapshot.hasData ||
-                                snapshot.data!.isEmpty) {
-                              return Text("No comments available",
-                                  style: TextStyle(
-                                      color: themeSettings.textColor));
+                              return Text("Error loading comments", style: TextStyle(color: Colors.red));
+                            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return Text("No comments available", style: TextStyle(color: themeSettings.textColor));
                             } else {
-                              List<Map<String, dynamic>> comments =
-                                  snapshot.data!;
+                              List<Map<String, dynamic>> comments = snapshot.data!;
 
                               return Column(
                                 children: comments.map((comment) {
@@ -692,31 +649,24 @@ class _PostState extends State<Post> {
                                       children: [
                                         CircleAvatar(
                                           radius: 20,
-                                          backgroundImage: NetworkImage(
-                                              comment['pictureUrl'] ??
-                                                  profileDetails
-                                                      .profilePicture),
+                                          backgroundImage: NetworkImage(comment['pictureUrl'] ?? profileDetails.profilePicture),
                                         ),
                                         SizedBox(width: 10),
                                         Expanded(
                                           child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 comment['name'] ?? 'Unknown',
                                                 style: TextStyle(
-                                                  color:
-                                                      themeSettings.textColor,
+                                                  color: themeSettings.textColor,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
                                               Text(
-                                                comment['comment'] ??
-                                                    'No content',
+                                                comment['comment'] ?? 'No content',
                                                 style: TextStyle(
-                                                  color: themeSettings.textColor
-                                                      .withOpacity(0.7),
+                                                  color: themeSettings.textColor.withOpacity(0.7),
                                                 ),
                                               ),
                                             ],
@@ -738,8 +688,7 @@ class _PostState extends State<Post> {
                       children: [
                         CircleAvatar(
                           radius: 20,
-                          backgroundImage:
-                              NetworkImage(profileDetails.profilePicture),
+                          backgroundImage: NetworkImage(profileDetails.profilePicture),
                         ),
                         SizedBox(width: 10),
                         Expanded(
@@ -752,9 +701,7 @@ class _PostState extends State<Post> {
                             },
                             decoration: InputDecoration(
                               hintText: "Post your reply",
-                              hintStyle: TextStyle(
-                                  color:
-                                      themeSettings.textColor.withOpacity(0.7)),
+                              hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
                               filled: true,
                               fillColor: Colors.transparent,
                             ),
@@ -835,16 +782,11 @@ class _PostState extends State<Post> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => User_Profile(
-                                  userId: widget.postDetails["UserId"])));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: widget.postDetails["UserId"])));
                     },
                     child: CircleAvatar(
                       radius: 20,
-                      backgroundImage:
-                          NetworkImage(widget.postDetails["pictureUrl"]),
+                      backgroundImage: NetworkImage(widget.postDetails["pictureUrl"]),
                     ),
                   ),
                   SizedBox(width: 10),
@@ -877,8 +819,7 @@ class _PostState extends State<Post> {
                 maxLines: 4,
               ),
               SizedBox(height: 20),
-              if (widget.postDetails['PetIds'] != null &&
-                  widget.postDetails['PetIds'].length != 0) ...[
+              if (widget.postDetails['PetIds'] != null && widget.postDetails['PetIds'].length != 0) ...[
                 Text(
                   "Pets included in this post: ",
                   style: TextStyle(
@@ -897,15 +838,12 @@ class _PostState extends State<Post> {
                             children: [
                               CircleAvatar(
                                 radius: 20,
-                                backgroundImage: NetworkImage(
-                                    pet["pictureUrl"] ??
-                                        profileDetails.profilePicture),
+                                backgroundImage: NetworkImage(pet["pictureUrl"] ?? profileDetails.profilePicture),
                               ),
                               SizedBox(height: 5),
                               Text(
                                 pet["name"] ?? 'Unnamed pet',
-                                style:
-                                    TextStyle(color: themeSettings.textColor),
+                                style: TextStyle(color: themeSettings.textColor),
                               ),
                             ],
                           ),
@@ -939,12 +877,9 @@ class _PostState extends State<Post> {
               message: "Like",
               child: IconButton(
                 onPressed: () async {
-                  await HomePageService().toggleLikeOnPost(
-                      widget.postDetails['PostId'], profileDetails.userID);
-                  bool liked = await HomePageService().checkIfUserLikedPost(
-                      widget.postDetails['PostId'], profileDetails.userID);
-                  int likesCount = await HomePageService()
-                      .getLikesCount(widget.postDetails['PostId']);
+                  await HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
+                  bool liked = await HomePageService().checkIfUserLikedPost(widget.postDetails['PostId'], profileDetails.userID);
+                  int likesCount = await HomePageService().getLikesCount(widget.postDetails['PostId']);
                   setState(() {
                     isLiked = liked;
                     numLikes = likesCount.toString();
@@ -968,9 +903,7 @@ class _PostState extends State<Post> {
                       ),
               ),
             ),
-            Text(numLikes,
-                style:
-                    TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+            Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
             SizedBox(height: 20),
             Tooltip(
               message: "Comment",
@@ -978,9 +911,7 @@ class _PostState extends State<Post> {
                 onPressed: () async {
                   showDialogBox(context);
                   // await getCommments();
-                  HomePageService()
-                      .getCommentsCount(widget.postDetails['PostId'])
-                      .then((value) {
+                  HomePageService().getCommentsCount(widget.postDetails['PostId']).then((value) {
                     setState(() {
                       numComments = value.toString();
                     });
@@ -992,9 +923,7 @@ class _PostState extends State<Post> {
                 ),
               ),
             ),
-            Text(numComments,
-                style:
-                    TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+            Text(numComments, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
             SizedBox(height: 20),
             Tooltip(
               message: "Views",
@@ -1003,9 +932,7 @@ class _PostState extends State<Post> {
                 color: Colors.green.withOpacity(0.7),
               ),
             ),
-            Text(numViews,
-                style:
-                    TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+            Text(numViews, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
           ],
         ),
       ],
@@ -1035,8 +962,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
     void getPets() async {
       if (!profileDetails.pets.isNotEmpty) {
         print("Pets not found. Fetching pets...");
-        List<Map<String, dynamic>> pets = await GeneralService()
-            .getUserPets(FirebaseAuth.instance.currentUser!.uid);
+        List<Map<String, dynamic>> pets = await GeneralService().getUserPets(FirebaseAuth.instance.currentUser!.uid);
         profileDetails.pets = pets;
       }
 
@@ -1084,8 +1010,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
               style: TextStyle(color: themeSettings.textColor),
             ),
             SizedBox(height: 20),
-            if (imagePicker.filesNotifier.value != null &&
-                imagePicker.filesNotifier.value!.isNotEmpty) ...[
+            if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) ...[
               Stack(
                 children: [
                   ClipRRect(
@@ -1111,10 +1036,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
             ] else ...[
               Container(
                 key: Key('add-photo-button'),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    color: Colors.transparent),
+                decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
                 child: GestureDetector(
                   onTap: () => imagePicker.pickFiles(),
                   child: Center(
@@ -1130,9 +1052,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                           SizedBox(width: 10),
                           Text(
                             "Add a photo",
-                            style: TextStyle(
-                                color:
-                                    themeSettings.textColor.withOpacity(0.7)),
+                            style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
                           ),
                         ],
                       ),
@@ -1162,10 +1082,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                         radius: Radius.circular(100),
                         color: themeSettings.textColor,
                         strokeWidth: 0.5,
-                        dashPattern: [
-                          5,
-                          5
-                        ], // Modify the dash pattern to make the border more spread out
+                        dashPattern: [5, 5], // Modify the dash pattern to make the border more spread out
                         child: IconButton(
                           onPressed: () {
                             setState(() {
@@ -1182,10 +1099,8 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                         Positioned(
                           child: Container(
                             padding: EdgeInsets.all(5),
-                            width:
-                                (MediaQuery.of(context).size.width - 590) * 0.3,
-                            constraints: BoxConstraints(
-                                maxHeight: 200), // Set the maximum width
+                            width: (MediaQuery.of(context).size.width - 590) * 0.3,
+                            constraints: BoxConstraints(maxHeight: 200), // Set the maximum width
                             decoration: BoxDecoration(
                               color: themeSettings.backgroundColor,
                               borderRadius: BorderRadius.all(
@@ -1197,8 +1112,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         "Select a pet",
@@ -1217,9 +1131,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                                     ],
                                   ),
                                   SizedBox(height: 10),
-                                  for (int i = 0;
-                                      i < profileDetails.pets.length;
-                                      i++) ...[
+                                  for (int i = 0; i < profileDetails.pets.length; i++) ...[
                                     if (petAdded[i] == false)
                                       MouseRegion(
                                         cursor: SystemMouseCursors.click,
@@ -1231,13 +1143,10 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                                               removePet.add(false);
                                               petList.add(
                                                 {
-                                                  'name': profileDetails.pets[i]
-                                                      ['name'],
-                                                  'pictureUrl': profileDetails
-                                                      .pets[i]['pictureUrl'],
+                                                  'name': profileDetails.pets[i]['name'],
+                                                  'pictureUrl': profileDetails.pets[i]['pictureUrl'],
                                                   'index': i,
-                                                  'petID': profileDetails
-                                                      .pets[i]['petID'],
+                                                  'petID': profileDetails.pets[i]['petID'],
                                                 },
                                               );
                                               petAdded[i] = true;
@@ -1250,17 +1159,13 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                                               children: [
                                                 CircleAvatar(
                                                   radius: 20,
-                                                  backgroundImage: NetworkImage(
-                                                      profileDetails.pets[i]
-                                                          ["pictureUrl"]),
+                                                  backgroundImage: NetworkImage(profileDetails.pets[i]["pictureUrl"]),
                                                 ),
                                                 SizedBox(width: 10),
                                                 Text(
-                                                  profileDetails.pets[i]
-                                                      ['name'],
+                                                  profileDetails.pets[i]['name'],
                                                   style: TextStyle(
-                                                    color:
-                                                        themeSettings.textColor,
+                                                    color: themeSettings.textColor,
                                                   ),
                                                 ),
                                               ],
@@ -1293,8 +1198,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                               },
                               child: CircleAvatar(
                                 radius: 20,
-                                backgroundImage:
-                                    NetworkImage(petList[i]["pictureUrl"]!),
+                                backgroundImage: NetworkImage(petList[i]["pictureUrl"]!),
                               ),
                             ),
                           ),
@@ -1310,10 +1214,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                               radius: Radius.circular(100),
                               color: themeSettings.textColor,
                               strokeWidth: 0.5,
-                              dashPattern: [
-                                5,
-                                5
-                              ], // Modify the dash pattern to make the border more spread out
+                              dashPattern: [5, 5], // Modify the dash pattern to make the border more spread out
                               child: IconButton(
                                 iconSize: 15,
                                 onPressed: () {
@@ -1326,8 +1227,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                                 },
                                 icon: Icon(
                                   Icons.remove,
-                                  color:
-                                      themeSettings.textColor.withOpacity(0.7),
+                                  color: themeSettings.textColor.withOpacity(0.7),
                                 ),
                               ),
                             ),
@@ -1349,13 +1249,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     postText = "Posting...";
                   });
 
-                  print("---------------------------------------");
-                  print("Post Details: ");
-
-                  if (postController.text.isNotEmpty) {
-                    print("Post text: ${postController.text}");
-                  } else {
-                    print("Cannot post without a message");
+                  if (!postController.text.isNotEmpty) {
                     setState(() {
                       errorText = "Cannot post without a message";
                       errorVisible = true;
@@ -1364,11 +1258,9 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     return;
                   }
 
-                  if (imagePicker.filesNotifier.value != null &&
-                      imagePicker.filesNotifier.value!.isNotEmpty) {
+                  if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
                     print("Image: ${imagePicker.filesNotifier.value![0].name}");
                   } else {
-                    print("No image selected");
                     setState(() {
                       errorText = "No image selected";
                       errorVisible = true;
@@ -1380,25 +1272,27 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                   List<Map<String, dynamic>> petIds = [];
 
                   if (petIncludeCounter > 0) {
-                    print("Pets included: ");
                     for (int i = 0; i < petIncludeCounter; i++) {
-                      petIds.add({
-                        'petId': petList[i]['petID'],
-                        'name': petList[i]['name'],
-                        'pictureUrl': petList[i]['pictureUrl']
-                      });
+                      petIds.add({'petId': petList[i]['petID'], 'name': petList[i]['name'], 'pictureUrl': petList[i]['pictureUrl']});
                     }
-                  } else {
-                    print("No pets included");
                   }
 
-                  print("---------------------------------------");
+                  bool postAdded = false;
 
-                  bool postAdded = await HomePageService().addPost(
-                      profileDetails.userID,
-                      imagePicker.filesNotifier.value![0],
-                      postController.text,
-                      petIds);
+                  try {
+                    postAdded = await HomePageService().addPost(profileDetails.userID, imagePicker.filesNotifier.value![0], postController.text, petIds);
+                  } catch (e) {
+                    print("Error adding post: $e");
+                    
+                    if (e.toString().contains("User has not verified their email address")) {
+                      setState(() {
+                        errorText = "Verify your email before you post";
+                        errorVisible = true;
+                        postText = "Post";
+                      });
+                    }
+                    return;
+                  }
 
                   if (postAdded) {
                     setState(() {
@@ -1411,8 +1305,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                       postText = "Post";
                     });
 
-                    homepageVAF.postPosted.value =
-                        !homepageVAF.postPosted.value;
+                    homepageVAF.postPosted.value = !homepageVAF.postPosted.value;
                   } else {
                     setState(() {
                       errorText = "An error occurred while posting";
@@ -1422,8 +1315,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                   }
                 },
                 style: ButtonStyle(
-                  backgroundColor:
-                      WidgetStateProperty.all(themeSettings.primaryColor),
+                  backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),

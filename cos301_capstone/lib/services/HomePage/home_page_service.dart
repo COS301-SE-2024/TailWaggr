@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:cos301_capstone/services/general/general_service.dart';
@@ -28,6 +29,11 @@ class HomePageService {
     List<Map<String, dynamic>> petIds,
   ) async {
     try {
+      if (FirebaseAuth.instance.currentUser?.emailVerified == false) {
+        print("User has not verified their email address, from homepage service");
+        throw Exception("User has not verified their email address");
+      }
+
       // Create a map for the initial post data without the photo URL and postId
       final postData = {
         'UserId': userId,
@@ -44,8 +50,7 @@ class HomePageService {
       String postId = postRef.id;
 
       // Generate a unique file name for the photo including the postId
-      String photoFileName =
-          'posts/${userId}_${postId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(platformFile.name)}';
+      String photoFileName = 'posts/${userId}_${postId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(platformFile.name)}';
 
       // Convert PlatformFile to Uint8List (byte data)
       Uint8List? fileBytes = platformFile.bytes;
@@ -57,8 +62,7 @@ class HomePageService {
       SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
 
       // Upload the photo to Firebase Storage
-      TaskSnapshot uploadTask =
-          await _storage.ref(photoFileName).putData(fileBytes, metadata);
+      TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
 
       // Retrieve the photo URL
       String imgUrl = await uploadTask.ref.getDownloadURL();
@@ -73,8 +77,7 @@ class HomePageService {
       print("Post added successfully with photo.");
       return true; // Return true if the post is added successfully
     } catch (e) {
-      print("Error adding post with photo: $e");
-      return false; // Return false if an error occurs
+      rethrow;
     }
   }
 
@@ -103,8 +106,7 @@ class HomePageService {
   Future<bool> deletePost(String postId) async {
     try {
       // Step 1: Retrieve the post document to get the image file path
-      DocumentSnapshot postSnapshot =
-          await _db.collection('posts').doc(postId).get();
+      DocumentSnapshot postSnapshot = await _db.collection('posts').doc(postId).get();
       String filePath = (postSnapshot.data() as Map<String, dynamic>)['ImgUrl'];
 
       // Step 2: Call deleteImageFromStorage with the retrieved file path
@@ -120,7 +122,7 @@ class HomePageService {
     }
   }
 
-   DocumentSnapshot? _lastDocument; // To keep track of the last document fetched
+  DocumentSnapshot? _lastDocument; // To keep track of the last document fetched
 
   Future<List<Map<String, dynamic>>> getPosts({
     int limit = 5,
@@ -134,10 +136,7 @@ class HomePageService {
       }
 
       // Build the base query
-      Query query = _db
-          .collection('posts')
-          .orderBy('CreatedAt', descending: true)
-          .limit(limit);
+      Query query = _db.collection('posts').orderBy('CreatedAt', descending: true).limit(limit);
 
       // Apply pagination if loading more
       if (isLoadMore && _lastDocument != null) {
@@ -173,10 +172,8 @@ class HomePageService {
         final labels = post['labels'] as List<dynamic>?;
         if (labels == null) return false;
 
-        final lowerCaseLabels =
-            labels.map((label) => label.toString().toLowerCase()).toList();
-        return wordList.any(
-            (word) => lowerCaseLabels.any((label) => label.contains(word)));
+        final lowerCaseLabels = labels.map((label) => label.toString().toLowerCase()).toList();
+        return wordList.any((word) => lowerCaseLabels.any((label) => label.contains(word)));
       }).toList();
 
       print("Fetched ${filteredPosts.length} filtered posts.");
@@ -193,8 +190,7 @@ class HomePageService {
 
   Future<void> toggleLikeOnPost(String postId, String userId) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
-    DocumentSnapshot likeSnapshot =
-        await postRef.collection('likes').doc(userId).get();
+    DocumentSnapshot likeSnapshot = await postRef.collection('likes').doc(userId).get();
 
     if (likeSnapshot.exists) {
       // Like exists, so delete it
@@ -212,16 +208,13 @@ class HomePageService {
 
   Future<bool> checkIfUserLikedPost(String postId, String userId) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
-    DocumentSnapshot likeSnapshot =
-        await postRef.collection('likes').doc(userId).get();
+    DocumentSnapshot likeSnapshot = await postRef.collection('likes').doc(userId).get();
     return likeSnapshot.exists;
   }
 
-  Future<void> addCommentToPost(
-      String postId, String userId, String comment) async {
+  Future<void> addCommentToPost(String postId, String userId, String comment) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
-    DocumentReference<Map<String, dynamic>> commentRef =
-        await postRef.collection('comments').add({
+    DocumentReference<Map<String, dynamic>> commentRef = await postRef.collection('comments').add({
       'userId': userId, // Storing the userId of the commenter
       'comment': comment, // Storing the actual comment text
       'commentedAt': DateTime.now(), // Storing the timestamp of the comment
@@ -273,16 +266,13 @@ class HomePageService {
   Future<List<Map<String, dynamic>>> getComments(String postId) async {
     DocumentReference postRef = _db.collection('posts').doc(postId);
     final querySnapshot = await postRef.collection('comments').get();
-    return querySnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
-        .toList();
+    return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
   }
 
   Future<List<String>> getPostLabels(String postId) async {
     try {
       // Fetch the document for the given postId from the "posts" collection
-      DocumentSnapshot docSnapshot =
-          await _db.collection('posts').doc(postId).get();
+      DocumentSnapshot docSnapshot = await _db.collection('posts').doc(postId).get();
 
       // Check if the document exists
       if (docSnapshot.exists) {
@@ -309,8 +299,7 @@ class HomePageService {
 
     for (String label in labels) {
       // Create a Wikipedia link directly for each label
-      String formattedLabel =
-          label.replaceAll(' ', '_'); // Replace spaces with underscores
+      String formattedLabel = label.replaceAll(' ', '_'); // Replace spaces with underscores
       String link = 'https://en.wikipedia.org/wiki/$formattedLabel';
 
       wikiLinks.add(link);
@@ -322,14 +311,12 @@ class HomePageService {
   Future<Map<String, dynamic>> getUserDetails(String userId) async {
     try {
       // Fetch the document for the given userId from the "users" collection
-      DocumentSnapshot docSnapshot =
-          await _db.collection('users').doc(userId).get();
+      DocumentSnapshot docSnapshot = await _db.collection('users').doc(userId).get();
 
       // Check if the document exists
       if (docSnapshot.exists) {
         // Extract the user details from the document data
-        Map<String, dynamic> userDetails =
-            docSnapshot.data() as Map<String, dynamic>;
+        Map<String, dynamic> userDetails = docSnapshot.data() as Map<String, dynamic>;
 
         print("User details fetched successfully for userId: $userId");
         return userDetails;
