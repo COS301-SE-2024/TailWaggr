@@ -140,8 +140,7 @@ class _PostContainerState extends State<PostContainer> {
                       topLeft: Radius.circular(10),
                       bottomLeft: Radius.circular(10),
                     ),
-                    borderSide:
-                        BorderSide(color: themeSettings.primaryColor),
+                    borderSide: BorderSide(color: themeSettings.primaryColor),
                   ),
                 ),
                 onSubmitted: (value) async {
@@ -275,8 +274,7 @@ class _PostState extends State<Post> {
 
   Future<void> checkIfLiked() async {
     // Simulate an asynchronous operation
-    bool liked = await homePageService.checkIfUserLikedPost(
-        widget.postDetails['PostId'], profileDetails.userID);
+    bool liked = await homePageService.checkIfUserLikedPost(widget.postDetails['PostId'], profileDetails.userID);
     // Check if the widget is still mounted before calling setState
     if (!mounted) return;
     setState(() {
@@ -341,6 +339,7 @@ class _PostState extends State<Post> {
     // Fetch post labels and wiki links asynchronously
     List<String> postLabels = await homePageService.getPostLabels(widget.postDetails['PostId']);
     List<String> wikiLinks = await homePageService.getWikiLinks(postLabels);
+    List<Map<String, dynamic>> comments = await getComments();
 
     // Fetch users who liked the post
     List<String> likedUsers = await homePageService.getLikes(widget.postDetails['PostId']);
@@ -360,6 +359,7 @@ class _PostState extends State<Post> {
       "postLabels": postLabels,
       "wikiLinks": wikiLinks,
       "likedUsers": likedUsersList,
+      "comments": comments,
       "PetIds": widget.postDetails["PetIds"] ?? [],
     };
   }
@@ -382,6 +382,7 @@ class _PostState extends State<Post> {
     try {
       // Fetch post details
       final postDetails = await fetchPostData();
+      print("Post details: $postDetails");
       // Close the loading indicator
       if (_loadingDialogKey.currentContext != null) {
         Navigator.of(_loadingDialogKey.currentContext!).pop(); // Ensure the loading dialog is closed
@@ -394,7 +395,7 @@ class _PostState extends State<Post> {
           return AlertDialog(
             backgroundColor: themeSettings.cardColor,
             content: Container(
-              width: MediaQuery.of(context).size.width * 0.8,
+              width: 800,
               height: MediaQuery.of(context).size.height * 0.8,
               child: Padding(
                 padding: EdgeInsets.all(10.0),
@@ -403,145 +404,316 @@ class _PostState extends State<Post> {
                   children: [
                     // Top Section: Post Details
                     Row(
+                      key: UniqueKey(),
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundImage: NetworkImage(widget.postDetails['pictureUrl'] ?? profileDetails.profilePicture),
+                        Container(
+                          width: 400,
+                          padding: EdgeInsets.only(right: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: widget.postDetails["UserId"])));
+                                    },
+                                    child: CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage: NetworkImage(widget.postDetails["pictureUrl"]),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        widget.postDetails["name"],
+                                        style: TextStyle(
+                                          color: themeSettings.textColor,
+                                        ),
+                                      ),
+                                      Text(
+                                        "Posted on ${formatDate()}",
+                                        style: TextStyle(
+                                          color: themeSettings.textColor.withOpacity(0.7),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                              Text(
+                                widget.postDetails["Content"] ?? 'No content',
+                                style: TextStyle(
+                                  color: themeSettings.textColor,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 4,
+                              ),
+                              SizedBox(height: 20),
+                              if (widget.postDetails['PetIds'] != null && widget.postDetails['PetIds'].length != 0) ...[
+                                Text(
+                                  "Pets included in this post: ",
+                                  style: TextStyle(
+                                    color: themeSettings.textColor.withOpacity(0.7),
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: [
+                                      for (var pet in widget.postDetails['PetIds']) ...[
+                                        Container(
+                                          margin: EdgeInsets.only(right: 10),
+                                          child: Column(
+                                            children: [
+                                              CircleAvatar(
+                                                radius: 20,
+                                                backgroundImage: NetworkImage(pet["pictureUrl"] ?? profileDetails.profilePicture),
+                                              ),
+                                              SizedBox(height: 5),
+                                              Text(
+                                                pet["name"] ?? 'Unnamed pet',
+                                                style: TextStyle(color: themeSettings.textColor),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
                         ),
-                        SizedBox(width: 10),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            widget.postDetails["ImgUrl"] ?? profileDetails.profilePicture,
+                            width: 300,
+                            height: 200,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        SizedBox(width: 30),
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              widget.postDetails['name'] ?? 'Unknown',
-                              style: TextStyle(
-                                color: themeSettings.textColor,
-                                fontWeight: FontWeight.bold,
+                            Tooltip(
+                              message: "Like",
+                              child: IconButton(
+                                onPressed: () async {
+                                  await homePageService.toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
+                                  bool liked = await homePageService.checkIfUserLikedPost(widget.postDetails['PostId'], profileDetails.userID);
+                                  int likesCount = await homePageService.getLikesCount(widget.postDetails['PostId']);
+                                  setState(() {
+                                    print("Liked: $liked");
+                                    isLiked = liked;
+                                    numLikes = likesCount.toString();
+                                  });
+                                },
+                                icon: isLiked
+                                    ? Icon(
+                                        Icons.pets,
+                                        color: Colors.red.withOpacity(0.7),
+                                      )
+                                    : SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: ColorFiltered(
+                                          colorFilter: ColorFilter.mode(
+                                            Colors.red.withOpacity(0.7),
+                                            BlendMode.srcIn,
+                                          ),
+                                          child: Image.asset('assets/images/paw1.png'),
+                                        ),
+                                      ),
                               ),
                             ),
-                            Text(
-                              "Posted on ${formatDate()}",
-                              style: TextStyle(
-                                color: themeSettings.textColor.withOpacity(0.7),
+                            Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                            SizedBox(height: 20),
+                            Tooltip(
+                              message: "Comment",
+                              child: IconButton(
+                                onPressed: () async {
+                                  showDialogBox(context);
+                                  // await getCommments();
+                                  homePageService.getCommentsCount(widget.postDetails['PostId']).then((value) {
+                                    setState(() {
+                                      numComments = value.toString();
+                                    });
+                                  });
+                                },
+                                icon: Icon(
+                                  Icons.comment,
+                                  color: Colors.blue.withOpacity(0.7),
+                                ),
                               ),
                             ),
+                            Text(numComments, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                            SizedBox(height: 20),
+                            Tooltip(
+                              message: "Views",
+                              child: Icon(
+                                Icons.remove_red_eye,
+                                color: Colors.green.withOpacity(0.7),
+                              ),
+                            ),
+                            Text(numViews, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
                           ],
                         ),
                       ],
                     ),
-                    SizedBox(height: 10),
-                    Text(
-                      widget.postDetails['Content'] ?? 'No content',
-                      style: TextStyle(
-                        color: themeSettings.textColor,
-                      ),
-                    ),
-                    SizedBox(height: 10),
                     Divider(),
-
-                    // Labels Section
-                    if (postDetails['postLabels'].isNotEmpty) ...[
-                      Text(
-                        "Labels:",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Wrap(
-                        spacing: 8.0, // Adds some space between the labels
+                    DefaultTabController(
+                      length: 3,
+                      child: Column(
                         children: [
-                          for (int i = 0; i < postDetails['postLabels'].length; i++) ...[
-                            InkWell(
-                              onTap: () async {
-                                final Uri url = Uri.parse(postDetails['wikiLinks'][i]);
-                                if (!await launchUrl(url)) {
-                                  print('Could not launch $url');
-                                }
-                              },
-                              child: Chip(
-                                label: Text(postDetails['postLabels'][i]),
-                                backgroundColor: themeSettings.primaryColor.withOpacity(0.7),
+                          TabBar(
+                            dividerColor: Colors.transparent,
+                            tabs: [
+                              Tab(
+                                child: Text("Labels"),
                               ),
-                            ),
-                          ],
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                    ],
-
-                    // Users who liked the post
-                    if (postDetails['likedUsers'].isNotEmpty) ...[
-                      Text(
-                        "Liked by:",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Wrap(
-                        spacing: 8.0, // Adds some space between the users
-                        children: [
-                          for (var user in postDetails['likedUsers']) ...[
-                            InkWell(
-                              onTap: () {
-                                // Handle profile click
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: user['userId'])));
-                              },
-                              child: Chip(
-                                avatar: CircleAvatar(
-                                  backgroundImage: NetworkImage(user['pictureUrl'] ?? ''),
-                                ),
-                                label: Text(user['username'] ?? 'Unknown'),
-                                backgroundColor: themeSettings.primaryColor.withOpacity(0.7),
+                              Tab(
+                                child: Text("Comments"),
                               ),
-                            ),
-                          ],
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                    ],
-
-                    // Pets included in the post
-                    if (postDetails['PetIds'] != null && postDetails['PetIds'].length != 0) ...[
-                      Text(
-                        "Pets included in this post:",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            for (var pet in postDetails['PetIds']) ...[
-                              Container(
-                                margin: EdgeInsets.only(right: 10),
-                                child: Column(
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 20,
-                                      backgroundImage: NetworkImage(
-                                        pet["pictureUrl"] ?? profileDetails.profilePicture,
-                                      ),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Text(
-                                      pet["name"] ?? 'Unnamed pet',
-                                      style: TextStyle(color: themeSettings.textColor),
-                                    ),
-                                  ],
-                                ),
+                              Tab(
+                                child: Text("Likes"),
                               ),
                             ],
-                          ],
-                        ),
+                          ),
+                          Divider(),
+                          SizedBox(
+                            height: 250, // Specify the height for the TabBarView
+                            child: TabBarView(
+                              children: [
+                                // Labels Section
+                                Wrap(
+                                  spacing: 10, // Adds some space between the labels
+                                  runSpacing: 10, // Adds some space between the rows
+                                  children: [
+                                    for (int i = 0; i < postDetails['postLabels'].length; i++) ...[
+                                      Container(
+                                        height: 50,
+                                        width: 100,
+                                        decoration: BoxDecoration(
+                                          color: themeSettings.primaryColor,
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            onTap: () async {
+                                              final Uri url = Uri.parse(postDetails['wikiLinks'][i]);
+                                              if (!await launchUrl(url)) {
+                                                print('Could not launch $url');
+                                              }
+                                            },
+                                            child: Center(
+                                              child: Text(postDetails['postLabels'][i], style: TextStyle(color: Colors.white)),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    for (var user in postDetails['comments']) ...[
+                                      Padding(
+                                        padding: const EdgeInsets.only(bottom: 10),
+                                        child: MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                              onTap: () {
+                                                // Handle profile click
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: user['userId'])));
+                                              },
+                                              child: Row(
+                                                children: [
+                                                  CircleAvatar(
+                                                    radius: 20,
+                                                    backgroundImage: NetworkImage(user['pictureUrl'] ?? ''),
+                                                  ),
+                                                  SizedBox(width: 10),
+                                                  Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        user['name'] ?? 'Unknown',
+                                                        style: TextStyle(
+                                                          color: themeSettings.textColor,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        user['comment'] ?? 'No content',
+                                                        style: TextStyle(
+                                                          color: themeSettings.textColor.withOpacity(0.7),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              )),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                                Wrap(
+                                  spacing: 8.0, // Adds some space between the users
+                                  children: [
+                                    for (var user in postDetails['likedUsers']) ...[
+                                      MouseRegion(
+                                        cursor: SystemMouseCursors.click,
+                                        child: InkWell(
+                                          onTap: () {
+                                            // Handle profile click
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: user['userId'])));
+                                          },
+                                          child: Container(
+                                            width: 200,
+                                            height: 50,
+                                            padding: EdgeInsets.symmetric(vertical: 10),
+                                            decoration: BoxDecoration(
+                                              // color: themeSettings.primaryColor,
+                                              borderRadius: BorderRadius.circular(10),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 20,
+                                                  backgroundImage: NetworkImage(user['pictureUrl'] ?? ''),
+                                                ),
+                                                SizedBox(width: 10),
+                                                Text(
+                                                  user['username'] ?? 'Unknown',
+                                                  style: TextStyle(
+                                                    color: themeSettings.textColor,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ],
                 ),
               ),
