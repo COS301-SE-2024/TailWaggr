@@ -74,7 +74,6 @@ class _PostContainerState extends State<PostContainer> {
         isLoadingMore = true;
       });
     }
-
     try {
       List<Map<String, dynamic>> fetchedPosts =
           await homePageService.getPosts(words: labels, isLoadMore: getMore);
@@ -142,7 +141,7 @@ class _PostContainerState extends State<PostContainer> {
                       bottomLeft: Radius.circular(10),
                     ),
                     borderSide:
-                        BorderSide(color: Color.fromARGB(255, 255, 148, 25)),
+                        BorderSide(color: themeSettings.primaryColor),
                   ),
                 ),
                 onSubmitted: (value) async {
@@ -283,14 +282,12 @@ class _PostState extends State<Post> {
 
   Future<void> checkIfLiked() async {
     // Simulate an asynchronous operation
-    await Future.delayed(Duration(seconds: 2));
-
+    bool liked = await homePageService.checkIfUserLikedPost(
+        widget.postDetails['PostId'], profileDetails.userID);
     // Check if the widget is still mounted before calling setState
     if (!mounted) return;
-
     setState(() {
-      isLiked =
-          true; // Update the state based on the result of the async operation
+      isLiked = liked;
     });
   }
 
