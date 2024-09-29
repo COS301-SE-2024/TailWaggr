@@ -120,6 +120,7 @@ class EditProfileVariables {
         'isoCode': profileDetails.isoCode,
         'phoneNumber': profileDetails.phone,
       },
+      'profileVisibility': profileDetails.isPublic,
     };
 
     if (EditProfileVariables.birthdate != null) {

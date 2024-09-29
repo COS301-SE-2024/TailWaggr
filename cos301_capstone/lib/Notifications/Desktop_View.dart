@@ -258,9 +258,10 @@ class NotificationCard extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
+              backgroundColor: themeSettings.cardColor,
               title: Text(
                 'Message from Forum: ${forum['Name'] ?? 'Unknown Forum'}',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: themeSettings.textColor),
               ),
               content: SingleChildScrollView(
                 child: Container(
@@ -327,16 +328,24 @@ class NotificationCard extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.pets_outlined, size: 16),
+                                    Icon(
+                                      Icons.pets_outlined,
+                                      size: 16,
+                                      color: Colors.red,
+                                    ),
                                     SizedBox(width: 4),
-                                    Text('$likes'),
+                                    Text('$likes', style: TextStyle(color: themeSettings.textColor)),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Icon(Icons.comment, size: 16),
+                                    Icon(
+                                      Icons.comment,
+                                      size: 16,
+                                      color: Colors.blue,
+                                    ),
                                     SizedBox(width: 4),
-                                    Text('$comments'),
+                                    Text('$comments', style: TextStyle(color: themeSettings.textColor)),
                                   ],
                                 ),
                               ],
@@ -349,7 +358,7 @@ class NotificationCard extends StatelessWidget {
                         Divider(),
                         Text(
                           'Comment:',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(fontWeight: FontWeight.bold, color: themeSettings.textColor),
                         ),
                         SizedBox(height: 8),
                         Row(
@@ -410,14 +419,15 @@ class NotificationCard extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Error'),
-              content: Text('Unable to fetch forum details.'),
+              backgroundColor: themeSettings.cardColor,
+              title: Text('Error', style: TextStyle(color: themeSettings.textColor)),
+              content: Text('Unable to fetch forum details. The content may have been deleted.', style: TextStyle(color: themeSettings.textColor)),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Close'),
+                  child: Text('Close', style: TextStyle(color: themeSettings.primaryColor)),
                 ),
               ],
             );
@@ -431,14 +441,15 @@ class NotificationCard extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error'),
-            content: Text('An error occurred while fetching forum details.'),
+            backgroundColor: themeSettings.cardColor,
+            title: Text('Error', style: TextStyle(color: themeSettings.textColor)),
+            content: Text('An error occurred while fetching forum details. The content may have been deleted.', style: TextStyle(color: themeSettings.textColor)),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Close'),
+                child: Text('Close', style: TextStyle(color: themeSettings.primaryColor)),
               ),
             ],
           );
@@ -483,6 +494,7 @@ class NotificationCard extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
+              backgroundColor: themeSettings.cardColor,
               content: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -493,7 +505,7 @@ class NotificationCard extends StatelessWidget {
                       Divider(),
                       Text(
                         'Comment:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: themeSettings.textColor),
                       ),
                       SizedBox(height: 8),
                       Row(
@@ -540,7 +552,7 @@ class NotificationCard extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Close'),
+                  child: Text('Close', style: TextStyle(color: themeSettings.primaryColor)),
                 ),
               ],
             );
@@ -556,14 +568,15 @@ class NotificationCard extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error'),
-            content: Text('An error occurred while fetching post details.'),
+            backgroundColor: themeSettings.cardColor,
+            title: Text('Error', style: TextStyle(color: themeSettings.textColor)),
+            content: Text('An error occurred while fetching post details. The content may have been deleted.', style: TextStyle(color: themeSettings.textColor)),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Close'),
+                child: Text('Close', style: TextStyle(color: themeSettings.primaryColor)),
               ),
             ],
           );

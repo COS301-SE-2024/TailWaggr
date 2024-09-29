@@ -133,8 +133,7 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
   void initState() {
     super.initState();
     imagePickerLocal.filesNotifier.addListener(() {
-      setState(() {
-      });
+      setState(() {});
     });
   }
 
@@ -340,6 +339,60 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
           Visibility(
             visible: isDatePickerVisible,
             child: SizedBox(height: 20),
+          ),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    color: themeSettings.textColor,
+                    height: 1,
+                    width: 200,
+                  ),
+                  Text("Profile Visibility", style: TextStyle(color: themeSettings.textColor, fontSize: 14)),
+                  Container(
+                    color: themeSettings.textColor,
+                    height: 1,
+                    width: 200,
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: ListTile(
+                      title: Text('Public', style: TextStyle(color: themeSettings.textColor)),
+                      leading: Radio<bool>(
+                        value: true,
+                        fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                        groupValue: profileDetails.isPublic,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            profileDetails.isPublic = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListTile(
+                      title: Text('Private', style: TextStyle(color: themeSettings.textColor)),
+                      leading: Radio<bool>(
+                        value: false,
+                        fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                        groupValue: profileDetails.isPublic,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            profileDetails.isPublic = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
           ElevatedButton(
             onPressed: !isPhoneValid
@@ -803,6 +856,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                         saveChangesText = "Saving...";
                       });
                       await EditProfileVariables.setNavbarPreferences(profileDetails.usingImage, profileDetails.usingDefaultImage);
+                      profileDetails.isEditing.value++;
                       setState(() {
                         saveChangesText = "Save Changes";
                       });

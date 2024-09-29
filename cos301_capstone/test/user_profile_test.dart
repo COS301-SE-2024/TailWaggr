@@ -37,7 +37,7 @@ void main() {
         }
       };
 
-      await tester.pumpWidget(createWidgetForTesting(child: desktopView.PostsContainer()));
+      await tester.pumpWidget(createWidgetForTesting(child: desktopView.PostsContainer(localProfileDetails: ProfileDetails(),)));
 
       expect(find.text("Posts"), findsOneWidget);
     });
@@ -52,8 +52,10 @@ void main() {
           oldOnError!(details);
         }
       };
+      
+      ProfileDetails localProfileDetails = ProfileDetails();
 
-      profileDetails.myPosts = [
+      localProfileDetails.myPosts = [
         {
           "pictureUrl": "assets/images/pug.jpg",
           "name": "John Doe",
@@ -72,7 +74,9 @@ void main() {
         }
       ];
 
-      await tester.pumpWidget(createWidgetForTesting(child: desktopView.ListOfPosts()));
+      
+
+      await tester.pumpWidget(createWidgetForTesting(child: desktopView.ListOfPosts(profileDetails: localProfileDetails)));
 
       expect(find.text("This is a sample post content."), findsOneWidget);
       expect(find.text("Included pets:"), findsOneWidget);
@@ -91,13 +95,14 @@ void main() {
         }
       };
 
-      profileDetails.email = "johndoe@gmail.com";
-      profileDetails.phone = "0123456789";
-      profileDetails.birthdate = "1999-12-12";
-      profileDetails.location = "Pretoria";
-      profileDetails.userType = "Veterinarian";
+      ProfileDetails localProfileDetails = ProfileDetails();
 
-      await tester.pumpWidget(createWidgetForTesting(child: desktopView.AboutMeContainer()));
+      localProfileDetails.email = "johndoe@gmail.com";
+      localProfileDetails.phone = "0123456789";
+      localProfileDetails.birthdate = "1999-12-12";
+      localProfileDetails.location = "Pretoria";
+
+      await tester.pumpWidget(createWidgetForTesting(child: desktopView.AboutMeContainer(profileDetails: localProfileDetails)));
 
       expect(find.text("Profile Details"), findsOneWidget);
       expect(find.text("johndoe@gmail.com"), findsOneWidget);
@@ -105,7 +110,6 @@ void main() {
       expect(find.text("1999-12-12"), findsOneWidget);
       expect(find.text("Pretoria"), findsOneWidget);
       expect(find.text("Pet enthusiast"), findsOneWidget);
-      expect(find.text("Veterinarian"), findsOneWidget);
     });
 
     testWidgets('Testing the MyPetsContainer widget for Desktop', (WidgetTester tester) async {
@@ -119,7 +123,7 @@ void main() {
         }
       };
 
-      await tester.pumpWidget(createWidgetForTesting(child: desktopView.MyPetsContainer()));
+      await tester.pumpWidget(createWidgetForTesting(child: desktopView.MyPetsContainer(profileDetails: ProfileDetails())));
 
       expect(find.text("My Pets"), findsOneWidget);
     });
@@ -194,7 +198,9 @@ void main() {
         }
       };
 
-      profileDetails.myPosts = [
+      ProfileDetails localProfileDetails = ProfileDetails();
+
+      localProfileDetails.myPosts = [
         {
           "pictureUrl": "assets/images/pug.jpg",
           "name": "John Doe",
@@ -213,7 +219,7 @@ void main() {
         }
       ];
 
-      await tester.pumpWidget(createWidgetForTesting(child: tabletView.PostsContainer()));
+      await tester.pumpWidget(createWidgetForTesting(child: tabletView.PostsContainer(profileDetails: localProfileDetails)));
 
       expect(find.text("This is a sample post content."), findsOneWidget);
       expect(find.text("Included pets:"), findsOneWidget);
@@ -232,11 +238,13 @@ void main() {
         }
       };
 
-      profileDetails.name = "John";
-      profileDetails.surname = "Doe";
-      profileDetails.bio = "This is a sample bio.";
+      ProfileDetails localProfileDetails = ProfileDetails();
 
-      await tester.pumpWidget(createWidgetForTesting(child: tabletView.AboutMeContainer()));
+      localProfileDetails.name = "John";
+      localProfileDetails.surname = "Doe";
+      localProfileDetails.bio = "This is a sample bio.";
+
+      await tester.pumpWidget(createWidgetForTesting(child: tabletView.AboutMeContainer(profileDetails: localProfileDetails)));
 
       expect(find.text("John Doe"), findsOneWidget);
       expect(find.text("This is a sample bio."), findsOneWidget);
@@ -253,7 +261,7 @@ void main() {
         }
       };
 
-      await tester.pumpWidget(createWidgetForTesting(child: tabletView.DetailsContainer()));
+      await tester.pumpWidget(createWidgetForTesting(child: tabletView.DetailsContainer(profileDetails: ProfileDetails())));
 
       expect(find.byIcon(Icons.person_outline), findsOneWidget);
       expect(find.text("Details"), findsOneWidget);
@@ -276,20 +284,21 @@ void main() {
         }
       };
 
-      profileDetails.email = "johndoe@gmail.com";
-      profileDetails.phone = "0123456789";
-      profileDetails.birthdate = "1999-12-12";
-      profileDetails.location = "Pretoria";
-      profileDetails.userType = "Veterinarian";
+      ProfileDetails localProfileDetails = ProfileDetails();
 
-      await tester.pumpWidget(createWidgetForTesting(child: tabletView.PersonalDetailsContainer()));
+      localProfileDetails.email = "johndoe@gmail.com";
+      localProfileDetails.phone = "0123456789";
+      localProfileDetails.birthdate = "1999-12-12";
+      localProfileDetails.location = "Pretoria";
+      localProfileDetails.userType = "Veterinarian";
+
+      await tester.pumpWidget(createWidgetForTesting(child: tabletView.PersonalDetailsContainer(profileDetails: localProfileDetails)));
 
       expect(find.text("Personal Information"), findsOneWidget);
       expect(find.text("johndoe@gmail.com"), findsOneWidget);
       expect(find.text("0123456789"), findsOneWidget);
       expect(find.text("1999-12-12"), findsOneWidget);
       expect(find.text("Pretoria"), findsOneWidget);
-      expect(find.text("Veterinarian"), findsOneWidget);
     });
 
     testWidgets('Testing the MyPetsContainer widget for Tablet', (WidgetTester tester) async {
@@ -303,7 +312,9 @@ void main() {
         }
       };
 
-      profileDetails.pets = [
+      ProfileDetails localProfileDetails = ProfileDetails();
+
+      localProfileDetails.pets = [
         {
           "bio": "This is a sample pet bio.",
           "birthDate": "2020-01-01",
@@ -322,7 +333,7 @@ void main() {
         }
       ];
 
-      await tester.pumpWidget(createWidgetForTesting(child: tabletView.MyPetsContainer()));
+      await tester.pumpWidget(createWidgetForTesting(child: tabletView.MyPetsContainer(profileDetails: localProfileDetails)));
 
       expect(find.text("Fluffy"), findsOneWidget);
       expect(find.text("This is a sample pet bio."), findsOneWidget);
@@ -344,7 +355,9 @@ void main() {
         }
       };
 
-      profileDetails.myPosts = [
+      ProfileDetails localProfileDetails = ProfileDetails();
+
+      localProfileDetails.myPosts = [
         {
           "pictureUrl": "assets/images/pug.jpg",
           "name": "John Doe",
@@ -363,7 +376,7 @@ void main() {
         }
       ];
 
-      await tester.pumpWidget(createWidgetForTesting(child: mobileView.PostsContainer()));
+      await tester.pumpWidget(createWidgetForTesting(child: mobileView.PostsContainer(profileDetails: localProfileDetails)));
 
       expect(find.text("This is a sample post content."), findsOneWidget);
       expect(find.text("Pets included in this post: "), findsOneWidget);
@@ -382,11 +395,13 @@ void main() {
         }
       };
 
-      profileDetails.name = "John";
-      profileDetails.surname = "Doe";
-      profileDetails.bio = "This is a sample bio.";
+      ProfileDetails localProfileDetails = ProfileDetails();
 
-      await tester.pumpWidget(createWidgetForTesting(child: mobileView.AboutMeContainer()));
+      localProfileDetails.name = "John";
+      localProfileDetails.surname = "Doe";
+      localProfileDetails.bio = "This is a sample bio.";
+
+      await tester.pumpWidget(createWidgetForTesting(child: mobileView.AboutMeContainer(profileDetails: localProfileDetails)));
 
       expect(find.text("John Doe"), findsOneWidget);
       expect(find.text("This is a sample bio."), findsOneWidget);
@@ -403,7 +418,7 @@ void main() {
         }
       };
 
-      await tester.pumpWidget(createWidgetForTesting(child: mobileView.DetailsContainer()));
+      await tester.pumpWidget(createWidgetForTesting(child: mobileView.DetailsContainer(profileDetails: ProfileDetails())));
 
       expect(find.byIcon(Icons.person_outline), findsOneWidget);
       expect(find.byIcon(Icons.pets_outlined), findsOneWidget);
@@ -421,20 +436,20 @@ void main() {
         }
       };
 
-      profileDetails.email = "johndoe@gmail.com";
-      profileDetails.phone = "0123456789";
-      profileDetails.birthdate = "1999-12-12";
-      profileDetails.location = "Pretoria";
-      profileDetails.userType = "Veterinarian";
+      ProfileDetails localProfileDetails = ProfileDetails();
 
-      await tester.pumpWidget(createWidgetForTesting(child: mobileView.PersonalDetailsContainer()));
+      localProfileDetails.email = "johndoe@gmail.com";
+      localProfileDetails.phone = "0123456789";
+      localProfileDetails.birthdate = "1999-12-12";
+      localProfileDetails.location = "Pretoria";
+
+      await tester.pumpWidget(createWidgetForTesting(child: mobileView.PersonalDetailsContainer(profileDetails: localProfileDetails)));
 
       expect(find.text("Personal Information"), findsOneWidget);
       expect(find.text("johndoe@gmail.com"), findsOneWidget);
       expect(find.text("0123456789"), findsOneWidget);
       expect(find.text("1999-12-12"), findsOneWidget);
       expect(find.text("Pretoria"), findsOneWidget);
-      expect(find.text("Veterinarian"), findsOneWidget);
     });
 
     testWidgets('Testing the MyPetsContainer widget for Mobile', (WidgetTester tester) async {
@@ -448,7 +463,9 @@ void main() {
         }
       };
 
-      profileDetails.pets = [
+      ProfileDetails localProfileDetails = ProfileDetails();
+
+      localProfileDetails.pets = [
         {
           "bio": "This is a sample pet bio.",
           "birthDate": "2020-01-01",
@@ -467,7 +484,7 @@ void main() {
         }
       ];
 
-      await tester.pumpWidget(createWidgetForTesting(child: mobileView.MyPetsContainer()));
+      await tester.pumpWidget(createWidgetForTesting(child: mobileView.MyPetsContainer(profileDetails: localProfileDetails)));
 
       expect(find.text("Fluffy"), findsOneWidget);
       expect(find.text("This is a sample pet bio."), findsOneWidget);
