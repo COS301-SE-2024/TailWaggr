@@ -350,7 +350,7 @@ class _PostState extends State<Post> {
                             InkWell(
                               onTap: () {
                                 // Handle profile click
-                                // Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(user['userId'])));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: user['userId'])));
                               },
                               child: Chip(
                                 avatar: CircleAvatar(
@@ -647,9 +647,7 @@ class _PostState extends State<Post> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => showPostDetails(context),
-      child: Row(
+      return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
@@ -660,9 +658,14 @@ class _PostState extends State<Post> {
               children: [
                 Row(
                   children: [
-                    CircleAvatar(
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: widget.postDetails["UserId"])));
+                      },
+                      child: CircleAvatar(
                       radius: 20,
                       backgroundImage: NetworkImage(widget.postDetails["pictureUrl"]),
+                      ),
                     ),
                     SizedBox(width: 10),
                     Column(
@@ -731,13 +734,18 @@ class _PostState extends State<Post> {
               ],
             ),
           ),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.network(
-              widget.postDetails["ImgUrl"] ?? profileDetails.profilePicture,
-              width: 300,
-              height: 200,
-              fit: BoxFit.cover,
+          InkWell(
+            onTap: () {
+              showPostDetails(context);
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                widget.postDetails["ImgUrl"] ?? profileDetails.profilePicture,
+                width: 300,
+                height: 200,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           SizedBox(width: 30),
@@ -806,8 +814,7 @@ class _PostState extends State<Post> {
             ],
           ),
         ],
-      ),
-    );
+      );
   }
 }
 
