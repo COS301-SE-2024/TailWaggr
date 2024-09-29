@@ -598,7 +598,7 @@ class NotificationCard extends StatelessWidget {
         print('Post: ');
         print(notification['post']);
         // Check the notification type and call the appropriate dialog
-        if (notification['NotificationTypeId'] == 1 || notification['NotificationTypeId'] == 3) {
+        if (notification['NotificationTypeId'] == 1 || notification['NotificationTypeId'] == 3 || notification['NotificationTypeId'] == 7) {
           _showForumDialog(context);
         } else if (notification['NotificationTypeId'] == 5 || notification['NotificationTypeId'] == 6) {
           _showPostDialog(context);
@@ -682,7 +682,7 @@ class NotificationCard extends StatelessWidget {
                     style: TextStyle(fontSize: bodyTextSize - 2, color: themeSettings.textColor),
                   ),
                   Spacer(),
-                  if (notification['NotificationTypeId'] == 1 || notification['NotificationTypeId'] == 3) ...[
+                  if (notification['NotificationTypeId'] == 1 || notification['NotificationTypeId'] == 3 || notification['NotificationTypeId'] == 7) ...[
                     ElevatedButton(
                       key: Key('view-message'),
                       onPressed: () {
@@ -725,6 +725,7 @@ class NotificationCard extends StatelessWidget {
                       ),
                     ),
                   ],
+
                 ],
               ),
             ),

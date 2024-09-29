@@ -306,6 +306,11 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
       Map<String, dynamic> postData = postDoc.data() as Map<String, dynamic>;
       String postOwnerId = postData['UserId'] ?? '';
 
+      //return if message is muted for notifications
+      if(postData['mute'] ==true){
+        print("Message is muted for notifications");
+        return;
+      }
       //return if sending notification to self
       if (postOwnerId == userId) {
         return;
@@ -427,5 +432,58 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
       print("Error creating comment post notification: $e");
     }
   }
+  // Create a new notification for a new message added to a forum
+ Future<void> createMessageNotification(String forumId, String messageId, String userId) async {
+  try {
+    // Fetch the forum document to get the forum owner's UserId
+    DocumentReference<Map<String, dynamic>> forumDoc = _db.collection('forum').doc(forumId);
+    DocumentSnapshot forumSnapshot = await forumDoc.get();
+    
+    if (!forumSnapshot.exists) {
+      throw Exception("Forum not found");
+    }
 
+    // Extract postOwnerId (the forum owner's UserId) from the forum document
+    Map<String, dynamic> forumData = forumSnapshot.data() as Map<String, dynamic>;
+    String postOwnerId = forumData['UserId']; // Forum owner's UserId
+    String forumName = forumData['Name'];     // Forum name
+    
+    print("mute: ${forumData['mute']}");
+    //return if forum is muted for notifications
+    if(forumData['mute'] ==true){
+      print("Forum is muted for notifications");
+      return;
+    }
+    // Return if sending notification to self
+    if (postOwnerId == userId) {
+      return;
+    }
+
+    // Fetch user details of the message sender (userId)
+    DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
+    if (!userDoc.exists) {
+      throw Exception("User not found");
+    }
+
+    Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+    String name = userData['name'] ?? '';
+
+    // Set the notification content
+    String content = "$name added a message to your forum: $forumName";
+
+    await _db.collection('notifications').add({
+      'UserId': postOwnerId,                    // Forum owner's UserId
+      'NotificationTypeId': 7,                  // Notification type for new message
+      'Content': content,                       // Notification content
+      'Read': false,                            // Initially unread
+      'ReferenceId': '$forumId/$messageId',     // Reference to the forum and message
+      'AvatarUrlId': userId,                    // AvatarUrlId of the message sender
+      'CreatedAt': Timestamp.now(),             // Creation time of the notification
+    });
+
+    print("Notification created successfully");
+  } catch (e) {
+    print("Error creating message notification: $e");
+  }
+}
 }

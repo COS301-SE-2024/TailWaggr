@@ -28,7 +28,8 @@ class ForumServices {
         'ImgUrl': imgUrl,
         'Name': name,
         'Description': des,
-        'UserId': userId
+        'UserId': userId,
+        'mute': false
       });
       print('Forum created successfully.');
       return ref;
@@ -63,7 +64,15 @@ class ForumServices {
           .get();
 
           //get recent message Timestamp
-          DateTime recentMessage = this.getRecentMessage(messagesSnapshot.docs);
+          DateTime recentMessage = getRecentMessage(messagesSnapshot.docs);
+          //compare with createdAt
+          if (recentMessage.isAfter(forumData['CreatedAt'].toDate())) {
+            recentMessage = forumData['CreatedAt'].toDate();
+          }
+          //get creator name
+          DocumentSnapshot userDoc = await _db.collection('users').doc(forumData['UserId']).get();
+          Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+          forumData['creatorUsername'] = userData['name'];
           forums.add({
             'forumId': doc.id,
             ...forumData,
@@ -72,10 +81,12 @@ class ForumServices {
           });
         }
       }
+      //order forums by CreatedAt from newest to oldest
+      forums.sort((a, b) => (b['CreatedAt'] as Timestamp).compareTo(a['CreatedAt'] as Timestamp));
       //print(forums);
       return forums.isNotEmpty ? forums : null;
     } catch (e) {
-      print('Error fetching forums: $e');
+      print('Error fetching forums backend: $e');
       return null;
     }
   }
@@ -137,6 +148,8 @@ class ForumServices {
           });
         }
       }
+      //order messages by CreatedAt from oldest to newest
+      messages.sort((a, b) => (a['message']['CreatedAt'] as Timestamp).compareTo(b['message']['CreatedAt'] as Timestamp));
       //print(messages);
       return messages.isNotEmpty ? messages : null;
     } catch (e) {
@@ -152,8 +165,10 @@ class ForumServices {
         'UserId': userId,
         'Content': content,
         'CreatedAt': Timestamp.now(),
+        'mute': false,
       });
 
+      notif.createMessageNotification(forumId,messageRef.id, userId);
       return messageRef;
     } catch (e) {
       print('Error creating message: $e');
@@ -250,6 +265,8 @@ class ForumServices {
           });
         }
       }
+      //order replies by CreatedAt from oldest to newest
+      replies.sort((a, b) => (a['CreatedAt'] as Timestamp).compareTo(b['CreatedAt'] as Timestamp));
       //print(replies);
       return replies.isNotEmpty ? replies : null;
     } catch (e) {
@@ -259,7 +276,7 @@ class ForumServices {
 }
 
   DateTime getRecentMessage(List<QueryDocumentSnapshot<Object?>> docs) {
-    DateTime recentMessage = DateTime(2021);
+    DateTime recentMessage = DateTime(2024);
     for (var doc in docs) {
       Map<String, dynamic> messageData = doc.data() as Map<String, dynamic>;
       DateTime messageTime = messageData['CreatedAt'].toDate();
@@ -268,5 +285,78 @@ class ForumServices {
       }
     }
     return recentMessage;
+  }
+  Future<void> deleteReply(String forumId, String messageId, String replyId) async {
+    try {
+      await _db.collection('forum').doc(forumId).collection('messages').doc(messageId).collection('replies').doc(replyId).delete();
+      print('Reply deleted successfully.');
+    } catch (e) {
+      print('Error deleting reply: $e');
+      throw Exception('Failed to delete reply.');
+    }
+  }
+Future<void> togglemuteForum(String forumId, String userId) async {
+  try {
+    // Reference to the forum document
+    DocumentReference<Map<String, dynamic>> forumDoc = _db.collection('forum').doc(forumId);
+
+    // Fetch the current mute status
+    DocumentSnapshot forumSnapshot = await forumDoc.get();
+    if (!forumSnapshot.exists) {
+      throw Exception("Forum not found");
+    }
+
+    Map<String, dynamic> forumData = forumSnapshot.data() as Map<String, dynamic>;
+    bool isMuted = forumData['mute'] ?? false;  // Default to false if 'mute' is not present
+
+    // Toggle the mute status
+    await forumDoc.update({
+      'mute': !isMuted,
+    });
+
+    print("Forum mute toggled to: ${!isMuted}");
+  } catch (e) {
+    print("Error toggling forum mute: $e");
+  }
+}
+
+
+  Future<void> togglemuteMessage(String messageId, String forumId, String userId) async {
+  try {
+    // Reference to the message document
+    DocumentReference<Map<String, dynamic>> messageDoc = _db.collection('forum').doc(forumId).collection('messages').doc(messageId);
+
+    // Fetch the current mute status
+    DocumentSnapshot messageSnapshot = await messageDoc.get();
+    if (!messageSnapshot.exists) {
+      throw Exception("Message not found");
+    }
+
+    Map<String, dynamic> messageData = messageSnapshot.data() as Map<String, dynamic>;
+    bool isMuted = messageData['mute'] ?? false;  // Default to false if 'mute' is not present
+
+    // Toggle the mute status
+    await messageDoc.update({
+      'mute': !isMuted,
+    });
+
+    print("Message mute toggled to: ${!isMuted}");
+  } catch (e) {
+    print("Error toggling message mute: $e");
+  }
+}
+
+  Future<bool> checkIfUserLikedPost(String postId,String forumId, String userId) async {
+    try {
+      // Reference to the like document
+      DocumentReference<Map<String, dynamic>> likeDoc = _db.collection('forum').doc(forumId).collection('messages').doc(postId).collection('likes').doc(userId);
+
+      // Fetch the like document
+      DocumentSnapshot likeSnapshot = await likeDoc.get();
+      return likeSnapshot.exists;
+    } catch (e) {
+      print("Error checking if user liked post: $e");
+      return false;
+    }
   }
 }

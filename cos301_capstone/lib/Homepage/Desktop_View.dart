@@ -7,15 +7,14 @@ import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
+import 'package:cos301_capstone/services/imageApi/imageFilter.dart';
 import 'package:cos301_capstone/services/profile/profile_service.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final HomePageService homePageService = HomePageService();
-
 class DesktopHomepage extends StatefulWidget {
   const DesktopHomepage({super.key});
 
@@ -1153,6 +1152,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
   TextEditingController postController = TextEditingController();
   bool selectingPet = false;
   List<bool> removePet = [];
+  ImageFilter imageFilter = ImageFilter();
 
   @override
   void initState() {
@@ -1457,15 +1457,84 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     return;
                   }
 
+                  // Check if image is selected and moderate image
                   if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
                     print("Image: ${imagePicker.filesNotifier.value![0].name}");
+                    print("Image details: ${imagePicker.filesNotifier.value![0]}");
+                    print("calling image filter");
+                    Map<String, dynamic> moderationResult = await imageFilter.moderateImage(imagePicker.filesNotifier.value![0]);
+                    print("Moderation result: $moderationResult");
+                    //create dialog box for moderation
+                    if (moderationResult['status'] == 'error') {
+                      // Show error dialog
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Error'),
+                            content: Text(moderationResult['message']),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              )
+                            ],
+                          );
+                        },
+                      );
+                    } else if (moderationResult['status'] == 'fail') {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.redAccent, // Customize color if needed
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "🔞 Warning!",  // Title
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: themeSettings.textColor, // Customize text color
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                moderationResult['message'],  // Full message
+                                style: TextStyle(color: themeSettings.textColor), // Customize text color
+                              ),
+                            ],
+                          ),
+                          duration: Duration(seconds: 20),  // Increase the duration if needed
+                          behavior: SnackBarBehavior.floating,  // Makes the snackbar floating
+                        ),
+                      );
+                      //prevent the post from being uploaded
+                      setState(() {
+                        errorText = "Inappropriate content detected";
+                        errorVisible = true;
+                        postText = "Post";
+                        postController.clear();
+                        imagePicker.clearCachedFiles();
+                        petIncludeCounter = 0;
+                        petList.clear();
+                        petAdded.clear();
+                        removePet.clear();
+                        postText = "Post";
+                      });
+                      //stop image from being uploaded
+                      return;
+                    } else {
+                      // Image is clean, proceed with uploading
+                      // Proceed with uploading the image
+                      print("Proceeding to upload image...");
+                    }
                   } else {
                     setState(() {
                       errorText = "No image selected";
                       errorVisible = true;
-                      postText = "Post";
                     });
-                    return;
                   }
 
                   List<Map<String, dynamic>> petIds = [];
