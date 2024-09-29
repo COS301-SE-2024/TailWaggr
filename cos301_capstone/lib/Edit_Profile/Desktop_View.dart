@@ -3,22 +3,14 @@
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
-import 'package:cos301_capstone/services/Location/location_service.dart';
 import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:toggle_switch/toggle_switch.dart';
-
-ValueNotifier<int> themeModeNotifier = ValueNotifier<int>(0);
-Color primaryColor = themeSettings.primaryColor;
-Color secondaryColor = themeSettings.secondaryColor;
-Color backgroundColor = themeSettings.backgroundColor;
-Color textColor = themeSettings.textColor;
-Color cardColor = themeSettings.cardColor;
-Color navbarTextColor = Colors.white;
+import 'package:syncfusion_flutter_core/theme.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class EditProfileDesktop extends StatefulWidget {
   const EditProfileDesktop({super.key});
@@ -132,11 +124,16 @@ class UpdatePersonalDetails extends StatefulWidget {
 }
 
 class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
+  bool isDatePickerVisible = false;
+  bool isPhoneValid = true;
+
+  ImagePicker imagePickerLocal = ImagePicker();
+
   @override
   void initState() {
     super.initState();
-    imagePicker.filesNotifier.addListener(() {
-      setState(() {}); // Rebuild the widget when files are selected
+    imagePickerLocal.filesNotifier.addListener(() {
+      setState(() {});
     });
   }
 
@@ -151,12 +148,13 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
                 cursor: SystemMouseCursors.click,
                 child: GestureDetector(
                   onTap: () async {
-                    imagePicker.pickFiles();
+                    imagePickerLocal.pickFiles();
                   },
                   child: CircleAvatar(
                     radius: 75,
-                    // backgroundImage: AssetImage("assets/images/profile.jpg"),
-                    backgroundImage: NetworkImage(profileDetails.profilePicture),
+                    backgroundImage: imagePickerLocal.filesNotifier.value != null && imagePickerLocal.filesNotifier.value!.isNotEmpty
+                        ? MemoryImage(imagePickerLocal.filesNotifier.value![0].bytes!)
+                        : NetworkImage(profileDetails.profilePicture) as ImageProvider,
                   ),
                 ),
               ),
@@ -214,18 +212,24 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
               color: themeSettings.textColor,
             ),
             onInputChanged: (PhoneNumber number) {
-              // print(number.phoneNumber);
+              profileDetails.dialCode = number.dialCode!;
+              profileDetails.isoCode = number.isoCode!;
+              profileDetails.phone = number.phoneNumber!;
             },
             onInputValidated: (bool value) {
-              // print(value);
+              print("Validating phone number: $value");
+              if (value != isPhoneValid) {
+                setState(() {
+                  isPhoneValid = value;
+                });
+              }
             },
             selectorConfig: SelectorConfig(
               selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
               useBottomSheetSafeArea: true,
             ),
             ignoreBlank: false,
-            autoValidateMode: AutovalidateMode.disabled,
-            // selectorTextStyle: TextStyle(color: Colors.black),
+            autoValidateMode: AutovalidateMode.onUserInteraction,
             initialValue: PhoneNumber(
               dialCode: profileDetails.dialCode,
               isoCode: profileDetails.isoCode,
@@ -256,34 +260,148 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
             ),
           ),
           SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () async {
-              profileDetails.name = EditProfileVariables.nameController.text;
-              profileDetails.surname = EditProfileVariables.surnameController.text;
-              profileDetails.bio = EditProfileVariables.bioController.text;
-              profileDetails.location = EditProfileVariables.addressController.text;
-
-              PlatformFile? newProfileImage;
-
-              if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
-                newProfileImage = imagePicker.filesNotifier.value![0];
-              }
-
-              await ProfileService().updateProfile(
-                profileDetails.userID,
-                {
-                  'name': profileDetails.name,
-                  'surname': profileDetails.surname,
-                  'bio': profileDetails.bio,
-                  'location': profileDetails.location,
+          TextField(
+            controller: EditProfileVariables.birthdateController,
+            decoration: InputDecoration(
+              labelText: "Birth Date",
+              border: OutlineInputBorder(),
+              suffixIcon: IconButton(
+                icon: Icon(Icons.calendar_today),
+                onPressed: () {
+                  setState(() {
+                    isDatePickerVisible = !isDatePickerVisible;
+                  });
                 },
-                newProfileImage,
-                null,
-              );
-
-              profileDetails.isEditing.value++;
-              Navigator.pop(context);
+              ),
+            ),
+            style: TextStyle(
+              color: themeSettings.textColor,
+            ),
+            onChanged: (value) {
+              EditProfileVariables.birthdateController.text = profileDetails.birthdate;
             },
+            // enabled: false,
+          ),
+          SizedBox(height: 20),
+          Visibility(
+            visible: isDatePickerVisible,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: themeSettings.primaryColor),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SfDateRangePickerTheme(
+                  data: SfDateRangePickerThemeData(
+                    activeDatesTextStyle: TextStyle(color: themeSettings.textColor),
+                    headerTextStyle: TextStyle(color: themeSettings.primaryColor),
+                    selectionColor: themeSettings.secondaryColor,
+                    todayTextStyle: TextStyle(color: themeSettings.primaryColor),
+                    weekNumberTextStyle: TextStyle(color: themeSettings.primaryColor),
+                    viewHeaderTextStyle: TextStyle(color: themeSettings.primaryColor),
+                    cellTextStyle: TextStyle(color: themeSettings.textColor),
+                    todayCellTextStyle: TextStyle(color: themeSettings.primaryColor),
+                  ),
+                  child: SfDateRangePicker(
+                    backgroundColor: themeSettings.cardColor,
+                    onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                      profileDetails.birthdate = args.value.toString();
+                    },
+                    selectionMode: DateRangePickerSelectionMode.single,
+                    initialDisplayDate: DateTime.now(),
+                    showActionButtons: true,
+                    confirmText: "Select",
+                    cancelText: "Cancel",
+                    headerStyle: DateRangePickerHeaderStyle(
+                      backgroundColor: themeSettings.cardColor,
+                      textAlign: TextAlign.center,
+                    ),
+                    todayHighlightColor: themeSettings.primaryColor,
+                    showNavigationArrow: true,
+                    onSubmit: (p0) {
+                      EditProfileVariables.setBirthDateControllers(p0);
+                      setState(() {
+                        isDatePickerVisible = false;
+                      });
+                    },
+                    onCancel: () {
+                      setState(() {
+                        EditProfileVariables.birthdateController.text = profileDetails.birthdate;
+                        isDatePickerVisible = false;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: isDatePickerVisible,
+            child: SizedBox(height: 20),
+          ),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    color: themeSettings.textColor,
+                    height: 1,
+                    width: 200,
+                  ),
+                  Text("Profile Visibility", style: TextStyle(color: themeSettings.textColor, fontSize: 14)),
+                  Container(
+                    color: themeSettings.textColor,
+                    height: 1,
+                    width: 200,
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: ListTile(
+                      title: Text('Public', style: TextStyle(color: themeSettings.textColor)),
+                      leading: Radio<bool>(
+                        value: true,
+                        fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                        groupValue: profileDetails.isPublic,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            profileDetails.isPublic = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListTile(
+                      title: Text('Private', style: TextStyle(color: themeSettings.textColor)),
+                      leading: Radio<bool>(
+                        value: false,
+                        fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                        groupValue: profileDetails.isPublic,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            profileDetails.isPublic = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          ElevatedButton(
+            onPressed: !isPhoneValid
+                ? () {
+                    print("Phone number is invalid");
+                  }
+                : () async {
+                    await EditProfileVariables.updatePersonalDetails(context, imagePickerLocal);
+                  },
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
             ),
@@ -326,6 +444,7 @@ class _UpdateThemeState extends State<UpdateTheme> {
             primaryColor = newColor;
             // themeSettings.setPrimaryColor(newColor);
             themeModeNotifier.value++;
+
             break;
           case "SecondaryColour":
             secondaryColor = newColor;
@@ -480,7 +599,7 @@ class _UpdateThemeState extends State<UpdateTheme> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       setState(() {
                         switch (themeModeSelector) {
                           case "PrimaryColour":
@@ -508,6 +627,7 @@ class _UpdateThemeState extends State<UpdateTheme> {
                             break;
                         }
                       });
+                      await EditProfileVariables.setNavbarPreferences(profileDetails.usingImage, profileDetails.usingDefaultImage);
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(primaryColor),
@@ -534,9 +654,19 @@ class _UpdateThemeState extends State<UpdateTheme> {
       margin: EdgeInsets.only(top: 20),
       child: Row(
         children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(100),
+              // border: Border.all(color: Colors.white, width: 2),
+            ),
+          ),
+          SizedBox(width: 10),
           Text(
             title,
-            style: TextStyle(color: color, fontSize: bodyTextSize),
+            style: TextStyle(color: themeSettings.textColor, fontSize: bodyTextSize),
           ),
           Spacer(),
           ElevatedButton(
@@ -546,13 +676,13 @@ class _UpdateThemeState extends State<UpdateTheme> {
               });
             },
             style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(color),
+              backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
             ),
             child: Text(
               "Change",
               style: TextStyle(
                 fontSize: bodyTextSize,
-                color: Colors.white,
+                color: themeSettings.cardColor,
               ),
             ),
           ),
@@ -570,9 +700,9 @@ class _UpdateThemeState extends State<UpdateTheme> {
             children: [
               themeSettingRow("Primary Colour", primaryColor, "PrimaryColour"),
               themeSettingRow("Secondary Colour", secondaryColor, "SecondaryColour"),
-              themeSettingRow("Background Colour", textColor, "BackgroundColour"),
+              themeSettingRow("Background Colour", backgroundColor, "BackgroundColour"),
               themeSettingRow("Text Colour", textColor, "TextColour"),
-              themeSettingRow("Card Colour", textColor, "CardColour"),
+              themeSettingRow("Card Colour", cardColor, "CardColour"),
 
               // Add more color change buttons as needed
             ],
@@ -599,17 +729,22 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
   bool useImage = true;
   bool useDefaultImage = true;
   bool usePrimaryColour = true;
-
-  int petIncludeCounter = 0;
-  List<bool> petAdded = [];
-  List<Map<String, dynamic>> petList = [];
-  TextEditingController postController = TextEditingController();
-  bool selectingPet = false;
-  List<bool> removePet = [];
-
   bool navbarTextColourSelector = false;
-
   TextEditingController changeColourtextController = TextEditingController();
+  String saveChangesText = "Save Changes";
+
+  @override
+  void initState() {
+    super.initState();
+    imagePicker.filesNotifier.addListener(() {
+      setState(() {}); // Rebuild the widget when files are selected
+    });
+
+    setState(() {
+      useImage = profileDetails.usingImage;
+      useDefaultImage = profileDetails.usingDefaultImage;
+    });
+  }
 
   void updateTextController(Color color) {
     changeColourtextController.text = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
@@ -692,7 +827,8 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                   child: ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        navbarTextColor = Colors.white;
+                        navbarTextColor = themeSettings.navbarTextColour;
+                        navbarTextColourSelector = false;
                       });
                     },
                     style: ButtonStyle(
@@ -712,18 +848,24 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       setState(() {
                         // themeSettings.setNavbarTextColor(navbarTextColor);
                         themeModeNotifier.value++;
                         navbarTextColourSelector = false;
+                        saveChangesText = "Saving...";
+                      });
+                      await EditProfileVariables.setNavbarPreferences(profileDetails.usingImage, profileDetails.usingDefaultImage);
+                      profileDetails.isEditing.value++;
+                      setState(() {
+                        saveChangesText = "Save Changes";
                       });
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(primaryColor),
                     ),
                     child: Text(
-                      "Save Changes",
+                      saveChangesText,
                       style: TextStyle(
                         fontSize: bodyTextSize,
                         color: Colors.white,
@@ -737,14 +879,6 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
         ],
       ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    imagePicker.filesNotifier.addListener(() {
-      setState(() {}); // Rebuild the widget when files are selected
-    });
   }
 
   String errorText = "";
@@ -765,7 +899,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                   ? !useDefaultImage
                       ? imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty
                           ? BoxDecoration(image: DecorationImage(image: MemoryImage(imagePicker.filesNotifier.value![0].bytes!), fit: BoxFit.cover))
-                          : BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/pug.jpg"), fit: BoxFit.cover))
+                          : BoxDecoration(image: DecorationImage(image: NetworkImage(profileDetails.sidebarImage), fit: BoxFit.cover))
                       : BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/pug.jpg"), fit: BoxFit.cover))
                   : BoxDecoration(color: usePrimaryColour ? primaryColor : secondaryColor),
               child: Column(
@@ -845,14 +979,14 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                   ),
                   Row(
                     children: [
-                      Icon(Icons.dark_mode, color: navbarTextColor),
+                      Icon(Icons.logout, color: navbarTextColor),
                       SizedBox(width: 10),
                       Text("Logout", style: TextStyle(color: navbarTextColor, fontSize: 14)),
                     ],
                   ),
                   Row(
                     children: [
-                      Icon(Icons.logout, color: navbarTextColor),
+                      Icon(Icons.dark_mode, color: navbarTextColor),
                       SizedBox(width: 10),
                       Text("Toggle theme", style: TextStyle(color: navbarTextColor, fontSize: 14)),
                     ],
@@ -894,34 +1028,12 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                           ),
                         ],
                       ),
-                      // if (!useDefaultImage) ...[
                       SizedBox(height: 20),
-                      if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) ...[
-                        Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.memory(
-                                imagePicker.filesNotifier.value![0].bytes!,
-                              ),
-                            ),
-                            Positioned(
-                              top: 10,
-                              right: 10,
-                              child: IconButton(
-                                color: Colors.white.withOpacity(0.5),
-                                icon: Icon(
-                                  Icons.close,
-                                  color: Colors.grey,
-                                ),
-                                onPressed: () => imagePicker.clearCachedFiles(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ] else ...[
-                        Container(
+                      Visibility(
+                        visible: !useDefaultImage,
+                        child: Container(
                           decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
+                          margin: EdgeInsets.only(bottom: 20),
                           child: GestureDetector(
                             onTap: () => imagePicker.pickFiles(),
                             child: Center(
@@ -945,35 +1057,8 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                             ),
                           ),
                         ),
-                      ],
-                      // ],
-                    ] else ...[
-                      ToggleSwitch(
-                        minWidth: double.infinity,
-                        cornerRadius: 20.0,
-                        activeBgColors: [
-                          [primaryColor],
-                          [secondaryColor]
-                        ],
-                        activeFgColor: Colors.white,
-                        inactiveBgColor: Colors.grey,
-                        inactiveFgColor: Colors.white,
-                        initialLabelIndex: usePrimaryColour ? 0 : 1,
-                        totalSwitches: 2,
-                        labels: ['Primary', 'Secondary'],
-                        radiusStyle: true,
-                        animate: true,
-                        curve: Curves.easeInOut, // animate must be set to true when using custom curve
-                        animationDuration: 200,
-                        onToggle: (index) {
-                          print('switched to: $index');
-                          setState(() {
-                            usePrimaryColour = index == 0;
-                          });
-                        },
                       ),
                     ],
-                    SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -988,7 +1073,10 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                             backgroundColor: WidgetStateProperty.all(primaryColor),
                             textStyle: WidgetStateProperty.all(TextStyle(color: themeSettings.textColor)),
                           ),
-                          child: Text("Change", style: TextStyle(color: Colors.white),),
+                          child: Text(
+                            "Change",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ],
                     ),
@@ -996,14 +1084,22 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {});
+                        onPressed: () async {
+                          setState(() {
+                            profileDetails.usingImage = useImage;
+                            profileDetails.usingDefaultImage = useDefaultImage;
+                            saveChangesText = "Saving...";
+                          });
+                          await EditProfileVariables.setNavbarPreferences(useImage, useDefaultImage);
+                          setState(() {
+                            saveChangesText = "Save Changes";
+                          });
                         },
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(primaryColor),
                         ),
                         child: Text(
-                          "Save Changes",
+                          saveChangesText,
                           style: TextStyle(
                             fontSize: bodyTextSize,
                             color: Colors.white,

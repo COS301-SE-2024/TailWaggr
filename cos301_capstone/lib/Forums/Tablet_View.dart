@@ -277,10 +277,10 @@ class _ForumsPageState extends State<TabletForums> {
                           decoration: BoxDecoration(
                             color: themeSettings.cardColor,
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: themeSettings.primaryColor,
-                              width: 2.0,
-                            ),
+                            // border: Border.all(
+                            //   color: themeSettings.primaryColor,
+                            //   width: 2.0,
+                            // ),
                           ),
                           child: Text(
                             forum['Name'],
@@ -341,10 +341,10 @@ class _ForumsPageState extends State<TabletForums> {
                             decoration: BoxDecoration(
                               color: themeSettings.cardColor,
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: themeSettings.primaryColor,
-                                width: 2.0,
-                              ),
+                              // border: Border.all(
+                              //   color: themeSettings.primaryColor,
+                              //   width: 2.0,
+                              // ),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -516,10 +516,10 @@ class _MessageViewState extends State<MessageView> {
                     decoration: BoxDecoration(
                       color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 1.0,
-                      ),
+                      // border: Border.all(
+                      //   color: Colors.grey,
+                      //   width: 1.0,
+                      // ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

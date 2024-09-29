@@ -2,5 +2,11 @@
   "devDependencies": {
     "coveralls": "^3.1.1",
     "coveralls-next": "^4.2.1"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "body-parser": "^1.20.3",
+    "express": "^4.21.0",
+    "multer": "^1.4.3"
   }
 }

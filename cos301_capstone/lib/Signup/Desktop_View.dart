@@ -3,6 +3,8 @@
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Login/Login.dart';
 import 'package:cos301_capstone/Signup/Signup.dart';
+import 'package:cos301_capstone/User_Auth/Auth_Gate.dart';
+import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -19,6 +21,39 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
   bool ErrorTextVisible = false;
   String errorText = '';
   String SignupButtonText = "Create Account";
+
+  // Login details
+  late TextEditingController signUpEmailController;
+  late TextEditingController signUpPasswordController;
+  late TextEditingController signUpConfirmPasswordController;
+
+  // Personal details
+  late TextEditingController signUpFirstNameController;
+  late TextEditingController signUpLastNameController;
+  late TextEditingController signUpBioController;
+
+  // Additional info
+  late TextEditingController signUpPhoneNumberController;
+  late TextEditingController signUpAddressController;
+
+  @override
+  void initState() {
+    // Login details
+    signUpEmailController = TextEditingController();
+    signUpPasswordController = TextEditingController();
+    signUpConfirmPasswordController = TextEditingController();
+
+    // Personal details
+    signUpFirstNameController = TextEditingController();
+    signUpLastNameController = TextEditingController();
+    signUpBioController = TextEditingController();
+
+    // Additional info
+    signUpPhoneNumberController = TextEditingController();
+    signUpAddressController = TextEditingController();
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +93,8 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                     SizedBox(
                       width: 260,
                       child: TextField(
-                        controller: signupVariables.signUpFirstNameController,
+                        key: Key("signup-first-name-key"),
+                        controller: signUpFirstNameController,
                         decoration: InputDecoration(
                           labelText: "First Name",
                           labelStyle: TextStyle(
@@ -83,7 +119,8 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                     SizedBox(
                       width: 260,
                       child: TextField(
-                        controller: signupVariables.signUpLastNameController,
+                        key: Key("signup-last-name-key"),
+                        controller: signUpLastNameController,
                         decoration: InputDecoration(
                           labelText: "Last Name",
                           labelStyle: TextStyle(
@@ -108,7 +145,8 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                 ),
                 SizedBox(height: 20),
                 TextField(
-                  controller: signupVariables.signUpEmailController,
+                  controller: signUpEmailController,
+                  key: Key("signup-email-key"),
                   decoration: InputDecoration(
                     labelText: "Email",
                     labelStyle: TextStyle(
@@ -134,7 +172,8 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                     SizedBox(
                       width: 260,
                       child: TextField(
-                        controller: signupVariables.signUpPasswordController,
+                        key: Key("signup-password-key"),
+                        controller: signUpPasswordController,
                         obscureText: !Password_Visible,
                         obscuringCharacter: "*",
                         decoration: InputDecoration(
@@ -172,7 +211,8 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                     SizedBox(
                       width: 260,
                       child: TextField(
-                        controller: signupVariables.signUpConfirmPasswordController,
+                        key: Key("signup-confirm-password-key"),
+                        controller: signUpConfirmPasswordController,
                         obscureText: !Confirm_Password_Visible,
                         obscuringCharacter: "*",
                         decoration: InputDecoration(
@@ -232,23 +272,22 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () async {
-                      if (signupVariables.signUpFirstNameController.text.isEmpty || signupVariables.signUpLastNameController.text.isEmpty) {
+                      if (signUpFirstNameController.text.isEmpty || signUpLastNameController.text.isEmpty) {
                         setState(() {
                           errorText = "Please make sure your first and last name are filled in";
                           ErrorTextVisible = true;
                         });
-                      } else if (signupVariables.signUpEmailController.text.isEmpty || !SignupMethods.checkEmail(signupVariables.signUpEmailController.text)) {
+                      } else if (signUpEmailController.text.isEmpty || !SignupMethods.checkEmail(signUpEmailController.text)) {
                         setState(() {
                           errorText = "Please enter a valid email address";
                           ErrorTextVisible = true;
                         });
-                      } else if (signupVariables.signUpPasswordController.text.isEmpty || !SignupMethods.checkPassword(signupVariables.signUpPasswordController.text)) {
+                      } else if (signUpPasswordController.text.isEmpty || !SignupMethods.checkPassword(signUpPasswordController.text)) {
                         setState(() {
                           errorText = "Please enter a valid Password";
                           ErrorTextVisible = true;
                         });
-                      } else if (signupVariables.signUpConfirmPasswordController.text.isEmpty ||
-                          !SignupMethods.checkConfirmPassword(signupVariables.signUpPasswordController.text, signupVariables.signUpConfirmPasswordController.text)) {
+                      } else if (signUpConfirmPasswordController.text.isEmpty || !SignupMethods.checkConfirmPassword(signUpPasswordController.text, signUpConfirmPasswordController.text)) {
                         setState(() {
                           errorText = "Please make sure your passwords match";
                           ErrorTextVisible = true;
@@ -258,9 +297,16 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                           SignupButtonText = "Creating Account...";
                         });
                         try {
-                          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                            email: signupVariables.signUpEmailController.text,
-                            password: signupVariables.signUpPasswordController.text,
+                          await AuthService().signUp(
+                            signUpEmailController.text,
+                            signUpPasswordController.text,
+                            signUpFirstNameController.text,
+                            signUpLastNameController.text,
+                          );
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => AuthGate()),
                           );
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'weak-password') {
@@ -294,7 +340,7 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                       });
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(themeSettings.primaryColor),
+                      backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
                     ),
                     child: Text(
                       SignupButtonText,
@@ -335,6 +381,43 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                       ),
                     ),
                   ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 200,
+                      height: 1,
+                      color: Colors.grey,
+                    ),
+                    Text("Or sign up with"),
+                    Container(
+                      width: 200,
+                      height: 1,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                SizedBox(
+                  width: 600,
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(themeSettings.cardColor),
+                      side: WidgetStateProperty.all(
+                        BorderSide(color: themeSettings.primaryColor),
+                      ),
+                    ),
+                    onPressed: () async {
+                      await AuthService().signInWithGoogle();
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AuthGate()),
+                      );
+                    },
+                    child: Text("Sign up with Google", style: TextStyle(color: themeSettings.primaryColor)),
+                  ),
                 ),
               ],
             ),

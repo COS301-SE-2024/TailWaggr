@@ -16,7 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class LocationVAF {
   static final Set<Marker> markers = {};
-  static List<User> vetList = [];
+  static List<Vet> vetList = [];
   static List<User> petKeeperList = [];
   static CameraPosition myLocation = CameraPosition(
     target: LatLng(-28.284535, 24.402177),
@@ -104,13 +104,6 @@ class LocationVAF {
     }
 
     print('Fetched polyline result');
-
-    // if (polylineResult.points.isNotEmpty) {
-    //   polylineResult.points.clear();
-    //   for (var point in polylineResult.points) {
-    //     polylineResult.points.add(PointLatLng(point.latitude, point.longitude));
-    //   }
-    // }
   }
 
   static double calculateZoomLevel(LatLngBounds bounds, BuildContext context) {
@@ -145,22 +138,6 @@ class LocationVAF {
     return zoomLevel;
   }
 
-  static Future<void> panCameraToLocation(double lat, double long, GoogleMapController googleMapController) async {
-    print("Panning camera to location");
-    try {
-      await googleMapController.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(lat, long),
-            zoom: 15.0,
-          ),
-        ),
-      );
-    } catch (e) {
-      print("Error panning camera: $e");
-    }
-  }
-
   String getDistanceFromMe(double lat, double long) {
     double distanceInKilometers = (Geolocator.distanceBetween(lat, long, myLocation.target.latitude, myLocation.target.longitude) / 1000);
     if (distanceInKilometers < 1000) {
@@ -169,32 +146,70 @@ class LocationVAF {
 
     return "${(Geolocator.distanceBetween(lat, long, myLocation.target.latitude, myLocation.target.longitude) / 1000).toStringAsFixed(2)} km";
   }
+  /*
+  address
+  "40 Johannes Ramokhoase Street, Pretoria"
+  (string)
+  location
+  (map)
+    lat
+    -25.7438048
+    (number)
+    lng
+    28.1796809
+    (number)
+  name
+  "Kruvet Pharmaceuticals"
+  (string)
+  place_id
+  "ChIJ65pWPm1ilR4RCSYg1HZA-Qg"
+  */
+  static Future<List<Vet>> getVets(LatLng userLocation, double radius) async {
+    try {
+      markers.clear();
+      vetList.clear();
+      List<Vet> vets = await LocationService().getVets(userLocation, radius);
+      
+      if (searchVetsController.text.isNotEmpty) {
+        vets = vets.where((vet) => vet.name.toLowerCase().contains(searchVetsController.text.toLowerCase())).toList();
+      }
 
-  static Future<List<User>> getVets(LatLng userLocation, double radius) async {
-    print("Getting vets");
-    vetList.clear();
-    List<User> vets = await LocationService().getVets(userLocation, radius);
-    for (User vet in vets) {
-      vetList.add(vet);
       markers.add(
         Marker(
-          markerId: MarkerId(vet.id),
-          position: LatLng(vet.location.latitude, vet.location.longitude),
-          infoWindow: InfoWindow(
-            title: vet.name,
-            snippet: "Get directions ${vet.distance.toStringAsFixed(2)}km",
-            onTap: () async {
-              print("Navigating to google maps");
-              final Uri url = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=${vet.location.latitude},${vet.location.longitude}');
-              if (!await launchUrl(url)) {
-                print('Could not launch $url');
-              }
-            },
-          ),
+          markerId: MarkerId('current_location'),
+          position: userLocation,
+          infoWindow: InfoWindow(title: 'Current Location'),
         ),
       );
+      
+      for (Vet vet in vets) {
+        vetList.add(vet);
+
+        markers.add(
+          Marker(
+            markerId: MarkerId(vet.placeId),
+            position: LatLng(vet.location.latitude, vet.location.longitude),
+            infoWindow: InfoWindow(
+              title: vet.name,
+              snippet: "Get directions",
+              onTap: () async {
+                print("Navigating to Google Maps");
+                final Uri url = Uri.parse(
+                  'https://www.google.com/maps/dir/?api=1&destination=${vet.location.latitude},${vet.location.longitude}'
+                );
+                if (!await launchUrl(url)) {
+                  print('Could not launch $url');
+                }
+              },
+            ),
+          ),
+        );
+      }
+      return vets;
+    } catch (e) {
+      print("Error getting vets: $e");
+      return [];
     }
-    return vets;
   }
 
   static Future<List<User>> getPetSitters(LatLng userLocation, double radius) async {

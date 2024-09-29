@@ -4,8 +4,11 @@ import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
+import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
+import 'package:cos301_capstone/services/imageApi/imageFilter.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +16,7 @@ ValueNotifier<bool> uploadPostContainerOpen = ValueNotifier(true);
 
 class TabletHomepage extends StatefulWidget {
   const TabletHomepage({super.key});
+
 
   @override
   State<TabletHomepage> createState() => _TabletHomepageState();
@@ -139,15 +143,6 @@ class Post extends StatefulWidget {
 
   @override
   State<Post> createState() => _PostState();
-
-  // {
-  //   CreatedAt: Timestamp(seconds=1718002008, nanoseconds=412000000),
-  //   ForumId: DocumentReference<Map<String, dynamic>>(forum/EvfTTsu9GjHxL1sZcZcx),
-  //   ParentId: null,
-  //   UserId: DocumentReference<Map<String, dynamic>>(users/y2RnaR2jdgeqqbfeG6yP0NLjmiP2),
-  //   ImgUrl: null,
-  //   Content: Goldens are so beautiful man
-  // }
 }
 
 class _PostState extends State<Post> {
@@ -160,70 +155,55 @@ class _PostState extends State<Post> {
   @override
   void initState() {
     super.initState();
-    void getLikes() async {
-      Future<int> likes = HomePageService().getLikesCount(widget.postDetails['PostId']);
-      likes.then((value) {
-        setState(() {
-          numLikes = value.toString();
-        });
-      });
-    }
-
     getLikes();
-
-    void getViews() async {
-      HomePageService().addViewToPost(widget.postDetails['PostId'], profileDetails.userID);
-      Future<int> views = HomePageService().getViewsCount(widget.postDetails['PostId']);
-      views.then((value) {
-        setState(() {
-          numViews = value.toString();
-        });
-      });
-    }
-
     getViews();
-
-    
-    void getComments() async {
-      Future<int> comments = HomePageService().getCommentsCount(widget.postDetails['PostId']);
-      comments.then((value) {
-        setState(() {
-          numComments = value.toString();
-        });
-      });
-    }
-    getComments();
+    getCommentCount();
   }
 
-  String getMonthAbbreviation(int month) {
-    switch (month) {
-      case 1:
-        return 'Jan';
-      case 2:
-        return 'Feb';
-      case 3:
-        return 'Mar';
-      case 4:
-        return 'Apr';
-      case 5:
-        return 'May';
-      case 6:
-        return 'Jun';
-      case 7:
-        return 'Jul';
-      case 8:
-        return 'Aug';
-      case 9:
-        return 'Sep';
-      case 10:
-        return 'Oct';
-      case 11:
-        return 'Nov';
-      case 12:
-        return 'Dec';
-      default:
-        return '';
+  void getLikes() async {
+    Future<int> likes = HomePageService().getLikesCount(widget.postDetails['PostId']);
+    likes.then((value) {
+      setState(() {
+        numLikes = value.toString();
+      });
+    });
+  }
+
+  void getViews() async {
+    HomePageService().addViewToPost(widget.postDetails['PostId'], profileDetails.userID);
+    Future<int> views = HomePageService().getViewsCount(widget.postDetails['PostId']);
+    views.then((value) {
+      setState(() {
+        numViews = value.toString();
+      });
+    });
+  }
+
+  void getCommentCount() async {
+    Future<int> commentCount = HomePageService().getCommentsCount(widget.postDetails['PostId']);
+    commentCount.then((value) {
+      setState(() {
+        numComments = value.toString();
+      });
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getComments() async {
+    List<Map<String, dynamic>> commentsList = await HomePageService().getComments(widget.postDetails['PostId']);
+    for (int i = 0; i < commentsList.length; i++) {
+      Map<String, dynamic> comment = commentsList[i];
+      Map<String, dynamic>? profileDetails = await ProfileService().getUserDetails(comment['userId']);
+      // print("Profile Details: $profileDetails");
+      comment['name'] = profileDetails!['name'];
+      comment['pictureUrl'] = profileDetails['profilePictureUrl'];
+      commentsList[i] = comment;
+      print(commentsList[i]);
+      print("");
     }
+
+    commentsList.sort((a, b) => a['commentedAt'].compareTo(b['commentedAt']));
+
+    return commentsList;
   }
 
   String formatDate() {
@@ -231,167 +211,218 @@ class _PostState extends State<Post> {
     String month = getMonthAbbreviation(date.month);
     return "${date.day} $month ${date.year}";
   }
+
   Future<void> _replyToMessage(String postId) async {
-    if ( newReplyContent.isNotEmpty) {
+    if (newReplyContent.isNotEmpty) {
       try {
-        _homePageService.addCommentToPost( postId, profileDetails.userID, newReplyContent);
+        _homePageService.addCommentToPost(postId, profileDetails.userID, newReplyContent);
         //_PostContainerState()._fetchPosts();//refresh the posts
-        setState(() { 
+        setState(() {
           newReplyContent = '';
+          numComments = (int.parse(numComments) + 1).toString();
         });
       } catch (e) {
         print('Error replying to post: $e');
       }
     }
   }
+
   Future<void> showDialogBox(BuildContext context) async {
-  try {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Container(
-            width: MediaQuery.of(context).size.width * 0.5,
-            height: MediaQuery.of(context).size.height * 0.6,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Spacer(flex: 1),
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundImage: NetworkImage( widget.postDetails['pictureUrl'] ?? profileDetails.profilePicture),
-                      ),
-                      SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.postDetails['name'] ?? 'Unknown',
-                            style: TextStyle(
-                              color: themeSettings.textColor,
-                              fontWeight: FontWeight.bold,
+    try {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: themeSettings.cardColor,
+            content: Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Top Section: Post Details
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage: NetworkImage(widget.postDetails['pictureUrl'] ?? profileDetails.profilePicture),
+                        ),
+                        SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.postDetails['name'] ?? 'Unknown',
+                              style: TextStyle(
+                                color: themeSettings.textColor,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          Text(
-                            "Posted on ${formatDate()}",
-                            style: TextStyle(
-                              color: themeSettings.textColor.withOpacity(0.7),
+                            Text(
+                              "Posted on ${formatDate()}",
+                              style: TextStyle(
+                                color: themeSettings.textColor.withOpacity(0.7),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Spacer(flex: 2),
-                  Text(
-                    widget.postDetails['Content'] ?? 'No content',
-                    style: TextStyle(
-                      color: themeSettings.textColor,
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                  Spacer(flex: 2),
-                  SizedBox(height: 20),
-                  if (widget.postDetails['ImgUrl'] != null)
-                    Image.network(
-                      widget.postDetails['ImgUrl'],
-                      height: 95,
-                      width: double.infinity,
-                      fit: BoxFit.fitHeight,
-                    ),
-                  Divider(),
-                  SizedBox(height: 10), // Reduced space
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundImage: NetworkImage(profileDetails.profilePicture),
+                    SizedBox(height: 10),
+                    Text(
+                      widget.postDetails['Content'] ?? 'No content',
+                      style: TextStyle(
+                        color: themeSettings.textColor,
                       ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: TextField(
-                          onChanged: (value) {
-                            if (!mounted) return;
-                            setState(() {
-                              newReplyContent = value;
-                            });
+                    ),
+                    SizedBox(height: 10),
+                    Divider(),
+
+                    // Scrollable Comments Section
+                    Flexible(
+                      child: SingleChildScrollView(
+                        child: FutureBuilder<List<Map<String, dynamic>>>(
+                          future: getComments(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (snapshot.hasError) {
+                              return Text("Error loading comments");
+                            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return Text("No comments available");
+                            } else {
+                              List<Map<String, dynamic>> comments = snapshot.data!;
+
+                              return Column(
+                                children: comments.map((comment) {
+                                  return Container(
+                                    margin: EdgeInsets.only(top: 10),
+                                    child: Row(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: NetworkImage(comment['pictureUrl'] ?? profileDetails.profilePicture),
+                                        ),
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                comment['name'] ?? 'Unknown',
+                                                style: TextStyle(
+                                                  color: themeSettings.textColor,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              Text(
+                                                comment['comment'] ?? 'No content',
+                                                style: TextStyle(
+                                                  color: themeSettings.textColor.withOpacity(0.7),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                              );
+                            }
                           },
-                          decoration: InputDecoration(
-                            hintText: "Post your reply",
-                            hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
                         ),
                       ),
-                    ],
-                  ),
-                  Spacer(flex: 1),
-                ],
-              ),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                "Cancel",
-                style: TextStyle(color: themeSettings.primaryColor),
-              ),
-            ),
-            TextButton(
-              onPressed: () async {
-                await _replyToMessage(widget.postDetails['PostId']);
-                Navigator.of(context).pop();
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: themeSettings.primaryColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
+                    ),
+
+                    SizedBox(height: 10),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage: NetworkImage(profileDetails.profilePicture),
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            onChanged: (value) {
+                              if (!mounted) return;
+                              setState(() {
+                                newReplyContent = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Post your reply",
+                              hintStyle: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
+                              filled: true,
+                              fillColor: Colors.transparent,
+                            ),
+                            style: TextStyle(color: themeSettings.textColor),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              child: Text(
-                "Reply",
-                style: TextStyle(color: Colors.white),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: themeSettings.primaryColor),
+                ),
               ),
-            ),
-          ],
-        );
-      },
-    );
-  } catch (e) {
-    print("Error fetching post details: $e");
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: Text('An error occurred while fetching post details.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
+              TextButton(
+                onPressed: () async {
+                  await _replyToMessage(widget.postDetails['PostId']);
+
+                  Navigator.of(context).pop();
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: themeSettings.primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                ),
+                child: Text(
+                  "Reply",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print("Error fetching post details: $e");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('An error occurred while fetching post details.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -508,14 +539,14 @@ class _PostState extends State<Post> {
                 Tooltip(
                   message: "Comment",
                   child: IconButton(
-                      onPressed: () {
+                    onPressed: () {
                       showDialogBox(context);
                       HomePageService().getCommentsCount(widget.postDetails['PostId']).then((value) {
                         setState(() {
                           numComments = value.toString();
                         });
                       });
-                      },
+                    },
                     icon: Icon(
                       Icons.comment,
                       color: Colors.blue.withOpacity(0.7),
@@ -555,7 +586,8 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
   TextEditingController postController = TextEditingController();
   bool selectingPet = false;
   List<bool> removePet = [];
-
+  ImageFilter imageFilter = ImageFilter();
+  
   @override
   void initState() {
     super.initState();
@@ -604,6 +636,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
+              key: Key('post-text-key'),
               controller: postController,
               decoration: InputDecoration(
                 labelText: "What's on your mind",
@@ -638,6 +671,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
               ),
             ] else ...[
               Container(
+                key: Key('add-photo-button'),
                 decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
                 child: GestureDetector(
                   onTap: () => imagePicker.pickFiles(),
@@ -867,17 +901,87 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     return;
                   }
 
+                  // Check if image is selected and moderate image
                   if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
                     print("Image: ${imagePicker.filesNotifier.value![0].name}");
+                    print("Image details: ${imagePicker.filesNotifier.value![0]}");
+                    print("calling image filter");
+                    Map<String, dynamic> moderationResult = await imageFilter.moderateImage(imagePicker.filesNotifier.value![0]);
+                    print("Moderation result: $moderationResult");
+                    //create dialog box for moderation
+                    if (moderationResult['status'] == 'error') {
+                      // Show error dialog
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Error'),
+                            content: Text(moderationResult['message']),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              )
+                            ],
+                          );
+                        },
+                      );
+                    } else if (moderationResult['status'] == 'fail') {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.redAccent, // Customize color if needed
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "🔞 Warning!",  // Title
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: themeSettings.textColor, // Customize text color
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                moderationResult['message'],  // Full message
+                                style: TextStyle(color: themeSettings.textColor), // Customize text color
+                              ),
+                            ],
+                          ),
+                          duration: Duration(seconds: 20),  // Increase the duration if needed
+                          behavior: SnackBarBehavior.floating,  // Makes the snackbar floating
+                        ),
+                      );
+                      //prevent the post from being uploaded
+                      setState(() {
+                        errorText = "Inappropriate content detected";
+                        errorVisible = true;
+                        postText = "Post";
+                        postController.clear();
+                        imagePicker.clearCachedFiles();
+                        petIncludeCounter = 0;
+                        petList.clear();
+                        petAdded.clear();
+                        removePet.clear();
+                        postText = "Post";
+                      });
+                      //stop image from being uploaded
+                      return;
+                    } else {
+                      // Image is clean, proceed with uploading
+                      // Proceed with uploading the image
+                      print("Proceeding to upload image...");
+                    }
                   } else {
                     print("No image selected");
                     setState(() {
                       errorText = "No image selected";
                       errorVisible = true;
-                      postText = "Post";
                     });
-                    return;
                   }
+
 
                   List<Map<String, dynamic>> petIds = [];
 

@@ -26,19 +26,17 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
   void initState() {
     super.initState();
 
-    populateData() async {
-      await LocationVAF.initializeLocation();
-      await LocationVAF.getVets(LocationVAF.myLocation.target, 100);
-      await LocationVAF.getPetSitters(LocationVAF.myLocation.target, 100);
-      setState(() {});
+    try {
+      populateData() async {
+        await LocationVAF.getVets(LocationVAF.myLocation.target, 100);
+        await LocationVAF.getPetSitters(LocationVAF.myLocation.target, 100);
+        setState(() {});
+      }
+
+      populateData();
+    } catch (e) {
+      print("Error initializing location: $e");
     }
-
-    populateData();
-
-    _animationController = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 300),
-    );
   }
 
   @override
@@ -49,11 +47,26 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
       }
       super.dispose();
     } catch (e) {
-      print("Error disposing Google Map Controller: $e");
+      // print("Error disposing Google Map Controller: $e");
     } finally {
       _scrollController.dispose();
-      _animationController.dispose();
       super.dispose();
+    }
+  }
+  Future<void> panCameraToLocation(double lat, double long) async {
+    print("Panning camera to location: $lat, $long");
+    print("Google Map Controller: $_googleMapController");
+    try {
+      await _googleMapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(lat, long),
+            zoom: 15.0,
+          ),
+        ),
+      );
+    } catch (e) {
+      print("Error panning camera: $e");
     }
   }
 
@@ -70,7 +83,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
 
   Widget searchVets() {
     return Container(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.only(top: 10.0),
       width: MediaQuery.of(context).size.width - 290.0,
       child: SingleChildScrollView(
         child: Column(
@@ -80,6 +93,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
               width: double.infinity,
               margin: EdgeInsets.only(bottom: 10.0),
               child: TextField(
+                key: Key("search-vets-input"),
                 controller: LocationVAF.searchVetsController,
                 decoration: InputDecoration(
                   labelText: "Search Veterinary Clinics",
@@ -103,6 +117,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
                     ),
                   ),
                 ),
+                style: TextStyle(color: themeSettings.textColor),
               ),
             ),
             SizedBox(height: 10.0),
@@ -110,6 +125,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
               width: double.infinity,
               padding: EdgeInsets.only(bottom: 10.0),
               child: TextField(
+                key: Key("search-vets-distance-input"),
                 controller: LocationVAF.searchDistanceController,
                 decoration: InputDecoration(
                   labelText: "Distance (km)",
@@ -133,35 +149,89 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
                     ),
                   ),
                 ),
+                style: TextStyle(color: themeSettings.textColor),
               ),
             ),
             SizedBox(height: 10.0),
-            MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: () async {
-                  await LocationVAF.getVets(LocationVAF.myLocation.target, double.parse(LocationVAF.searchDistanceController.text));
-                  setState(() {});
-                },
-                child: Container(
-                  height: 48,
-                  width: double.infinity,
-                  margin: EdgeInsets.only(bottom: 10),
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: themeSettings.primaryColor,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Apply Filters",
-                      style: TextStyle(color: Colors.white, fontSize: 16.0),
+            Row(
+              children: [
+                Expanded(
+                  child: MouseRegion(
+                    key: Key("apply-filters-button"),
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () async {
+                        try {
+                          await LocationVAF.getVets(LocationVAF.myLocation.target, double.parse(LocationVAF.searchDistanceController.text));
+                          setState(() {});
+                        } catch (e) {
+                          if (e is FormatException) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Please enter a valid distance.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                          print("Error applying filters: $e");
+                        }
+                      },
+                      child: Container(
+                        height: 48,
+                        // width: double.infinity,
+                        margin: EdgeInsets.only(bottom: 10),
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: themeSettings.primaryColor,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Apply Filters",
+                            style: TextStyle(color: Colors.white, fontSize: 16.0),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+                Expanded(
+                  child: MouseRegion(
+                    key: Key("clear-filters-button"),
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () async {
+                        try {
+                          LocationVAF.searchDistanceController.text = "100";
+                          LocationVAF.searchVetsController.text = "";
+                          setState(() {});
+                          await LocationVAF.getVets(LocationVAF.myLocation.target, 100);
+                          setState(() {});
+                        } catch (e) {
+                          print("Error applying filters: $e");
+                        }
+                      },
+                      child: Container(
+                        height: 48,
+                        margin: EdgeInsets.only(bottom: 10, left: 20),
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: themeSettings.primaryColor,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Clear Filters",
+                            style: TextStyle(color: Colors.white, fontSize: 16.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            for (User vet in LocationVAF.vetList) ...[
+            for (Vet vet in LocationVAF.vetList) ...[
               Container(
                 margin: EdgeInsets.only(right: 50, bottom: 20),
                 decoration: BoxDecoration(
@@ -172,7 +242,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
                   child: GestureDetector(
                     onTap: () async {
                       try {
-                        await LocationVAF.panCameraToLocation(vet.location.latitude, vet.location.longitude, _googleMapController);
+                        await panCameraToLocation(vet.location.latitude, vet.location.longitude);
                         
                         // setState(() {
                           // toggleCardExpansion();
@@ -189,11 +259,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
                           style: TextStyle(color: themeSettings.textColor),
                         ),
                         Text(
-                          "Email: ${vet.email == '' ? 'No email provided' : vet.email}",
-                          style: TextStyle(color: themeSettings.textColor),
-                        ),
-                        Text(
-                          "Phone number: ${vet.phone == '' ? 'No phone number provided' : vet.phone}",
+                          "Address: ${vet.address == '' ? 'No Address provided' : vet.address}",
                           style: TextStyle(color: themeSettings.textColor),
                         ),
                         Text(
@@ -229,6 +295,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
               width: double.infinity,
               margin: EdgeInsets.only(bottom: 10.0),
               child: TextField(
+                key: Key("search-pet-sitters-input"),
                 controller: LocationVAF.searchPetSittersController,
                 decoration: InputDecoration(
                   labelText: "Search Pet Sitters",
@@ -252,6 +319,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
                     ),
                   ),
                 ),
+                style: TextStyle(color: themeSettings.textColor),
               ),
             ),
             SizedBox(height: 10.0),
@@ -259,6 +327,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
               width: double.infinity,
               padding: EdgeInsets.only(bottom: 10.0),
               child: TextField(
+                key: Key("search-pet-sitters-distance-input"),
                 controller: LocationVAF.searchPetSittersDistanceController,
                 decoration: InputDecoration(
                   labelText: "Distance (km)",
@@ -282,6 +351,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
                     ),
                   ),
                 ),
+                style: TextStyle(color: themeSettings.textColor),
               ),
             ),
             SizedBox(height: 10.0),
@@ -320,7 +390,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
                   child: GestureDetector(
                     onTap: () async {
                       try {
-                        LocationVAF.panCameraToLocation(petSitter.location.latitude, petSitter.location.longitude, _googleMapController);
+                        panCameraToLocation(petSitter.location.latitude, petSitter.location.longitude);
                       } catch (e) {
                         print("Error getting directions: $e");
                       }
@@ -398,6 +468,7 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
                       Visibility(
                         visible: !cardExpanded,
                         child: DefaultTabController(
+                           key: Key('tabController'),
                           length: 2,
                           child: Column(
                             children: [
@@ -405,13 +476,20 @@ class _LocationMobileState extends State<LocationMobile> with SingleTickerProvid
                                 labelColor: themeSettings.primaryColor,
                                 indicatorColor: themeSettings.secondaryColor,
                                 tabs: [
-                                  Tab(text: 'Veterinary Clinics'),
-                                  Tab(text: 'Pet Sitters'),
+                                 Tab(
+                                    key: Key('vetsTab'),
+                                    text: 'Veterinary Clinics',
+                                  ),
+                                  Tab(
+                                    key: Key('petSittersTab'),
+                                    text: 'Pet Sitters',
+                                  ),
                                 ],
                               ),
                               SizedBox(
                                 height: MediaQuery.of(context).size.height / 2 - 110,
                                 child: TabBarView(
+                                  key: Key('tabBarView'),
                                   physics: NeverScrollableScrollPhysics(),
                                   children: [
                                     searchVets(),

@@ -8,9 +8,14 @@ import 'package:path/path.dart' as path;
 import 'package:cos301_capstone/services/general/general_service.dart';
 
 class ProfileService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  late final FirebaseFirestore _db;
+  late final FirebaseStorage _storage;
 
+  ProfileService({FirebaseFirestore? db, FirebaseStorage? storage}) {
+    _db = db ?? FirebaseFirestore.instance;
+    _storage = storage ?? FirebaseStorage.instance;
+  }
+  
   Future<Map<String, dynamic>?> getUserDetails(String userId) async {
     try {
       DocumentSnapshot doc = await _db.collection('users').doc(userId).get();
@@ -42,11 +47,11 @@ class ProfileService {
   }
 
   Future<List<Map<String, dynamic>>> getUserPets(String userId) async {
-    try {
-      QuerySnapshot snapshot = await _db.collection('users').doc(userId).collection('pets').get();
-      return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-    } catch (e) {
-      print("Error fetching user pets: $e");
+    try{
+      return GeneralService().getUserPets(userId);
+    }
+    catch(e){
+      print("Error fetching pets: $e");
       return [];
     }
   }
@@ -60,29 +65,33 @@ class ProfileService {
   /// - location: (geopoint) The user's geographical location.
   /// - name: (string) The user's first name.
   /// - preferences: (map) A map containing user preferences.
-  ///   - sidebarImage: (PlatformFile) The new sidebar image file.
+  ///   - themeMode: (String) The user's preferred theme mode (e.g., "light", "Dark", "Custom").
+  ///   - Colours: (map) A map containing user preferred colours.
+  ///     - PrimaryColour: (int) The color code for the primary color.
+  ///     - SecondaryColour: (int) The color code for the secondary color.
+  ///     - tertiaryColor: (int) The color code for the tertiary color.
+  ///     - BackgroundColour: (int) The color code for the background color.
+  ///     - TextColour: (int) The color code for the text color.
+  ///     - CardColour: (int) The color code for the card color.
+  ///     - NavbarTextColour: (number) The color code for the navbar text.
   ///   - usingImage: (bool) Whether the user is using an image.
-  ///   - color: (map) A map containing the user's preferred color scheme.
-  ///     - primary: (Int) The primary color.
-  ///     - secondary: (Int) The secondary color.
-  ///     - tertiary: (Int) The tertiary color.
-  ///     - background: (Int) The background color.
-  ///     - text: (Int) The text color.
-  ///     - cardColor: (Int) The card color.
-  ///     - sidebarColor: (Int) The sidebar color.
+  ///   - usingDefaultImage: (bool) Whether the user is using the default image.
   ///   - sidebarImage: (string) The URL of the sidebar image.
   ///   - themeMode: (string) whether light, dark or custom.
   /// - profileImage: (PlatformFile) The new profile image file.
   /// - surname: (string) The user's surname.
   /// - userName: (string) The user's username.
   /// - userType: (string) The type of user (e.g., "pet_keeper").
-  Future<void> updateProfile(String userId, Map<String, dynamic> updatedData, PlatformFile? profileImage, PlatformFile? sidebarImage) async {
+  Future<bool> updateProfile(String userId, Map<String, dynamic> updatedData, PlatformFile? profileImage, PlatformFile? sidebarImage) async {
     try {
       // Update profile data
       await _db.collection('users').doc(userId).update(updatedData);
 
       // Update profile image
       if (profileImage != null) {
+
+        print("Profile image isnt null");
+
         String profilePhotoFileName = 'profile_images/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(profileImage.name)}';
         Uint8List? profileFileBytes = profileImage.bytes;
         if (profileFileBytes == null) {
@@ -94,7 +103,8 @@ class ProfileService {
 
         // Delete the old profile image
         String? oldProfileImageUrl = await getUserDetails(userId).then((value) => value?['profilePictureUrl']);
-        if (oldProfileImageUrl != null) {
+        print("Old profile image url: $oldProfileImageUrl");
+        if (oldProfileImageUrl != null && oldProfileImageUrl != "") {
           await _storage.refFromURL(oldProfileImageUrl).delete();
         }
 
@@ -120,8 +130,10 @@ class ProfileService {
 
         await _updateProfileData(userId, {'sidebarImage': sidebarImgUrl});
       }
+      return true;
     } catch (e) {
       print("Error updating profile: $e");
+      return false;
     }
   }
 
@@ -136,7 +148,7 @@ class ProfileService {
 
   Future<List<DocumentReference>> getUserPosts(String userId) async {
     try {
-      QuerySnapshot snapshot = await _db.collection('posts').where('UserId', isEqualTo: _db.collection('users').doc(userId)).get();
+      QuerySnapshot snapshot = await _db.collection('posts').where('UserId', isEqualTo: userId).get();
       return snapshot.docs.map((doc) => doc.reference).toList();
     } catch (e) {
       print("Error fetching user posts: $e");
@@ -148,7 +160,7 @@ class ProfileService {
   /// - birthDate: (timestamp) The pet's birth date.
   /// - name: (string) The pet's name.
   /// - profileImage: (PlatformFile) The new profile image file.
-  Future<void> addPet(String ownerId, Map<String, dynamic> petData, PlatformFile? profileImage) async {
+  Future<bool> addPet(String ownerId, Map<String, dynamic> petData, PlatformFile? profileImage) async {
     try {
       DocumentReference docRef = await _db.collection('users').doc(ownerId).collection('pets').add(petData);
 
@@ -163,13 +175,15 @@ class ProfileService {
         TaskSnapshot uploadTask = await _storage.ref(photoFileName).putData(fileBytes, metadata);
         String imgUrl = await uploadTask.ref.getDownloadURL();
 
-        await _updatePetData(ownerId, docRef.id, {'pictureUrl': imgUrl});
+        await _updatePetData(ownerId, docRef.id, {'pictureUrl': imgUrl, 'petID': docRef.id});
       }
+      return true;
     } catch (e) {
       print("Error adding pet: $e");
+      return false;
     }
   }
-  Future<void> deletePet(String ownerId, String petId) async {
+  Future<bool> deletePet(String ownerId, String petId) async {
     try {
       // Delete the pet profile image
       String? petImageUrl = await getPetProfile(ownerId, petId).then((value) => value?['pictureUrl']);
@@ -179,8 +193,10 @@ class ProfileService {
       // Delete the pet document
       await _db.collection('users').doc(ownerId).collection('pets').doc(petId).delete();
       print("Pet deleted successfully.");
+      return true;
     } catch (e) {
       print("Error deleting pet: $e");
+      return false;
     }
   }
 
@@ -197,7 +213,7 @@ class ProfileService {
   /// - birthDate: (timestamp) The pet's birth date.
   /// - name: (string) The pet's name.
   /// - profileImage: (PlatformFile) The new profile image file.
-  Future<void> updatePet(String userID, String petId, Map<String, dynamic> updatedData, PlatformFile? profileImage) async {
+  Future<bool> updatePet(String userID, String petId, Map<String, dynamic> updatedData, PlatformFile? profileImage) async {
     try {
       await _db.collection('users').doc(userID).collection('pets').doc(petId).update(updatedData);
 
@@ -220,8 +236,10 @@ class ProfileService {
 
         await _updatePetData(userID, petId, {'pictureUrl': imgUrl});
       }
+      return true;
     } catch (e) {
       print("Error updating pet: $e");
+      return false;
     }
   }
 }

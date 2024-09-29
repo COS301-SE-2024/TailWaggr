@@ -1,25 +1,110 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
+import 'package:cos301_capstone/Pets/Pet_Profile.dart';
+import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
+import 'package:cos301_capstone/services/Profile/profile_service.dart';
+import 'package:cos301_capstone/services/general/general_service.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 
 class ProfileDesktop extends StatefulWidget {
-  const ProfileDesktop({Key? key}) : super(key: key);
+  const ProfileDesktop({super.key, required this.userId});
 
+  final String userId;
   @override
   State<ProfileDesktop> createState() => _ProfileDesktopState();
 }
 
 class _ProfileDesktopState extends State<ProfileDesktop> {
+
+  ProfileDetails localProfileDetails = ProfileDetails();
+
+  String formatDate(DateTime date) {
+    return "${date.day} ${getMonthAbbreviation(date.month)} ${date.year}";
+  }
+
   @override
   void initState() {
     super.initState();
+
+    Future<void> getProfileDetails() async {
+      if (widget.userId != profileDetails.userID) {
+        Map<String, dynamic>? tempDetails = await ProfileService().getUserDetails(widget.userId);
+
+        if (tempDetails != null && tempDetails['profileVisibility']) {
+          localProfileDetails.userID = widget.userId;
+          localProfileDetails.name = tempDetails['name'];
+          localProfileDetails.surname = tempDetails['surname'];
+          localProfileDetails.email = tempDetails['email'];
+          localProfileDetails.bio = tempDetails['bio'];
+          localProfileDetails.profilePicture = tempDetails['profilePictureUrl'];
+          localProfileDetails.location = tempDetails['location'];
+          localProfileDetails.phone = tempDetails['phoneDetails']['phoneNumber'];
+          localProfileDetails.isoCode = tempDetails['phoneDetails']['isoCode'];
+          localProfileDetails.dialCode = tempDetails['phoneDetails']['dialCode'];
+          localProfileDetails.birthdate = formatDate(tempDetails['birthDate'].toDate());
+          localProfileDetails.userType = tempDetails['userType'];
+
+          localProfileDetails.pets = await ProfileService().getUserPets(widget.userId);
+          List<DocumentReference> localPosts = await ProfileService().getUserPosts(widget.userId);
+
+          profileDetails.myPosts.clear();
+
+          for (var post in localPosts) {
+            DocumentSnapshot postSnapshot = await post.get();
+            Map<String, dynamic> postData = postSnapshot.data() as Map<String, dynamic>;
+            postData['PostId'] = postSnapshot.id;
+            localProfileDetails.myPosts.add(postData);
+            print("Post data: $postData");
+          }
+        } else {
+          localProfileDetails.userID = widget.userId;
+          localProfileDetails.name = tempDetails!['name'];
+          localProfileDetails.surname = tempDetails['surname'];
+          localProfileDetails.bio = tempDetails['bio'];
+          localProfileDetails.profilePicture = tempDetails['profilePictureUrl'];
+
+          // Stubbed data
+          localProfileDetails.email = "Private Profile";
+          localProfileDetails.phone = "Private Profile";
+          localProfileDetails.birthdate = "Private Profile";
+          localProfileDetails.location = "Private Profile";
+          localProfileDetails.userType = "Private Profile";
+        }
+
+        setState(() {
+          print("Profile details set successfully for: ${localProfileDetails.userID}");
+        });
+      } else {
+        localProfileDetails = profileDetails;
+      }
+    }
+
+    getProfileDetails();
+
     profileDetails.isEditing.addListener(() {
       setState(() {});
     });
+
+    PetProfileVariables.petEditted.addListener(() {
+      Future<List<Map<String, dynamic>>> pets = GeneralService().getUserPets(profileDetails.userID);
+      pets.then((value) {
+        setState(() {
+          profileDetails.pets = value;
+        });
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    profileDetails.isEditing.removeListener(() {});
   }
 
   @override
@@ -43,16 +128,16 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
                 children: [
                   Expanded(
                     flex: 1,
-                    child: AboutMeContainer(),
+                    child: AboutMeContainer(profileDetails: localProfileDetails),
                   ),
                   SizedBox(width: 20),
                   Expanded(
                     flex: 3,
                     child: Column(
                       children: [
-                        MyPetsContainer(),
+                        MyPetsContainer(profileDetails: localProfileDetails),
                         SizedBox(height: 20),
-                        PostsContainer(),
+                        PostsContainer(localProfileDetails: localProfileDetails),
                       ],
                     ),
                   )
@@ -67,7 +152,9 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
 }
 
 class PostsContainer extends StatefulWidget {
-  const PostsContainer({super.key});
+  const PostsContainer({super.key, required this.localProfileDetails});
+
+  final ProfileDetails localProfileDetails;
 
   @override
   State<PostsContainer> createState() => _PostsContainerState();
@@ -84,45 +171,20 @@ class _PostsContainerState extends State<PostsContainer> {
           color: themeSettings.cardColor,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: DefaultTabController(
-          length: 2,
+        child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TabBar(
-                dividerColor: Colors.transparent,
-                tabs: [
-                  Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.add_box_outlined),
-                        SizedBox(width: 10),
-                        Text("Posts"),
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.calendar_month),
-                        SizedBox(width: 10),
-                        Text("Events"),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Divider(),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    // Icon(Icons.add_box_outlined),
-                    ListOfPosts(),
-                    Icon(Icons.calendar_month),
-                  ],
+              Text(
+                "Posts",
+                style: TextStyle(
+                  fontSize: subHeadingTextSize,
+                  color: themeSettings.primaryColor,
                 ),
               ),
+              Divider(),
+              ListOfPosts(profileDetails: widget.localProfileDetails),
             ],
           ),
         ),
@@ -131,9 +193,16 @@ class _PostsContainerState extends State<PostsContainer> {
   }
 }
 
-class ListOfPosts extends StatelessWidget {
-  const ListOfPosts({super.key});
+class ListOfPosts extends StatefulWidget {
+  const ListOfPosts({super.key, required this.profileDetails});
 
+  final ProfileDetails profileDetails;
+
+  @override
+  State<ListOfPosts> createState() => _ListOfPostsState();
+}
+
+class _ListOfPostsState extends State<ListOfPosts> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -141,15 +210,11 @@ class ListOfPosts extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          for (var post in profileDetails.posts) ...[
+          for (var post in widget.profileDetails.myPosts) ...[
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Row(
                 children: [
-                  // CircleAvatar(
-                  //   radius: 35,
-                  //   backgroundImage: NetworkImage(post["ImgUrl"]),
-                  // ),
                   SizedBox(
                     width: 175,
                     child: ClipRRect(
@@ -178,14 +243,17 @@ class ListOfPosts extends StatelessWidget {
                         Row(
                           children: [
                             for (var includedPet in post["PetIds"]) ...[
-                              Column(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 20,
-                                    backgroundImage: NetworkImage(includedPet['pictureUrl']),
-                                  ),
-                                  Text(includedPet['name'], style: TextStyle(fontSize: textSize)),
-                                ],
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage: NetworkImage(includedPet['pictureUrl']),
+                                    ),
+                                    Text(includedPet['name'], style: TextStyle(fontSize: textSize)),
+                                  ],
+                                ),
                               ),
                             ]
                           ],
@@ -193,6 +261,30 @@ class ListOfPosts extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (widget.profileDetails.email == profileDetails.email) ...[
+                    IconButton(
+                      icon: Icon(Icons.delete, color: themeSettings.primaryColor),
+                      onPressed: () async {
+                        print("PostId: ${post["PostId"]}");
+
+                        bool deleted = await HomePageService().deletePost(post["PostId"]);
+
+                        if (deleted) {
+                          print("Post deleted successfully.");
+                          setState(() {
+                            profileDetails.myPosts.remove(post);
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to delete post'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
+                    )
+                  ],
                 ],
               ),
             ),
@@ -204,7 +296,9 @@ class ListOfPosts extends StatelessWidget {
 }
 
 class AboutMeContainer extends StatefulWidget {
-  const AboutMeContainer({super.key});
+  const AboutMeContainer({super.key, required this.profileDetails});
+
+  final ProfileDetails profileDetails;
 
   @override
   State<AboutMeContainer> createState() => _AboutMeContainerState();
@@ -215,6 +309,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(20),
+      height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
         color: themeSettings.cardColor,
         borderRadius: BorderRadius.circular(10),
@@ -226,37 +321,15 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
           children: [
             CircleAvatar(
               radius: 100,
-              backgroundImage: NetworkImage(profileDetails.profilePicture),
+              backgroundImage: NetworkImage(widget.profileDetails.profilePicture),
             ),
             SizedBox(width: 20),
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("${profileDetails.name} ${profileDetails.surname}", style: TextStyle(fontSize: subHeadingTextSize)),
-                Text(profileDetails.bio, style: TextStyle(fontSize: subBodyTextSize)),
-                SizedBox(height: 20),
-                OpenContainer(
-                  transitionDuration: Duration(milliseconds: 300),
-                  closedBuilder: (context, action) {
-                    return Container(
-                      padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-                      decoration: BoxDecoration(
-                        color: themeSettings.primaryColor,
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: Text(
-                        "Edit Profile",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    );
-                  },
-                  closedColor: Colors.transparent,
-                  closedElevation: 0,
-                  openBuilder: (context, action) {
-                    return EditProfile();
-                  },
-                ),
+                Text("${widget.profileDetails.name} ${widget.profileDetails.surname}", style: TextStyle(fontSize: subHeadingTextSize)),
+                Text(widget.profileDetails.bio, style: TextStyle(fontSize: subBodyTextSize)),
                 SizedBox(height: 20),
                 Text("Profile Details", style: TextStyle(fontSize: bodyTextSize, color: themeSettings.primaryColor)),
                 Divider(),
@@ -273,7 +346,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                       SizedBox(width: 10),
                       Flexible(
                         child: Text(
-                          profileDetails.email,
+                          widget.profileDetails.email,
                           style: TextStyle(fontSize: subBodyTextSize),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -294,7 +367,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                       SizedBox(width: 10),
                       Flexible(
                         child: Text(
-                          profileDetails.phone,
+                          widget.profileDetails.phone,
                           style: TextStyle(fontSize: subBodyTextSize),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -315,7 +388,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                       SizedBox(width: 10),
                       Flexible(
                         child: Text(
-                          profileDetails.birthdate,
+                          widget.profileDetails.birthdate,
                           style: TextStyle(fontSize: subBodyTextSize),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -336,7 +409,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                       SizedBox(width: 10),
                       Flexible(
                         child: Text(
-                          profileDetails.location,
+                          widget.profileDetails.location,
                           style: TextStyle(fontSize: subBodyTextSize),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -404,7 +477,9 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
 }
 
 class MyPetsContainer extends StatefulWidget {
-  const MyPetsContainer({super.key});
+  const MyPetsContainer({super.key, required this.profileDetails});
+
+  final ProfileDetails profileDetails;
 
   @override
   State<MyPetsContainer> createState() => _MyPetsContainerState();
@@ -435,15 +510,84 @@ class _MyPetsContainerState extends State<MyPetsContainer> {
                 ),
               ),
               Divider(),
-              for (var pet in profileDetails.pets)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: PetProfileButton(
-                    petName: pet["name"],
-                    petBio: pet["bio"],
-                    petPicture: pet["pictureUrl"],
+              for (var pet in widget.profileDetails.pets) ...[
+                if (widget.profileDetails.userID == profileDetails.userID) ...[
+                  OpenContainer(
+                    transitionDuration: Duration(milliseconds: 300),
+                    closedBuilder: (context, action) {
+                      return MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: PetProfileButton(
+                            petName: pet["name"],
+                            petBio: pet["bio"],
+                            petPicture: pet["pictureUrl"],
+                          ),
+                        ),
+                      );
+                    },
+                    closedColor: Colors.transparent,
+                    closedElevation: 0,
+                    openBuilder: (context, action) {
+                      return PetProfile(
+                        creatingNewPet: false,
+                        petName: pet["name"],
+                        petBio: pet["bio"],
+                        petBirthdate: pet["birthDate"],
+                        petProfilePicture: pet["pictureUrl"],
+                        petID: pet["petID"],
+                      );
+                    },
                   ),
+                ] else ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: PetProfileButton(
+                      petName: pet["name"],
+                      petBio: pet["bio"],
+                      petPicture: pet["pictureUrl"],
+                    ),
+                  ),
+                ]
+              ],
+              SizedBox(height: 20),
+              if (widget.profileDetails.email == profileDetails.email) ...[
+                OpenContainer(
+                  transitionDuration: Duration(milliseconds: 300),
+                  closedBuilder: (context, action) {
+                    return MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: DottedBorder(
+                        padding: EdgeInsets.all(20),
+                        borderType: BorderType.RRect,
+                        radius: Radius.circular(100),
+                        color: themeSettings.textColor,
+                        strokeWidth: 0.5,
+                        dashPattern: [5, 5], // Modify the dash pattern to make the border more spread out
+                        child: Row(
+                          children: [
+                            Icon(Icons.add, color: themeSettings.primaryColor, size: 30),
+                            SizedBox(width: 10),
+                            Text(
+                              "Add a new pet to your family",
+                              style: TextStyle(color: themeSettings.textColor),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  closedColor: Colors.transparent,
+                  closedElevation: 0,
+                  openBuilder: (context, action) {
+                    return PetProfile(
+                      creatingNewPet: true,
+                    );
+                  },
                 ),
+              ],
+              SizedBox(height: 20),
             ],
           ),
         ),
@@ -480,13 +624,13 @@ class _PetProfileButtonState extends State<PetProfileButton> {
             children: [
               Text(
                 widget.petName,
-                style: TextStyle(fontSize: subHeadingTextSize),
+                style: TextStyle(fontSize: subHeadingTextSize, color: themeSettings.textColor),
                 overflow: TextOverflow.ellipsis,
               ),
               // SizedBox(height: 8),
               Text(
                 widget.petBio,
-                style: TextStyle(fontSize: subBodyTextSize),
+                style: TextStyle(fontSize: subBodyTextSize, color: themeSettings.textColor),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
               ),
