@@ -17,22 +17,22 @@ The app can be viewed [Here](https://tailwaggr.web.app)
 You can view our project board [Here](https://github.com/orgs/COS301-SE-2024/projects/99/views/1).
 
 ## Tech Stack
-You can view our tech stack [Here](https://docs.google.com/document/d/11uUHFuaqj6Mx52eWC4wKD2fOWFQbhcgVURP3L99YpWo/edit)
+You can view our tech stack [Here](docs/TechStack.pdf)
 
 ## Architecture
-You can view our architecture [Here](docs/architecture.md)
+You can view our architecture [Here](docs/architecture.pdf)
 
 ## User Manual
-You can view our user manual [Here](https://docs.google.com/document/d/1TiRA697HTTGuLCOzq20es4q_fotXlDpTnVuov_7zNP0/edit)
+You can view our user manual [Here](docs/TailWaggr%20user%20guide.pdf)
 
 ## Technical Installation Manual
-You can view our technical installation manual [Here](docs/Technical_Installation.md)
+You can view our technical installation manual [Here](docs/Technical_Installation.pdf)
 
 ## Coding Standards
-You can view our coding standards [Here](docs/CodingStandards.md)
+You can view our coding standards [Here](docs/CodingStandards.pdf)
 
 ## Software Requirements Specification
-You can view our SRS [Here](docs/srs.md)
+You can view our SRS [Here](docs/srs.pdf)
 
 ## The Team
 
