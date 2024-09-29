@@ -135,26 +135,33 @@ class HomePageService {
       return []; // Return an empty list if an error occurs
     }
   }
-  Future<List<Map<String, dynamic>>> getPostsByLabels(List<String> words) async {
+    Future<List<Map<String, dynamic>>> getPostsByLabels(List<String> words) async {
     try {
       // Fetch the posts from the "posts" collection
       final querySnapshot = await _db.collection('posts').get();
-
+  
       // Convert each document to a map and add it to a list
       final posts = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-
+  
+      // If no words are provided, return all posts
+      if (words.isEmpty) {
+        // Sort the posts from newest to oldest based on the 'CreatedAt' field
+        posts.sort((a, b) => b['CreatedAt'].compareTo(a['CreatedAt']));
+        return posts;
+      }
+  
       // Filter posts based on matching labels
       final filteredPosts = posts.where((post) {
         final labels = post['labels'] as List<dynamic>?;
         if (labels == null) return false;
-
+  
         // Check if any of the labels match the words entered by the user
         return words.any((word) => labels.contains(word));
       }).toList();
-
+  
       // Sort the filtered posts from newest to oldest based on the 'CreatedAt' field
       filteredPosts.sort((a, b) => b['CreatedAt'].compareTo(a['CreatedAt']));
-
+  
       print("Posts fetched and filtered successfully.");
       return filteredPosts; // Return the filtered list of posts
     } catch (e) {
@@ -271,5 +278,31 @@ class HomePageService {
     
     return wikiLinks;
   }
+  Future<Map<String, dynamic>> getUserDetails(String userId) async {
+    try {
+      // Fetch the document for the given userId from the "users" collection
+      DocumentSnapshot docSnapshot = await _db.collection('users').doc(userId).get();
 
+      // Check if the document exists
+      if (docSnapshot.exists) {
+        // Extract the user details from the document data
+        Map<String, dynamic> userDetails = docSnapshot.data() as Map<String, dynamic>;
+
+        print("User details fetched successfully for userId: $userId");
+        return userDetails;
+      } else {
+        print("User not found for userId: $userId");
+        return {};
+      }
+    } catch (e) {
+      print("Error fetching user details: $e");
+      return {};
+    }
+  }
+  Future<List<String>> getLikes(String postId) async {
+    DocumentReference postRef = _db.collection('posts').doc(postId);
+    final querySnapshot = await postRef.collection('likes').get();
+    
+    return querySnapshot.docs.map((doc) => doc.id).toList();
+  }
 }

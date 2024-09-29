@@ -4,6 +4,7 @@
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
+import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:cos301_capstone/services/profile/profile_service.dart';
@@ -11,6 +12,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DesktopHomepage extends StatefulWidget {
   const DesktopHomepage({super.key});
@@ -158,7 +160,7 @@ class _PostState extends State<Post> {
       Map<String, dynamic> comment = commentsList[i];
       Map<String, dynamic>? profileDetails = await ProfileService().getUserDetails(comment['userId']);
       // print("Profile Details: $profileDetails");
-      comment['name'] = profileDetails!['name'];
+      comment['name'] = profileDetails!['name'] + ' ' + profileDetails['surname'];
       comment['pictureUrl'] = profileDetails['profilePictureUrl'];
       commentsList[i] = comment;
       print(commentsList[i]);
@@ -175,7 +177,13 @@ class _PostState extends State<Post> {
     String month = getMonthAbbreviation(date.month);
     return "${date.day} $month ${date.year}";
   }
-
+  Future<void> _launchURL(Uri url) async {
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
   Future<void> _replyToMessage(String postId) async {
     if (newReplyContent.isNotEmpty) {
       try {
@@ -188,6 +196,256 @@ class _PostState extends State<Post> {
       } catch (e) {
         print('Error replying to post: $e');
       }
+    }
+  }
+  Future<Map<String, dynamic>> fetchPostData() async {
+    final homePageService = HomePageService();
+  
+    // Fetch post labels and wiki links asynchronously
+    List<String> postLabels = await homePageService.getPostLabels(widget.postDetails['PostId']);
+    List<String> wikiLinks = await homePageService.getWikiLinks(postLabels);
+  
+    // Fetch users who liked the post
+    List<String> likedUsers = await homePageService.getLikes(widget.postDetails['PostId']);
+    List<Map<String, dynamic>> likedUsersList = [];
+    for (String userId in likedUsers) {
+      Map<String, dynamic>? profileDetails = await ProfileService().getUserDetails(userId);
+      likedUsersList.add({
+        'username': (profileDetails?['name'] ?? 'Unknown') + ' ' + (profileDetails?['surname'] ?? ''),
+        'pictureUrl': profileDetails?['profilePictureUrl'] ?? '',
+        'userId': userId,
+      });
+    }
+  
+    // Combine the data in a map to be passed to the dialog
+    return {
+      "name": widget.postDetails["name"] ?? 'Unknown',
+      "postLabels": postLabels,
+      "wikiLinks": wikiLinks,
+      "likedUsers": likedUsersList,
+      "PetIds": widget.postDetails["PetIds"] ?? [],
+    };
+  }
+  final GlobalKey<NavigatorState> _loadingDialogKey = GlobalKey<NavigatorState>();
+  
+  Future<void> showPostDetails(BuildContext context) async {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Center(
+          child: CircularProgressIndicator(),
+          key: _loadingDialogKey,
+        );
+      },
+    );
+  
+    try {
+      // Fetch post details
+      final postDetails = await fetchPostData();
+      // Close the loading indicator
+      if (_loadingDialogKey.currentContext != null) {
+        Navigator.of(_loadingDialogKey.currentContext!).pop(); // Ensure the loading dialog is closed
+      }
+  
+      // Show post details dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: themeSettings.cardColor,
+            content: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: MediaQuery.of(context).size.height * 0.8,
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Top Section: Post Details
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage: NetworkImage(widget.postDetails['pictureUrl'] ?? profileDetails.profilePicture),
+                        ),
+                        SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.postDetails['name'] ?? 'Unknown',
+                              style: TextStyle(
+                                color: themeSettings.textColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              "Posted on ${formatDate()}",
+                              style: TextStyle(
+                                color: themeSettings.textColor.withOpacity(0.7),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      widget.postDetails['Content'] ?? 'No content',
+                      style: TextStyle(
+                        color: themeSettings.textColor,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Divider(),
+  
+                    // Labels Section
+                    if (postDetails['postLabels'].isNotEmpty) ...[
+                      Text(
+                        "Labels:",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Wrap(
+                        spacing: 8.0, // Adds some space between the labels
+                        children: [
+                          for (int i = 0; i < postDetails['postLabels'].length; i++) ...[
+                            InkWell(
+                              onTap: () async {
+                                final Uri url = Uri.parse(postDetails['wikiLinks'][i]);
+                                if (!await launchUrl(url)) {
+                                  print('Could not launch $url');
+                                }
+                              },
+                              child: Chip(
+                                label: Text(postDetails['postLabels'][i]),
+                                backgroundColor: themeSettings.primaryColor.withOpacity(0.7),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                    ],
+  
+                    // Users who liked the post
+                    if (postDetails['likedUsers'].isNotEmpty) ...[
+                      Text(
+                        "Liked by:",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Wrap(
+                        spacing: 8.0, // Adds some space between the users
+                        children: [
+                          for (var user in postDetails['likedUsers']) ...[
+                            InkWell(
+                              onTap: () {
+                                // Handle profile click
+                                // Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(user['userId'])));
+                              },
+                              child: Chip(
+                                avatar: CircleAvatar(
+                                  backgroundImage: NetworkImage(user['pictureUrl'] ?? ''),
+                                ),
+                                label: Text(user['username'] ?? 'Unknown'),
+                                backgroundColor: themeSettings.primaryColor.withOpacity(0.7),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                    ],
+  
+                    // Pets included in the post
+                    if (postDetails['PetIds'] != null && postDetails['PetIds'].length != 0) ...[
+                      Text(
+                        "Pets included in this post:",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            for (var pet in postDetails['PetIds']) ...[
+                              Container(
+                                margin: EdgeInsets.only(right: 10),
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage: NetworkImage(
+                                        pet["pictureUrl"] ?? profileDetails.profilePicture,
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      pet["name"] ?? 'Unnamed pet',
+                                      style: TextStyle(color: themeSettings.textColor),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  "Close",
+                  style: TextStyle(color: themeSettings.primaryColor),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print("Error fetching post details: $e");
+      if (_loadingDialogKey.currentContext != null) {
+        Navigator.of(_loadingDialogKey.currentContext!).pop(); // Close the loading dialog if an error occurs
+      }
+  
+      // Show error dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('An error occurred while fetching post details.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -389,163 +647,166 @@ class _PostState extends State<Post> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: MediaQuery.of(context).size.width * 0.25,
-          padding: EdgeInsets.only(right: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundImage: NetworkImage(widget.postDetails["pictureUrl"]),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.postDetails["name"],
-                        style: TextStyle(
-                          color: themeSettings.textColor,
+    return GestureDetector(
+      onTap: () => showPostDetails(context),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width * 0.25,
+            padding: EdgeInsets.only(right: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundImage: NetworkImage(widget.postDetails["pictureUrl"]),
+                    ),
+                    SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.postDetails["name"],
+                          style: TextStyle(
+                            color: themeSettings.textColor,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "Posted on ${formatDate()}",
-                        style: TextStyle(
-                          color: themeSettings.textColor.withOpacity(0.7),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Text(
-                widget.postDetails["Content"] ?? 'No content',
-                style: TextStyle(
-                  color: themeSettings.textColor,
-                ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 4,
-              ),
-              SizedBox(height: 20),
-              if (widget.postDetails['PetIds'] != null && widget.postDetails['PetIds'].length != 0) ...[
-                Text(
-                  "Pets included in this post: ",
-                  style: TextStyle(
-                    color: themeSettings.textColor.withOpacity(0.7),
-                  ),
-                ),
-                SizedBox(height: 5),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (var pet in widget.postDetails['PetIds']) ...[
-                        Container(
-                          margin: EdgeInsets.only(right: 10),
-                          child: Column(
-                            children: [
-                              CircleAvatar(
-                                radius: 20,
-                                backgroundImage: NetworkImage(pet["pictureUrl"] ?? profileDetails.profilePicture),
-                              ),
-                              SizedBox(height: 5),
-                              Text(
-                                pet["name"] ?? 'Unnamed pet',
-                                style: TextStyle(color: themeSettings.textColor),
-                              ),
-                            ],
+                        Text(
+                          "Posted on ${formatDate()}",
+                          style: TextStyle(
+                            color: themeSettings.textColor.withOpacity(0.7),
                           ),
                         ),
                       ],
-                    ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                Text(
+                  widget.postDetails["Content"] ?? 'No content',
+                  style: TextStyle(
+                    color: themeSettings.textColor,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 4,
+                ),
+                SizedBox(height: 20),
+                if (widget.postDetails['PetIds'] != null && widget.postDetails['PetIds'].length != 0) ...[
+                  Text(
+                    "Pets included in this post: ",
+                    style: TextStyle(
+                      color: themeSettings.textColor.withOpacity(0.7),
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        for (var pet in widget.postDetails['PetIds']) ...[
+                          Container(
+                            margin: EdgeInsets.only(right: 10),
+                            child: Column(
+                              children: [
+                                CircleAvatar(
+                                  radius: 20,
+                                  backgroundImage: NetworkImage(pet["pictureUrl"] ?? profileDetails.profilePicture),
+                                ),
+                                SizedBox(height: 5),
+                                Text(
+                                  pet["name"] ?? 'Unnamed pet',
+                                  style: TextStyle(color: themeSettings.textColor),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.network(
+              widget.postDetails["ImgUrl"] ?? profileDetails.profilePicture,
+              width: 300,
+              height: 200,
+              fit: BoxFit.cover,
+            ),
+          ),
+          SizedBox(width: 30),
+                Column(
+            children: [
+              Tooltip(
+                message: "Like",
+                child: IconButton(
+                  onPressed: () async {
+                    await HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
+                    bool liked = await HomePageService().checkIfUserLikedPost(widget.postDetails['PostId'], profileDetails.userID);
+                    int likesCount = await HomePageService().getLikesCount(widget.postDetails['PostId']);
+                    setState(() {
+                      isLiked = liked;
+                      numLikes = likesCount.toString();
+                    });
+                  },
+                  icon: isLiked
+                      ? Icon(
+                          Icons.pets,
+                          color: Colors.red.withOpacity(0.7),
+                        )
+                      : SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: ColorFiltered(
+                            colorFilter: ColorFilter.mode(
+                              Colors.red.withOpacity(0.7),
+                              BlendMode.srcIn,
+                            ),
+                            child: Image.asset('assets/images/paw1.png'),
+                          ),
+                        ),
+                ),
+              ),
+              Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+              SizedBox(height: 20),
+              Tooltip(
+                message: "Comment",
+                child: IconButton(
+                  onPressed: () async {
+                    showDialogBox(context);
+                    // await getCommments();
+                    HomePageService().getCommentsCount(widget.postDetails['PostId']).then((value) {
+                      setState(() {
+                        numComments = value.toString();
+                      });
+                    });
+                  },
+                  icon: Icon(
+                    Icons.comment,
+                    color: Colors.blue.withOpacity(0.7),
                   ),
                 ),
-              ],
-            ],
-          ),
-        ),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Image.network(
-            widget.postDetails["ImgUrl"] ?? profileDetails.profilePicture,
-            width: 300,
-            height: 200,
-            fit: BoxFit.cover,
-          ),
-        ),
-        SizedBox(width: 30),
-               Column(
-          children: [
-            Tooltip(
-              message: "Like",
-              child: IconButton(
-                onPressed: () async {
-                  await HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
-                  bool liked = await HomePageService().checkIfUserLikedPost(widget.postDetails['PostId'], profileDetails.userID);
-                  int likesCount = await HomePageService().getLikesCount(widget.postDetails['PostId']);
-                  setState(() {
-                    isLiked = liked;
-                    numLikes = likesCount.toString();
-                  });
-                },
-                icon: isLiked
-                    ? Icon(
-                        Icons.pets,
-                        color: Colors.red.withOpacity(0.7),
-                      )
-                    : SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: ColorFiltered(
-                          colorFilter: ColorFilter.mode(
-                            Colors.red.withOpacity(0.7),
-                            BlendMode.srcIn,
-                          ),
-                          child: Image.asset('assets/images/paw1.png'),
-                        ),
-                      ),
               ),
-            ),
-            Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
-            SizedBox(height: 20),
-            Tooltip(
-              message: "Comment",
-              child: IconButton(
-                onPressed: () async {
-                  showDialogBox(context);
-                  // await getCommments();
-                  HomePageService().getCommentsCount(widget.postDetails['PostId']).then((value) {
-                    setState(() {
-                      numComments = value.toString();
-                    });
-                  });
-                },
-                icon: Icon(
-                  Icons.comment,
-                  color: Colors.blue.withOpacity(0.7),
+              Text(numComments, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+              SizedBox(height: 20),
+              Tooltip(
+                message: "Views",
+                child: Icon(
+                  Icons.remove_red_eye,
+                  color: Colors.green.withOpacity(0.7),
                 ),
               ),
-            ),
-            Text(numComments, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
-            SizedBox(height: 20),
-            Tooltip(
-              message: "Views",
-              child: Icon(
-                Icons.remove_red_eye,
-                color: Colors.green.withOpacity(0.7),
-              ),
-            ),
-            Text(numViews, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
-          ],
-        ),
-      ],
+              Text(numViews, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
