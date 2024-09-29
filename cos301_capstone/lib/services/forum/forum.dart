@@ -28,7 +28,8 @@ class ForumServices {
         'ImgUrl': imgUrl,
         'Name': name,
         'Description': des,
-        'UserId': userId
+        'UserId': userId,
+        'mute': false
       });
       print('Forum created successfully.');
       return ref;
@@ -152,8 +153,10 @@ class ForumServices {
         'UserId': userId,
         'Content': content,
         'CreatedAt': Timestamp.now(),
+        'mute': false,
       });
 
+      notif.createMessageNotification(forumId,messageRef.id, userId);
       return messageRef;
     } catch (e) {
       print('Error creating message: $e');
@@ -269,4 +272,65 @@ class ForumServices {
     }
     return recentMessage;
   }
+  Future<void> deleteReply(String forumId, String messageId, String replyId) async {
+    try {
+      await _db.collection('forum').doc(forumId).collection('messages').doc(messageId).collection('replies').doc(replyId).delete();
+      print('Reply deleted successfully.');
+    } catch (e) {
+      print('Error deleting reply: $e');
+      throw Exception('Failed to delete reply.');
+    }
+  }
+Future<void> togglemuteForum(String forumId, String userId) async {
+  try {
+    // Reference to the forum document
+    DocumentReference<Map<String, dynamic>> forumDoc = _db.collection('forum').doc(forumId);
+
+    // Fetch the current mute status
+    DocumentSnapshot forumSnapshot = await forumDoc.get();
+    if (!forumSnapshot.exists) {
+      throw Exception("Forum not found");
+    }
+
+    Map<String, dynamic> forumData = forumSnapshot.data() as Map<String, dynamic>;
+    bool isMuted = forumData['mute'] ?? false;  // Default to false if 'mute' is not present
+
+    // Toggle the mute status
+    await forumDoc.update({
+      'mute': !isMuted,
+    });
+
+    print("Forum mute toggled to: ${!isMuted}");
+  } catch (e) {
+    print("Error toggling forum mute: $e");
+  }
+}
+
+
+  Future<void> togglemuteMessage(String messageId, String forumId, String userId) async {
+  try {
+    // Reference to the message document
+    DocumentReference<Map<String, dynamic>> messageDoc = _db.collection('forum').doc(forumId).collection('messages').doc(messageId);
+
+    // Fetch the current mute status
+    DocumentSnapshot messageSnapshot = await messageDoc.get();
+    if (!messageSnapshot.exists) {
+      throw Exception("Message not found");
+    }
+
+    Map<String, dynamic> messageData = messageSnapshot.data() as Map<String, dynamic>;
+    bool isMuted = messageData['mute'] ?? false;  // Default to false if 'mute' is not present
+
+    // Toggle the mute status
+    await messageDoc.update({
+      'mute': !isMuted,
+    });
+
+    print("Message mute toggled to: ${!isMuted}");
+  } catch (e) {
+    print("Error toggling message mute: $e");
+  }
+}
+
+
 }

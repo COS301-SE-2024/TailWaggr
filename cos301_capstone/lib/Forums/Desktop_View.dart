@@ -399,8 +399,13 @@ class _DesktopForumsState extends State<DesktopForums> {
     return monthNames[month - 1];
   }
 
-  void _muteMessage(String postId, String userId) {
+  void _togglemuteMessage(String postId,String forumId, String userId) {
     // Implement mute message functionality
+    _forumServices.togglemuteMessage(postId,forumId, userId);
+  }
+  void _togglemuteForum(String forumId, String userId) {
+    // Implement mute forum functionality
+    _forumServices.togglemuteForum(forumId, userId);
   }
   void _deleteMessage(String postId) {
     showDialog(
@@ -614,11 +619,18 @@ class _DesktopForumsState extends State<DesktopForums> {
                                     if (value == 'delete') {
                                       _deleteForum(forum['forumId']);
                                     }
+                                    else if(value == 'mute'){
+                                      _togglemuteForum(forum['forumId'], userId);
+                                    }
                                   },
                                   itemBuilder: (context) => [
                                     PopupMenuItem(
                                       value: 'delete',
                                       child: Text('Delete Forum'),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 'mute',
+                                      child: Text('Mute/Unmute Notifications'),
                                     ),
                                   ],
                                 ),
@@ -736,7 +748,7 @@ class _DesktopForumsState extends State<DesktopForums> {
                                                             if (value == 'delete') {
                                                               _deleteMessage(postId);
                                                             } else if (value == 'mute') {
-                                                              _muteMessage(postId, userId);
+                                                              _togglemuteMessage(postId,selectedForumId!, userId);
                                                             }
                                                           },
                                                           itemBuilder: (context) => [
@@ -747,7 +759,7 @@ class _DesktopForumsState extends State<DesktopForums> {
                                                             // option to mute notifications from this message
                                                             PopupMenuItem(
                                                               value: 'mute',
-                                                              child: Text('Mute Notifications'),
+                                                              child: Text('Mute/Unmute Notifications'),
                                                             ),
                                                           ],
                                                         ),
@@ -953,7 +965,82 @@ class _MessageViewState extends State<MessageView> {
     final userProfile = widget.userProfiles[userId];
     final replies = widget.post['replies'] ?? [];
     final postTime = formatDateTime(widget.post['message']['CreatedAt'].toDate());
-
+    void _deleteReply(String postId,String replyId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: themeSettings.backgroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10), // Optional: to round the corners
+          ),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.4, // Set width to 40% of the screen width
+            height: MediaQuery.of(context).size.height * 0.3, // Adjust width
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Delete Reply',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: themeSettings.primaryColor,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Are you sure you want to delete this reply?',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: themeSettings.textColor,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _fetchReplies(selectedForumId!, postId);
+                        },
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(color: themeSettings.primaryColor),
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      ElevatedButton(
+                        onPressed: () async {
+                          await _forumServices.deleteReply(selectedForumId!, postId,replyId);
+                          _fetchReplies(selectedForumId!,postId);
+                          Navigator.of(context).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: themeSettings.primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                        ),
+                        child: Text(
+                          'Delete',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
     return Scaffold(
       appBar: AppBar(
         title: Text('View Message'),
@@ -1028,30 +1115,32 @@ class _MessageViewState extends State<MessageView> {
                   final replyUserId = reply['UserId'] as String;
                   final replyUserProfile = widget.userProfiles[replyUserId];
                   final replyTime = formatDateTime(reply['CreatedAt'].toDate());
-
+                  final replyId = reply['replyId'];
+                  String currentUserId = profileDetails.userID;
+                  //print(currentUserId);
                   return Container(
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: themeSettings.cardColor,
-                      borderRadius: BorderRadius.circular(10),
-                      // border: Border.all(
-                      //   color: themeSettings.primaryColor.withOpacity(0.5),
-                      //   width: 1.0,
-                      // ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundImage: NetworkImage(replyUserProfile?['profilePictureUrl'] ?? 'default_profile_picture.png'),
-                              radius: 20,
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
+                  margin: EdgeInsets.symmetric(vertical: 10),
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: themeSettings.cardColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Use spaceBetween instead of Spacer
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                  replyUserProfile?['profilePictureUrl'] ?? 'default_profile_picture.png',
+                                ),
+                                radius: 20,
+                              ),
+                              SizedBox(width: 10),
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
@@ -1078,20 +1167,36 @@ class _MessageViewState extends State<MessageView> {
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          reply['Content'] ?? 'No Content',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: themeSettings.textColor.withOpacity(0.9),
+                            ],
                           ),
+                          if (replyUserId == currentUserId)
+                            PopupMenuButton(
+                              icon: Icon(Icons.more_vert, color: themeSettings.primaryColor),
+                              onSelected: (value) {
+                                if (value == 'delete') {
+                                  _deleteReply(postId, replyId);
+                                }
+                              },
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: 'delete',
+                                  child: Text('Delete Reply'),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        reply['Content'] ?? 'No Content',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: themeSettings.textColor.withOpacity(0.9),
                         ),
-                      ],
-                    ),
-                  );
+                      ),
+                    ],
+                  ),
+                );
                 },
               ),
             ),
