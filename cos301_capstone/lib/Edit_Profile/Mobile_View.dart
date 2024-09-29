@@ -308,6 +308,41 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
             visible: isDatePickerVisible,
             child: SizedBox(height: 20),
           ),
+          Column(
+            children: [
+              Text("Profile Visibility", style: TextStyle(color: themeSettings.textColor, fontSize: 14)),
+              Column(
+                children: [
+                  ListTile(
+                    title: Text('Public', style: TextStyle(color: themeSettings.textColor)),
+                    leading: Radio<bool>(
+                      value: true,
+                      fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                      groupValue: profileDetails.isPublic,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          profileDetails.isPublic = value!;
+                        });
+                      },
+                    ),
+                  ),
+                  ListTile(
+                    title: Text('Private', style: TextStyle(color: themeSettings.textColor)),
+                    leading: Radio<bool>(
+                      value: false,
+                      fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                      groupValue: profileDetails.isPublic,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          profileDetails.isPublic = value!;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
           ElevatedButton(
             onPressed: !isPhoneValid
                 ? () {
