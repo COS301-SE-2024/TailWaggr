@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'dart:math';
+
 import 'package:animations/animations.dart';
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Events/Events.dart';
@@ -28,7 +30,6 @@ class DesktopNavbar extends StatefulWidget {
 }
 
 class _DesktopNavbarState extends State<DesktopNavbar> {
-
   Color containerColor = Colors.transparent;
   Color themeColor = Colors.transparent;
   Color helpColor = Colors.transparent;
@@ -68,69 +69,78 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 250,
-          padding: EdgeInsets.all(30),
-          decoration: profileDetails.usingImage
-                  ?
-                  !profileDetails.usingDefaultImage
-                      ? imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty
-                          ? BoxDecoration(image: DecorationImage(image: MemoryImage(imagePicker.filesNotifier.value![0].bytes!), fit: BoxFit.cover))
-                          : BoxDecoration(image: DecorationImage(image: NetworkImage(profileDetails.sidebarImage), fit: BoxFit.cover))
-                      : BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/pug.jpg"), fit: BoxFit.cover, colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken)))
-                  : BoxDecoration(color: themeSettings.primaryColor),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+    return Container(
+      width: 250,
+      height: double.infinity,
+      padding: EdgeInsets.all(30),
+      decoration: profileDetails.usingImage
+          ? !profileDetails.usingDefaultImage
+              ? imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty
+                  ? BoxDecoration(image: DecorationImage(image: MemoryImage(imagePicker.filesNotifier.value![0].bytes!), fit: BoxFit.cover))
+                  : BoxDecoration(image: DecorationImage(image: NetworkImage(profileDetails.sidebarImage), fit: BoxFit.cover))
+              : BoxDecoration(image: DecorationImage(image: AssetImage("assets/images/pug.jpg"), fit: BoxFit.cover, colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken)))
+          : BoxDecoration(color: themeSettings.primaryColor),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 50,
+              child: Row(
                 children: [
                   CircleAvatar(
                     radius: 20,
                     backgroundImage: Image.asset("assets/images/Dog_Walk_Image.png").image,
                   ),
                   SizedBox(width: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "TailWaggr",
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: themeSettings.navbarTextColour,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    "TailWaggr",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: themeSettings.navbarTextColour,
+                    ),
                   ),
                 ],
               ),
-              SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Navbar_Icon(icon: Icons.home, text: "Home", page: Homepage()),
-                    Navbar_Icon(
-                      icon: Icons.notifications,
-                      text: "Notifications",
-                      page: Notifications(),
-                      badgeContent: unreadNotificationsCount > 0
-                          ? Text(
-                              '$unreadNotificationsCount',
-                              style: TextStyle(color: Colors.white),
-                            )
-                          : null,
-                    ),
-                    Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: LocationDesktop()),
-                    Navbar_Icon(icon: Icons.pets, text: "Lost and Found", page: LostAndFound()),
-                    Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
-                    Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile()),
-                    Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),
-                  ],
-                ),
+            ),
+            SizedBox(
+              height: max(MediaQuery.of(context).size.height - 300, 370),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Navbar_Icon(icon: Icons.home, text: "Home", page: Homepage()),
+                  Navbar_Icon(
+                    icon: Icons.notifications,
+                    text: "Notifications",
+                    page: Notifications(),
+                    badgeContent: unreadNotificationsCount > 0
+                        ? Text(
+                            '$unreadNotificationsCount',
+                            style: TextStyle(color: Colors.white),
+                          )
+                        : null,
+                  ),
+                  Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: LocationDesktop()),
+                  Navbar_Icon(icon: Icons.pets, text: "Lost and Found", page: LostAndFound()),
+                  Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
+                  Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile(userId: profileDetails.userID)),
+                  Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: "ObLE2MEEhDZlwFUYhOdpoaWH4tm2")));
+                    },
+                    child: Text("Test"),
+                  ),
+                ],
               ),
-              Column(
+            ),
+            SizedBox(
+              height: 190,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   if (isExtraMenuOpen) ...[
                     ThemeSelect(
@@ -241,11 +251,10 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   ),
                 ],
               ),
-            
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

@@ -51,7 +51,7 @@ class _MobileNavbarState extends State<MobileNavbar> {
             // width: MediaQuery.of(context).size.width - (isSearchVisible ? 550 : 250),
             color: ThemeSettings.backgroundColor,
             padding: EdgeInsets.all(20),
-            child: ProfileMobile(),
+            child: ProfileMobile(userId: profileDetails.userID),
           );
         },
       ),
@@ -128,8 +128,14 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                 Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: Location()),
                 Navbar_Icon(icon: Icons.map_sharp, text: "Lost and Found", page: LostAndFound()),
                 Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
-                Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile()),
+                Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile(userId: profileDetails.userID)),
                 Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: "ObLE2MEEhDZlwFUYhOdpoaWH4tm2")));
+                  },
+                  child: Text("Test"),
+                ),
               ],
             ),
             Column(
