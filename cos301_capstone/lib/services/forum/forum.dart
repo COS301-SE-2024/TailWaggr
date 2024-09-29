@@ -64,7 +64,7 @@ class ForumServices {
           .get();
 
           //get recent message Timestamp
-          DateTime recentMessage = this.getRecentMessage(messagesSnapshot.docs);
+          DateTime recentMessage = getRecentMessage(messagesSnapshot.docs);
           forums.add({
             'forumId': doc.id,
             ...forumData,

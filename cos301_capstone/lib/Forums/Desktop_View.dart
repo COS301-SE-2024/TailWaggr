@@ -34,7 +34,7 @@ class _DesktopForumsState extends State<DesktopForums> {
   TextEditingController forumNameController = TextEditingController();
   TextEditingController forumDescriptionController = TextEditingController();
   bool isLoadingPosts = false;
-
+  bool isLoadingForums = false;
   @override
   void initState() {
     super.initState();
@@ -48,53 +48,86 @@ class _DesktopForumsState extends State<DesktopForums> {
     super.dispose();
   }
 
-  Future<void> _fetchForums() async {
-    try {
-      List<Map<String, dynamic>>? fetchedForums = await _forumServices.getForums();
-      if (!mounted) return;
-      setState(() {
-        forums = fetchedForums ?? [];
-        searchedForums = forums;
-        if (forums!.isNotEmpty) {
-          selectedForumId = forums?.first['forumId'] ?? '';
-          forumName = forums?.first['Name'] ?? 'Unknown';
-          forumDescription = forums?.first['Description'] ?? 'No description available';
-          _fetchPosts(selectedForumId!);
-        }
-      });
-    } catch (e) {
-      print('Error fetching forums: $e');
-    }
-  }
-
-  void _selectForum(String forumId) {
+ Future<void> _fetchForums() async {
+  setState(() {
+    isLoadingForums = true; // Start loading
+  });
+  try {
+    print('Fetching forums');
+    List<Map<String, dynamic>>? fetchedForums = await _forumServices.getForums();
+    if (!mounted) return;
+    
     setState(() {
-      selectedForumId = forumId;
-      posts = null;
-      var selectedForum = forums?.firstWhere((forum) => forum['forumId'] == forumId, orElse: () => {});
-      forumName = selectedForum?['Name'] ?? 'Unknown';
-      forumDescription = selectedForum?['Description'] ?? 'No description available';
-      isLoadingPosts = true;
+      forums = fetchedForums ?? [];
+      searchedForums = forums;
+      if (forums!.isNotEmpty) {
+        selectedForumId = forums?.first['forumId'] as String? ?? '';
+        forumName = forums?.first['Name'] as String? ?? 'Unknown';
+        forumDescription = forums?.first['Description'] as String? ?? 'No description available';
+
+        if (selectedForumId!.isNotEmpty) {
+          _fetchPosts(selectedForumId!);
+        } else {
+          print('No selectedForumId available after fetching forums.');
+        }
+      }
+      isLoadingForums = false; // Stop loading
     });
-    _fetchPosts(forumId);
+  } catch (e) {
+    print('Error fetching forums: $e');
+  }
+}
+
+void _selectForum(String forumId) {
+  print('Selected forum: $forumId');
+  setState(() {
+    selectedForumId = forumId;
+    posts = null;
+
+    var selectedForum = forums?.firstWhere(
+      (forum) => forum['forumId'] == forumId,
+      orElse: () => {}, // Changed to an empty map for better null handling
+    );
+
+    if (selectedForum == null) {
+      print('Selected forum not found');
+      return; // Handle case where the forum is not found
+    }
+
+    forumName = selectedForum['Name'] as String? ?? 'Unknown';
+    forumDescription = selectedForum['Description'] as String? ?? 'No description available';
+    isLoadingPosts = true;
+  });
+  
+  if (selectedForumId!.isNotEmpty) {
+    _fetchPosts(selectedForumId!);
+  }
+}
+
+Future<void> _fetchPosts(String forumId) async {
+  if (forumId.isEmpty) {
+    print('No forumId provided for fetching posts.');
+    return; // Early return if forumId is invalid
   }
 
-  Future<void> _fetchPosts(String forumId) async {
-    try {
-      List<Map<String, dynamic>>? fetchedPosts = await _forumServices.getMessages(forumId);
-      if (!mounted) return;
-      setState(() {
-        posts = fetchedPosts;
-        isLoadingPosts = false;
-      });
-      _fetchUserProfiles();
-    } catch (e) {
-      print('Error fetching posts: $e');
-      setState(() {
-        isLoadingPosts = false;
-      });
-    }
+  try {
+    print('Fetching posts for forum: $forumId');
+    List<Map<String, dynamic>>? fetchedPosts = await _forumServices.getMessages(forumId);
+    if (!mounted) return;
+
+    setState(() {
+      posts = fetchedPosts ?? [];
+      isLoadingPosts = false;
+    });
+    
+    _fetchUserProfiles();
+  } catch (e) {
+    print('Error fetching posts: $e');
+    setState(() {
+      isLoadingPosts = false;
+    });
   }
+}
 
   Future<void> _fetchUserProfiles() async {
     if (posts == null || posts!.isEmpty) return;
@@ -545,8 +578,10 @@ class _DesktopForumsState extends State<DesktopForums> {
                     ),
                     style: TextStyle(color: themeSettings.textColor),
                   ),
-                ),
-
+                ),              // Conditional rendering for the forum list
+              isLoadingForums
+                  ? Center(child: CircularProgressIndicator()) // Loading indicator when forums are being fetched
+                  :
                 // Forum list
                 Expanded(
                   child: ListView.builder(
@@ -670,7 +705,7 @@ class _DesktopForumsState extends State<DesktopForums> {
                     SizedBox(height: 20),
                     isLoadingPosts
                         ? Center(child: CircularProgressIndicator())
-                        : posts != null && posts!.isNotEmpty
+                        : isLoadingPosts == false && posts != null && posts!.isNotEmpty
                             ? Expanded(
                                 child: ListView.builder(
                                   itemCount: posts!.length,
