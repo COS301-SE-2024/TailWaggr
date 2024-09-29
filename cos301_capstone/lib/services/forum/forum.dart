@@ -73,6 +73,8 @@ class ForumServices {
           });
         }
       }
+      //order forums by CreatedAt from newest to oldest
+      forums.sort((a, b) => (b['CreatedAt'] as Timestamp).compareTo(a['CreatedAt'] as Timestamp));
       //print(forums);
       return forums.isNotEmpty ? forums : null;
     } catch (e) {
@@ -138,6 +140,8 @@ class ForumServices {
           });
         }
       }
+      //order messages by CreatedAt from oldest to newest
+      messages.sort((a, b) => (a['message']['CreatedAt'] as Timestamp).compareTo(b['message']['CreatedAt'] as Timestamp));
       //print(messages);
       return messages.isNotEmpty ? messages : null;
     } catch (e) {
@@ -253,6 +257,8 @@ class ForumServices {
           });
         }
       }
+      //order replies by CreatedAt from oldest to newest
+      replies.sort((a, b) => (a['CreatedAt'] as Timestamp).compareTo(b['CreatedAt'] as Timestamp));
       //print(replies);
       return replies.isNotEmpty ? replies : null;
     } catch (e) {
@@ -262,7 +268,7 @@ class ForumServices {
 }
 
   DateTime getRecentMessage(List<QueryDocumentSnapshot<Object?>> docs) {
-    DateTime recentMessage = DateTime(2021);
+    DateTime recentMessage = DateTime(2024);
     for (var doc in docs) {
       Map<String, dynamic> messageData = doc.data() as Map<String, dynamic>;
       DateTime messageTime = messageData['CreatedAt'].toDate();
