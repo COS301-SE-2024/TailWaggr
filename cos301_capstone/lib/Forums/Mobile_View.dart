@@ -264,7 +264,7 @@ Widget build(BuildContext context) {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -292,7 +292,7 @@ Widget build(BuildContext context) {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: TextField(
             controller: forumSearchController,
             onChanged: (value) {
@@ -332,7 +332,7 @@ Widget build(BuildContext context) {
                             action();
                           },
                           child: Container(
-                            margin: EdgeInsets.symmetric(vertical: 10),
+                            margin: EdgeInsets.all(10),
                             padding: EdgeInsets.all(20),
                             decoration: BoxDecoration(
                               color: themeSettings.cardColor,
