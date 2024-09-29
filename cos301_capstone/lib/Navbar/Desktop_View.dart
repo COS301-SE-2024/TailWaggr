@@ -72,7 +72,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
     return Container(
       width: 250,
       height: double.infinity,
-      padding: EdgeInsets.all(30),
+      padding: EdgeInsets.all(20),
       decoration: profileDetails.usingImage
           ? !profileDetails.usingDefaultImage
               ? imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty
