@@ -85,31 +85,39 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // SizedBox(
+            //   height: 50,
+            //   child: Row(
+            //     children: [
+            //       CircleAvatar(
+            //         radius: 20,
+            //         backgroundImage: Image.asset("assets/images/Logo.png").image,
+            //       ),
+            //       SizedBox(width: 20),
+            //       Text(
+            //         "TailWaggr",
+            //         style: TextStyle(
+            //           fontSize: 20,
+            //           color: themeSettings.navbarTextColour,
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+
             SizedBox(
-              height: 50,
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundImage: Image.asset("assets/images/Dog_Walk_Image.png").image,
-                  ),
-                  SizedBox(width: 20),
-                  Text(
-                    "TailWaggr",
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: themeSettings.navbarTextColour,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: max(MediaQuery.of(context).size.height - 300, 370),
+              height: max(MediaQuery.of(context).size.height - 250, 493),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                      themeSettings.navbarTextColour,
+                      BlendMode.srcIn,
+                    ),
+                    child: Image.asset(width: 200, 'assets/images/Logo_transparent.png'),
+                  ),
                   Navbar_Icon(icon: Icons.home, text: "Home", page: Homepage()),
                   Navbar_Icon(
                     icon: Icons.notifications,
@@ -118,7 +126,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                     badgeContent: unreadNotificationsCount > 0
                         ? Text(
                             '$unreadNotificationsCount',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: themeSettings.navbarTextColour),
                           )
                         : null,
                   ),
@@ -127,12 +135,6 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                   Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile(userId: profileDetails.userID)),
                   Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: "ObLE2MEEhDZlwFUYhOdpoaWH4tm2")));
-                    },
-                    child: Text("Test"),
-                  ),
                 ],
               ),
             ),
@@ -175,9 +177,9 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                           padding: EdgeInsets.all(10),
                           child: Row(
                             children: [
-                              Icon(Icons.help_outline, color: Colors.white),
+                              Icon(Icons.help_outline, color: themeSettings.navbarTextColour),
                               SizedBox(width: 10),
-                              Text("Help", style: TextStyle(color: Colors.white, fontSize: 20)),
+                              Text("Help", style: TextStyle(color: themeSettings.navbarTextColour, fontSize: 20)),
                             ],
                           ),
                         ),
@@ -208,9 +210,9 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                           padding: EdgeInsets.all(10),
                           child: Row(
                             children: [
-                              Icon(Icons.logout, color: Colors.white),
+                              Icon(Icons.logout, color: themeSettings.navbarTextColour),
                               SizedBox(width: 10),
-                              Text("Logout", style: TextStyle(color: Colors.white, fontSize: 20)),
+                              Text("Logout", style: TextStyle(color: themeSettings.navbarTextColour, fontSize: 20)),
                             ],
                           ),
                         ),
@@ -240,7 +242,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                                 profileDetails.name,
                                 style: TextStyle(
                                   fontSize: 20,
-                                  color: Colors.white,
+                                  color: themeSettings.navbarTextColour,
                                 ),
                               ),
                             ],

@@ -856,6 +856,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                         saveChangesText = "Saving...";
                       });
                       await EditProfileVariables.setNavbarPreferences(profileDetails.usingImage, profileDetails.usingDefaultImage);
+                      profileDetails.isEditing.value++;
                       setState(() {
                         saveChangesText = "Save Changes";
                       });
