@@ -63,6 +63,9 @@ class AuthService {
           },
         });
       }
+
+      await user?.sendEmailVerification();
+
       return user;
     } catch (e) {
       print(e.toString());
@@ -163,6 +166,8 @@ class AuthService {
               'usingImage': false
             },
           });
+        
+          await user.sendEmailVerification();
         }
       }
 
