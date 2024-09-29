@@ -189,6 +189,7 @@ class ProfileDetails {
   String userType = "";
   String themeMode = "Light";
   String sidebarImage = "";
+  bool isPublic = false;
   bool usingImage = false;
   bool usingDefaultImage = true;
   ValueNotifier<int> isEditing = ValueNotifier(0);
