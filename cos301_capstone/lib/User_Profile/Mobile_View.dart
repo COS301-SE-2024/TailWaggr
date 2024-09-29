@@ -34,35 +34,49 @@ class _ProfileMobileState extends State<ProfileMobile> {
     Future<void> getProfileDetails() async {
       if (widget.userId != profileDetails.userID) {
         Map<String, dynamic>? tempDetails = await ProfileService().getUserDetails(widget.userId);
-        localProfileDetails.pets = await ProfileService().getUserPets(widget.userId);
-        List<DocumentReference> localPosts = await ProfileService().getUserPosts(widget.userId);
 
-        localProfileDetails.userID = widget.userId;
-        localProfileDetails.name = tempDetails!['name'];
-        localProfileDetails.surname = tempDetails['surname'];
-        localProfileDetails.email = tempDetails['email'];
-        localProfileDetails.bio = tempDetails['bio'];
-        localProfileDetails.profilePicture = tempDetails['profilePictureUrl'];
-        localProfileDetails.location = tempDetails['location'];
-        localProfileDetails.phone = tempDetails['phoneDetails']['phoneNumber'];
-        localProfileDetails.isoCode = tempDetails['phoneDetails']['isoCode'];
-        localProfileDetails.dialCode = tempDetails['phoneDetails']['dialCode'];
-        localProfileDetails.birthdate = formatDate(tempDetails['birthDate'].toDate());
-        localProfileDetails.userType = tempDetails['userType'];
+        if (tempDetails != null && tempDetails['profileVisibility']) {
+          localProfileDetails.userID = widget.userId;
+          localProfileDetails.name = tempDetails['name'];
+          localProfileDetails.surname = tempDetails['surname'];
+          localProfileDetails.email = tempDetails['email'];
+          localProfileDetails.bio = tempDetails['bio'];
+          localProfileDetails.profilePicture = tempDetails['profilePictureUrl'];
+          localProfileDetails.location = tempDetails['location'];
+          localProfileDetails.phone = tempDetails['phoneDetails']['phoneNumber'];
+          localProfileDetails.isoCode = tempDetails['phoneDetails']['isoCode'];
+          localProfileDetails.dialCode = tempDetails['phoneDetails']['dialCode'];
+          localProfileDetails.birthdate = formatDate(tempDetails['birthDate'].toDate());
+          localProfileDetails.userType = tempDetails['userType'];
 
-        localProfileDetails.myPosts = [];
+          localProfileDetails.pets = await ProfileService().getUserPets(widget.userId);
+          List<DocumentReference> localPosts = await ProfileService().getUserPosts(widget.userId);
 
-        for (var post in localPosts) {
-          DocumentSnapshot postSnapshot = await post.get();
-          Map<String, dynamic> postData = postSnapshot.data() as Map<String, dynamic>;
-          postData['PostId'] = postSnapshot.id;
-          localProfileDetails.myPosts.add(postData);
-          print("Post data: $postData");
+          profileDetails.myPosts.clear();
+
+          for (var post in localPosts) {
+            DocumentSnapshot postSnapshot = await post.get();
+            Map<String, dynamic> postData = postSnapshot.data() as Map<String, dynamic>;
+            postData['PostId'] = postSnapshot.id;
+            localProfileDetails.myPosts.add(postData);
+            print("Post data: $postData");
+          }
+        } else {
+          localProfileDetails.userID = widget.userId;
+          localProfileDetails.name = tempDetails!['name'];
+          localProfileDetails.surname = tempDetails['surname'];
+          localProfileDetails.bio = tempDetails['bio'];
+          localProfileDetails.profilePicture = tempDetails['profilePictureUrl'];
+
+          // Stubbed data
+          localProfileDetails.email = "Private Profile";
+          localProfileDetails.phone = "Private Profile";
+          localProfileDetails.birthdate = "Private Profile";
+          localProfileDetails.location = "Private Profile";
+          localProfileDetails.userType = "Private Profile";
         }
 
-        setState(() {
-          print("Profile details set successfully for: ${localProfileDetails.userID}");
-        });
+        setState(() {});
       } else {
         localProfileDetails = profileDetails;
       }
