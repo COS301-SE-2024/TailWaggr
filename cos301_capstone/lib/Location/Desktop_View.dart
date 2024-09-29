@@ -45,7 +45,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
       }
       super.dispose();
     } catch (e) {
-      print("Error disposing Google Map Controller: $e");
+      // print("Error disposing Google Map Controller: $e");
     } finally {
       _scrollController.dispose();
       super.dispose();
@@ -81,6 +81,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                 width: 400,
                 margin: EdgeInsets.only(bottom: 10.0),
                 child: TextField(
+                  key: Key("search-vets-input"),
                   controller: LocationVAF.searchVetsController,
                   decoration: InputDecoration(
                     labelText: "Search Veterinary Clinics",
@@ -112,6 +113,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                 width: 200,
                 padding: EdgeInsets.only(bottom: 10.0),
                 child: TextField(
+                  key: Key("search-vets-distance-input"),
                   controller: LocationVAF.searchDistanceController,
                   decoration: InputDecoration(
                     labelText: "Distance (km)",
@@ -139,11 +141,24 @@ class _LocationDesktopState extends State<LocationDesktop> {
                 ),
               ),
               MouseRegion(
+                key: Key("apply-filters-button"),
                 cursor: SystemMouseCursors.click,
                 child: GestureDetector(
                   onTap: () async {
-                    await LocationVAF.getVets(LocationVAF.myLocation.target, double.parse(LocationVAF.searchDistanceController.text));
-                    setState(() {});
+                    try {
+                      await LocationVAF.getVets(LocationVAF.myLocation.target, double.parse(LocationVAF.searchDistanceController.text));
+                      setState(() {});
+                    } catch (e) {
+                      if (e is FormatException) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Please enter a valid distance.'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                      print("Error applying filters: $e");
+                    }
                   },
                   child: Container(
                     height: 48,
@@ -162,6 +177,38 @@ class _LocationDesktopState extends State<LocationDesktop> {
                   ),
                 ),
               ),
+              MouseRegion(
+                key: Key("clear-filters-button"),
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () async {
+                    try {
+                      LocationVAF.searchDistanceController.text = "100";
+                      LocationVAF.searchVetsController.text = "";
+                      setState(() {});
+                      await LocationVAF.getVets(LocationVAF.myLocation.target, 100);
+                      setState(() {});
+                    } catch (e) {
+                      print("Error applying filters: $e");
+                    }
+                  },
+                  child: Container(
+                    height: 48,
+                    margin: EdgeInsets.only(bottom: 10, left: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: themeSettings.primaryColor,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Clear Filters",
+                        style: TextStyle(color: Colors.white, fontSize: 16.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
           Scrollbar(
@@ -172,7 +219,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  for (User vet in LocationVAF.vetList) ...[
+                  for (Vet vet in LocationVAF.vetList) ...[
                     Container(
                       margin: EdgeInsets.only(right: 50, bottom: 20),
                       decoration: BoxDecoration(
@@ -196,11 +243,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                                 style: TextStyle(color: themeSettings.textColor),
                               ),
                               Text(
-                                "Email: ${vet.email == '' ? 'No email provided' : vet.email}",
-                                style: TextStyle(color: themeSettings.textColor),
-                              ),
-                              Text(
-                                "Phone number: ${vet.phone == '' ? 'No phone number provided' : vet.phone}",
+                                "Address: ${vet.address == '' ? 'No Address provided' : vet.address}",
                                 style: TextStyle(color: themeSettings.textColor),
                               ),
                               Text(
@@ -239,6 +282,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                 width: 400,
                 margin: EdgeInsets.only(bottom: 10.0),
                 child: TextField(
+                  key: Key("search-pet-sitters-input"),
                   controller: LocationVAF.searchPetSittersController,
                   decoration: InputDecoration(
                     labelText: "Search Pet Sitters",
@@ -270,6 +314,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                 width: 200,
                 padding: EdgeInsets.only(bottom: 10.0),
                 child: TextField(
+                  key: Key("search-pet-sitters-distance-input"),
                   controller: LocationVAF.searchPetSittersDistanceController,
                   decoration: InputDecoration(
                     labelText: "Distance (km)",
@@ -404,6 +449,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     child: DefaultTabController(
+                      key: Key('tabController'),
                       length: 2,
                       child: Column(
                         children: [
@@ -411,13 +457,20 @@ class _LocationDesktopState extends State<LocationDesktop> {
                             labelColor: themeSettings.primaryColor,
                             indicatorColor: themeSettings.secondaryColor,
                             tabs: [
-                              Tab(text: 'Veterinary Clinics'),
-                              Tab(text: 'Pet Sitters'),
+                              Tab(
+                                key: Key('vetsTab'),
+                                text: 'Veterinary Clinics',
+                              ),
+                              Tab(
+                                key: Key('petSittersTab'),
+                                text: 'Pet Sitters',
+                              ),
                             ],
                           ),
                           SizedBox(
                             height: 200.0,
                             child: TabBarView(
+                              key: Key('tabBarView'),
                               physics: NeverScrollableScrollPhysics(),
                               children: [
                                 searchVets(),
@@ -449,6 +502,7 @@ class _LocationDesktopState extends State<LocationDesktop> {
                         return ClipRRect(
                           borderRadius: BorderRadius.circular(20.0),
                           child: GoogleMap(
+                            key: Key('googleMap'),
                             style: mapStyle,
                             initialCameraPosition: LocationVAF.myLocation,
                             markers: LocationVAF.markers,

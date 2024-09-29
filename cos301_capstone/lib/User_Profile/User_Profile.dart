@@ -8,7 +8,9 @@ import 'package:cos301_capstone/User_Profile/Tablet_View.dart';
 import 'package:flutter/material.dart';
 
 class User_Profile extends StatefulWidget {
-  const User_Profile({super.key});
+  const User_Profile({super.key, required this.userId});
+
+  final String userId;
 
   @override
   State<User_Profile> createState() => _User_ProfileState();
@@ -23,9 +25,9 @@ class _User_ProfileState extends State<User_Profile> {
         return LayoutBuilder(
           builder: (context, constraints) {
             if (constraints.maxWidth > 1100) {
-              return ProfileDesktop();
+              return ProfileDesktop(userId: widget.userId);
             } else if (constraints.maxWidth > 800) {
-              return ProfileTablet();
+              return ProfileTablet(userId: widget.userId);
             } else {
               return Scaffold(
                 drawer: NavbarDrawer(),
@@ -38,7 +40,7 @@ class _User_ProfileState extends State<User_Profile> {
                     ),
                   ),
                 ),
-                body: ProfileMobile(),
+                body: ProfileMobile(userId: widget.userId),
               );
               // return ProfileMobile();
             }

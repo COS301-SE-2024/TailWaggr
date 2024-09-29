@@ -201,9 +201,15 @@ class _Navbar_IconState extends State<Navbar_Icon> {
               padding: EdgeInsets.all(10),
               child: Row(
                 children: [
-                  Icon(widget.icon, color: Colors.white),
+                  Icon(widget.icon, color: themeSettings.navbarTextColour),
                   SizedBox(width: 10),
-                  Text(widget.text, style: TextStyle(color: Colors.white, fontSize: 20)),
+                  Expanded(
+                    child: Text(
+                      widget.text,
+                      style: TextStyle(color: themeSettings.navbarTextColour, fontSize: 20),
+                      overflow: TextOverflow.visible,
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:path/path.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -21,18 +22,51 @@ class AuthService {
 
   Future<User?> signUp(String email, String password, String name, String surname) async {
     try {
+      // Check if the user already exists
+      QuerySnapshot userQuery = await _db.collection('users').where('email', isEqualTo: email).get();
+      if (userQuery.docs.isNotEmpty) {
+        print('User already exists');
+        return null;
+      }
+
+      // Create a new user
       UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       User? user = result.user;
 
       if (user != null) {
         await _db.collection('users').doc(user.uid).set({
-          'authId': user.uid,
           'name': name,
           'surname': surname,
           'email': email,
-          'userType': 'pet_owner'
+          'bio': '',
+          'birthDate': DateTime.now(),
+          'location': '',
+          'userType': 'pet_owner',
+          'profilePictureUrl': '',
+          'sidebarImage': '',
+          'phoneDetails': {
+            'phoneNumber': '',
+            'isoCode': '',
+            'dialCode': '',
+          },
+          'preferences': {
+            'Colours': {
+              'BackgroundColour': 4278190080,
+              'CardColour': 4279505940,
+              'NavbarTextColour': 4294967295,
+              'PrimaryColour': 4283302026,
+              'SecondaryColour': 4279522048,
+              'TextColour': 4294967295,
+            },
+            'themeMode': 'light',
+            'usingDefaultImage': true,
+            'usingImage': false
+          },
         });
       }
+
+      await user?.sendEmailVerification();
+
       return user;
     } catch (e) {
       print(e.toString());
@@ -57,23 +91,24 @@ class AuthService {
     }
   }
 
-Future<String?> getUserByAuthId(String authId) async {
-  try {
-    // Query the collection to find a document where the 'authId' field matches the provided authId
-    QuerySnapshot snapshot = await _db.collection('users').where('authId', isEqualTo: authId).get();
-    
-    if (snapshot.docs.isNotEmpty) {
- // Return the document ID of the first document found
-      return snapshot.docs.first.id;
-    } else {
-      print("No user found for the given authId.");
+  Future<String?> getUserByAuthId(String authId) async {
+    try {
+      // Query the collection to find a document where the 'authId' field matches the provided authId
+      DocumentSnapshot snapshot = await _db.collection('users').doc(authId).get();
+
+      if (snapshot.exists) {
+        // Return the document ID of the first document found
+        return snapshot.id;
+      } else {
+        print("No user found for the given authId.");
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
       return null;
     }
-  } catch (e) {
-    print("Error fetching user data: $e");
-    return null;
   }
-}
+
   Future<User?> signInWithGoogle() async {
     try {
       // Trigger the Google authentication flow
@@ -100,13 +135,37 @@ Future<String?> getUserByAuthId(String authId) async {
         // Check if the user is new and create a Firestore document if so
         DocumentSnapshot userDoc = await _db.collection('users').doc(user.uid).get();
         if (!userDoc.exists) {
+          String name = user.displayName!.split(' ')[0];
+          String surname = user.displayName!.split(' ')[1];
           // If the user does not exist in Firestore, create a new user document
           await _db.collection('users').doc(user.uid).set({
-            'authId': user.uid,
-            'name': user.displayName,
-            'surname': '', // Adjust as needed, Google sign-in may not provide surname
+            'name': name,
+            'surname': surname,
             'email': user.email,
-            'typeUser': 'pet_owner'
+            'bio': '',
+            'birthDate': DateTime.now(),
+            'location': '',
+            'userType': 'pet_owner',
+            'profilePictureUrl': '',
+            'sidebarImage': '',
+            'phoneDetails': {
+              'phoneNumber': '',
+              'isoCode': '',
+              'dialCode': '',
+            },
+            'preferences': {
+              'Colours': {
+                'BackgroundColour': 4278190080,
+                'CardColour': 4279505940,
+                'NavbarTextColour': 4294967295,
+                'PrimaryColour': 4283302026,
+                'SecondaryColour': 4279522048,
+                'TextColour': 4294967295,
+              },
+              'themeMode': 'light',
+              'usingDefaultImage': true,
+              'usingImage': false
+            },
           });
         }
       }

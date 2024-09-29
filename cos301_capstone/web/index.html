@@ -28,7 +28,7 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="icon" type="image/png" href="Logo_transparent.png" />
 
   <title>cos301_capstone</title>
   <link rel="manifest" href="manifest.json">
@@ -44,6 +44,16 @@
 
   <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDR51SrNFtZp3vAeLhS5vQgETEnOOshEi8&libraries=drawing&loading=async"></script>
   <!-- <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"> -->
+  </script>
+
+  <script>
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        document.title = 'Come back!';
+      } else {
+        document.title = 'TailWaggr';
+      }
+    });
   </script>
 </head>
 

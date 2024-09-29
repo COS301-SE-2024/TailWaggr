@@ -1,10 +1,13 @@
 // ignore_for_file: file_names
 
+import 'dart:ui';
+
 import 'package:cos301_capstone/Edit_Profile/Desktop_View.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Edit_Profile/Mobile_View.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/services/Profile/profile_service.dart';
+import 'package:cos301_capstone/services/imageApi/imageFilter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -25,6 +28,7 @@ class EditProfileVariables {
   static TextEditingController addressController = TextEditingController();
   static TextEditingController birthdateController = TextEditingController();
   static DateTime? birthdate;
+  static ImageFilter imageFilter = ImageFilter();
 
   static void setBirthDateControllers(Object? p0) {
     print("Selected date: $p0");
@@ -34,7 +38,7 @@ class EditProfileVariables {
     profileDetails.birthdate = "${p0.day} ${getMonthAbbreviation(p0.month)} ${p0.year}";
   }
 
-  static Future<void> updatePersonalDetails(context) async {
+  static Future<void> updatePersonalDetails(context, imagePicker) async {
     profileDetails.name = EditProfileVariables.nameController.text;
     profileDetails.surname = EditProfileVariables.surnameController.text;
     profileDetails.bio = EditProfileVariables.bioController.text;
@@ -45,7 +49,65 @@ class EditProfileVariables {
     if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
       newProfileImage = imagePicker.filesNotifier.value![0];
     }
-
+    //moderate image
+    if (newProfileImage != null) {
+    Map<String, dynamic> moderationResult = await imageFilter.moderateImage(imagePicker.filesNotifier.value![0]);
+    print("Moderation result: $moderationResult");
+    //create dialog box for moderation
+    if (moderationResult['status'] == 'error') {
+      // Show error dialog
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text(moderationResult['message']),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        },
+      );
+    } else if (moderationResult['status'] == 'fail') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.redAccent, // Customize color if needed
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "🔞 Warning!",  // Title
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: themeSettings.textColor, // Customize text color
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                moderationResult['message'],  // Full message
+                style: TextStyle(color: themeSettings.textColor), // Customize text color
+              ),
+            ],
+          ),
+          duration: Duration(seconds: 20),  // Increase the duration if needed
+          behavior: SnackBarBehavior.floating,  // Makes the snackbar floating
+        ),
+      );
+      //prevent the post from being uploaded
+      //stop image from being uploaded
+      return;}
+      else{
+        //image is safe to upload
+        print("Image is safe to upload");
+      }
+                    
+    }
     print("Birthdate: ${EditProfileVariables.birthdate}");
 
     Map<String, dynamic> jsonData = {
@@ -58,6 +120,7 @@ class EditProfileVariables {
         'isoCode': profileDetails.isoCode,
         'phoneNumber': profileDetails.phone,
       },
+      'profileVisibility': profileDetails.isPublic,
     };
 
     if (EditProfileVariables.birthdate != null) {

@@ -5,8 +5,10 @@ import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Events/Events.dart';
 import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Help/Help.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Location/Location.dart';
+import 'package:cos301_capstone/LostAndFound/LostAndFound.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:cos301_capstone/Notifications/Notifications.dart';
 import 'package:cos301_capstone/User_Profile/Mobile_View.dart';
@@ -51,7 +53,7 @@ class _MobileNavbarState extends State<MobileNavbar> {
             // width: MediaQuery.of(context).size.width - (isSearchVisible ? 550 : 250),
             color: ThemeSettings.backgroundColor,
             padding: EdgeInsets.all(20),
-            child: ProfileMobile(),
+            child: ProfileMobile(userId: profileDetails.userID),
           );
         },
       ),
@@ -126,8 +128,9 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                 Navbar_Icon(icon: Icons.home, text: "Home", page: Homepage()),
                 Navbar_Icon(icon: Icons.notifications, text: "Notifications", page: Notifications()),
                 Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: Location()),
+                Navbar_Icon(icon: Icons.map_sharp, text: "Lost and Found", page: LostAndFound()),
                 Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
-                Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile()),
+                Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile(userId: profileDetails.userID)),
                 Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),
                 Navbar_Icon(icon: Icons.gamepad, text: "Petrunner", page: Game()),
               ],
@@ -140,10 +143,11 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                   ).animate().moveY(begin: 100, end: 0, duration: Duration(milliseconds: 300), delay: Duration(milliseconds: 200)).fadeIn(),
                   GestureDetector(
                     onTap: () async {
-                      final Uri url = Uri.parse('https://docs.google.com/document/d/1TiRA697HTTGuLCOzq20es4q_fotXlDpTnVuov_7zNP0/edit?usp=sharing ');
-                      if (!await launchUrl(url)) {
-                        print('Could not launch $url');
-                      }
+                      // final Uri url = Uri.parse('https://docs.google.com/document/d/1TiRA697HTTGuLCOzq20es4q_fotXlDpTnVuov_7zNP0/edit?usp=sharing ');
+                      // if (!await launchUrl(url)) {
+                      //   print('Could not launch $url');
+                      // }
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => Help()));
                     },
                     child: MouseRegion(
                       cursor: SystemMouseCursors.click,

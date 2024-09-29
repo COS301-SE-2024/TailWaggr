@@ -53,11 +53,7 @@ class _MobileNotificationsState extends State<MobileNotifications> {
           _isLoading = false;
         });
 
-        FirebaseFirestore.instance
-            .collection('notifications')
-            .where('UserId', isEqualTo: userId)
-            .snapshots()
-            .listen((snapshot) {
+        FirebaseFirestore.instance.collection('notifications').where('UserId', isEqualTo: userId).snapshots().listen((snapshot) {
           List<Map<String, dynamic>> newNotifications = snapshot.docs.map((doc) {
             return {
               'id': doc.id,
@@ -155,7 +151,7 @@ class _MobileNotificationsState extends State<MobileNotifications> {
   }
 }
 
-class NotificationCard extends StatelessWidget{
+class NotificationCard extends StatelessWidget {
   final Map<String, dynamic> notification;
   final String Function(Timestamp) formatDate;
   final void Function(String) onMarkAsRead;
@@ -166,7 +162,7 @@ class NotificationCard extends StatelessWidget{
     required this.formatDate,
     required this.onMarkAsRead,
   }) : super(key: key);
-   Future<String> _fetchUserName(String userId) async {
+  Future<String> _fetchUserName(String userId) async {
     try {
       DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
       if (userSnapshot.exists) {
@@ -180,14 +176,15 @@ class NotificationCard extends StatelessWidget{
     }
     return 'Unknown User';
   }
-  Future<int> getLikes(String forumId, String messageId) async
-  {
-    return ForumServices().getLikesCount(forumId, messageId) ;
+
+  Future<int> getLikes(String forumId, String messageId) async {
+    return ForumServices().getLikesCount(forumId, messageId);
   }
-  Future<int> getReplies(String forumId, String messageId) async
-  {
+
+  Future<int> getReplies(String forumId, String messageId) async {
     return ForumServices().getRepliesCount(forumId, messageId);
   }
+
   Future<String> _fetchProfilePicture(String userId) async {
     try {
       DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
@@ -204,241 +201,239 @@ class NotificationCard extends StatelessWidget{
   }
 
   void _showForumDialog(BuildContext context) async {
-  String referenceId = notification['ReferenceId'];
-  List<String> ids = referenceId.split('/');
-  String forumId = ids[0];
-  String messageId = ids.length > 1 ? ids[1] : '';
-  Map<String, dynamic> comment = {};
-  String commentId = '';
+    String referenceId = notification['ReferenceId'];
+    List<String> ids = referenceId.split('/');
+    String forumId = ids[0];
+    String messageId = ids.length > 1 ? ids[1] : '';
+    Map<String, dynamic> comment = {};
+    String commentId = '';
 
-  try {
-    DocumentSnapshot forumSnapshot = await FirebaseFirestore.instance.collection('forum').doc(forumId).get();
-    DocumentSnapshot messageSnapshot = await FirebaseFirestore.instance
-        .collection('forum')
-        .doc(forumId)
-        .collection('messages')
-        .doc(messageId)
-        .get();
-    DocumentSnapshot userProfileSnapshot = await FirebaseFirestore.instance.collection('users').doc(messageSnapshot['UserId']).get();
+    try {
+      DocumentSnapshot forumSnapshot = await FirebaseFirestore.instance.collection('forum').doc(forumId).get();
+      DocumentSnapshot messageSnapshot = await FirebaseFirestore.instance.collection('forum').doc(forumId).collection('messages').doc(messageId).get();
+      DocumentSnapshot userProfileSnapshot = await FirebaseFirestore.instance.collection('users').doc(messageSnapshot['UserId']).get();
 
-    if (notification['NotificationTypeId'] == 3) {
-      commentId = ids.length > 2 ? ids[2] : '';
-      if (commentId.isNotEmpty) {
-        DocumentSnapshot commentSnapshot = await FirebaseFirestore.instance
-            .collection('forum')
-            .doc(forumId)
-            .collection('messages')
-            .doc(messageId)
-            .collection('replies')
-            .doc(commentId)
-            .get();
-        comment = commentSnapshot.data() as Map<String, dynamic>? ?? {};
+      if (notification['NotificationTypeId'] == 3) {
+        commentId = ids.length > 2 ? ids[2] : '';
+        if (commentId.isNotEmpty) {
+          DocumentSnapshot commentSnapshot = await FirebaseFirestore.instance.collection('forum').doc(forumId).collection('messages').doc(messageId).collection('replies').doc(commentId).get();
+          comment = commentSnapshot.data() as Map<String, dynamic>? ?? {};
+        }
       }
-    }
 
-    if (forumSnapshot.exists && messageSnapshot.exists && userProfileSnapshot.exists) {
-      Map<String, dynamic> forum = forumSnapshot.data() as Map<String, dynamic>;
-      Map<String, dynamic> message = messageSnapshot.data() as Map<String, dynamic>;
-      Map<String, dynamic> userProfile = userProfileSnapshot.data() as Map<String, dynamic>;
-      final String profilePicture = await _fetchProfilePicture(notification['AvatarUrlId']);
-      final int likes = await getLikes(forumId, messageId);
-      final int comments =await getReplies(forumId, messageId);
-      final String name = await _fetchUserName(notification['AvatarUrlId']);
+      if (forumSnapshot.exists && messageSnapshot.exists && userProfileSnapshot.exists) {
+        Map<String, dynamic> forum = forumSnapshot.data() as Map<String, dynamic>;
+        Map<String, dynamic> message = messageSnapshot.data() as Map<String, dynamic>;
+        Map<String, dynamic> userProfile = userProfileSnapshot.data() as Map<String, dynamic>;
+        final String profilePicture = await _fetchProfilePicture(notification['AvatarUrlId']);
+        final int likes = await getLikes(forumId, messageId);
+        final int comments = await getReplies(forumId, messageId);
+        final String name = await _fetchUserName(notification['AvatarUrlId']);
 
-      showDialog(
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(
-              'Message from Forum: ${forum['Name'] ?? 'Unknown Forum'}',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-            ),
-            content: SingleChildScrollView(
-              child: Container(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.7,  // Constrain the height
-                  maxWidth: MediaQuery.of(context).size.width * 0.9,    // Constrain the width
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // User Info Section
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundImage: NetworkImage(profilePicture),
-                        ),
-                        SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              userProfile['name'] ?? 'Unknown User',
-                              style: TextStyle(
-                                color: themeSettings.textColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              'Posted on: ${formatDate(message['CreatedAt'])}',
-                              style: TextStyle(
-                                color: themeSettings.textColor.withOpacity(0.7),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    // Message Content Section
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: themeSettings.primaryColor,
-                          width: 2,  // Increased border thickness
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            message['Content'] ?? 'No content',
-                            style: TextStyle(
-                              color: themeSettings.textColor,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(Icons.pets_outlined, size: 16),
-                                  SizedBox(width: 4),
-                                  Text('$likes'),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Icon(Icons.comment, size: 16),
-                                  SizedBox(width: 4),
-                                  Text('$comments'),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (comment.isNotEmpty) ...[
-                      SizedBox(height: 16),
-                      Divider(),
-                      Text(
-                        'Comment:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 8),
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: themeSettings.cardColor,
+              title: Text(
+                'Message from Forum: ${forum['Name'] ?? 'Unknown Forum'}',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: themeSettings.textColor),
+              ),
+              content: SingleChildScrollView(
+                child: Container(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.7, // Constrain the height
+                    maxWidth: MediaQuery.of(context).size.width * 0.9, // Constrain the width
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // User Info Section
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CircleAvatar(
                             radius: 20,
                             backgroundImage: NetworkImage(profilePicture),
                           ),
                           SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  name,
-                                  style: TextStyle(
-                                    color: themeSettings.textColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                userProfile['name'] ?? 'Unknown User',
+                                style: TextStyle(
+                                  color: themeSettings.textColor,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                Text(
-                                  comment['Content'] ?? 'No content',
-                                  style: TextStyle(
-                                    color: themeSettings.textColor.withOpacity(0.7),
-                                  ),
+                              ),
+                              Text(
+                                'Posted on: ${formatDate(message['CreatedAt'])}',
+                                style: TextStyle(
+                                  color: themeSettings.textColor.withOpacity(0.7),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Commented on: ${formatDate(comment['CreatedAt'])}',
-                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                      SizedBox(height: 10),
+                      // Message Content Section
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: themeSettings.primaryColor,
+                            width: 2, // Increased border thickness
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              message['Content'] ?? 'No content',
+                              style: TextStyle(
+                                color: themeSettings.textColor,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.pets_outlined,
+                                      size: 16,
+                                      color: Colors.red,
+                                    ),
+                                    SizedBox(width: 4),
+                                    Text('$likes', style: TextStyle(color: themeSettings.textColor)),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.comment,
+                                      size: 16,
+                                      color: Colors.blue,
+                                    ),
+                                    SizedBox(width: 4),
+                                    Text('$comments', style: TextStyle(color: themeSettings.textColor)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
+                      if (comment.isNotEmpty) ...[
+                        SizedBox(height: 16),
+                        Divider(),
+                        Text(
+                          'Comment:',
+                          style: TextStyle(fontWeight: FontWeight.bold, color: themeSettings.textColor),
+                        ),
+                        SizedBox(height: 8),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundImage: NetworkImage(profilePicture),
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    name,
+                                    style: TextStyle(
+                                      color: themeSettings.textColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    comment['Content'] ?? 'No content',
+                                    style: TextStyle(
+                                      color: themeSettings.textColor.withOpacity(0.7),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Commented on: ${formatDate(comment['CreatedAt'])}',
+                          style: TextStyle(color: Colors.grey, fontSize: 14),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Close'),
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      // Handle the case where any of the documents do not exist
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Close', style: TextStyle(color: themeSettings.primaryColor)),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        // Handle the case where any of the documents do not exist
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: themeSettings.cardColor,
+              title: Text('Error', style: TextStyle(color: themeSettings.textColor)),
+              content: Text('Unable to fetch forum details.', style: TextStyle(color: themeSettings.textColor)),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Close', style: TextStyle(color: themeSettings.primaryColor)),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
+      print("Error fetching forum details: $e");
       showDialog(
         // ignore: use_build_context_synchronously
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error'),
-            content: Text('Unable to fetch forum details.'),
+            backgroundColor: themeSettings.cardColor,
+            title: Text('Error', style: TextStyle(color: themeSettings.textColor)),
+            content: Text('An error occurred while fetching forum details.', style: TextStyle(color: themeSettings.textColor)),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Close'),
+                child: Text('Close', style: TextStyle(color: themeSettings.primaryColor)),
               ),
             ],
           );
         },
       );
     }
-  } catch (e) {
-    print("Error fetching forum details: $e");
-    showDialog(
-      // ignore: use_build_context_synchronously
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: Text('An error occurred while fetching forum details.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
   }
-}
-
 
   void _showEventDialog(BuildContext context) async {
     String referenceId = notification['ReferenceId'];
@@ -454,9 +449,10 @@ class NotificationCard extends StatelessWidget{
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
+              backgroundColor: themeSettings.cardColor,
               title: Text(
                 event['Name'] ?? 'Unknown Event',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: themeSettings.textColor),
               ),
               content: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -464,7 +460,7 @@ class NotificationCard extends StatelessWidget{
                 children: [
                   Text(
                     event['Description'] ?? 'No description available',
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 18, color: themeSettings.textColor),
                   ),
                   SizedBox(height: 16),
                   Text(
@@ -483,7 +479,7 @@ class NotificationCard extends StatelessWidget{
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Close'),
+                  child: Text('Close', style: TextStyle(color: themeSettings.primaryColor)),
                 ),
               ],
             );
@@ -495,14 +491,15 @@ class NotificationCard extends StatelessWidget{
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Error'),
-              content: Text('Unable to fetch event details.'),
+              backgroundColor: themeSettings.cardColor,
+              title: Text('Error', style: TextStyle(color: themeSettings.textColor)),
+              content: Text('Unable to fetch event details.', style: TextStyle(color: themeSettings.textColor)),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Close'),
+                  child: Text('Close', style: TextStyle(color: themeSettings.primaryColor)),
                 ),
               ],
             );
@@ -516,145 +513,149 @@ class NotificationCard extends StatelessWidget{
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error'),
-            content: Text('Unable to fetch event details.'),
+            backgroundColor: themeSettings.cardColor,
+            title: Text('Error', style: TextStyle(color: themeSettings.textColor)),
+            content: Text('Unable to fetch event details.', style: TextStyle(color: themeSettings.textColor)),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Close'),)
-              ],
-            );
-        },
-      );
-    }
-  }
-
-void _showPostDialog(BuildContext context) async {
-  try {
-    // Fetch the notification type to distinguish between types
-    int notificationType = notification['NotificationTypeId'];
-    String referenceId = notification['ReferenceId'];
-    
-    // Initialize variables to hold post and user profile data
-    Map<String, dynamic> post = {};
-    Map<String, dynamic> comment = {};
-    
-    // Fetch post data
-    DocumentSnapshot postSnapshot = await FirebaseFirestore.instance.collection('posts').doc(referenceId.split('/')[0]).get();
-    if (postSnapshot.exists) {
-      post = postSnapshot.data() as Map<String, dynamic>;
-
-      // If the notification is of type 6, fetch the comment data
-      if (notificationType == 6) {
-        String postId = referenceId.split('/')[0];
-        String commentId = referenceId.split('/')[1];
-        DocumentSnapshot commentSnapshot = await FirebaseFirestore.instance.collection('posts').doc(postId).collection('comments').doc(commentId).get();
-        if (commentSnapshot.exists) {
-          comment = commentSnapshot.data() as Map<String, dynamic>;
-        } else {
-          throw Exception('Comment not found');
-        }
-      }
-      
-      // Fetch user name and profile picture
-      final String name = await _fetchUserName(notification['AvatarUrlId']);
-      final String profilePicture = await _fetchProfilePicture(notification['AvatarUrlId']);
-      
-      showDialog(
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Post(postDetails: post),
-                  if (notificationType == 6 && comment.isNotEmpty) ...[
-                    SizedBox(height: 16),
-                    Divider(),
-                    Text(
-                      'Comment:',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundImage: NetworkImage(profilePicture),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded( // Use Expanded here
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                name,
-                                style: TextStyle(
-                                  color: themeSettings.textColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                comment['comment'] ?? 'No content',
-                                style: TextStyle(
-                                  color: themeSettings.textColor.withOpacity(0.7),
-                                ),
-                                maxLines: null, // Allow text to wrap
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Commented on: ${formatDate(comment['commentedAt'])}',
-                      style: TextStyle(color: Colors.grey, fontSize: 14),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Close'),
+                child: Text('Close', style: TextStyle(color: themeSettings.primaryColor)),
               ),
             ],
           );
         },
       );
-    } else {
-      throw Exception('Post not found');
     }
-  } catch (e) {
-    print("Error fetching post details: $e");
-    showDialog(
-      // ignore: use_build_context_synchronously
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: Text('An error occurred while fetching post details.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
   }
-}
 
+  void _showPostDialog(BuildContext context) async {
+    try {
+      // Fetch the notification type to distinguish between types
+      int notificationType = notification['NotificationTypeId'];
+      String referenceId = notification['ReferenceId'];
+
+      // Initialize variables to hold post and user profile data
+      Map<String, dynamic> post = {};
+      Map<String, dynamic> comment = {};
+
+      // Fetch post data
+      DocumentSnapshot postSnapshot = await FirebaseFirestore.instance.collection('posts').doc(referenceId.split('/')[0]).get();
+      if (postSnapshot.exists) {
+        post = postSnapshot.data() as Map<String, dynamic>;
+
+        // If the notification is of type 6, fetch the comment data
+        if (notificationType == 6) {
+          String postId = referenceId.split('/')[0];
+          String commentId = referenceId.split('/')[1];
+          DocumentSnapshot commentSnapshot = await FirebaseFirestore.instance.collection('posts').doc(postId).collection('comments').doc(commentId).get();
+          if (commentSnapshot.exists) {
+            comment = commentSnapshot.data() as Map<String, dynamic>;
+          } else {
+            throw Exception('Comment not found');
+          }
+        }
+
+        // Fetch user name and profile picture
+        final String name = await _fetchUserName(notification['AvatarUrlId']);
+        final String profilePicture = await _fetchProfilePicture(notification['AvatarUrlId']);
+
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: themeSettings.cardColor,
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Post(postDetails: post),
+                    if (notificationType == 6 && comment.isNotEmpty) ...[
+                      SizedBox(height: 16),
+                      Divider(),
+                      Text(
+                        'Comment:',
+                        style: TextStyle(fontWeight: FontWeight.bold, color: themeSettings.textColor),
+                      ),
+                      SizedBox(height: 8),
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: NetworkImage(profilePicture),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            // Use Expanded here
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  name,
+                                  style: TextStyle(
+                                    color: themeSettings.textColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  comment['comment'] ?? 'No content',
+                                  style: TextStyle(
+                                    color: themeSettings.textColor.withOpacity(0.7),
+                                  ),
+                                  maxLines: null, // Allow text to wrap
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Commented on: ${formatDate(comment['commentedAt'])}',
+                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Close', style: TextStyle(color: themeSettings.primaryColor)),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        throw Exception('Post not found');
+      }
+    } catch (e) {
+      print("Error fetching post details: $e");
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: themeSettings.cardColor,
+            title: Text('Error', style: TextStyle(color: themeSettings.textColor)),
+            content: Text('An error occurred while fetching post details.', style: TextStyle(color: themeSettings.textColor)),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close', style: TextStyle(color: themeSettings.primaryColor)),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -671,7 +672,7 @@ void _showPostDialog(BuildContext context) async {
         String profilePictureUrl = snapshot.data ?? profileDetails.profilePicture;
 
         return Card(
-          color: read ? Colors.grey.shade200 : themeSettings.secondaryColor,
+          color: themeSettings.cardColor,
           elevation: 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           margin: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
