@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+final HomePageService homePageService = HomePageService();
 class DesktopHomepage extends StatefulWidget {
   const DesktopHomepage({super.key});
 
@@ -75,14 +76,19 @@ class _PostContainerState extends State<PostContainer> {
     }
 
     try {
-      List<Map<String, dynamic>> fetchedPosts = await HomePageService().getPosts(words: labels, isLoadMore: getMore);
+      List<Map<String, dynamic>> fetchedPosts =
+          await homePageService.getPosts(words: labels, isLoadMore: getMore);
 
       setState(() {
         if (getMore) {
           if (fetchedPosts.isNotEmpty) {
             profileDetails.posts.addAll(fetchedPosts);
           } else {
-            print('No more posts to load');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+              content: Text('No more posts to load'),
+              ),
+            );
           }
         } else {
           profileDetails.posts = fetchedPosts;
@@ -180,7 +186,10 @@ class _PostContainerState extends State<PostContainer> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                if (isInitialLoading) Center(child: CircularProgressIndicator()), // Loading indicator for initial load
+                if (isInitialLoading)
+                  Center(
+                      child:
+                          CircularProgressIndicator()), // Loading indicator for initial load
                 for (int i = 0; i < profileDetails.posts.length; i++) ...[
                   Post(
                     postDetails: profileDetails.posts[i],
@@ -226,7 +235,7 @@ class _PostState extends State<Post> {
   String newReplyContent = "";
   bool isLiked = false;
   List<Map<String, dynamic>> comments = [];
-  final HomePageService _homePageService = HomePageService();
+  final HomePageService _homePageService = homePageService;
   @override
   void initState() {
     super.initState();
@@ -237,8 +246,10 @@ class _PostState extends State<Post> {
   }
 
   void getLikes() async {
-    Future<int> likes = HomePageService().getLikesCount(widget.postDetails['PostId']);
+    Future<int> likes =
+        homePageService.getLikesCount(widget.postDetails['PostId']);
     likes.then((value) {
+      if (!mounted) return; // Check if the widget is still mounted
       setState(() {
         numLikes = value.toString();
       });
@@ -246,9 +257,12 @@ class _PostState extends State<Post> {
   }
 
   void getViews() async {
-    HomePageService().addViewToPost(widget.postDetails['PostId'], profileDetails.userID);
-    Future<int> views = HomePageService().getViewsCount(widget.postDetails['PostId']);
+    homePageService
+        .addViewToPost(widget.postDetails['PostId'], profileDetails.userID);
+    Future<int> views =
+        homePageService.getViewsCount(widget.postDetails['PostId']);
     views.then((value) {
+      if (!mounted) return; // Check if the widget is still mounted
       setState(() {
         numViews = value.toString();
       });
@@ -256,23 +270,38 @@ class _PostState extends State<Post> {
   }
 
   void getCommentCount() async {
-    Future<int> commentCount = HomePageService().getCommentsCount(widget.postDetails['PostId']);
+    Future<int> commentCount =
+        homePageService.getCommentsCount(widget.postDetails['PostId']);
     commentCount.then((value) {
+      if (!mounted) return; // Check if the widget is still mounted
       setState(() {
         numComments = value.toString();
       });
     });
   }
 
-  void checkIfLiked() async {
-    bool liked = await HomePageService().checkIfUserLikedPost(widget.postDetails['PostId'], profileDetails.userID);
+  Future<void> checkIfLiked() async {
+    // Simulate an asynchronous operation
+    await Future.delayed(Duration(seconds: 2));
+
+    // Check if the widget is still mounted before calling setState
+    if (!mounted) return;
+
     setState(() {
-      isLiked = liked;
+      isLiked =
+          true; // Update the state based on the result of the async operation
     });
   }
 
+  @override
+  void dispose() {
+    // Perform any necessary cleanup here
+    super.dispose();
+  }
+
   Future<List<Map<String, dynamic>>> getComments() async {
-    List<Map<String, dynamic>> commentsList = await HomePageService().getComments(widget.postDetails['PostId']);
+    List<Map<String, dynamic>> commentsList =
+        await homePageService.getComments(widget.postDetails['PostId']);
     for (int i = 0; i < commentsList.length; i++) {
       Map<String, dynamic> comment = commentsList[i];
       Map<String, dynamic>? profileDetails = await ProfileService().getUserDetails(comment['userId']);
@@ -319,7 +348,6 @@ class _PostState extends State<Post> {
   }
 
   Future<Map<String, dynamic>> fetchPostData({bool isLastPost = false}) async {
-    final homePageService = HomePageService();
 
     // Fetch post labels and wiki links asynchronously
     List<String> postLabels = await homePageService.getPostLabels(widget.postDetails['PostId']);
@@ -877,9 +905,12 @@ class _PostState extends State<Post> {
               message: "Like",
               child: IconButton(
                 onPressed: () async {
-                  await HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
-                  bool liked = await HomePageService().checkIfUserLikedPost(widget.postDetails['PostId'], profileDetails.userID);
-                  int likesCount = await HomePageService().getLikesCount(widget.postDetails['PostId']);
+                  await homePageService.toggleLikeOnPost(
+                      widget.postDetails['PostId'], profileDetails.userID);
+                  bool liked = await homePageService.checkIfUserLikedPost(
+                      widget.postDetails['PostId'], profileDetails.userID);
+                  int likesCount = await homePageService
+                      .getLikesCount(widget.postDetails['PostId']);
                   setState(() {
                     isLiked = liked;
                     numLikes = likesCount.toString();
@@ -911,7 +942,9 @@ class _PostState extends State<Post> {
                 onPressed: () async {
                   showDialogBox(context);
                   // await getCommments();
-                  HomePageService().getCommentsCount(widget.postDetails['PostId']).then((value) {
+                  homePageService
+                      .getCommentsCount(widget.postDetails['PostId'])
+                      .then((value) {
                     setState(() {
                       numComments = value.toString();
                     });
@@ -1280,7 +1313,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                   bool postAdded = false;
 
                   try {
-                    postAdded = await HomePageService().addPost(profileDetails.userID, imagePicker.filesNotifier.value![0], postController.text, petIds);
+                    postAdded = await homePageService.addPost(profileDetails.userID, imagePicker.filesNotifier.value![0], postController.text, petIds);
                   } catch (e) {
                     print("Error adding post: $e");
                     

@@ -9,7 +9,6 @@ import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:cos301_capstone/services/Notifications/notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -125,7 +124,7 @@ class HomePageService {
   DocumentSnapshot? _lastDocument; // To keep track of the last document fetched
 
   Future<List<Map<String, dynamic>>> getPosts({
-    int limit = 5,
+    int limit = 10,
     bool isLoadMore = false,
     String? words,
   }) async {
@@ -133,14 +132,17 @@ class HomePageService {
       // Reset _lastDocument if not loading more
       if (!isLoadMore) {
         _lastDocument = null;
+        print("Resetting _lastDocument");
       }
 
       // Build the base query
-      Query query = _db.collection('posts').orderBy('CreatedAt', descending: true).limit(limit);
+      Query query =
+          _db.collection('posts').orderBy('CreatedAt', descending: true);
 
       // Apply pagination if loading more
       if (isLoadMore && _lastDocument != null) {
         query = query.startAfterDocument(_lastDocument!);
+        print("Applying pagination with _lastDocument: ${_lastDocument!.id}");
       }
 
       // Execute the query
@@ -159,25 +161,30 @@ class HomePageService {
         return doc.data() as Map<String, dynamic>;
       }).toList();
 
-      // Return unfiltered posts if no filter is applied
-      if (words == null || words.isEmpty) {
-        print("Fetched ${posts.length} posts.");
-        return posts;
+      // Apply filters if search keywords are provided
+      if (words != null && words.isNotEmpty) {
+        final wordList = words.toLowerCase().split(' ');
+
+        final filteredPosts = posts.where((post) {
+          final labels = post['labels'] as List<dynamic>?;
+          if (labels == null) return false;
+
+          final lowerCaseLabels =
+              labels.map((label) => label.toString().toLowerCase()).toList();
+          return wordList.any(
+              (word) => lowerCaseLabels.any((label) => label.contains(word)));
+        }).toList();
+
+        // Limit the filtered results
+        final limitedFilteredPosts = filteredPosts.take(limit).toList();
+        print("Fetched ${limitedFilteredPosts.length} filtered posts.");
+        return limitedFilteredPosts;
       }
 
-      // Filter posts by label if search keywords are provided
-      final wordList = words.toLowerCase().split(' ');
-
-      final filteredPosts = posts.where((post) {
-        final labels = post['labels'] as List<dynamic>?;
-        if (labels == null) return false;
-
-        final lowerCaseLabels = labels.map((label) => label.toString().toLowerCase()).toList();
-        return wordList.any((word) => lowerCaseLabels.any((label) => label.contains(word)));
-      }).toList();
-
-      print("Fetched ${filteredPosts.length} filtered posts.");
-      return filteredPosts;
+      // Limit the unfiltered results
+      final limitedPosts = posts.take(limit).toList();
+      print("Fetched ${limitedPosts.length} posts.");
+      return limitedPosts;
     } catch (e) {
       print("Error fetching posts: $e");
       return [];
