@@ -158,7 +158,7 @@ class _PostContainerState extends State<PostContainer> {
                 for (int i = 0; i < profileDetails.posts.length; i++) ...{
                   Post(
                     postDetails: profileDetails.posts[i],
-                    key: ValueKey(i),
+                    key: UniqueKey(),
                   ),
                   Divider(),
                 },
@@ -780,6 +780,7 @@ class _PostState extends State<Post> {
   @override
   Widget build(BuildContext context) {
     return Row(
+      key: UniqueKey(),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
