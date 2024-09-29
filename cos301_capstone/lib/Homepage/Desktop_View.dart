@@ -593,48 +593,107 @@ class _PostState extends State<Post> {
                             child: TabBarView(
                               children: [
                                 // Labels Section
-                                Wrap(
-                                  spacing: 10, // Adds some space between the labels
-                                  runSpacing: 10, // Adds some space between the rows
-                                  children: [
-                                    for (int i = 0; i < postDetails['postLabels'].length; i++) ...[
-                                      Container(
-                                        height: 50,
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                          color: themeSettings.primaryColor,
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        child: MouseRegion(
-                                          cursor: SystemMouseCursors.click,
-                                          child: GestureDetector(
-                                            onTap: () async {
-                                              final Uri url = Uri.parse(postDetails['wikiLinks'][i]);
-                                              if (!await launchUrl(url)) {
-                                                print('Could not launch $url');
-                                              }
-                                            },
-                                            child: Center(
-                                              child: Text(postDetails['postLabels'][i], style: TextStyle(color: Colors.white)),
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.vertical,
+                                  child: Wrap(
+                                    spacing: 10, // Adds some space between the labels
+                                    runSpacing: 10, // Adds some space between the rows
+                                    children: [
+                                      for (int i = 0; i < postDetails['postLabels'].length; i++) ...[
+                                        Container(
+                                          height: 50,
+                                          width: 100,
+                                          decoration: BoxDecoration(
+                                            color: themeSettings.primaryColor,
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          child: MouseRegion(
+                                            cursor: SystemMouseCursors.click,
+                                            child: GestureDetector(
+                                              onTap: () async {
+                                                final Uri url = Uri.parse(postDetails['wikiLinks'][i]);
+                                                if (!await launchUrl(url)) {
+                                                  print('Could not launch $url');
+                                                }
+                                              },
+                                              child: Center(
+                                                child: Text(postDetails['postLabels'][i], style: TextStyle(color: Colors.white)),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
+                                      ],
                                     ],
-                                  ],
+                                  ),
                                 ),
-                                Column(
-                                  children: [
-                                    for (var user in postDetails['comments']) ...[
-                                      Padding(
-                                        padding: const EdgeInsets.only(bottom: 10),
-                                        child: MouseRegion(
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.vertical,
+                                  child: Column(
+                                    children: [
+                                      for (var user in postDetails['comments']) ...[
+                                        Padding(
+                                          padding: const EdgeInsets.only(bottom: 10),
+                                          child: MouseRegion(
+                                            cursor: SystemMouseCursors.click,
+                                            child: GestureDetector(
+                                                onTap: () {
+                                                  // Handle profile click
+                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: user['userId'])));
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    CircleAvatar(
+                                                      radius: 20,
+                                                      backgroundImage: NetworkImage(user['pictureUrl'] ?? ''),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          user['name'] ?? 'Unknown',
+                                                          style: TextStyle(
+                                                            color: themeSettings.textColor,
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          user['comment'] ?? 'No content',
+                                                          style: TextStyle(
+                                                            color: themeSettings.textColor.withOpacity(0.7),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                )),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.vertical,
+                                  child: Wrap(
+                                    spacing: 8.0, // Adds some space between the users
+                                    children: [
+                                      for (var user in postDetails['likedUsers']) ...[
+                                        MouseRegion(
                                           cursor: SystemMouseCursors.click,
-                                          child: GestureDetector(
-                                              onTap: () {
-                                                // Handle profile click
-                                                Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: user['userId'])));
-                                              },
+                                          child: InkWell(
+                                            onTap: () {
+                                              // Handle profile click
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: user['userId'])));
+                                            },
+                                            child: Container(
+                                              width: 200,
+                                              height: 50,
+                                              padding: EdgeInsets.symmetric(vertical: 10),
+                                              decoration: BoxDecoration(
+                                                // color: themeSettings.primaryColor,
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
                                               child: Row(
                                                 children: [
                                                   CircleAvatar(
@@ -642,71 +701,21 @@ class _PostState extends State<Post> {
                                                     backgroundImage: NetworkImage(user['pictureUrl'] ?? ''),
                                                   ),
                                                   SizedBox(width: 10),
-                                                  Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        user['name'] ?? 'Unknown',
-                                                        style: TextStyle(
-                                                          color: themeSettings.textColor,
-                                                          fontWeight: FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        user['comment'] ?? 'No content',
-                                                        style: TextStyle(
-                                                          color: themeSettings.textColor.withOpacity(0.7),
-                                                        ),
-                                                      ),
-                                                    ],
+                                                  Text(
+                                                    user['username'] ?? 'Unknown',
+                                                    style: TextStyle(
+                                                      color: themeSettings.textColor,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
                                                   ),
                                                 ],
-                                              )),
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                                Wrap(
-                                  spacing: 8.0, // Adds some space between the users
-                                  children: [
-                                    for (var user in postDetails['likedUsers']) ...[
-                                      MouseRegion(
-                                        cursor: SystemMouseCursors.click,
-                                        child: InkWell(
-                                          onTap: () {
-                                            // Handle profile click
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: user['userId'])));
-                                          },
-                                          child: Container(
-                                            width: 200,
-                                            height: 50,
-                                            padding: EdgeInsets.symmetric(vertical: 10),
-                                            decoration: BoxDecoration(
-                                              // color: themeSettings.primaryColor,
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                CircleAvatar(
-                                                  radius: 20,
-                                                  backgroundImage: NetworkImage(user['pictureUrl'] ?? ''),
-                                                ),
-                                                SizedBox(width: 10),
-                                                Text(
-                                                  user['username'] ?? 'Unknown',
-                                                  style: TextStyle(
-                                                    color: themeSettings.textColor,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
+                                      ],
                                     ],
-                                  ],
+                                  ),
                                 ),
                               ],
                             ),
