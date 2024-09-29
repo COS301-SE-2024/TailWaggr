@@ -349,7 +349,6 @@ class _PostState extends State<Post> {
   }
 
   Future<Map<String, dynamic>> fetchPostData({bool isLastPost = false}) async {
-
     // Fetch post labels and wiki links asynchronously
     List<String> postLabels =
         await homePageService.getPostLabels(widget.postDetails['PostId']);
