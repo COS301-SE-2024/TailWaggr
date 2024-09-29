@@ -40,7 +40,7 @@ The Component-Based architectural pattern divides the system into smaller, reusa
 - Encourages reusability of components, reducing redundancy and development time.
 - Simplifies testing and debugging by isolating components.
 - Enhances scalability, as individual components can be updated or replaced without affecting the entire system.
-
+![](doc_images/deployment.png)
 ## Architectural quality requirements
 - **Availability:** The system should have at least 99% uptime for the essential services (notably database access for reading and making posts).
 - **Usability:** The app and web interfaces should function smoothly on most devices, dynamically resizing interface elements to fit a reasonable variety of modern screen sizes.
