@@ -106,6 +106,7 @@ class _PostState extends State<Post> {
   String numViews = "0";
   String numComments = "0";
   String newReplyContent = "";
+  bool isLiked = false;
   final HomePageService _homePageService = HomePageService();
 
   @override
@@ -114,6 +115,7 @@ class _PostState extends State<Post> {
     getLikes();
     getViews();
     getCommentCount();
+    checkIfLiked();
   }
 
   void getLikes() async {
@@ -124,7 +126,12 @@ class _PostState extends State<Post> {
       });
     });
   }
-
+  void checkIfLiked() async {
+    bool liked = await HomePageService().checkIfUserLikedPost(widget.postDetails['PostId'], profileDetails.userID);
+    setState(() {
+      isLiked = liked;
+    });
+  }
   void getViews() async {
     HomePageService().addViewToPost(widget.postDetails['PostId'], profileDetails.userID);
     Future<int> views = HomePageService().getViewsCount(widget.postDetails['PostId']);
@@ -474,19 +481,31 @@ class _PostState extends State<Post> {
                 Tooltip(
                   message: "Like",
                   child: IconButton(
-                    onPressed: () {
-                      HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
-
-                      HomePageService().getLikesCount(widget.postDetails['PostId']).then((value) {
-                        setState(() {
-                          numLikes = value.toString();
-                        });
+                    onPressed: () async {
+                      await HomePageService().toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
+                      bool liked = await HomePageService().checkIfUserLikedPost(widget.postDetails['PostId'], profileDetails.userID);
+                      int likesCount = await HomePageService().getLikesCount(widget.postDetails['PostId']);
+                      setState(() {
+                        isLiked = liked;
+                        numLikes = likesCount.toString();
                       });
                     },
-                    icon: Icon(
-                      Icons.pets_outlined,
-                      color: Colors.red.withOpacity(0.7),
-                    ),
+                    icon: isLiked
+                        ? Icon(
+                            Icons.pets,
+                            color: Colors.red.withOpacity(0.7),
+                          )
+                        : SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: ColorFiltered(
+                              colorFilter: ColorFilter.mode(
+                                Colors.red.withOpacity(0.7),
+                                BlendMode.srcIn,
+                              ),
+                              child: Image.asset('assets/images/paw1.png'),
+                            ),
+                          ),
                   ),
                 ),
                 Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
@@ -513,7 +532,7 @@ class _PostState extends State<Post> {
                 Tooltip(
                   message: "Views",
                   child: Icon(
-                    Icons.bar_chart,
+                    Icons.remove_red_eye,
                     color: Colors.green.withOpacity(0.7),
                   ),
                 ),
