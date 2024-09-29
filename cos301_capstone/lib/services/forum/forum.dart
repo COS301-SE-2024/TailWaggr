@@ -69,6 +69,10 @@ class ForumServices {
           if (recentMessage.isAfter(forumData['CreatedAt'].toDate())) {
             recentMessage = forumData['CreatedAt'].toDate();
           }
+          //get creator name
+          DocumentSnapshot userDoc = await _db.collection('users').doc(forumData['UserId']).get();
+          Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+          forumData['creatorUsername'] = userData['name'];
           forums.add({
             'forumId': doc.id,
             ...forumData,
@@ -82,7 +86,7 @@ class ForumServices {
       //print(forums);
       return forums.isNotEmpty ? forums : null;
     } catch (e) {
-      print('Error fetching forums: $e');
+      print('Error fetching forums backend: $e');
       return null;
     }
   }

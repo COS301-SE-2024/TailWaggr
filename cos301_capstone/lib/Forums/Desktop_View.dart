@@ -26,7 +26,7 @@ String? newReplyContent;
 String? selectedPostId;
 String? forumName;
 String? forumDescription;
-Map<String, Map<String, dynamic>> userProfiles = {};
+
 
 class _DesktopForumsState extends State<DesktopForums> {
   TextEditingController forumSearchController = TextEditingController();
@@ -36,6 +36,7 @@ class _DesktopForumsState extends State<DesktopForums> {
   bool isLoadingPosts = false;
   bool isLoadingForums = false;
   Map<String, bool> isLikedPosts = {}; // A map to track isLiked status for each post
+  Map<String, Map<String, dynamic>> userProfiles = {};
   @override
   void initState() {
     super.initState();
@@ -158,7 +159,9 @@ void _checkIfLiked(String postId) async {
         }
       }
       if (!mounted) return;
-      setState(() {});
+      setState(() {
+        userProfiles = userProfiles;
+      });
     } catch (e) {
       print('Error fetching user profiles: $e');
     }
@@ -287,12 +290,16 @@ void _checkIfLiked(String postId) async {
                   TextField(
                     controller: forumNameController,
                     decoration: InputDecoration(labelText: 'Forum Name', labelStyle: TextStyle(color: themeSettings.textColor)),
+                    //format the textfield to display white text
+                    style: TextStyle(color: themeSettings.textColor),
                   ),
                   SizedBox(height: 10),
                   TextField(
                     controller: forumDescriptionController,
                     decoration: InputDecoration(labelText: 'Description', labelStyle: TextStyle(color: themeSettings.textColor)),
                     maxLines: 2,
+                    //format the textfield to display white text
+                    style: TextStyle(color: themeSettings.textColor),
                   ),
                   SizedBox(height: 20),
                   Row(
@@ -574,7 +581,7 @@ void _checkIfLiked(String postId) async {
 
                 // Search box
                 SizedBox(
-                  height: 35,
+                  height: 50,
                   child: TextField(
                     controller: forumSearchController,
                     onChanged: (value) {
@@ -602,8 +609,7 @@ void _checkIfLiked(String postId) async {
                     itemBuilder: (context, index) {
                       final forum = searchTerm.isNotEmpty ? searchedForums![index] : forums![index];
                       final userId = forum['UserId'] as String;
-                      final userProf = userProfiles[userId];
-                      final creatorUsername = userProf?['name'] ?? 'Unknown';
+                      final creatorUsername = forum['creatorUsername'] as String;
 
                       return GestureDetector(
                         onTap: () {
