@@ -136,8 +136,10 @@ class HomePageService {
       }
 
       // Build the base query
-      Query query =
-          _db.collection('posts').orderBy('CreatedAt', descending: true);
+      Query query = _db
+          .collection('posts')
+          .orderBy('CreatedAt', descending: true)
+          .limit(limit);
 
       // Apply pagination if loading more
       if (isLoadMore && _lastDocument != null) {
@@ -161,30 +163,27 @@ class HomePageService {
         return doc.data() as Map<String, dynamic>;
       }).toList();
 
-      // Apply filters if search keywords are provided
-      if (words != null && words.isNotEmpty) {
-        final wordList = words.toLowerCase().split(' ');
-
-        final filteredPosts = posts.where((post) {
-          final labels = post['labels'] as List<dynamic>?;
-          if (labels == null) return false;
-
-          final lowerCaseLabels =
-              labels.map((label) => label.toString().toLowerCase()).toList();
-          return wordList.any(
-              (word) => lowerCaseLabels.any((label) => label.contains(word)));
-        }).toList();
-
-        // Limit the filtered results
-        final limitedFilteredPosts = filteredPosts.take(limit).toList();
-        print("Fetched ${limitedFilteredPosts.length} filtered posts.");
-        return limitedFilteredPosts;
+      // Return unfiltered posts if no filter is applied
+      if (words == null || words.isEmpty) {
+        print("Fetched ${posts.length} posts.");
+        return posts;
       }
 
-      // Limit the unfiltered results
-      final limitedPosts = posts.take(limit).toList();
-      print("Fetched ${limitedPosts.length} posts.");
-      return limitedPosts;
+      // Filter posts by label if search keywords are provided
+      final wordList = words.toLowerCase().split(' ');
+
+      final filteredPosts = posts.where((post) {
+        final labels = post['labels'] as List<dynamic>?;
+        if (labels == null) return false;
+
+        final lowerCaseLabels =
+            labels.map((label) => label.toString().toLowerCase()).toList();
+        return wordList.any(
+            (word) => lowerCaseLabels.any((label) => label.contains(word)));
+      }).toList();
+
+      print("Fetched ${filteredPosts.length} filtered posts.");
+      return filteredPosts;
     } catch (e) {
       print("Error fetching posts: $e");
       return [];
