@@ -28,7 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  flutter_unity_widget: ^2022.2.0
+  
   flutter:
     sdk: flutter
   path: ^1.8.0 # Use the latest version available
@@ -36,6 +36,7 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
+  flutter_unity_widget: ^2022.2.0
   cupertino_icons: ^1.0.2
   firebase_core: ^2.32.0
   firebase_auth: ^4.17.8
