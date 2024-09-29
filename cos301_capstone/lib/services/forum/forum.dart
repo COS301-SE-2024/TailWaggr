@@ -65,6 +65,10 @@ class ForumServices {
 
           //get recent message Timestamp
           DateTime recentMessage = getRecentMessage(messagesSnapshot.docs);
+          //compare with createdAt
+          if (recentMessage.isAfter(forumData['CreatedAt'].toDate())) {
+            recentMessage = forumData['CreatedAt'].toDate();
+          }
           forums.add({
             'forumId': doc.id,
             ...forumData,
