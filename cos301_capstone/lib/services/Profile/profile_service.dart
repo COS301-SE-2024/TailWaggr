@@ -148,7 +148,7 @@ class ProfileService {
 
   Future<List<DocumentReference>> getUserPosts(String userId) async {
     try {
-      QuerySnapshot snapshot = await _db.collection('posts').where('UserId', isEqualTo: _db.collection('users').doc(userId)).get();
+      QuerySnapshot snapshot = await _db.collection('posts').where('UserId', isEqualTo: userId).get();
       return snapshot.docs.map((doc) => doc.reference).toList();
     } catch (e) {
       print("Error fetching user posts: $e");
