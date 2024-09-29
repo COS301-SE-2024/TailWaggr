@@ -35,6 +35,7 @@ class _DesktopForumsState extends State<DesktopForums> {
   TextEditingController forumDescriptionController = TextEditingController();
   bool isLoadingPosts = false;
   bool isLoadingForums = false;
+  Map<String, bool> isLikedPosts = {}; // A map to track isLiked status for each post
   @override
   void initState() {
     super.initState();
@@ -118,6 +119,13 @@ Future<void> _fetchPosts(String forumId) async {
     setState(() {
       posts = fetchedPosts ?? [];
       isLoadingPosts = false;
+
+      // Initialize isLiked for each post
+      for (var post in posts!) {
+        final postId = post['messageId'];
+        isLikedPosts[postId] = false; // Assume false until we check
+        _checkIfLiked(postId); // Check if the user liked this post
+      }
     });
     
     _fetchUserProfiles();
@@ -128,7 +136,13 @@ Future<void> _fetchPosts(String forumId) async {
     });
   }
 }
-
+// Update the checkIfLiked to handle each post separately
+void _checkIfLiked(String postId) async {
+  bool liked = await ForumServices().checkIfUserLikedPost(postId, selectedForumId!, profileDetails.userID);
+  setState(() {
+    isLikedPosts[postId] = liked; // Update the isLiked state for this post
+  });
+}
   Future<void> _fetchUserProfiles() async {
     if (posts == null || posts!.isEmpty) return;
 
@@ -149,7 +163,6 @@ Future<void> _fetchPosts(String forumId) async {
       print('Error fetching user profiles: $e');
     }
   }
-
   Future<void> _addMessage() async {
     if (newMessageContent != null && newMessageContent!.isNotEmpty) {
       try {
@@ -719,7 +732,8 @@ Future<void> _fetchPosts(String forumId) async {
                                     final userProfilePic = userProfile?['profilePictureUrl'] ?? profileDetails.profilePicture; // Add default URL for profile picture
                                     final userName = userProfile?['name'] ?? 'Unknown User';
                                     final postTime = formatDateTime(post['message']['CreatedAt'].toDate());
-
+                                    // Use the isLikedPosts map to track if this post is liked
+                                    bool isLiked = isLikedPosts[postId] ?? false;
                                     return GestureDetector(
                                       onTap: () {
                                         _viewMessage(context, post);
@@ -819,19 +833,34 @@ Future<void> _fetchPosts(String forumId) async {
                                                 Tooltip(
                                                   message: "Like",
                                                   child: IconButton(
-                                                    onPressed: () {
+                                                    onPressed: () async {
                                                       print("Like button pressed");
+                                                      print("Is post liked: $isLiked");
                                                       _likeMessage(postId);
+                                                      bool liked = await ForumServices().checkIfUserLikedPost(postId,selectedForumId!, userId);
                                                       ForumServices().getLikesCount(selectedForumId!, postId).then((value) {
                                                         setState(() {
+                                                          isLikedPosts[postId] = liked;
                                                           numLikes = value.toString();
                                                         });
                                                       });
                                                     },
-                                                    icon: Icon(
-                                                      Icons.pets_outlined,
-                                                      color: Colors.red.withOpacity(0.7),
-                                                    ),
+                                                     icon: isLiked
+                                                    ? Icon(
+                                                        Icons.pets,
+                                                        color: Colors.red.withOpacity(0.7),
+                                                      )
+                                                    : SizedBox(
+                                                        width: 24,
+                                                        height: 24,
+                                                        child: ColorFiltered(
+                                                          colorFilter: ColorFilter.mode(
+                                                            Colors.red.withOpacity(0.7),
+                                                            BlendMode.srcIn,
+                                                          ),
+                                                          child: Image.asset('images/paw1.png'),
+                                                        ),
+                                                      ),
                                                   ),
                                                 ),
                                                 Text(

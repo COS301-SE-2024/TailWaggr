@@ -338,5 +338,17 @@ Future<void> togglemuteForum(String forumId, String userId) async {
   }
 }
 
+  Future<bool> checkIfUserLikedPost(String postId,String forumId, String userId) async {
+    try {
+      // Reference to the like document
+      DocumentReference<Map<String, dynamic>> likeDoc = _db.collection('forum').doc(forumId).collection('messages').doc(postId).collection('likes').doc(userId);
 
+      // Fetch the like document
+      DocumentSnapshot likeSnapshot = await likeDoc.get();
+      return likeSnapshot.exists;
+    } catch (e) {
+      print("Error checking if user liked post: $e");
+      return false;
+    }
+  }
 }
