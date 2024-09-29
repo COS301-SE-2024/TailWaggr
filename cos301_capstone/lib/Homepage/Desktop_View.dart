@@ -47,24 +47,61 @@ class PostContainer extends StatefulWidget {
 }
 
 class _PostContainerState extends State<PostContainer> {
-  Future<void> getPosts(String ?labels) async {
-      Future<List<Map<String, dynamic>>> posts = HomePageService().getPostsByLabels(labels);
-      posts.then((value) {
-        setState(() {
-          profileDetails.posts = value;
-        });
-      });
-    }
+  bool isLoadingMore = false; // To track whether more posts are loading
+  bool isInitialLoading = true; // To track initial loading state
+
   @override
   void initState() {
     super.initState();
-
+    fetchInitialPosts();
     homepageVAF.postPosted.addListener(() async {
-      await getPosts(null);
+      await getPosts(null, false);
       setState(() {});
     });
   }
+
+  Future<void> fetchInitialPosts() async {
+    await getPosts(null, false);
+    setState(() {
+      isInitialLoading = false; // Set initial loading to false after fetching
+    });
+  }
+
+  Future<void> getPosts(String? labels, bool getMore) async {
+    if (getMore) {
+      setState(() {
+        isLoadingMore = true;
+      });
+    }
+
+    try {
+      List<Map<String, dynamic>> fetchedPosts =
+          await HomePageService().getPosts(words: labels, isLoadMore: getMore);
+
+      setState(() {
+        if (getMore) {
+          if (fetchedPosts.isNotEmpty) {
+            profileDetails.posts.addAll(fetchedPosts);
+          } else {
+            print('No more posts to load');
+          }
+        } else {
+          profileDetails.posts = fetchedPosts;
+        }
+      });
+    } catch (e) {
+      print("Error fetching posts: $e");
+    } finally {
+      if (getMore) {
+        setState(() {
+          isLoadingMore = false;
+        });
+      }
+    }
+  }
+
   TextEditingController searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -92,29 +129,19 @@ class _PostContainerState extends State<PostContainer> {
                       topLeft: Radius.circular(20),
                       bottomLeft: Radius.circular(20),
                     ),
-                    borderSide: BorderSide(
-                      color:
-                          Colors.grey, // Set the color you want for the border
-                    ),
+                    borderSide: BorderSide(color: Colors.grey),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10),
                       bottomLeft: Radius.circular(10),
                     ),
-                    borderSide: BorderSide(
-                      color:
-                          Color.fromARGB(255, 255, 148, 25), // Set the color you want for the border
-                    ),
+                    borderSide:
+                        BorderSide(color: Color.fromARGB(255, 255, 148, 25)),
                   ),
                 ),
-                onChanged: (value) {
-                  // Implement search functionality here
-                },
                 onSubmitted: (value) async {
-                  // Implement search functionality here
-                  await getPosts(value);
-                  setState(() {});
+                  await getPosts(value, false);
                 },
               ),
             ),
@@ -126,14 +153,14 @@ class _PostContainerState extends State<PostContainer> {
                 style: TextButton.styleFrom(
                   backgroundColor: themeSettings.primaryColor,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  )),
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    ),
+                  ),
                 ),
-                onPressed: () async{
-                  await getPosts(searchController.text);
-                  setState(() {});
+                onPressed: () async {
+                  await getPosts(searchController.text, false);
                 },
                 child: Text(
                   'Search',
@@ -155,13 +182,28 @@ class _PostContainerState extends State<PostContainer> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                for (int i = 0; i < profileDetails.posts.length; i++) ...{
+                if (isInitialLoading)
+                  Center(child: CircularProgressIndicator()), // Loading indicator for initial load
+                for (int i = 0; i < profileDetails.posts.length; i++) ...[
                   Post(
                     postDetails: profileDetails.posts[i],
                     key: UniqueKey(),
                   ),
                   Divider(),
-                },
+                ],
+                if (isLoadingMore)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                // Only show "View More" button if there are more posts to load
+                if (!isLoadingMore && profileDetails.posts.isNotEmpty)
+                  TextButton(
+                    onPressed: () async {
+                      await getPosts(searchController.text, true);
+                    },
+                    child: Text("View More"),
+                  ),
               ],
             ),
           ),
@@ -288,7 +330,7 @@ class _PostState extends State<Post> {
     }
   }
 
-  Future<Map<String, dynamic>> fetchPostData() async {
+  Future<Map<String, dynamic>> fetchPostData({bool isLastPost = false}) async {
     final homePageService = HomePageService();
 
     // Fetch post labels and wiki links asynchronously

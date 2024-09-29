@@ -119,67 +119,67 @@ class HomePageService {
       return false; // Return false if an error occurs
     }
   }
-  DocumentSnapshot? _lastDocument;
-  Future<List<Map<String, dynamic>>> getPosts({int limit = 10, bool isLoadMore = false}) async {
-    try {
-      Query query = _db.collection('posts').orderBy('CreatedAt', descending: true).limit(limit);
 
+   DocumentSnapshot? _lastDocument; // To keep track of the last document fetched
+
+  Future<List<Map<String, dynamic>>> getPosts({
+    int limit = 5,
+    bool isLoadMore = false,
+    String? words,
+  }) async {
+    try {
+      // Reset _lastDocument if not loading more
+      if (!isLoadMore) {
+        _lastDocument = null;
+      }
+
+      // Build the base query
+      Query query = _db
+          .collection('posts')
+          .orderBy('CreatedAt', descending: true)
+          .limit(limit);
+
+      // Apply pagination if loading more
       if (isLoadMore && _lastDocument != null) {
         query = query.startAfterDocument(_lastDocument!);
       }
 
+      // Execute the query
       final querySnapshot = await query.get();
 
+      // Update _lastDocument for pagination
       if (querySnapshot.docs.isNotEmpty) {
-        _lastDocument = querySnapshot.docs.last; // Update the last document
+        _lastDocument = querySnapshot.docs.last;
+        print("Updated _lastDocument: ${_lastDocument!.id}");
+      } else {
+        print("No more documents to fetch.");
       }
 
-      final posts = querySnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
-          .toList();
+      // Map Firestore documents to a list of posts
+      final posts = querySnapshot.docs.map((doc) {
+        return doc.data() as Map<String, dynamic>;
+      }).toList();
 
-      print("Posts fetched successfully.");
-      return posts;
-    } catch (e) {
-      print("Error fetching posts: $e");
-      return [];
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> getPostsByLabels(String? words, {int limit = 10, bool isLoadMore = false}) async {
-    try {
-      Query query = _db.collection('posts').orderBy('CreatedAt', descending: true).limit(limit);
-
-      if (isLoadMore && _lastDocument != null) {
-        query = query.startAfterDocument(_lastDocument!);
-      }
-
-      final querySnapshot = await query.get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        _lastDocument = querySnapshot.docs.last; // Update the last document
-      }
-
-      final posts = querySnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
-          .toList();
-
+      // Return unfiltered posts if no filter is applied
       if (words == null || words.isEmpty) {
+        print("Fetched ${posts.length} posts.");
         return posts;
       }
 
+      // Filter posts by label if search keywords are provided
       final wordList = words.toLowerCase().split(' ');
 
       final filteredPosts = posts.where((post) {
         final labels = post['labels'] as List<dynamic>?;
         if (labels == null) return false;
 
-        final lowerCaseLabels = labels.map((label) => label.toString().toLowerCase()).toList();
-
-        return wordList.any((word) => lowerCaseLabels.any((label) => label.contains(word)));
+        final lowerCaseLabels =
+            labels.map((label) => label.toString().toLowerCase()).toList();
+        return wordList.any(
+            (word) => lowerCaseLabels.any((label) => label.contains(word)));
       }).toList();
 
-      print("Posts fetched and filtered successfully.");
+      print("Fetched ${filteredPosts.length} filtered posts.");
       return filteredPosts;
     } catch (e) {
       print("Error fetching posts: $e");
@@ -188,7 +188,7 @@ class HomePageService {
   }
 
   void resetPagination() {
-    _lastDocument = null; // Reset the last document for pagination
+    _lastDocument = null;
   }
 
   Future<void> toggleLikeOnPost(String postId, String userId) async {
