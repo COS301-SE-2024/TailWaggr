@@ -84,7 +84,11 @@ class _PostContainerState extends State<PostContainer> {
           if (fetchedPosts.isNotEmpty) {
             profileDetails.posts.addAll(fetchedPosts);
           } else {
-            print('No more posts to load');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+              content: Text('No more posts to load'),
+              ),
+            );
           }
         } else {
           profileDetails.posts = fetchedPosts;
