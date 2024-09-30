@@ -75,7 +75,7 @@ jobs:
     - name: Extract Performance Score
       id: extract_score
       run: |
-        REPORT_URL=$(grep -o 'https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/[^"]*' <<< "${{ steps.lhci.outputs.stdout }}")
+        REPORT_URL=$(lhci upload --target=temporary-public-storage --collect.url=https://tailwaggr.web.app --output=json | jq -r '.finalUrl')
         if [ -z "$REPORT_URL" ]; then
             echo "Error: Report URL not found"
             exit 1
