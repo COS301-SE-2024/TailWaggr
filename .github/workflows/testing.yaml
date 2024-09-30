@@ -85,12 +85,7 @@ jobs:
         urls: |
           https://tailwaggr.web.app
         outputDirectory: './lighthouse-results'
-        config: |
-          {
-            "settings": {
-              "emulatedFormFactor": "desktop"
-            }
-          }
+        device: 'desktop'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
