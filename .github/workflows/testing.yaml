@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, dev]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   test:
@@ -16,7 +16,7 @@ jobs:
 
     - name: Set up Java
       uses: actions/setup-java@v1
-      with:
+      with:s
         java-version: '12.x'
 
     - name: Set up Flutter
@@ -50,44 +50,49 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         finish: true
       continue-on-error: true
-
   lighthouse:
-    runs-on: ubuntu-latest
+  runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+  steps:
+  - name: Checkout code
+    uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
+  - name: Set up Node.js
+    uses: actions/setup-node@v2
+    with:
+      node-version: '14'
 
-    - name: Install Lighthouse CI
-      run: npm install -g @lhci/cli@0.7.x
+  - name: Install Lighthouse CI
+    run: npm install -g @lhci/cli@0.7.x
 
-    - name: Run Lighthouse CI
-      run: lhci autorun --upload.target=temporary-public-storage --collect.url=https://tailwaggr.web.app
-      env:
-        LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  - name: Run Lighthouse CI
+    run: lhci autorun --upload.target=temporary-public-storage --collect.url=https://tailwaggr.web.app
+    env:
+      LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract Performance Score
-      id: extract_score
-      run: |
-        SCORE=$(curl -s https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/${{ github.sha }}.json | jq '.categories.performance.score * 100')
-        echo "PERFORMANCE_SCORE=${SCORE%.*}" >> $GITHUB_ENV
+  - name: Extract Performance Score
+    id: extract_score
+    run: |
+      RESPONSE=$(curl -s -w "%{http_code}" -o response.json https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/${{ github.sha }}.json)
+      if [ "$RESPONSE" -ne 200 ]; then
+          echo "Error: Received status code $RESPONSE"
+          exit 1
+      fi
 
-    - name: Update README with Lighthouse Badge
-      run: |
-        BADGE_URL="https://img.shields.io/badge/Performance-${{ env.PERFORMANCE_SCORE }}-brightgreen"
-        sed -i "s|!\[Lighthouse Performance\](.*)|![Lighthouse Performance](${BADGE_URL})|" README.md
+      SCORE=$(jq '.categories.performance.score * 100' response.json)
+      echo "PERFORMANCE_SCORE=${SCORE%.*}" >> $GITHUB_ENV
 
-    - name: Commit changes
-      run: |
-        git config --global user.name 'github-actions[bot]'
-        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add README.md
-        git commit -m "Update Lighthouse badge"
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  - name: Update README with Lighthouse Badge
+    run: |
+      BADGE_URL="https://img.shields.io/badge/Performance-${{ env.PERFORMANCE_SCORE }}-brightgreen"
+      sed -i "s|!\[Lighthouse Performance\](.*)|![Lighthouse Performance](${BADGE_URL})|" README.md
+
+  - name: Commit changes
+    run: |
+      git config --global user.name 'github-actions[bot]'
+      git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+      git add README.md
+      git commit -m "Update Lighthouse badge"
+      git push
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
