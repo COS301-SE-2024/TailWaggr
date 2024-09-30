@@ -177,7 +177,7 @@ ThemeSettingsObserver themeSettings = ThemeSettingsObserver();
 class ProfileDetails {
   String name = "";
   String surname = "";
-  String userID = FirebaseAuth.instance.currentUser!.uid;
+  String userID = FirebaseAuth.instance.currentUser != null ? FirebaseAuth.instance.currentUser!.uid : "";  
   String bio = "";
   String email = "";
   String phone = "";
@@ -186,9 +186,10 @@ class ProfileDetails {
   String location = "1234 Street Name, City, Country";
   String birthdate = "";
   String profilePicture = "https://st3.depositphotos.com/4060975/17707/v/450/depositphotos_177073010-stock-illustration-male-vector-icon.jpg";
-  String userType = "Veterinarian";
+  String userType = "";
   String themeMode = "Light";
   String sidebarImage = "";
+  bool isPublic = false;
   bool usingImage = false;
   bool usingDefaultImage = true;
   ValueNotifier<int> isEditing = ValueNotifier(0);
@@ -212,6 +213,11 @@ class ProfileDetails {
       ThemeSettings.setCardColor(Color(colours['CardColour']));
       ThemeSettings.setNavbarTextColour(Color(colours['NavbarTextColour']));
     }
+  }
+
+  @override
+  String toString() {
+    return 'Name: $name, Surname: $surname, UserID: $userID';
   }
 }
 

@@ -3,10 +3,13 @@
 [![Flutter](https://img.shields.io/badge/Flutter-Framework-blue?logo=flutter)](https://flutter.dev)
 [![Firebase](https://img.shields.io/badge/Firebase-Platform-yellow?logo=firebase)](https://firebase.google.com)
 <!-- [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=TailWaggr&metric=alert_status)](https://sonarcloud.io/dashboard?id=TailWaggr) -->
-[![Flutter Test](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Test/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions)
-[![Flutter Lint](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Lint/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions)
+[![Flutter Test](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Test/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions/workflows/testing.yaml)
+[![Flutter Lint](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Lint/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions/workflows/linting.yaml)
 <!-- [![Requirements Status](https://requires.io/github/COS301-SE-2024/TailWaggr/requirements.svg?branch=master)](https://requires.io/github/COS301-SE-2024/TailWaggr/requirements/?branch=master) -->
+
 [![GitHub issues](https://img.shields.io/github/issues/COS301-SE-2024/TailWaggr)](https://github.com/COS301-SE-2024/TailWaggr/issues)
+[![Code Coverage](https://img.shields.io/badge/Coverage-85-brightgreen)](https://img.shields.io/badge/Coverage-85-brightgreen)
+[![Lighthouse Performance](https://img.shields.io/badge/Performance-90-brightgreen)](https://img.shields.io/badge/Performance-90-brightgreen)
 
 Tailwaggr is a Flutter-based mobile application that aims to connect pet owners with veterinarians, pet keepers, and a supportive community of fellow pet enthusiasts. Our app provides a platform for creating profiles, finding professional pet care, engaging in discussions, and reuniting lost pets with their owners.
 
@@ -17,22 +20,22 @@ The app can be viewed [Here](https://tailwaggr.web.app)
 You can view our project board [Here](https://github.com/orgs/COS301-SE-2024/projects/99/views/1).
 
 ## Tech Stack
-You can view our tech stack [Here](https://docs.google.com/document/d/11uUHFuaqj6Mx52eWC4wKD2fOWFQbhcgVURP3L99YpWo/edit)
+You can view our tech stack [Here](docs/TechStack.pdf)
 
 ## Architecture
-You can view our architecture [Here](docs/architecture.md)
+You can view our architecture [Here](docs/architecture.pdf)
 
 ## User Manual
-You can view our user manual [Here](https://docs.google.com/document/d/1TiRA697HTTGuLCOzq20es4q_fotXlDpTnVuov_7zNP0/edit)
+You can view our user manual [Here](docs/UserGuide.pdf)
 
 ## Technical Installation Manual
-You can view our technical installation manual [Here](docs/Technical_Installation.md)
+You can view our technical installation manual [Here](docs/Technical_Installation.pdf)
 
 ## Coding Standards
-You can view our coding standards [Here](docs/CodingStandards.md)
+You can view our coding standards [Here](docs/CodingStandards.pdf)
 
 ## Software Requirements Specification
-You can view our SRS [Here](docs/srs.md)
+You can view our SRS [Here](docs/srs.pdf)
 
 ## The Team
 
@@ -106,5 +109,3 @@ By integrating Firebase, we can focus on creating a great user experience, knowi
 
 ## Demo Video
 https://drive.google.com/file/d/1tC8j1FsY6oPOFMTz301LnhL8oH5_-M4U/view?usp=sharing
-
-## Folder Structure

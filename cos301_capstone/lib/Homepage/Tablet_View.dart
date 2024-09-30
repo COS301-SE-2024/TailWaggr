@@ -6,7 +6,9 @@ import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
+import 'package:cos301_capstone/services/imageApi/imageFilter.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +16,7 @@ ValueNotifier<bool> uploadPostContainerOpen = ValueNotifier(true);
 
 class TabletHomepage extends StatefulWidget {
   const TabletHomepage({super.key});
+
 
   @override
   State<TabletHomepage> createState() => _TabletHomepageState();
@@ -583,7 +586,8 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
   TextEditingController postController = TextEditingController();
   bool selectingPet = false;
   List<bool> removePet = [];
-
+  ImageFilter imageFilter = ImageFilter();
+  
   @override
   void initState() {
     super.initState();
@@ -632,6 +636,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
+              key: Key('post-text-key'),
               controller: postController,
               decoration: InputDecoration(
                 labelText: "What's on your mind",
@@ -666,6 +671,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
               ),
             ] else ...[
               Container(
+                key: Key('add-photo-button'),
                 decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
                 child: GestureDetector(
                   onTap: () => imagePicker.pickFiles(),
@@ -895,17 +901,68 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     return;
                   }
 
+                  // Check if image is selected and moderate image
                   if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
                     print("Image: ${imagePicker.filesNotifier.value![0].name}");
+                    print("Image details: ${imagePicker.filesNotifier.value![0]}");
+                    print("calling image filter");
+                    Map<String, dynamic> moderationResult = await imageFilter.moderateImage(imagePicker.filesNotifier.value![0]);
+                    print("Moderation result: $moderationResult");
+                    //create dialog box for moderation
+                      if (moderationResult['status'] == 'fail') {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.redAccent, // Customize color if needed
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "🔞 Warning!",  // Title
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: themeSettings.textColor, // Customize text color
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                moderationResult['message'],  // Full message
+                                style: TextStyle(color: themeSettings.textColor), // Customize text color
+                              ),
+                            ],
+                          ),
+                          duration: Duration(seconds: 20),  // Increase the duration if needed
+                          behavior: SnackBarBehavior.floating,  // Makes the snackbar floating
+                        ),
+                      );
+                      //prevent the post from being uploaded
+                      setState(() {
+                        errorText = "Inappropriate content detected";
+                        errorVisible = true;
+                        postText = "Post";
+                        postController.clear();
+                        imagePicker.clearCachedFiles();
+                        petIncludeCounter = 0;
+                        petList.clear();
+                        petAdded.clear();
+                        removePet.clear();
+                        postText = "Post";
+                      });
+                      //stop image from being uploaded
+                      return;
+                    } else {
+                      // Image is clean, proceed with uploading
+                      // Proceed with uploading the image
+                      print("Proceeding to upload image...");
+                    }
                   } else {
                     print("No image selected");
                     setState(() {
                       errorText = "No image selected";
                       errorVisible = true;
-                      postText = "Post";
                     });
-                    return;
                   }
+
 
                   List<Map<String, dynamic>> petIds = [];
 

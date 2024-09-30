@@ -11,3 +11,9 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+android-ndk-r27b/
+
+unityLibrary/
+
+unityLibrary.zip
