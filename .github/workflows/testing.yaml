@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, dev]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
@@ -16,7 +16,7 @@ jobs:
 
     - name: Set up Java
       uses: actions/setup-java@v1
-      with:s
+      with:
         java-version: '12.x'
 
     - name: Set up Flutter
@@ -50,6 +50,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         finish: true
       continue-on-error: true
+
   lighthouse:
     runs-on: ubuntu-latest
 
@@ -73,9 +74,11 @@ jobs:
     - name: Extract Performance Score
       id: extract_score
       run: |
-        RESPONSE=$(curl -s -w "%{http_code}" -o response.json https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/${{ github.sha }}.json)
-        if [ "$RESPONSE" -ne 200 ]; then
-            echo "Error: Received status code $RESPONSE"
+        REPORT_URL="https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/${{ github.sha }}.json"
+        HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" $REPORT_URL)
+        if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Error: Received status code $HTTP_STATUS"
+            cat response.json
             exit 1
         fi
 
