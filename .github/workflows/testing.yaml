@@ -38,31 +38,14 @@ jobs:
         dart run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --package=.
       working-directory: cos301_capstone
 
-    - name: Check if lcov.info exists
+    - name: Extract Badge URL from badges.txt
+      id: extract_badge_url
       run: |
-        if [ ! -f cos301_capstone/coverage/lcov.info ]; then
-          echo "lcov.info file not found"
-          exit 1
-        fi
+        COVERAGE_BADGE_URL=$(grep 'Code Coverage Badge URL' badges.txt | cut -d' ' -f4)
+        echo "COVERAGE_BADGE_URL=$COVERAGE_BADGE_URL" >> $GITHUB_ENV
 
-    - name: Print lcov.info for Debugging
-      run: cat cos301_capstone/coverage/lcov.info
-
-    - name: Code Coverage Summary
-      uses: irongut/CodeCoverageSummary@v1.3.0
-      with:
-        filename: cos301_capstone/coverage/lcov.info
-        badge: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Extract Code Coverage Badge URL
-      id: extract_coverage_badge
-      run: |
-        COVERAGE=$(grep -oP 'TOTAL.*\K\d+(?=%)' cos301_capstone/coverage/lcov.info)
-        COVERAGE_BADGE_URL="https://img.shields.io/badge/Coverage-${COVERAGE}-brightgreen"
-        echo "COVERAGE_BADGE_URL=${COVERAGE_BADGE_URL}" >> $GITHUB_ENV
-        echo "Code Coverage Badge URL: ${COVERAGE_BADGE_URL}" > badge_urls.txt
+    - name: Display Badge URL
+      run: echo "Coverage Badge URL is: ${{ env.COVERAGE_BADGE_URL }}"
 
   lighthouse:
     runs-on: ubuntu-latest
@@ -88,40 +71,11 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: List Lighthouse Results Directory
-      run: ls -la ./lighthouse-results
-
-    - name: Print results.json for Debugging
-      run: cat ./lighthouse-results/results.json
-
-    - name: Extract Performance Score
-      id: extract_score
+    - name: Extract Lighthouse Badge URL
+      id: extract_lighthouse_badge
       run: |
-        REPORT_FILE=$(find ./lighthouse-results -name 'results.json' | head -n 1)
-        if [ -z "$REPORT_FILE" ]; then
-            echo "Error: Report file not found"
-            exit 1
-        fi
+        LIGHTHOUSE_BADGE_URL=$(grep 'Lighthouse Performance Badge URL' badges.txt | cut -d' ' -f5)
+        echo "LIGHTHOUSE_BADGE_URL=$LIGHTHOUSE_BADGE_URL" >> $GITHUB_ENV
 
-        SCORE=$(jq '.[0].scores.performance // 0 * 100' "$REPORT_FILE")
-        if [ "$SCORE" = "null" ]; then
-            SCORE=0
-        fi
-        echo "PERFORMANCE_SCORE=${SCORE%.*}" >> $GITHUB_ENV
-
-    - name: Generate Lighthouse Badge URL
-      id: generate_lighthouse_badge
-      run: |
-        BADGE_URL="https://img.shields.io/badge/Performance-${{ env.PERFORMANCE_SCORE }}-brightgreen"
-        echo "BADGE_URL=${BADGE_URL}" >> $GITHUB_ENV
-        echo "Lighthouse Performance Badge URL: ${BADGE_URL}" >> badge_urls.txt
-
-    - name: Commit badge URLs file
-      run: |
-        git config --global user.name 'github-actions[bot]'
-        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add badge_urls.txt
-        git commit -m "Update badge URLs"
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Display Lighthouse Badge URL
+      run: echo "Lighthouse Badge URL is: ${{ env.LIGHTHOUSE_BADGE_URL }}"
