@@ -67,7 +67,8 @@ jobs:
       run: npm install -g @lhci/cli@0.7.x
 
     - name: Run Lighthouse CI
-      run: lhci autorun --upload.target=temporary-public-storage
+      run: lhci autorun --upload.target=temporary-public-storage --collect.staticDistDir=build/web
+      working-directory: cos301_capstone
       env:
         LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -81,6 +82,7 @@ jobs:
       run: |
         BADGE_URL="https://img.shields.io/badge/Performance-${{ env.PERFORMANCE_SCORE }}-brightgreen"
         sed -i "s|!\[Lighthouse Performance\](.*)|![Lighthouse Performance](${BADGE_URL})|" README.md
+      working-directory: cos301_capstone
 
     - name: Commit changes
       run: |
@@ -91,3 +93,4 @@ jobs:
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      working-directory: cos301_capstone
