@@ -62,6 +62,7 @@ jobs:
         COVERAGE=$(grep -oP 'TOTAL.*\K\d+(?=%)' cos301_capstone/coverage/lcov.info)
         COVERAGE_BADGE_URL="https://img.shields.io/badge/Coverage-${COVERAGE}-brightgreen"
         echo "COVERAGE_BADGE_URL=${COVERAGE_BADGE_URL}" >> $GITHUB_ENV
+        echo "Code Coverage Badge URL: ${COVERAGE_BADGE_URL}" > badge_urls.txt
 
   lighthouse:
     runs-on: ubuntu-latest
@@ -113,18 +114,14 @@ jobs:
       run: |
         BADGE_URL="https://img.shields.io/badge/Performance-${{ env.PERFORMANCE_SCORE }}-brightgreen"
         echo "BADGE_URL=${BADGE_URL}" >> $GITHUB_ENV
+        echo "Lighthouse Performance Badge URL: ${BADGE_URL}" >> badge_urls.txt
 
-    - name: Update README with Badges
-      run: |
-        sed -i "s|!\[Lighthouse Performance\](.*)|![Lighthouse Performance](${BADGE_URL})|" README.md
-        sed -i "s|!\[Code Coverage\](.*)|![Code Coverage](${COVERAGE_BADGE_URL})|" README.md
-
-    - name: Commit changes
+    - name: Commit badge URLs file
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add README.md lighthouse-results/
-        git commit -m "Update badges"
+        git add badge_urls.txt
+        git commit -m "Update badge URLs"
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
