@@ -48,21 +48,21 @@ jobs:
     - name: Print lcov.info for Debugging
       run: cat cos301_capstone/coverage/lcov.info
 
-    - name: Code Coverage Summary
-      uses: irongut/CodeCoverageSummary@v1.3.0
-      with:
-        filename: cos301_capstone/coverage/lcov.info
-        badge: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Code Coverage Summary
+    #   uses: irongut/CodeCoverageSummary@v1.3.0
+    #   with:
+    #     filename: cos301_capstone/coverage/lcov.info
+    #     badge: true
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract Code Coverage Badge URL
-      id: extract_coverage_badge
-      run: |
-        COVERAGE=$(grep -oP 'TOTAL.*\K\d+(?=%)' cos301_capstone/coverage/lcov.info)
-        COVERAGE_BADGE_URL="https://img.shields.io/badge/Coverage-${COVERAGE}-brightgreen"
-        echo "COVERAGE_BADGE_URL=${COVERAGE_BADGE_URL}" >> $GITHUB_ENV
-        echo "Code Coverage Badge URL: ${COVERAGE_BADGE_URL}" > badges.txt
+    # - name: Extract Code Coverage Badge URL
+    #   id: extract_coverage_badge
+    #   run: |
+    #     COVERAGE=$(grep -oP 'TOTAL.*\K\d+(?=%)' cos301_capstone/coverage/lcov.info)
+    #     COVERAGE_BADGE_URL="https://img.shields.io/badge/Coverage-${COVERAGE}-brightgreen"
+    #     echo "COVERAGE_BADGE_URL=${COVERAGE_BADGE_URL}" >> $GITHUB_ENV
+    #     echo "Code Coverage Badge URL: ${COVERAGE_BADGE_URL}" > badges.txt
 
   lighthouse:
     runs-on: ubuntu-latest
@@ -85,6 +85,7 @@ jobs:
         urls: |
           https://tailwaggr.web.app
         outputDirectory: './lighthouse-results'
+        device: 'desktop'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -116,12 +117,12 @@ jobs:
         echo "BADGE_URL=${BADGE_URL}" >> $GITHUB_ENV
         echo "Lighthouse Performance Badge URL: ${BADGE_URL}" >> badges.txt
 
-    - name: Commit badge URLs file
-      run: |
-        git config --global user.name 'github-actions[bot]'
-        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add badges.txt
-        git commit -m "Update badge URLs"
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Commit badge URLs file
+    #   run: |
+    #     git config --global user.name 'github-actions[bot]'
+    #     git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+    #     git add badges.txt
+    #     git commit -m "Update badge URLs"
+    #     git push
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
