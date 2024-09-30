@@ -343,6 +343,41 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
               ),
             ],
           ),
+          Column(
+            children: [
+              Text("User Type", style: TextStyle(color: themeSettings.textColor, fontSize: 14)),
+              Expanded(
+                child: ListTile(
+                  title: Text('Pet Owner', style: TextStyle(color: themeSettings.textColor)),
+                  leading: Radio<String>(
+                    value: "pet_owner",
+                    fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                    groupValue: profileDetails.userType,
+                    onChanged: (String? value) {
+                      setState(() {
+                        profileDetails.userType = value!;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListTile(
+                  title: Text('Pet Sitter', style: TextStyle(color: themeSettings.textColor)),
+                  leading: Radio<String>(
+                    value: "PetSitter",
+                    fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                    groupValue: profileDetails.userType,
+                    onChanged: (String? value) {
+                      setState(() {
+                        profileDetails.userType = value!;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
           ElevatedButton(
             onPressed: !isPhoneValid
                 ? () {

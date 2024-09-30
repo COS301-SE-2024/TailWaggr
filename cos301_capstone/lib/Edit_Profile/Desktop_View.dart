@@ -394,6 +394,60 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
               ),
             ],
           ),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    color: themeSettings.textColor,
+                    height: 1,
+                    width: 200,
+                  ),
+                  Text("User Type", style: TextStyle(color: themeSettings.textColor, fontSize: 14)),
+                  Container(
+                    color: themeSettings.textColor,
+                    height: 1,
+                    width: 200,
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: ListTile(
+                      title: Text('Pet Owner', style: TextStyle(color: themeSettings.textColor)),
+                      leading: Radio<String>(
+                        value: "pet_owner",
+                        fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                        groupValue: profileDetails.userType,
+                        onChanged: (String? value) {
+                          setState(() {
+                            profileDetails.userType = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListTile(
+                      title: Text('Pet Sitter', style: TextStyle(color: themeSettings.textColor)),
+                      leading: Radio<String>(
+                        value: "PetSitter",
+                        fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                        groupValue: profileDetails.userType,
+                        onChanged: (String? value) {
+                          setState(() {
+                            profileDetails.userType = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
           ElevatedButton(
             onPressed: !isPhoneValid
                 ? () {
