@@ -63,6 +63,19 @@ jobs:
       with:
         node-version: '14'
 
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.x'
+
+    - name: Install dependencies
+      run: flutter pub get
+      working-directory: cos301_capstone
+
+    - name: Build Flutter web
+      run: flutter build web
+      working-directory: cos301_capstone
+
     - name: Install Lighthouse CI
       run: npm install -g @lhci/cli@0.7.x
 
@@ -77,6 +90,7 @@ jobs:
       run: |
         SCORE=$(curl -s https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/${{ github.sha }}.json | jq '.categories.performance.score * 100')
         echo "PERFORMANCE_SCORE=${SCORE%.*}" >> $GITHUB_ENV
+      working-directory: cos301_capstone
 
     - name: Update README with Lighthouse Badge
       run: |
