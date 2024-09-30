@@ -66,9 +66,10 @@ class ForumServices {
           //get recent message Timestamp
           DateTime recentMessage = getRecentMessage(messagesSnapshot.docs);
           //compare with createdAt
-          if (recentMessage.isAfter(forumData['CreatedAt'].toDate())) {
+          if (recentMessage == DateTime(2024)) {
             recentMessage = forumData['CreatedAt'].toDate();
           }
+
           //get creator name
           DocumentSnapshot userDoc = await _db.collection('users').doc(forumData['UserId']).get();
           Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
