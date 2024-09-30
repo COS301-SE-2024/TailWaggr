@@ -63,14 +63,15 @@ jobs:
       with:
         node-version: '14'
 
+    - name: Create Lighthouse Results Directory
+      run: mkdir -p ./lighthouse-results
+
     - name: Lighthouse Check
       uses: foo-software/lighthouse-check-action@v12.0.1
       with:
         urls: |
           https://tailwaggr.web.app
         outputDirectory: './lighthouse-results'
-        uploadArtifacts: true
-        temporaryPublicStorage: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
