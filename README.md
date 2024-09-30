@@ -23,7 +23,7 @@ You can view our tech stack [Here](docs/TechStack.pdf)
 You can view our architecture [Here](docs/architecture.pdf)
 
 ## User Manual
-You can view our user manual [Here](docs/TailWaggr%20user%20guide.pdf)
+You can view our user manual [Here](docs/UserGuide.pdf)
 
 ## Technical Installation Manual
 You can view our technical installation manual [Here](docs/Technical_Installation.pdf)
