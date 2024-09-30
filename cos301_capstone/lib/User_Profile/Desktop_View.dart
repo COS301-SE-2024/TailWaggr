@@ -274,6 +274,13 @@ class _ListOfPostsState extends State<ListOfPosts> {
                           setState(() {
                             profileDetails.myPosts.remove(post);
                           });
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Post deleted successfully'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
