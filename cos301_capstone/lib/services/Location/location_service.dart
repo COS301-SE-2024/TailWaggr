@@ -82,7 +82,7 @@ class LocationService {
 
   Future<List<User>> getPetKeepers(LatLng userLocation, double radius) async {
     GeoPoint geoPoint = GeoPoint(userLocation.latitude, userLocation.longitude);
-    return _getUsersByRoleWithinRadius(geoPoint, radius, 'pet_keeper');
+    return _getUsersByRoleWithinRadius(geoPoint, radius, 'PetSitter');
   }
 
   Future<List<User>> getPetKeepersByName(String name) async {
@@ -92,7 +92,7 @@ class LocationService {
         .collection('users')
         .where('name', isGreaterThanOrEqualTo: searchLowerBound)
         .where('name', isLessThanOrEqualTo: searchUpperBound)
-        .where('userType', isEqualTo: 'pet_keeper')
+        .where('userType', isEqualTo: 'PetSitter')
         .get();
     List<User> matchingPetKeepers = [];
 
@@ -117,7 +117,8 @@ class LocationService {
           id: doc.id,
           name: doc['name'],
           userType: doc['userType'],
-          location: doc['location'],
+          phone: doc['phoneDetails']['phoneNumber'],
+          location: doc['address'],
         );
         double distance = Geolocator.distanceBetween(
           userLocation.latitude,
