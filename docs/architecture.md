@@ -31,9 +31,10 @@ The system is set up using a litany of microservices to implement functions, not
 - **Authentication:** Application login requests to the server are run through the Firebase Authentication service to ensure that user sessions are properly authorised.
 - **Hosting:** The server-side application which hosts the database is run using Firebase Firestore, allowing easier configuration and bugfixing through the Firebase console.
 #### Benefits
-- Simplifies development process by reducing the work required to implement prebuilt functionality.
-- Simplifies testing and debugging by relying on known reliable services.
-- Enhances scalability, as hosted microservices can be scaled automatically to fit demand by Firebase.
+- Encourages reusability of components, reducing redundancy and development time.
+- Simplifies testing and debugging by isolating components.
+- Enhances scalability, as individual components can be updated or replaced without affecting the entire system.
+![](doc_images/deployment.png)
 
 ## Architectural quality requirements
 - **Availability:** The system should have at least 99% uptime for the essential services (notably database access for reading and making posts).

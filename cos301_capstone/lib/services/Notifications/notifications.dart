@@ -227,7 +227,7 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
       
       DocumentSnapshot followingDoc = await _db.collection('users').doc(followingId).get();
       Map<String, dynamic> followingData = followingDoc.data() as Map<String, dynamic>;
-      String username = followingData['userName'] ?? '';
+      String username = followingData['name'] ?? '';
 
       String content = "$username followed you";
 
@@ -270,7 +270,7 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
       DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
       if (!userDoc.exists) throw Exception("User not found");
       Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-      String username = userData['userName'] ?? '';
+      String username = userData['name'] ?? '';
 
       String content = "$username has liked your message";
 
@@ -319,7 +319,7 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
       DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
       if (!userDoc.exists) throw Exception("User not found");
       Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-      String username = userData['userName'] ?? '';
+      String username = userData['name'] ?? '';
 
       String content = "$username has commented on your message";
 
@@ -371,7 +371,7 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
       DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
       if (!userDoc.exists) throw Exception("User not found");
       Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-      String username = userData['userName'] ?? '';
+      String username = userData['name'] ?? '';
 
       String content = "$username has liked your post";
 
@@ -415,7 +415,7 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
       DocumentSnapshot userDoc = await _db.collection('users').doc(userId).get();
       if (!userDoc.exists) throw Exception("User not found");
       Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-      String username = userData['userName'] ?? '';
+      String username = userData['name'] ?? '';
 
       String content = "$username has commented on your post";
 
