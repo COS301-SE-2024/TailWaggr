@@ -67,6 +67,7 @@ jobs:
       run: npm install -g @lhci/cli@0.7.x
 
     - name: Run Lighthouse CI
+      id: lhci
       run: lhci autorun --upload.target=temporary-public-storage --collect.url=https://tailwaggr.web.app
       env:
         LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -74,7 +75,12 @@ jobs:
     - name: Extract Performance Score
       id: extract_score
       run: |
-        REPORT_URL="https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/${{ github.sha }}.json"
+        REPORT_URL=$(grep -o 'https://storage.googleapis.com/lighthouse-infrastructure.appspot.com/reports/[^"]*' <<< "${{ steps.lhci.outputs.stdout }}")
+        if [ -z "$REPORT_URL" ]; then
+            echo "Error: Report URL not found"
+            exit 1
+        fi
+
         HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" $REPORT_URL)
         if [ "$HTTP_STATUS" -ne 200 ]; then
             echo "Error: Received status code $HTTP_STATUS"
