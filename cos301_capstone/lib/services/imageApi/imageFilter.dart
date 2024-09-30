@@ -9,7 +9,7 @@ class ImageFilter {
       var moderationResult = await imageApi.uploadImage(selectedFile);
 
       if (moderationResult.containsKey('error')) {
-        print('Image moderation failed: ${moderationResult['error']}');
+        //print('Image moderation failed: ${moderationResult['error']}');
         return {'status': 'error', 'message': 'Image moderation failed'};
       } else {
         // Parse moderation results

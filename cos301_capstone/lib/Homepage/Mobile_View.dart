@@ -1448,26 +1448,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     Map<String, dynamic> moderationResult = await imageFilter.moderateImage(imagePicker.filesNotifier.value![0]);
                     print("Moderation result: $moderationResult");
                     //create dialog box for moderation
-                    if (moderationResult['status'] == 'error') {
-                      // Show error dialog
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text('Error'),
-                            content: Text(moderationResult['message']),
-                            actions: <Widget>[
-                              TextButton(
-                                child: Text('OK'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              )
-                            ],
-                          );
-                        },
-                      );
-                    } else if (moderationResult['status'] == 'fail') {
+                      if (moderationResult['status'] == 'fail') {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: Colors.redAccent, // Customize color if needed
