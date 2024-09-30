@@ -17,7 +17,7 @@ The app can be viewed [Here](https://tailwaggr.web.app)
 You can view our project board [Here](https://github.com/orgs/COS301-SE-2024/projects/99/views/1).
 
 ## Tech Stack
-You can view our tech stack [Here](https://docs.google.com/viewer?url=https://github.com/COS301-SE-2024/TailWaggr/blob/91674824d45097215dd31bd3c7e49a1daa15c583/docs/TailWaggr%20user%20guide.pdf)
+You can view our tech stack [Here](docs/TechStack.pdf)
 
 ## Architecture
 You can view our architecture [Here](docs/architecture.pdf)
