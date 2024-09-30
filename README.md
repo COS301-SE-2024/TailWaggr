@@ -3,8 +3,8 @@
 [![Flutter](https://img.shields.io/badge/Flutter-Framework-blue?logo=flutter)](https://flutter.dev)
 [![Firebase](https://img.shields.io/badge/Firebase-Platform-yellow?logo=firebase)](https://firebase.google.com)
 <!-- [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=TailWaggr&metric=alert_status)](https://sonarcloud.io/dashboard?id=TailWaggr) -->
-[![Flutter Test](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Test/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions/workflows/flutter_test.yml)
-[![Flutter Lint](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Lint/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions/workflows/flutter_lint.yml)
+[![Flutter Test](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Test/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions/workflows/testing.yml)
+[![Flutter Lint](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Lint/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions/workflows/linting.yml)
 <!-- [![Requirements Status](https://requires.io/github/COS301-SE-2024/TailWaggr/requirements.svg?branch=master)](https://requires.io/github/COS301-SE-2024/TailWaggr/requirements/?branch=master) -->
 
 [![GitHub issues](https://img.shields.io/github/issues/COS301-SE-2024/TailWaggr)](https://github.com/COS301-SE-2024/TailWaggr/issues)
