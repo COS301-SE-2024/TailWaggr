@@ -48,13 +48,13 @@ jobs:
     - name: Print lcov.info for Debugging
       run: cat cos301_capstone/coverage/lcov.info
 
-    - name: Code Coverage Summary
-      uses: irongut/CodeCoverageSummary@v1.3.0
-      with:
-        filename: cos301_capstone/coverage/lcov.info
-        badge: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Code Coverage Summary
+    #   uses: irongut/CodeCoverageSummary@v1.3.0
+    #   with:
+    #     filename: cos301_capstone/coverage/lcov.info
+    #     badge: true
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Extract Code Coverage Badge URL
       id: extract_coverage_badge
@@ -116,12 +116,12 @@ jobs:
         echo "BADGE_URL=${BADGE_URL}" >> $GITHUB_ENV
         echo "Lighthouse Performance Badge URL: ${BADGE_URL}" >> badges.txt
 
-    - name: Commit badge URLs file
-      run: |
-        git config --global user.name 'github-actions[bot]'
-        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add badges.txt
-        git commit -m "Update badge URLs"
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Commit badge URLs file
+    #   run: |
+    #     git config --global user.name 'github-actions[bot]'
+    #     git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+    #     git add badges.txt
+    #     git commit -m "Update badge URLs"
+    #     git push
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
