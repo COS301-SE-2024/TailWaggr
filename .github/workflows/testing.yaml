@@ -95,7 +95,7 @@ jobs:
             exit 1
         fi
 
-        SCORE=$(jq '.[0].scores.performance * 100' "$REPORT_FILE")
+        SCORE=$(jq '.[0].scores.performance // 0 * 100' "$REPORT_FILE")
         echo "PERFORMANCE_SCORE=${SCORE%.*}" >> $GITHUB_ENV
 
     - name: Update README with Lighthouse Badge
