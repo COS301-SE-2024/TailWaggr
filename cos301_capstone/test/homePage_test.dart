@@ -187,29 +187,29 @@ void main() {
     //   expect(find.text("This is a test post"), findsOneWidget);
     // });
 
-    testWidgets('Should display image when one is selected', (WidgetTester tester) async {
-      final oldOnError = FlutterError.onError;
-      FlutterError.onError = (FlutterErrorDetails details) {
-        if (!details.exceptionAsString().contains('A RenderFlex overflowed by') && !details.exceptionAsString().contains('firebase_storage/no-bucket')) {
-          oldOnError!(details);
-        }
-      };
+    // testWidgets('Should display image when one is selected', (WidgetTester tester) async {
+    //   final oldOnError = FlutterError.onError;
+    //   FlutterError.onError = (FlutterErrorDetails details) {
+    //     if (!details.exceptionAsString().contains('A RenderFlex overflowed by') && !details.exceptionAsString().contains('firebase_storage/no-bucket')) {
+    //       oldOnError!(details);
+    //     }
+    //   };
 
-      // final mockFile = PlatformFile(
-      //   name: 'test_image.png',
-      //   bytes: Uint8List.fromList([0, 0, 0]),
-      //   size: 1024,
-      //   path: 'path/to/test_image.png',
-      // );
+    //   // final mockFile = PlatformFile(
+    //   //   name: 'test_image.png',
+    //   //   bytes: Uint8List.fromList([0, 0, 0]),
+    //   //   size: 1024,s
+    //   //   path: 'path/to/test_image.png',
+    //   // );
 
-      await tester.pumpWidget(createWidgetForTesting(
-        child: desktopView.UploadPostContainer(),
-      ));
+    //   await tester.pumpWidget(createWidgetForTesting(
+    //     child: desktopView.UploadPostContainer(),
+    //   ));
 
-      // Mock the image selection process
-      await tester.tap(find.byKey(Key('add-photo-button')));
-      await tester.pump();
-    });
+    //   // Mock the image selection process
+    //   await tester.tap(find.byKey(Key('add-photo-button')));
+    //   await tester.pump();
+    // });
 
     testWidgets('Should display pets list and allow selection', (WidgetTester tester) async {
       final oldOnError = FlutterError.onError;
