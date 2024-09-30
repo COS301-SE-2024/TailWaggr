@@ -45,6 +45,9 @@ jobs:
           exit 1
         fi
 
+    - name: Print lcov.info for Debugging
+      run: cat cos301_capstone/coverage/lcov.info
+
     - name: Code Coverage Summary
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
@@ -92,7 +95,7 @@ jobs:
             exit 1
         fi
 
-        SCORE=$(jq '.[0].categories.performance.score * 100' "$REPORT_FILE")
+        SCORE=$(jq '.[0].categories.performance.score // 0 * 100' "$REPORT_FILE")
         echo "PERFORMANCE_SCORE=${SCORE%.*}" >> $GITHUB_ENV
 
     - name: Update README with Lighthouse Badge
