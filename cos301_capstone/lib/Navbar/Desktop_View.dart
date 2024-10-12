@@ -11,6 +11,7 @@ import 'package:cos301_capstone/Location/Desktop_View.dart';
 import 'package:cos301_capstone/LostAndFound/LostAndFound.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:cos301_capstone/Notifications/Notifications.dart';
+import 'package:cos301_capstone/Search/Search.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:cos301_capstone/services/Notifications/notifications.dart';
 import 'package:cos301_capstone/services/auth/auth.dart';
@@ -68,7 +69,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
     return Container(
       width: 250,
       height: double.infinity,
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(horizontal: 20),
       decoration: profileDetails.usingImage
           ? !profileDetails.usingDefaultImage
               ? imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty
@@ -102,7 +103,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
             // ),
 
             SizedBox(
-              height: max(MediaQuery.of(context).size.height - 250, 493),
+              height: max(MediaQuery.of(context).size.height - 250, 493 + 27),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -128,6 +129,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   ),
                   Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: LocationDesktop()),
                   Navbar_Icon(icon: Icons.pets, text: "Lost and Found", page: LostAndFound()),
+                  Navbar_Icon(icon: Icons.search, text: "Search", page: Search()),
                   Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                   Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile(userId: profileDetails.userID)),
                   Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),

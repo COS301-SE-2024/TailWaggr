@@ -1,5 +1,7 @@
 // ignore_for_file: file_names
 
+import 'dart:collection';
+
 import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -197,6 +199,8 @@ class ProfileDetails {
   List<Map<String, dynamic>> posts = [];
   List<Map<String, dynamic>> myPosts = [];
   Map<String, dynamic> customColours = {};
+  // List<Map<String, String>> friends = [];
+  HashMap<String, String> friends = HashMap<String, String>();
 
   void setCustomColours(Map<String, dynamic> colours) {
     customColours = colours;

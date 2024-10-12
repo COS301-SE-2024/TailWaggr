@@ -167,8 +167,10 @@ class User {
   String email;
   String phone;
   double distance;
+  String profileUrl;
+  String bio;
 
-  User({required this.id, required this.name, required this.userType, required this.location, this.distance = 0.0, this.email = '', this.phone = ''});
+  User({required this.id, required this.name, required this.userType, required this.location, this.distance = 0.0, this.email = '', this.phone = '', this.profileUrl = '', this.bio = ''});
 
   factory User.fromFirestore(Map<String, dynamic> firestoreDoc) {
     return User(
@@ -188,6 +190,19 @@ class User {
 
   void addPhone(String inphone) {
     phone = inphone;
+  }
+
+  void addProfileUrl(String inprofileUrl) {
+    profileUrl = inprofileUrl;
+  }
+
+  void addBio(String inbio) {
+    bio = inbio;
+  }
+
+  @override
+  String toString() {
+    return 'User: {id: $id, name: $name, userType: $userType, location: $location, email: $email, phone: $phone, distance: $distance}';
   }
 }
 

@@ -1,5 +1,8 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+
+import 'dart:developer';
+
 import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
@@ -20,7 +23,6 @@ class ProfileDesktop extends StatefulWidget {
 }
 
 class _ProfileDesktopState extends State<ProfileDesktop> {
-
   ProfileDetails localProfileDetails = ProfileDetails();
 
   String formatDate(DateTime date) {
@@ -48,6 +50,7 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
           localProfileDetails.dialCode = tempDetails['phoneDetails']['dialCode'];
           localProfileDetails.birthdate = formatDate(tempDetails['birthDate'].toDate());
           localProfileDetails.userType = tempDetails['userType'];
+          localProfileDetails.isPublic = tempDetails['profileVisibility'];
 
           localProfileDetails.pets = await ProfileService().getUserPets(widget.userId);
           List<DocumentReference> localPosts = await ProfileService().getUserPosts(widget.userId);
@@ -329,6 +332,25 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
               children: [
                 Text("${widget.profileDetails.name} ${widget.profileDetails.surname}", style: TextStyle(fontSize: subHeadingTextSize)),
                 Text(widget.profileDetails.bio, style: TextStyle(fontSize: subBodyTextSize)),
+                if (widget.profileDetails.email != profileDetails.email) ...[
+                  SizedBox(height: 20),
+                  if (profileDetails.friends.containsKey(widget.profileDetails.userID)) ...[
+                    ElevatedButton(
+                      onPressed: () async {},
+                      child: Text("Unfollow"),
+                    ),
+                  ] else ...[
+                    ElevatedButton(
+                      onPressed: () async {
+                        setState(() {
+                          
+                        });
+                        log("Is user Public: ${widget.profileDetails.isPublic}");
+                      },
+                      child: Text(widget.profileDetails.isPublic ? "Follow" : "Request to follow"),
+                    ),
+                  ],
+                ],
                 SizedBox(height: 20),
                 Text("Profile Details", style: TextStyle(fontSize: bodyTextSize, color: themeSettings.primaryColor)),
                 Divider(),
