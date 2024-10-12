@@ -1,15 +1,12 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cos301_capstone/Forgot_Password/Forgot_Password.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Location/Location.dart';
 // import 'package:cos301_capstone/Location/Desktop_View.dart';
 // import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/Login/Login.dart';
-import 'package:cos301_capstone/LostAndFound/LostAndFound.dart';
-import 'package:cos301_capstone/User_Profile/User_Profile.dart';
+import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
 // import 'package:cos301_capstone/Navbar/Navbar.dart';
 // import 'package:cos301_capstone/Notifications/Notifications.dart';
@@ -18,7 +15,6 @@ import 'package:cos301_capstone/services/general/general_service.dart';
 // import 'package:cos301_capstone/Signup/Signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cos301_capstone/services/Profile/profile_service.dart';
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});

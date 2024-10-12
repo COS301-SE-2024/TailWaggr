@@ -3,7 +3,6 @@
 import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 
 var titleTextSize = 56.0;
 var subtitleTextSize = 40.0;

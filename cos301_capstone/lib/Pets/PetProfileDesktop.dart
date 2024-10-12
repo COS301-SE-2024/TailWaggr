@@ -2,11 +2,9 @@
 
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Pets/Pet_Profile.dart';
-import 'package:cos301_capstone/User_Profile/User_Profile.dart';
-import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class PetProfileDesktop extends StatefulWidget {
   const PetProfileDesktop({

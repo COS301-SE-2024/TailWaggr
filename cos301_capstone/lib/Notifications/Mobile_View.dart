@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Mobile_View.dart';
-import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:cos301_capstone/services/Notifications/notifications.dart';
+import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:cos301_capstone/services/forum/forum.dart';
 import 'package:flutter/material.dart';
 
@@ -664,7 +664,7 @@ class NotificationCard extends StatelessWidget {
     Timestamp createdAt = notification['CreatedAt'];
     String formattedDate = formatDate(createdAt);
     String userId = notification['AvatarUrlId'] ?? '';
-    bool read = notification['Read'] ?? false;
+    // bool read = notification['Read'] ?? false;
 
     return FutureBuilder<String>(
       future: _fetchProfilePicture(userId),

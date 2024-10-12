@@ -2,9 +2,7 @@
 
 import 'dart:math';
 
-import 'package:animations/animations.dart';
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
-import 'package:cos301_capstone/Events/Events.dart';
 import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Help/Help.dart';
@@ -13,14 +11,12 @@ import 'package:cos301_capstone/Location/Desktop_View.dart';
 import 'package:cos301_capstone/LostAndFound/LostAndFound.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:cos301_capstone/Notifications/Notifications.dart';
-import 'package:cos301_capstone/User_Profile/Desktop_View.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:cos301_capstone/services/Notifications/notifications.dart';
 import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class DesktopNavbar extends StatefulWidget {
   const DesktopNavbar({super.key});
