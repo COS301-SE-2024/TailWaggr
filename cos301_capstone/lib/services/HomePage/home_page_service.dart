@@ -1,3 +1,6 @@
+import 'dart:collection';
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/services/Notifications/notifications.dart';
@@ -131,11 +134,33 @@ class HomePageService {
         print("Resetting _lastDocument");
       }
 
-      // Build the base query
+      // Fetch the user's requests
+      DocumentSnapshot friendDoc = await _db.collection('users').doc(profileDetails.userID).get();
+      Map<String, dynamic>? Data = friendDoc.data() as Map<String, dynamic>?;
+      HashMap<String, dynamic> friends = Data?['friends'] != null ? HashMap.from(Data?['friends']) : HashMap<String, String>();
+
+      // Filter friends to include only those with the value "Following"
+      friends.removeWhere((key, value) => value != "Following");
+
+      friends[profileDetails.userID] = "Following";
+
+      List<String> followedUserIDs = friends.keys.toList();
+
+      if (followedUserIDs.isEmpty) {
+        print("No friends to fetch posts from.");
+        return [];
+      }
+
+      log("Followed User IDs: $followedUserIDs");
+
       Query query = _db
           .collection('posts')
+          .where('UserId', whereIn: followedUserIDs) // Filter by user IDs
           .orderBy('CreatedAt', descending: true)
           .limit(limit);
+
+      // Build the base query
+      // Query query = _db.collection('posts').orderBy('CreatedAt', descending: true).limit(limit);
 
       // Apply pagination if loading more
       if (isLoadMore && _lastDocument != null) {
@@ -172,10 +197,8 @@ class HomePageService {
         final labels = post['labels'] as List<dynamic>?;
         if (labels == null) return false;
 
-        final lowerCaseLabels =
-            labels.map((label) => label.toString().toLowerCase()).toList();
-        return wordList.any(
-            (word) => lowerCaseLabels.any((label) => label.contains(word)));
+        final lowerCaseLabels = labels.map((label) => label.toString().toLowerCase()).toList();
+        return wordList.any((word) => lowerCaseLabels.any((label) => label.contains(word)));
       }).toList();
 
       print("Fetched ${filteredPosts.length} filtered posts.");

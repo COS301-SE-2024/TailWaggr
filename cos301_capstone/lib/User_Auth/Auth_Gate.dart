@@ -70,6 +70,16 @@ class _AuthGateState extends State<AuthGate> {
         print("No friends found for the user");
         log(e.toString());
       }
+
+      try {
+        // Assuming profileDetails.requests is of type Map<String, String>
+        var requestsMap = Map<String, String>.from(value['friendRequests']);
+        profileDetails.requests = HashMap<String, String>.from(requestsMap);
+        // print("Requests found: " + profileDetails.requests.toString());
+      } catch (e) {
+        print("No requests found for the user");
+        log(e.toString());
+      }
     });
 
     await LocationVAF.initializeLocation();
@@ -95,8 +105,8 @@ class _AuthGateState extends State<AuthGate> {
           populateUserData();
           populateUserPets();
 
-          // return Homepage();
-          return Search();
+          return Homepage();
+          // return Search();
         }
         return Login();
       },

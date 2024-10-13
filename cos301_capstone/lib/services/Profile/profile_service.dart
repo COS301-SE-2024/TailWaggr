@@ -303,4 +303,60 @@ class ProfileService {
       return false;
     }
   }
+
+  Future<bool> acceptFriendRequest(String userId, String friendId) async {
+    try {
+      profileDetails.requests.remove(friendId);
+
+      await _db.collection('users').doc(userId).update({
+        'friendRequests': profileDetails.requests
+      });
+
+      // Fetch the user's requests
+      DocumentSnapshot friendDoc = await _db.collection('users').doc(friendId).get();
+      Map<String, dynamic>? friendData = friendDoc.data() as Map<String, dynamic>?;
+
+      if (friendData != null) {
+        HashMap<String, dynamic> friendRequests = friendData['friends'] != null ? HashMap.from(friendData['friends']) : HashMap<String, String>();
+        friendRequests[userId] = 'Following';
+
+        await _db.collection('users').doc(friendId).update({
+          'friends': friendRequests
+        });
+      }
+
+      return true;
+    } catch (e) {
+      print("Error accepting friend request: $e");
+      return false;
+    }
+  }
+
+  Future<bool> declineFriendRequest(String userId, String friendId) async {
+    try {
+      profileDetails.requests.remove(friendId);
+
+      await _db.collection('users').doc(userId).update({
+        'friendRequests': profileDetails.requests
+      });
+
+      // Fetch the user's requests
+      DocumentSnapshot friendDoc = await _db.collection('users').doc(friendId).get();
+      Map<String, dynamic>? friendData = friendDoc.data() as Map<String, dynamic>?;
+
+      if (friendData != null) {
+        HashMap<String, dynamic> friendRequests = friendData['friends'] != null ? HashMap.from(friendData['friends']) : HashMap<String, String>();
+        friendRequests.remove(userId);
+
+        await _db.collection('users').doc(friendId).update({
+          'friends': friendRequests
+        });
+      }
+
+      return true;
+    } catch (e) {
+      print("Error declining friend request: $e");
+      return false;
+    }
+  }
 }

@@ -362,7 +362,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                       },
                       child: Text("Unfollow", style: TextStyle(color: Colors.white)),
                     ),
-                  ] else if (profileDetails.friends.containsKey(widget.profileDetails.userID) && profileDetails.friends[widget.profileDetails.userID] == "Requested") ... {
+                  ] else if (profileDetails.friends.containsKey(widget.profileDetails.userID) && profileDetails.friends[widget.profileDetails.userID] == "Requested") ...{
                     ElevatedButton(
                       style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),

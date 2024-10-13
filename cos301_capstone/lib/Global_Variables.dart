@@ -201,6 +201,7 @@ class ProfileDetails {
   Map<String, dynamic> customColours = {};
   // List<Map<String, String>> friends = [];
   HashMap<String, String> friends = HashMap<String, String>();
+  HashMap<String, String> requests = HashMap<String, String>();
 
   void setCustomColours(Map<String, dynamic> colours) {
     customColours = colours;
