@@ -1,5 +1,8 @@
 // import 'dart:ffi';
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -238,6 +241,65 @@ class ProfileService {
       return true;
     } catch (e) {
       print("Error updating pet: $e");
+      return false;
+    }
+  }
+
+  Future<bool> followUser(String userId, String friendId, String type) async {
+    try {
+
+      profileDetails.friends[friendId] = type;
+
+      await _db.collection('users').doc(userId).update({
+        'friends': profileDetails.friends
+      });
+
+      if (type == "Requested") {
+        // Fetch the user's requests
+        DocumentSnapshot friendDoc = await _db.collection('users').doc(friendId).get();
+        Map<String, dynamic>? friendData = friendDoc.data() as Map<String, dynamic>?;
+
+        if (friendData != null) {
+          HashMap<String, dynamic> friendRequests = friendData['friendRequests'] != null ? HashMap.from(friendData['friendRequests']) : HashMap<String, String>();
+          friendRequests[userId] = 'Pending';
+
+          await _db.collection('users').doc(friendId).update({
+            'friendRequests': friendRequests
+          });
+        }
+      }
+
+
+      return true;
+    } catch (e) {
+      print("Error following user: $e");
+      return false;
+    }
+  }
+
+  Future<bool> unfollowUser(String userId, String friendId) async {
+    try {
+      profileDetails.friends.remove(friendId);
+
+      await _db.collection('users').doc(userId).update({
+        'friends': profileDetails.friends
+      });
+
+      // Fetch the user's requests
+      DocumentSnapshot friendDoc = await _db.collection('users').doc(friendId).get();
+      Map<String, dynamic>? friendData = friendDoc.data() as Map<String, dynamic>?;
+
+      if (friendData != null) {
+        HashMap<String, dynamic> friendRequests = friendData['friendRequests'] != null ? HashMap.from(friendData['friendRequests']) : HashMap<String, String>();
+        friendRequests.remove(userId);
+
+        await _db.collection('users').doc(friendId).update({
+          'friendRequests': friendRequests
+        });
+      }
+      return true;
+    } catch (e) {
+      print("Error unfollowing user: $e");
       return false;
     }
   }

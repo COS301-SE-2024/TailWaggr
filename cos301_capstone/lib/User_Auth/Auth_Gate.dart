@@ -1,5 +1,8 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'dart:collection';
+import 'dart:developer';
+
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Location/Location.dart';
@@ -57,6 +60,16 @@ class _AuthGateState extends State<AuthGate> {
         "CardColour": value['preferences']['Colours']['CardColour'],
         "NavbarTextColour": value['preferences']['Colours']['NavbarTextColour'],
       });
+
+      try {
+        // Assuming profileDetails.friends is of type Map<String, String>
+        var friendsMap = Map<String, String>.from(value['friends']);
+        profileDetails.friends = HashMap<String, String>.from(friendsMap);
+        // print("Friends found: " + profileDetails.friends.toString());
+      } catch (e) {
+        print("No friends found for the user");
+        log(e.toString());
+      }
     });
 
     await LocationVAF.initializeLocation();
