@@ -9,6 +9,7 @@ import 'package:cos301_capstone/Location/Location.dart';
 // import 'package:cos301_capstone/Location/Desktop_View.dart';
 // import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/Login/Login.dart';
+import 'package:cos301_capstone/NotVerified.dart';
 import 'package:cos301_capstone/Search/Search.dart';
 import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
@@ -105,8 +106,17 @@ class _AuthGateState extends State<AuthGate> {
           populateUserData();
           populateUserPets();
 
-          return Homepage();
-          // return Search();
+          if (FirebaseAuth.instance.currentUser!.emailVerified) {
+            return Homepage();
+            // print("Email Verified");
+          }
+
+          else {
+            print("Email not verified");
+            return NotVerified();
+          }
+
+          // return Homepage(); 
         }
         return Login();
       },
