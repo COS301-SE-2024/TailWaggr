@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:cos301_capstone/Global_Variables.dart';
-import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:cos301_capstone/services/Location/location_service.dart';
 import 'package:cos301_capstone/services/search/search_service.dart';
