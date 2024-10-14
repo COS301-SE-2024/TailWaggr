@@ -33,7 +33,7 @@ class _ProfileMobileState extends State<ProfileMobile> {
       if (widget.userId != profileDetails.userID) {
         Map<String, dynamic>? tempDetails = await ProfileService().getUserDetails(widget.userId);
 
-        if ((tempDetails != null && tempDetails['profileVisibility']) || profileDetails.friends.containsKey(widget.userId)) {
+        if ((tempDetails != null && tempDetails['profileVisibility']) || (profileDetails.friends.containsKey(widget.userId) && profileDetails.friends[widget.userId] == "Following")) {
           localProfileDetails.userID = widget.userId;
           localProfileDetails.name = tempDetails!['name'];
           localProfileDetails.surname = tempDetails['surname'];

@@ -149,7 +149,15 @@ class _MobileSearchState extends State<MobileSearch> {
                                 children: [
                                   CircleAvatar(
                                     radius: 30,
-                                    backgroundImage: NetworkImage(users[i].profileUrl),
+                                    backgroundImage: users[i].profileUrl == "" ? null : NetworkImage(users[i].profileUrl),
+                                    backgroundColor: themeSettings.primaryColor,
+                                    child: Text(
+                                      users[i].name[0],
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                      ),
+                                    ),
                                   ),
                                   SizedBox(width: 10), // Add some spacing between avatar and text
                                   Expanded(
