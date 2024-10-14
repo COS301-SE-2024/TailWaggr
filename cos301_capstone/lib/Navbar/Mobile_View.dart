@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:cos301_capstone/Dog_Runner/Game.dart';
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
@@ -129,6 +130,7 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                 Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                 Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile(userId: profileDetails.userID)),
                 Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),
+                Navbar_Icon(icon: Icons.gamepad, text: "Petrunner", page: Game()),
               ],
             ),
             Column(

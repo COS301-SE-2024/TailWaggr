@@ -28,22 +28,32 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="icon" type="image/png" href="Logo_transparent.png" />
 
   <title>cos301_capstone</title>
   <link rel="manifest" href="manifest.json">
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "3189850224";
+    const serviceWorkerVersion = "336505637";
   </script>
   <script src="assets/packages/libphonenumber_plugin/js/libphonenumber.js"></script>
   <script src="assets/packages/libphonenumber_plugin/js/stringbuffer.js"></script>
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
 
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDR51SrNFtZp3vAeLhS5vQgETEnOOshEi8&libraries=drawing"></script>
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDR51SrNFtZp3vAeLhS5vQgETEnOOshEi8&libraries=drawing&loading=async"></script>
   <!-- <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"> -->
+  </script>
+
+  <script>
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        document.title = 'Come back!';
+      } else {
+        document.title = 'TailWaggr';
+      }
+    });
   </script>
 </head>
 

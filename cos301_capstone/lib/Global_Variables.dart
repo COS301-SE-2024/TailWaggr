@@ -176,6 +176,7 @@ class ThemeSettingsObserver extends ChangeNotifier {
 ThemeSettingsObserver themeSettings = ThemeSettingsObserver();
 
 class ProfileDetails {
+  int score = 0;
   String name = "";
   String surname = "";
   String userID = FirebaseAuth.instance.currentUser != null ? FirebaseAuth.instance.currentUser!.uid : "";  

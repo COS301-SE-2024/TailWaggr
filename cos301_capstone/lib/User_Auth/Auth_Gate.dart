@@ -31,6 +31,7 @@ class _AuthGateState extends State<AuthGate> {
       profileDetails.profilePicture = value['profilePictureUrl'];
       profileDetails.location = value['location'];
       profileDetails.themeMode = value['preferences']['themeMode'];
+      profileDetails.score = value['score'];
       profileDetails.userType = value['userType'];
       profileDetails.isPublic = value['profileVisibility'];
 

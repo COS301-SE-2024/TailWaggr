@@ -2,6 +2,8 @@
 
 import 'dart:math';
 
+import 'package:animations/animations.dart';
+import 'package:cos301_capstone/Dog_Runner/Game.dart';
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
@@ -133,6 +135,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                   Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile(userId: profileDetails.userID)),
                   Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),
+                  Navbar_Icon(icon: Icons.gamepad, text: "Mini Game", page: Game()),
                 ],
               ),
             ),
