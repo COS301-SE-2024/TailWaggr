@@ -10,6 +10,7 @@ import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/LostAndFound/LostAndFound.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:cos301_capstone/Notifications/Notifications.dart';
+import 'package:cos301_capstone/Search/Search.dart';
 import 'package:cos301_capstone/User_Profile/Mobile_View.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -99,26 +100,14 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundImage: Image.asset("assets/images/Dog_Walk_Image.png").image,
+            Center(
+              child: ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                  themeSettings.navbarTextColour,
+                  BlendMode.srcIn,
                 ),
-                SizedBox(width: 20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "TailWaggr",
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: themeSettings.navbarTextColour,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                child: Image.asset(width: 100, 'assets/images/Logo_transparent.png'),
+              ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,10 +116,11 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                 Navbar_Icon(icon: Icons.notifications, text: "Notifications", page: Notifications()),
                 Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: Location()),
                 Navbar_Icon(icon: Icons.map_sharp, text: "Lost and Found", page: LostAndFound()),
+                Navbar_Icon(icon: Icons.search, text: "Search", page: Search()),
                 Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                 Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile(userId: profileDetails.userID)),
                 Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),
-                Navbar_Icon(icon: Icons.gamepad, text: "Petrunner", page: Game()),
+                Navbar_Icon(icon: Icons.gamepad, text: "Mini Game", page: Game()),
               ],
             ),
             Column(

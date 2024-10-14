@@ -31,8 +31,13 @@ class _AuthGateState extends State<AuthGate> {
       profileDetails.profilePicture = value['profilePictureUrl'];
       profileDetails.location = value['location'];
       profileDetails.themeMode = value['preferences']['themeMode'];
-      profileDetails.score = value['score'];
+
+      if (value['score'] != null) {
+        profileDetails.score = value['score'];
+      }
+
       profileDetails.userType = value['userType'];
+
       profileDetails.isPublic = value['profileVisibility'];
 
       profileDetails.phone = value['phoneDetails']['phoneNumber'];
@@ -102,14 +107,12 @@ class _AuthGateState extends State<AuthGate> {
           if (FirebaseAuth.instance.currentUser!.emailVerified) {
             return Homepage();
             // print("Email Verified");
-          }
-
-          else {
+          } else {
             print("Email not verified");
             return NotVerified();
           }
 
-          // return Homepage(); 
+          // return Homepage();
         }
         return Login();
       },

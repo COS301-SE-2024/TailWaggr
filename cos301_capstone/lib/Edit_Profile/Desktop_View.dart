@@ -130,6 +130,9 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
   @override
   void initState() {
     super.initState();
+
+    print("User type: ${profileDetails.userType}");
+
     imagePickerLocal.filesNotifier.addListener(() {
       setState(() {});
     });

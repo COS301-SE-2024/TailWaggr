@@ -110,12 +110,14 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ColorFiltered(
-                    colorFilter: ColorFilter.mode(
-                      themeSettings.navbarTextColour,
-                      BlendMode.srcIn,
+                  Center(
+                    child: ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                        themeSettings.navbarTextColour,
+                        BlendMode.srcIn,
+                      ),
+                      child: Image.asset(width: 100, 'assets/images/Logo_transparent.png'),
                     ),
-                    child: Image.asset(width: 200, 'assets/images/Logo_transparent.png'),
                   ),
                   Navbar_Icon(icon: Icons.home, text: "Home", page: Homepage()),
                   Navbar_Icon(
