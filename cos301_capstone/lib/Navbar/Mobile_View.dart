@@ -116,11 +116,11 @@ class _NavbarDrawerState extends State<NavbarDrawer> {
                 Navbar_Icon(icon: Icons.notifications, text: "Notifications", page: Notifications()),
                 Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: Location()),
                 Navbar_Icon(icon: Icons.map_sharp, text: "Lost and Found", page: LostAndFound()),
-                Navbar_Icon(icon: Icons.search, text: "Search", page: Search()),
+                Navbar_Icon(icon: Icons.search, text: "Friends", page: Search()),
                 Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                 Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile(userId: profileDetails.userID)),
                 Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),
-                Navbar_Icon(icon: Icons.gamepad, text: "Mini Game", page: Game()),
+                Navbar_Icon(icon: Icons.gamepad, text: "Pet Runner", page: Game()),
               ],
             ),
             Column(

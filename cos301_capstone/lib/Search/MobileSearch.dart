@@ -23,7 +23,8 @@ class _MobileSearchState extends State<MobileSearch> {
   @override
   void initState() {
     super.initState();
-    searchController = TextEditingController();
+    searchController = TextEditingController(text: '');
+    getUsersByName(false);
   }
 
   @override
@@ -32,14 +33,34 @@ class _MobileSearchState extends State<MobileSearch> {
     super.dispose();
   }
 
-  void getUsersByName() async {
+  void getUsersByName(bool loadmore) async {
     setState(() {
       searchText = 'Searching...';
     });
 
     try {
-      users = await searchService.searchUsers(searchController.text);
-    } on Exception catch (_) {}
+      List<User> newUsers = await searchService.searchUsers(searchController.text, loadmore);
+
+      if (newUsers.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.blue,
+            content: Center(child: Text('No more users found')),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        setState(() {
+          searchText = 'Search';
+        });
+
+        return;
+      }
+
+      users.addAll(newUsers);
+    } on Exception catch (e) {
+      print(e);
+    }
 
     setState(() {
       searchText = 'Search';
@@ -92,7 +113,7 @@ class _MobileSearchState extends State<MobileSearch> {
                       ),
                     ),
                     onSubmitted: (value) async {
-                      getUsersByName();
+                      getUsersByName(false);
                     },
                   ),
                 ),
@@ -108,7 +129,7 @@ class _MobileSearchState extends State<MobileSearch> {
                     ),
                     onPressed: () async {
                       // await getPosts(searchController.text, false);
-                      getUsersByName();
+                      getUsersByName(false);
                     },
                     child: Text(
                       searchText,
@@ -198,6 +219,25 @@ class _MobileSearchState extends State<MobileSearch> {
                           ),
                         ),
                       },
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: 40,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: themeSettings.cardColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                            ),
+                          ),
+                          onPressed: () async {
+                            getUsersByName(true);
+                          },
+                          child: Text(
+                            'Load more',
+                            style: TextStyle(color: themeSettings.textColor),
+                          ),
+                        ),
+                      ),
                     },
                   ],
                 ),

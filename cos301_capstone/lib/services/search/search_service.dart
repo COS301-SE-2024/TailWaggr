@@ -3,36 +3,38 @@ import 'package:cos301_capstone/services/Location/location_service.dart';
 
 class SearchService {
   final _db = FirebaseFirestore.instance;
+  DocumentSnapshot? _lastDocument;
 
-  Future<List<User>> searchUsers(String query) async {
+  Future<List<User>> searchUsers(String query, bool loadMore) async {
     final users = <User>[];
-    final querySnapshot = await _db
+
+    Query querySnapshot = _db
         .collection('users')
         .where('name', isGreaterThanOrEqualTo: query)
         .where('name', isLessThanOrEqualTo: '$query\uf8ff')
-        // .where('name', isEqualTo: "Tim")
-        .get();
+        .where('emailVerified', isEqualTo: true)
+        .orderBy('name', descending: false)
+        .limit(5);
 
-    print("Users fetched successfully.");
-    print(querySnapshot.docs.length);
-    for (final doc in querySnapshot.docs) {
+    if (loadMore && _lastDocument != null) {
+      querySnapshot = querySnapshot.startAfterDocument(_lastDocument!);
+    }
+
+    final querySnapshotData = await querySnapshot.get();
+
+    // Update _lastDocument for pagination
+    if (querySnapshotData.docs.isNotEmpty) {
+      _lastDocument = querySnapshotData.docs.last;
+    }
+
+    for (final doc in querySnapshotData.docs) {
+      // _lastDocument = querySnapshotData.docs.last;
+
       GeoPoint location = GeoPoint(0, 0);
 
       try {
-        bool verified = doc['emailVerified'];
-      } catch (e) {
-        continue;
-      }
-
-      if (doc['name'] == "Shuaib") {
-        print("Shuaib found");
-      }
-
-      try {
         location = doc['address'];
-      } catch (e) {
-        // print(e);
-      }
+      } catch (_) {}
 
       User user = User(id: doc.id, name: doc['name'], userType: doc['userType'], location: location);
 

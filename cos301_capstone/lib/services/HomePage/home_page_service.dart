@@ -165,7 +165,6 @@ class HomePageService {
       // Apply pagination if loading more
       if (isLoadMore && _lastDocument != null) {
         query = query.startAfterDocument(_lastDocument!);
-        print("Applying pagination with _lastDocument: ${_lastDocument!.id}");
       }
 
       // Execute the query
@@ -174,7 +173,6 @@ class HomePageService {
       // Update _lastDocument for pagination
       if (querySnapshot.docs.isNotEmpty) {
         _lastDocument = querySnapshot.docs.last;
-        print("Updated _lastDocument: ${_lastDocument!.id}");
       } else {
         print("No more documents to fetch.");
       }
@@ -186,7 +184,6 @@ class HomePageService {
 
       // Return unfiltered posts if no filter is applied
       if (words == null || words.isEmpty) {
-        print("Fetched ${posts.length} posts.");
         return posts;
       }
 
