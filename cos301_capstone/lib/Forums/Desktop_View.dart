@@ -1033,6 +1033,11 @@ class _MessageViewState extends State<MessageView> {
     final postId = widget.post['messageId'];
     final userId = widget.post['message']['UserId'] as String;
     final userProfile = widget.userProfiles[userId];
+
+    print("------------------------------");
+    print("User profile: $userProfile");
+    print("------------------------------");
+
     final replies = widget.post['replies'] ?? [];
     final postTime = formatDateTime(widget.post['message']['CreatedAt'].toDate());
     void _deleteReply(String postId,String replyId) {
@@ -1134,7 +1139,7 @@ class _MessageViewState extends State<MessageView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        userProfile?['userName'] ?? 'Unknown User',
+                        userProfile?['name'] ?? 'Unknown User',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -1214,7 +1219,7 @@ class _MessageViewState extends State<MessageView> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    replyUserProfile?['userName'] ?? 'Unknown User',
+                                    replyUserProfile?['name'] ?? 'Unknown User',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,

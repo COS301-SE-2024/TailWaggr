@@ -84,7 +84,8 @@ class _PostContainerState extends State<PostContainer> {
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('No more posts to load'),
+                backgroundColor: Colors.blue,
+                content: Center(child: Text('No more posts to load')),
               ),
             );
           }

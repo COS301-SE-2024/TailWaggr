@@ -58,7 +58,8 @@ class _MobileHomepageState extends State<MobileHomepage> {
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('No more posts to load'),
+                backgroundColor: Colors.blue,
+                content: Center(child: Text('No more posts to load')),
               ),
             );
           }
@@ -101,7 +102,6 @@ class _MobileHomepageState extends State<MobileHomepage> {
                         controller: searchController,
                         style: TextStyle(color: themeSettings.textColor),
                         decoration: InputDecoration(
-                          
                           hintText: 'Search posts...',
                           prefixIcon: Icon(Icons.search),
                           border: OutlineInputBorder(
@@ -720,7 +720,7 @@ class _PostState extends State<Post> {
                         ],
                       ),
                     ),
-                   ],
+                  ],
                 ),
               ),
             ),
@@ -1440,69 +1440,68 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                   return;
                 }
 
-                  // Check if image is selected and moderate image
-                  // Check if image is selected and moderate image
-                  if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
-                    print("Image: ${imagePicker.filesNotifier.value![0].name}");
-                    print("Image details: ${imagePicker.filesNotifier.value![0]}");
-                    print("calling image filter");
-                    Map<String, dynamic> moderationResult = await imageFilter.moderateImage(imagePicker.filesNotifier.value![0]);
-                    print("Moderation result: $moderationResult");
-                    //create dialog box for moderation
-                      if (moderationResult['status'] == 'fail') {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.redAccent, // Customize color if needed
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                "🔞 Warning!",  // Title
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: themeSettings.textColor, // Customize text color
-                                ),
+                // Check if image is selected and moderate image
+                // Check if image is selected and moderate image
+                if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
+                  print("Image: ${imagePicker.filesNotifier.value![0].name}");
+                  print("Image details: ${imagePicker.filesNotifier.value![0]}");
+                  print("calling image filter");
+                  Map<String, dynamic> moderationResult = await imageFilter.moderateImage(imagePicker.filesNotifier.value![0]);
+                  print("Moderation result: $moderationResult");
+                  //create dialog box for moderation
+                  if (moderationResult['status'] == 'fail') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: Colors.redAccent, // Customize color if needed
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "🔞 Warning!", // Title
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: themeSettings.textColor, // Customize text color
                               ),
-                              SizedBox(height: 8),
-                              Text(
-                                moderationResult['message'],  // Full message
-                                style: TextStyle(color: themeSettings.textColor), // Customize text color
-                              ),
-                            ],
-                          ),
-                          duration: Duration(seconds: 20),  // Increase the duration if needed
-                          behavior: SnackBarBehavior.floating,  // Makes the snackbar floating
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              moderationResult['message'], // Full message
+                              style: TextStyle(color: themeSettings.textColor), // Customize text color
+                            ),
+                          ],
                         ),
-                      );
-                      //prevent the post from being uploaded
-                      setState(() {
-                        errorText = "Inappropriate content detected";
-                        errorVisible = true;
-                        postText = "Post";
-                        postController.clear();
-                        imagePicker.clearCachedFiles();
-                        petIncludeCounter = 0;
-                        petList.clear();
-                        petAdded.clear();
-                        removePet.clear();
-                        postText = "Post";
-                      });
-                      //stop image from being uploaded
-                      return;
-                    } else {
-                      // Image is clean, proceed with uploading
-                      // Proceed with uploading the image
-                      print("Proceeding to upload image...");
-                    }
-                  } else {
-                    print("No image selected");
+                        duration: Duration(seconds: 20), // Increase the duration if needed
+                        behavior: SnackBarBehavior.floating, // Makes the snackbar floating
+                      ),
+                    );
+                    //prevent the post from being uploaded
                     setState(() {
-                      errorText = "No image selected";
+                      errorText = "Inappropriate content detected";
                       errorVisible = true;
+                      postText = "Post";
+                      postController.clear();
+                      imagePicker.clearCachedFiles();
+                      petIncludeCounter = 0;
+                      petList.clear();
+                      petAdded.clear();
+                      removePet.clear();
+                      postText = "Post";
                     });
+                    //stop image from being uploaded
+                    return;
+                  } else {
+                    // Image is clean, proceed with uploading
+                    // Proceed with uploading the image
+                    print("Proceeding to upload image...");
                   }
-
+                } else {
+                  print("No image selected");
+                  setState(() {
+                    errorText = "No image selected";
+                    errorVisible = true;
+                  });
+                }
 
                 List<Map<String, dynamic>> petIds = [];
 

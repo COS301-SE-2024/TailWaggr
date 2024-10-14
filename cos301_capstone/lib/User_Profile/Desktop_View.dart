@@ -534,7 +534,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                     ],
                   ),
                 ),
-                if (profileDetails.userType == "Veterinarian")
+                if (profileDetails.userType == "PetSitter")
                   Container(
                     padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -544,23 +544,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.medical_services, color: themeSettings.textColor.withOpacity(0.5)),
-                        SizedBox(width: 10),
-                        Text("Veterinarian", style: TextStyle(fontSize: subBodyTextSize)),
-                      ],
-                    ),
-                  ),
-                if (profileDetails.userType == "PetKeeper")
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: themeSettings.cardColor,
-                      borderRadius: BorderRadius.circular(10),
-                      // border: Border.all(color: themeSettings.primaryColor),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.medical_services, color: themeSettings.textColor.withOpacity(0.5)),
+                        Icon(Icons.home_filled, color: themeSettings.textColor.withOpacity(0.5)),
                         SizedBox(width: 10),
                         Text("Pet sitter", style: TextStyle(fontSize: subBodyTextSize)),
                       ],
