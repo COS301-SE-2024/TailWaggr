@@ -158,10 +158,10 @@ class _DesktopSearchState extends State<DesktopSearch> {
                                         backgroundImage: users[i].profileUrl == "" ? null : NetworkImage(users[i].profileUrl),
                                         backgroundColor: themeSettings.primaryColor,
                                         child: Text(
-                                          users[i].name[0],
+                                          users[i].profileUrl == "" ? users[i].name[0] : "",
                                           style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
+                                            color: Colors.white,
+                                            fontSize: 20,
                                           ),
                                         ),
                                       ),

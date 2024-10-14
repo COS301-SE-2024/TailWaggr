@@ -948,7 +948,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
           children: [
             Container(
               width: 175,
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.symmetric(horizontal: 20),
               height: double.infinity,
               decoration: useImage
                   ? !useDefaultImage
@@ -960,21 +960,17 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 15,
-                        backgroundImage: NetworkImage(profileDetails.profilePicture),
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        profileDetails.name,
-                        style: TextStyle(color: navbarTextColor, fontSize: 14),
-                      ),
-                    ],
-                  ),
                   Column(
                     children: [
+                      Center(
+                        child: ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            themeSettings.navbarTextColour,
+                            BlendMode.srcIn,
+                          ),
+                          child: Image.asset(width: 100, 'assets/images/Logo_transparent.png'),
+                        ),
+                      ),
                       Row(
                         children: [
                           Icon(Icons.home, color: navbarTextColor),
@@ -988,14 +984,6 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                           Icon(Icons.notifications, color: navbarTextColor),
                           SizedBox(width: 10),
                           Text("Notifications", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Icon(Icons.search, color: navbarTextColor),
-                          SizedBox(width: 10),
-                          Text("Search", style: TextStyle(color: navbarTextColor, fontSize: 14)),
                         ],
                       ),
                       SizedBox(height: 10),
@@ -1017,6 +1005,22 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                       SizedBox(height: 10),
                       Row(
                         children: [
+                          Icon(Icons.pets, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Lost and Found", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.search, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Search", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
                           Icon(Icons.forum_outlined, color: navbarTextColor),
                           SizedBox(width: 10),
                           Text("Forums", style: TextStyle(color: navbarTextColor, fontSize: 14)),
@@ -1030,20 +1034,29 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                           Text("Profile", style: TextStyle(color: navbarTextColor, fontSize: 14)),
                         ],
                       ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.gamepad, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Mini Game", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
                     ],
                   ),
-                  Row(
+                  Column(
                     children: [
-                      Icon(Icons.logout, color: navbarTextColor),
-                      SizedBox(width: 10),
-                      Text("Logout", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Icon(Icons.dark_mode, color: navbarTextColor),
-                      SizedBox(width: 10),
-                      Text("Toggle theme", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            backgroundImage: NetworkImage(profileDetails.profilePicture),
+                          ),
+                          SizedBox(width: 10),
+                          Text(profileDetails.name, style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
+                      SizedBox(height: 10),
                     ],
                   ),
                 ],

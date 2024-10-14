@@ -309,69 +309,61 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
           Column(
             children: [
               Text("Profile Visibility", style: TextStyle(color: themeSettings.textColor, fontSize: 14)),
-              Column(
-                children: [
-                  ListTile(
-                    title: Text('Public', style: TextStyle(color: themeSettings.textColor)),
-                    leading: Radio<bool>(
-                      value: true,
-                      fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
-                      groupValue: profileDetails.isPublic,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          profileDetails.isPublic = value!;
-                        });
-                      },
-                    ),
-                  ),
-                  ListTile(
-                    title: Text('Private', style: TextStyle(color: themeSettings.textColor)),
-                    leading: Radio<bool>(
-                      value: false,
-                      fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
-                      groupValue: profileDetails.isPublic,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          profileDetails.isPublic = value!;
-                        });
-                      },
-                    ),
-                  ),
-                ],
+              ListTile(
+                title: Text('Public', style: TextStyle(color: themeSettings.textColor)),
+                leading: Radio<bool>(
+                  value: true,
+                  fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                  groupValue: profileDetails.isPublic,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      profileDetails.isPublic = value!;
+                    });
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text('Private', style: TextStyle(color: themeSettings.textColor)),
+                leading: Radio<bool>(
+                  value: false,
+                  fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                  groupValue: profileDetails.isPublic,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      profileDetails.isPublic = value!;
+                    });
+                  },
+                ),
               ),
             ],
           ),
           Column(
             children: [
               Text("User Type", style: TextStyle(color: themeSettings.textColor, fontSize: 14)),
-              Expanded(
-                child: ListTile(
-                  title: Text('Pet Enthusiast', style: TextStyle(color: themeSettings.textColor)),
-                  leading: Radio<String>(
-                    value: "pet_owner",
-                    fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
-                    groupValue: profileDetails.userType,
-                    onChanged: (String? value) {
-                      setState(() {
-                        profileDetails.userType = value!;
-                      });
-                    },
-                  ),
+              ListTile(
+                title: Text('Pet Enthusiast', style: TextStyle(color: themeSettings.textColor)),
+                leading: Radio<String>(
+                  value: "pet_owner",
+                  fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                  groupValue: profileDetails.userType,
+                  onChanged: (String? value) {
+                    setState(() {
+                      profileDetails.userType = value!;
+                    });
+                  },
                 ),
               ),
-              Expanded(
-                child: ListTile(
-                  title: Text('Pet Sitter', style: TextStyle(color: themeSettings.textColor)),
-                  leading: Radio<String>(
-                    value: "PetSitter",
-                    fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
-                    groupValue: profileDetails.userType,
-                    onChanged: (String? value) {
-                      setState(() {
-                        profileDetails.userType = value!;
-                      });
-                    },
-                  ),
+              ListTile(
+                title: Text('Pet Sitter', style: TextStyle(color: themeSettings.textColor)),
+                leading: Radio<String>(
+                  value: "PetSitter",
+                  fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                  groupValue: profileDetails.userType,
+                  onChanged: (String? value) {
+                    setState(() {
+                      profileDetails.userType = value!;
+                    });
+                  },
                 ),
               ),
             ],
@@ -918,7 +910,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                 Container(
                   width: 175,
                   padding: EdgeInsets.all(20),
-                  height: MediaQuery.of(context).size.height - 200,
+                  height: MediaQuery.of(context).size.height - 350,
                   decoration: useImage
                       ? !useDefaultImage
                           ? imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty
@@ -929,21 +921,17 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 15,
-                            backgroundImage: NetworkImage(profileDetails.profilePicture),
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            profileDetails.name,
-                            style: TextStyle(color: navbarTextColor, fontSize: 14),
-                          ),
-                        ],
-                      ),
                       Column(
                         children: [
+                          Center(
+                            child: ColorFiltered(
+                              colorFilter: ColorFilter.mode(
+                                themeSettings.navbarTextColour,
+                                BlendMode.srcIn,
+                              ),
+                              child: Image.asset(width: 100, 'assets/images/Logo_transparent.png'),
+                            ),
+                          ),
                           Row(
                             children: [
                               Icon(Icons.home, color: navbarTextColor),
@@ -957,14 +945,6 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                               Icon(Icons.notifications, color: navbarTextColor),
                               SizedBox(width: 10),
                               Text("Notifications", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Icon(Icons.search, color: navbarTextColor),
-                              SizedBox(width: 10),
-                              Text("Search", style: TextStyle(color: navbarTextColor, fontSize: 14)),
                             ],
                           ),
                           SizedBox(height: 10),
@@ -986,6 +966,22 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                           SizedBox(height: 10),
                           Row(
                             children: [
+                              Icon(Icons.pets, color: navbarTextColor),
+                              SizedBox(width: 10),
+                              Text("Lost and Found", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Icon(Icons.search, color: navbarTextColor),
+                              SizedBox(width: 10),
+                              Text("Search", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
                               Icon(Icons.forum_outlined, color: navbarTextColor),
                               SizedBox(width: 10),
                               Text("Forums", style: TextStyle(color: navbarTextColor, fontSize: 14)),
@@ -999,20 +995,29 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                               Text("Profile", style: TextStyle(color: navbarTextColor, fontSize: 14)),
                             ],
                           ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Icon(Icons.gamepad, color: navbarTextColor),
+                              SizedBox(width: 10),
+                              Text("Mini Game", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                            ],
+                          ),
                         ],
                       ),
-                      Row(
+                      Column(
                         children: [
-                          Icon(Icons.logout, color: navbarTextColor),
-                          SizedBox(width: 10),
-                          Text("Logout", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.dark_mode, color: navbarTextColor),
-                          SizedBox(width: 10),
-                          Text("Toggle theme", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 15,
+                                backgroundImage: NetworkImage(profileDetails.profilePicture),
+                              ),
+                              SizedBox(width: 10),
+                              Text(profileDetails.name, style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                            ],
+                          ),
+                          SizedBox(height: 10),
                         ],
                       ),
                     ],
