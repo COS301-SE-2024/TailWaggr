@@ -1,4 +1,5 @@
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/Navbar/Mobile_View.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
@@ -19,16 +20,16 @@ class _GameState extends State<Game> {
         listenable: themeSettings,
         builder: (BuildContext context, Widget? child) {
           return Scaffold(
-            drawer: NavbarDrawer(),
-            appBar: AppBar(
-              backgroundColor: themeSettings.primaryColor,
-              title: Text(
-                "TailWaggr",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
+            // drawer: NavbarDrawer(),
+            // appBar: AppBar(
+            //   backgroundColor: themeSettings.primaryColor,
+            //   title: Text(
+            //     "TailWaggr",
+            //     style: TextStyle(
+            //       color: Colors.white,
+            //     ),
+            //   ),
+            // ),
             body: GameView(),
           );
         },
@@ -45,8 +46,7 @@ class GameView extends StatefulWidget {
 }
 
 class _GameViewState extends State<GameView> {
-  static final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
+  static final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   UnityWidgetController? _unityWidgetController;
 
   @override
@@ -55,22 +55,32 @@ class _GameViewState extends State<GameView> {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        padding: EdgeInsets.all(20),
+        // padding: EdgeInsets.all(20),
         color: themeSettings.backgroundColor,
-        child: WillPopScope(
-          onWillPop: () async {
-            // Pop the category page if Android back button is pressed.
-            return true;
-          },
-          child: Stack(children: <Widget>[
-            UnityWidget(
-              borderRadius: BorderRadius.circular(20),
-              onUnityCreated: onUnityCreated,
-              onUnityMessage: onUnityMessage,
-              onUnitySceneLoaded: onUnitySceneLoaded,
-              fullscreen: false,
+        child: Row(
+          children: [
+            DesktopNavbar(),
+            Container(
+              width: MediaQuery.of(context).size.width - 290,
+              height: MediaQuery.of(context).size.height,
+              margin: EdgeInsets.all(20),
+              child: WillPopScope(
+                onWillPop: () async {
+                  // Pop the category page if Android back button is pressed.
+                  return true;
+                },
+                child: Stack(children: <Widget>[
+                  UnityWidget(
+                    borderRadius: BorderRadius.circular(20),
+                    onUnityCreated: onUnityCreated,
+                    onUnityMessage: onUnityMessage,
+                    onUnitySceneLoaded: onUnitySceneLoaded,
+                    fullscreen: false,
+                  ),
+                ]),
+              ),
             ),
-          ]),
+          ],
         ),
       ),
     );
@@ -101,8 +111,7 @@ class _GameViewState extends State<GameView> {
 
   Future<void> sendLeaderboard() async {
     try {
-      List<Map<String, dynamic>> leaderbord =
-          await LeaderboardService().getTopScores(6);
+      List<Map<String, dynamic>> leaderbord = await LeaderboardService().getTopScores(6);
 
       String leaderboardData = leaderbord.map((entry) {
         String name = entry['name'];
@@ -129,8 +138,7 @@ class _GameViewState extends State<GameView> {
         'ReceiveMe',
         "${profileDetails.name},${profileDetails.score}",
       );
-      print(
-          'Received scene loaded from unity buildIndex: ${sceneInfo.buildIndex}');
+      print('Received scene loaded from unity buildIndex: ${sceneInfo.buildIndex}');
     }
   }
 }

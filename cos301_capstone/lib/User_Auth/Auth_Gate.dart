@@ -3,6 +3,7 @@
 import 'dart:collection';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Location/Location.dart';
@@ -78,6 +79,11 @@ class _AuthGateState extends State<AuthGate> {
       } catch (e) {
         print("No requests found for the user");
         log(e.toString());
+      }
+
+      // set the email to true if the user has verified their email
+      if (FirebaseAuth.instance.currentUser!.emailVerified) {
+        FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({'emailVerified': true});
       }
     });
 

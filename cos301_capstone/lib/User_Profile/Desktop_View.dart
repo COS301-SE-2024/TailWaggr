@@ -34,10 +34,12 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
       if (widget.userId != profileDetails.userID) {
         Map<String, dynamic>? tempDetails = await ProfileService().getUserDetails(widget.userId);
 
-        if ((tempDetails != null && tempDetails['profileVisibility']) || profileDetails.friends.containsKey(widget.userId)) {
+        if ((tempDetails != null && tempDetails['profileVisibility']) || (profileDetails.friends.containsKey(widget.userId) && profileDetails.friends[widget.userId] == "Following")) {
+
           localProfileDetails.userID = widget.userId;
           localProfileDetails.name = tempDetails!['name'];
-          localProfileDetails.surname = tempDetails['surname'];
+
+          localProfileDetails.surname = tempDetails['surname'] ?? "";
           localProfileDetails.email = tempDetails['email'];
           localProfileDetails.bio = tempDetails['bio'];
           localProfileDetails.profilePicture = tempDetails['profilePictureUrl'];
@@ -59,12 +61,11 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
             Map<String, dynamic> postData = postSnapshot.data() as Map<String, dynamic>;
             postData['PostId'] = postSnapshot.id;
             localProfileDetails.myPosts.add(postData);
-            print("Post data: $postData");
           }
         } else {
           localProfileDetails.userID = widget.userId;
           localProfileDetails.name = tempDetails!['name'];
-          localProfileDetails.surname = tempDetails['surname'];
+          localProfileDetails.surname = tempDetails['surname'] ?? "";
           localProfileDetails.bio = tempDetails['bio'];
           localProfileDetails.profilePicture = tempDetails['profilePictureUrl'];
 
@@ -77,7 +78,7 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
         }
 
         setState(() {
-          print("Profile details set successfully for: ${localProfileDetails.userID}");
+          // print("Profile details set successfully for: ${localProfileDetails.userID}");
         });
       } else {
         localProfileDetails = profileDetails;

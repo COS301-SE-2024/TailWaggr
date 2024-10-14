@@ -346,7 +346,7 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
               Text("User Type", style: TextStyle(color: themeSettings.textColor, fontSize: 14)),
               Expanded(
                 child: ListTile(
-                  title: Text('Pet Owner', style: TextStyle(color: themeSettings.textColor)),
+                  title: Text('Pet Enthusiast', style: TextStyle(color: themeSettings.textColor)),
                   leading: Radio<String>(
                     value: "pet_owner",
                     fillColor: WidgetStateProperty.all(themeSettings.primaryColor),

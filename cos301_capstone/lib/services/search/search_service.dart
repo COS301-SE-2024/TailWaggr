@@ -14,15 +14,31 @@ class SearchService {
         .get();
 
     print("Users fetched successfully.");
-    // print(querySnapshot.docs);
+    print(querySnapshot.docs.length);
     for (final doc in querySnapshot.docs) {
-      try {
-        User user = User(id: doc.id, name: doc['name'], userType: doc['userType'], location: doc['address']);
+      GeoPoint location = GeoPoint(0, 0);
 
-        user.addProfileUrl(doc['profilePictureUrl']);
-        user.addBio(doc['bio']);
-        users.add(user);
-      } catch (_) {}
+      try {
+        bool verified = doc['emailVerified'];
+      } catch (e) {
+        continue;
+      }
+
+      if (doc['name'] == "Shuaib") {
+        print("Shuaib found");
+      }
+
+      try {
+        location = doc['address'];
+      } catch (e) {
+        // print(e);
+      }
+
+      User user = User(id: doc.id, name: doc['name'], userType: doc['userType'], location: location);
+
+      user.addProfileUrl(doc['profilePictureUrl']);
+      user.addBio(doc['bio']);
+      users.add(user);
     }
 
     return users;
