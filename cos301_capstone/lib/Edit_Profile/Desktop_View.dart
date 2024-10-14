@@ -658,7 +658,7 @@ class _UpdateThemeState extends State<UpdateTheme> {
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.circular(100),
-              // border: Border.all(color: Colors.white, width: 2),
+              border: Border.all(color: Colors.black, width: 1),
             ),
           ),
           SizedBox(width: 10),

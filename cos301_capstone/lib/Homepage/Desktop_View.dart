@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final HomePageService homePageService = HomePageService();
+
 class DesktopHomepage extends StatefulWidget {
   const DesktopHomepage({super.key});
 
@@ -165,7 +166,7 @@ class _PostContainerState extends State<PostContainer> {
                 },
                 child: Text(
                   'Search',
-                  style: TextStyle(color: themeSettings.textColor),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -1232,27 +1233,34 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                 ],
               ),
             ] else ...[
-              Container(
-                key: Key('add-photo-button'),
-                decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
                 child: GestureDetector(
                   onTap: () => imagePicker.pickFiles(),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add_a_photo,
-                            color: themeSettings.textColor.withOpacity(0.7),
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            "Add a photo",
-                            style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
-                          ),
-                        ],
+                  child: Container(
+                    key: Key('add-photo-button'),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      color: Colors.transparent,
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_a_photo,
+                              color: themeSettings.textColor.withOpacity(0.7),
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              "Add a photo",
+                              style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -1472,7 +1480,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "🔞 Warning!",  // Title
+                                "🔞 Warning!", // Title
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
@@ -1481,13 +1489,13 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                               ),
                               SizedBox(height: 8),
                               Text(
-                                moderationResult['message'],  // Full message
+                                moderationResult['message'], // Full message
                                 style: TextStyle(color: themeSettings.textColor), // Customize text color
                               ),
                             ],
                           ),
-                          duration: Duration(seconds: 20),  // Increase the duration if needed
-                          behavior: SnackBarBehavior.floating,  // Makes the snackbar floating
+                          duration: Duration(seconds: 20), // Increase the duration if needed
+                          behavior: SnackBarBehavior.floating, // Makes the snackbar floating
                         ),
                       );
                       //prevent the post from being uploaded

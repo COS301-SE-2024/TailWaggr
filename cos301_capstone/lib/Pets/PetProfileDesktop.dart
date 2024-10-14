@@ -20,10 +20,10 @@ class PetProfileDesktop extends StatefulWidget {
 
 class _PetProfileDesktopState extends State<PetProfileDesktop> {
   bool isDatePickerVisible = false;
-  String creatingNewPetText = 'Create Your Pets Profile';
+  String creatingNewPetText = "Create Your Pet's Profile";
   bool isCreateButtonDisabled = false;
 
-  String edittingPetText = 'Update Your Pets Profile';
+  String edittingPetText = "Update Your Pet's Profile";
   bool usingNewImage = false;
 
   String removePetText = 'Remove Pet Profile';
@@ -119,12 +119,12 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  widget.creatingNewPet ? 'Create Your Pets Profile' : 'Update your pets profile',
+                  widget.creatingNewPet ? "Create Your Pet's Profile" : "Update Your Pet's Profile",
                   style: TextStyle(color: themeSettings.primaryColor, fontSize: subtitleTextSize),
                 ),
                 if (widget.creatingNewPet) ...[
                   Text(
-                    'Please fill in the details below to create your pets profile',
+                    "Please fill in the details below to create your pet's profile",
                     style: TextStyle(
                       color: themeSettings.textColor,
                       fontSize: bodyTextSize,
@@ -280,7 +280,7 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
                       onPressed: () async {
                         try {
                           if (PetProfileVariables.nameController.text.isEmpty || PetProfileVariables.bioController.text.isEmpty || PetProfileVariables.birthdateController.text.isEmpty) {
-                            showCustomSnackBar(context, 'Please make sure all fields ae filled in', Colors.red);
+                            showCustomSnackBar(context, 'Please make sure all fields are filled in', Colors.red);
                             return;
                           }
 
@@ -314,14 +314,14 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
                           });
                         } finally {
                           setState(() {
-                            creatingNewPetText = 'Create Your Pets Profile';
+                            creatingNewPetText = "Create Your Pet's Profile";
                           });
                         }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: themeSettings.primaryColor,
                       ),
-                      child: Text(creatingNewPetText, style: TextStyle(color: themeSettings.textColor)),
+                      child: Text(creatingNewPetText, style: TextStyle(color: Colors.white)),
                     ),
                   ),
                 ] else ...[
@@ -373,7 +373,7 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
                           onPressed: () async {
                             try {
                               if (PetProfileVariables.nameController.text.isEmpty || PetProfileVariables.bioController.text.isEmpty || PetProfileVariables.birthdateController.text.isEmpty) {
-                                showCustomSnackBar(context, 'Please make sure all fields ae filled in', Colors.red);
+                                showCustomSnackBar(context, 'Please make sure all fields are filled in', Colors.red);
                                 return;
                               }
 
@@ -399,14 +399,14 @@ class _PetProfileDesktopState extends State<PetProfileDesktop> {
                               showCustomSnackBar(context, 'Error creating pet profile', Colors.red);
                             } finally {
                               setState(() {
-                                edittingPetText = 'Update Your Pets Profile';
+                                edittingPetText = "Update Your Pet's Profile";
                               });
                             }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: themeSettings.primaryColor,
                           ),
-                          child: Text(edittingPetText, style: TextStyle(color: themeSettings.textColor)),
+                          child: Text(edittingPetText, style: TextStyle(color: Colors.white)),
                         ),
                       ),
                     ],
