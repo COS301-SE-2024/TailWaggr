@@ -10,6 +10,7 @@ import 'package:cos301_capstone/services/search/search_service.dart';
 import 'package:flutter/material.dart';
 
 ProfileService profileService = ProfileService();
+ValueNotifier<int> refreshFriendsList = ValueNotifier<int>(0);
 
 class DesktopSearch extends StatefulWidget {
   const DesktopSearch({super.key});
@@ -30,6 +31,11 @@ class _DesktopSearchState extends State<DesktopSearch> {
     super.initState();
     searchController = TextEditingController(text: '');
     getUsersByName(false);
+
+
+    refreshFriendsList.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -42,6 +48,10 @@ class _DesktopSearchState extends State<DesktopSearch> {
     setState(() {
       searchText = 'Searching...';
     });
+
+    if (!loadmore) {
+      users.clear();
+    }
 
     try {
       List<User> newUsers = await searchService.searchUsers(searchController.text, loadmore);
@@ -443,7 +453,7 @@ class _FriendCardState extends State<FriendCard> {
                             ),
                           );
 
-                          dispose();
+                          refreshFriendsList.value++;
                         } catch (_) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -459,7 +469,7 @@ class _FriendCardState extends State<FriendCard> {
                         }
                       },
                       child: Text(
-                        'Unfollow',
+                        unfollowText,
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
