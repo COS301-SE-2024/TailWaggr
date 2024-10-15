@@ -8,6 +8,8 @@ import 'package:cos301_capstone/services/lostAndFound/lostAndFound.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+ValueNotifier<int> refreshListOfPets = ValueNotifier<int>(0);
+
 class LostAndFoundDesktop extends StatefulWidget {
   const LostAndFoundDesktop({super.key});
 
@@ -56,6 +58,10 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
         selectedLostPet.add(false);
       }
     });
+
+    refreshListOfPets.addListener(() {
+      getPetsAndSetMarkers(double.parse(searchDistanceController.text));
+    });
   }
 
   @override
@@ -69,6 +75,7 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
     } catch (e) {
       // print("Error disposing Google Map Controller: $e");
     } finally {
+      refreshListOfPets.removeListener(() {});
       searchDistanceController.dispose();
       super.dispose();
     }
@@ -524,9 +531,9 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
 
                             // return Text("Placeholder for Google Map");
 
-                              return ClipRRect(
-                                borderRadius: BorderRadius.circular(20.0),
-                                child: GoogleMap(
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(20.0),
+                              child: GoogleMap(
                                 key: Key('googleMap'),
                                 style: mapStyle,
                                 initialCameraPosition: LocationVAF.myLocation,
@@ -542,7 +549,7 @@ class _LostAndFoundDesktopState extends State<LostAndFoundDesktop> {
                                 myLocationButtonEnabled: true,
                                 zoomControlsEnabled: true,
                               ),
-                              );
+                            );
                           },
                         ),
                       ),
@@ -721,6 +728,8 @@ class _ListOfPetsState extends State<ListOfPets> {
                                             backgroundColor: Colors.green,
                                           ),
                                         );
+
+                                        refreshListOfPets.value++;
                                       },
                                       child: Text("Report Found", style: TextStyle(color: Colors.white)),
                                     ),

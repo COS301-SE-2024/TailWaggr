@@ -7,6 +7,7 @@ import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/lostAndFound/lostAndFound.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+ValueNotifier<int> refreshListOfPets = ValueNotifier<int>(0);
 
 class LostAndFoundTablet extends StatefulWidget {
   const LostAndFoundTablet({super.key});
@@ -94,6 +95,10 @@ class _LostAndFoundTabletState extends State<LostAndFoundTablet> {
         selectedLostPet.add(false);
       }
     });
+
+    refreshListOfPets.addListener(() {
+      getPetsAndSetMarkers(double.parse(searchDistanceController.text));
+    });
   }
 
   void setMarkers(int index) {
@@ -178,6 +183,7 @@ class _LostAndFoundTabletState extends State<LostAndFoundTablet> {
     } catch (e) {
       // print("Error disposing Google Map Controller: $e");
     } finally {
+      refreshListOfPets.removeListener(() {});
       searchDistanceController.dispose();
       super.dispose();
     }
@@ -723,6 +729,8 @@ class _ListOfPetsState extends State<ListOfPets> {
                                             backgroundColor: Colors.green,
                                           ),
                                         );
+
+                                        refreshListOfPets.value++;
                                       },
                                       child: Text("Report Found", style: TextStyle(color: Colors.white)),
                                     ),

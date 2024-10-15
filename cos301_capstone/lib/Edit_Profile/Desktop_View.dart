@@ -1049,7 +1049,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                         children: [
                           Icon(Icons.gamepad, color: navbarTextColor),
                           SizedBox(width: 10),
-                          Text("Mini Game", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                          Text("Pet Runner", style: TextStyle(color: navbarTextColor, fontSize: 14)),
                         ],
                       ),
                     ],
