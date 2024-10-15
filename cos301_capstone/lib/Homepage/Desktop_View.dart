@@ -239,6 +239,17 @@ class _PostState extends State<Post> {
     getViews();
     getCommentCount();
     checkIfLiked();
+    getUser();
+  }
+
+  void getUser() {
+    homePageService.getUserDetails(widget.postDetails['UserId']).then((value) {
+      if (!mounted) return; // Check if the widget is still mounted
+      setState(() {
+        widget.postDetails['name'] = value['name'] + ' ' + value['surname'];
+        widget.postDetails['pictureUrl'] = value['profilePictureUrl'];
+      });
+    });
   }
 
   void getLikes() async {

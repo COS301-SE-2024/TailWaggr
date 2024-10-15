@@ -124,6 +124,7 @@ class UpdatePersonalDetails extends StatefulWidget {
 class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
   bool isDatePickerVisible = false;
   bool isPhoneValid = true;
+  String saveChangesText = "Save Changes";
 
   ImagePicker imagePickerLocal = ImagePicker();
 
@@ -455,13 +456,22 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
                     print("Phone number is invalid");
                   }
                 : () async {
+
+                    setState(() {
+                      saveChangesText = "Saving...";
+                    });
+
                     await EditProfileVariables.updatePersonalDetails(context, imagePickerLocal);
+
+                    setState(() {
+                      saveChangesText = "Save Changes";
+                    });
                   },
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
             ),
             child: Text(
-              "Save Changes",
+              saveChangesText,
               style: TextStyle(
                 fontSize: bodyTextSize,
                 color: Colors.white,
@@ -1158,7 +1168,9 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                             profileDetails.usingDefaultImage = useDefaultImage;
                             saveChangesText = "Saving...";
                           });
+
                           await EditProfileVariables.setNavbarPreferences(useImage, useDefaultImage);
+
                           setState(() {
                             saveChangesText = "Save Changes";
                           });

@@ -17,7 +17,7 @@ class ProfileService {
     _db = db ?? FirebaseFirestore.instance;
     _storage = storage ?? FirebaseStorage.instance;
   }
-  
+
   Future<Map<String, dynamic>?> getUserDetails(String userId) async {
     try {
       DocumentSnapshot doc = await _db.collection('users').doc(userId).get();
@@ -49,10 +49,9 @@ class ProfileService {
   }
 
   Future<List<Map<String, dynamic>>> getUserPets(String userId) async {
-    try{
+    try {
       return GeneralService().getUserPets(userId);
-    }
-    catch(e){
+    } catch (e) {
       print("Error fetching pets: $e");
       return [];
     }
@@ -91,7 +90,6 @@ class ProfileService {
 
       // Update profile image
       if (profileImage != null) {
-
         print("Profile image isnt null");
 
         String profilePhotoFileName = 'profile_images/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(profileImage.name)}';
@@ -107,14 +105,20 @@ class ProfileService {
         String? oldProfileImageUrl = await getUserDetails(userId).then((value) => value?['profilePictureUrl']);
         print("Old profile image url: $oldProfileImageUrl");
         if (oldProfileImageUrl != null && oldProfileImageUrl != "") {
-          await _storage.refFromURL(oldProfileImageUrl).delete();
+          try {
+            await _storage.refFromURL(oldProfileImageUrl).delete();
+          } on Exception catch (_) {}
         }
+
+        profileDetails.profilePicture = profileImgUrl;
 
         await _updateProfileData(userId, {'profilePictureUrl': profileImgUrl});
       }
 
       // Update sidebar image
       if (sidebarImage != null) {
+        print("Sidebar image isnt null");
+
         String sidebarPhotoFileName = 'sidebar_images/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(sidebarImage.name)}';
         Uint8List? sidebarFileBytes = sidebarImage.bytes;
         if (sidebarFileBytes == null) {
@@ -124,11 +128,15 @@ class ProfileService {
         TaskSnapshot sidebarUploadTask = await _storage.ref(sidebarPhotoFileName).putData(sidebarFileBytes, sidebarMetadata);
         String sidebarImgUrl = await sidebarUploadTask.ref.getDownloadURL();
 
+        print("Sidebar image url: $sidebarImgUrl");
+
         // Delete the old sidebar image
         String? oldSidebarImageUrl = await getUserDetails(userId).then((value) => value?['sidebarImage']);
-        if (oldSidebarImageUrl != null) {
+        if (oldSidebarImageUrl != null && oldSidebarImageUrl != "") {
           await _storage.refFromURL(oldSidebarImageUrl).delete();
         }
+
+        print("Sidebar image url: $sidebarImgUrl");
 
         await _updateProfileData(userId, {'sidebarImage': sidebarImgUrl});
       }
@@ -157,6 +165,7 @@ class ProfileService {
       return [];
     }
   }
+
   /// The following fields can be added to the pet profile:
   /// - bio: (string) A short biography of the pet.
   /// - birthDate: (timestamp) The pet's birth date.
@@ -185,6 +194,7 @@ class ProfileService {
       return false;
     }
   }
+
   Future<bool> deletePet(String ownerId, String petId) async {
     try {
       // Delete the pet profile image
@@ -210,6 +220,7 @@ class ProfileService {
       print("Error updating pet: $e");
     }
   }
+
   /// The following fields can be added to the pet profile:
   /// - bio: (string) A short biography of the pet.
   /// - birthDate: (timestamp) The pet's birth date.
@@ -247,12 +258,9 @@ class ProfileService {
 
   Future<bool> followUser(String userId, String friendId, String type) async {
     try {
-
       profileDetails.friends[friendId] = type;
 
-      await _db.collection('users').doc(userId).update({
-        'friends': profileDetails.friends
-      });
+      await _db.collection('users').doc(userId).update({'friends': profileDetails.friends});
 
       if (type == "Requested") {
         // Fetch the user's requests
@@ -263,12 +271,9 @@ class ProfileService {
           HashMap<String, dynamic> friendRequests = friendData['friendRequests'] != null ? HashMap.from(friendData['friendRequests']) : HashMap<String, String>();
           friendRequests[userId] = 'Pending';
 
-          await _db.collection('users').doc(friendId).update({
-            'friendRequests': friendRequests
-          });
+          await _db.collection('users').doc(friendId).update({'friendRequests': friendRequests});
         }
       }
-
 
       return true;
     } catch (e) {
@@ -281,9 +286,7 @@ class ProfileService {
     try {
       profileDetails.friends.remove(friendId);
 
-      await _db.collection('users').doc(userId).update({
-        'friends': profileDetails.friends
-      });
+      await _db.collection('users').doc(userId).update({'friends': profileDetails.friends});
 
       // Fetch the user's requests
       DocumentSnapshot friendDoc = await _db.collection('users').doc(friendId).get();
@@ -293,9 +296,7 @@ class ProfileService {
         HashMap<String, dynamic> friendRequests = friendData['friendRequests'] != null ? HashMap.from(friendData['friendRequests']) : HashMap<String, String>();
         friendRequests.remove(userId);
 
-        await _db.collection('users').doc(friendId).update({
-          'friendRequests': friendRequests
-        });
+        await _db.collection('users').doc(friendId).update({'friendRequests': friendRequests});
       }
       return true;
     } catch (e) {
@@ -308,9 +309,7 @@ class ProfileService {
     try {
       profileDetails.requests.remove(friendId);
 
-      await _db.collection('users').doc(userId).update({
-        'friendRequests': profileDetails.requests
-      });
+      await _db.collection('users').doc(userId).update({'friendRequests': profileDetails.requests});
 
       // Fetch the user's requests
       DocumentSnapshot friendDoc = await _db.collection('users').doc(friendId).get();
@@ -320,9 +319,7 @@ class ProfileService {
         HashMap<String, dynamic> friendRequests = friendData['friends'] != null ? HashMap.from(friendData['friends']) : HashMap<String, String>();
         friendRequests[userId] = 'Following';
 
-        await _db.collection('users').doc(friendId).update({
-          'friends': friendRequests
-        });
+        await _db.collection('users').doc(friendId).update({'friends': friendRequests});
       }
 
       return true;
@@ -336,9 +333,7 @@ class ProfileService {
     try {
       profileDetails.requests.remove(friendId);
 
-      await _db.collection('users').doc(userId).update({
-        'friendRequests': profileDetails.requests
-      });
+      await _db.collection('users').doc(userId).update({'friendRequests': profileDetails.requests});
 
       // Fetch the user's requests
       DocumentSnapshot friendDoc = await _db.collection('users').doc(friendId).get();
@@ -348,9 +343,7 @@ class ProfileService {
         HashMap<String, dynamic> friendRequests = friendData['friends'] != null ? HashMap.from(friendData['friends']) : HashMap<String, String>();
         friendRequests.remove(userId);
 
-        await _db.collection('users').doc(friendId).update({
-          'friends': friendRequests
-        });
+        await _db.collection('users').doc(friendId).update({'friends': friendRequests});
       }
 
       return true;

@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:animations/animations.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Homepage/Desktop_View.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
@@ -157,6 +158,17 @@ class _PostState extends State<Post> {
     getLikes();
     getViews();
     getCommentCount();
+    getUser();
+  }
+
+  void getUser() {
+    homePageService.getUserDetails(widget.postDetails['UserId']).then((value) {
+      if (!mounted) return; // Check if the widget is still mounted
+      setState(() {
+        widget.postDetails['name'] = value['name'] + ' ' + value['surname'];
+        widget.postDetails['pictureUrl'] = value['profilePictureUrl'];
+      });
+    });
   }
 
   void getLikes() async {

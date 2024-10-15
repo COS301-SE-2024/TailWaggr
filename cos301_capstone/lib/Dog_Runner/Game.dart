@@ -95,14 +95,13 @@ class _GameViewState extends State<GameView> {
   void onUnityMessage(message) {
     print("function running");
     print("Score is: ${profileDetails.score}");
-    if(message == "Send Me"){
+    if (message == "Send Me") {
       _unityWidgetController?.postMessage(
         'FlutterMessenger',
         'ReceiveMe',
         profileDetails.name + "," + profileDetails.score.toString(),
       );
-    }
-    if (message == "Refresh the leaderboard") {
+    } else if (message == "Refresh the leaderboard") {
       print("leaderboard sent");
       sendLeaderboard();
     } else {
