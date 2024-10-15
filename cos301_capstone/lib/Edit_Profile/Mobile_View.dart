@@ -976,7 +976,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                             children: [
                               Icon(Icons.search, color: navbarTextColor),
                               SizedBox(width: 10),
-                              Text("Search", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                              Text("Friends", style: TextStyle(color: navbarTextColor, fontSize: 14)),
                             ],
                           ),
                           SizedBox(height: 10),

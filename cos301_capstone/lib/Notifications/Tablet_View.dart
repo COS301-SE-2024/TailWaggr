@@ -9,6 +9,8 @@ import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/forum/forum.dart';
 import 'package:flutter/material.dart';
 
+ValueNotifier<int> refreshRequests = ValueNotifier<int>(0);
+
 class TabletNotifications extends StatefulWidget {
   const TabletNotifications({super.key});
 
@@ -28,6 +30,18 @@ class _TabletNotificationsState extends State<TabletNotifications> {
   void initState() {
     super.initState();
     _fetchNotifications();
+
+    refreshRequests.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    refreshRequests.removeListener(() {
+      setState(() {});
+    });
+    super.dispose();
   }
 
   void _fetchNotifications() async {
@@ -238,7 +252,6 @@ class _TabletNotificationsState extends State<TabletNotifications> {
                                         SingleChildScrollView(
                                           child: Column(
                                             children: [
-
                                               if (profileDetails.requests.isEmpty)
                                                 Center(
                                                   child: Text(
@@ -246,7 +259,6 @@ class _TabletNotificationsState extends State<TabletNotifications> {
                                                     style: TextStyle(fontSize: subtitleTextSize - 2, color: themeSettings.primaryColor),
                                                   ),
                                                 ),
-
                                               for (var request in profileDetails.requests.entries)
                                                 RequestCard(
                                                   request: request,
@@ -373,6 +385,8 @@ class _RequestCardState extends State<RequestCard> {
                               backgroundColor: Colors.green,
                             ),
                           );
+
+                          refreshRequests.value++;
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -406,6 +420,8 @@ class _RequestCardState extends State<RequestCard> {
                               backgroundColor: Colors.red,
                             ),
                           );
+
+                          refreshRequests.value++;
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -430,7 +446,6 @@ class _RequestCardState extends State<RequestCard> {
     );
   }
 }
-
 
 class NotificationCard extends StatelessWidget {
   final Map<String, dynamic> notification;

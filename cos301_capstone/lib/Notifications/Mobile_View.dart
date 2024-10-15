@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Mobile_View.dart';
@@ -7,6 +9,8 @@ import 'package:cos301_capstone/services/Profile/profile_service.dart';
 // import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:cos301_capstone/services/forum/forum.dart';
 import 'package:flutter/material.dart';
+
+ValueNotifier<int> refreshRequests = ValueNotifier<int>(0);
 
 class MobileNotifications extends StatefulWidget {
   const MobileNotifications({super.key});
@@ -27,6 +31,18 @@ class _MobileNotificationsState extends State<MobileNotifications> {
   void initState() {
     super.initState();
     _fetchNotifications();
+
+    refreshRequests.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    refreshRequests.removeListener(() {
+      setState(() {});
+    });
+    super.dispose();
   }
 
   void _fetchNotifications() async {
@@ -365,6 +381,8 @@ class _RequestCardState extends State<RequestCard> {
                               backgroundColor: Colors.green,
                             ),
                           );
+
+                          refreshRequests.value++;
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -398,6 +416,8 @@ class _RequestCardState extends State<RequestCard> {
                               backgroundColor: Colors.red,
                             ),
                           );
+
+                          refreshRequests.value++;
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

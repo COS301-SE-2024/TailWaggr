@@ -11,6 +11,8 @@ import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/forum/forum.dart';
 import 'package:flutter/material.dart';
 
+ValueNotifier<int> refreshRequests = ValueNotifier<int>(0);
+
 class DesktopNotifications extends StatefulWidget {
   const DesktopNotifications({super.key});
 
@@ -30,6 +32,18 @@ class DesktopNotificationsState extends State<DesktopNotifications> {
   void initState() {
     super.initState();
     _fetchNotifications();
+
+    refreshRequests.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    refreshRequests.removeListener(() {
+      setState(() {});
+    });
+    super.dispose();
   }
 
   void _fetchNotifications() async {
@@ -243,7 +257,6 @@ class DesktopNotificationsState extends State<DesktopNotifications> {
                                         SingleChildScrollView(
                                           child: Column(
                                             children: [
-
                                               if (profileDetails.requests.isEmpty)
                                                 Center(
                                                   child: Text(
@@ -251,7 +264,6 @@ class DesktopNotificationsState extends State<DesktopNotifications> {
                                                     style: TextStyle(fontSize: subtitleTextSize - 2, color: themeSettings.primaryColor),
                                                   ),
                                                 ),
-
                                               for (var request in profileDetails.requests.entries)
                                                 RequestCard(
                                                   request: request,
@@ -308,13 +320,22 @@ class _RequestCardState extends State<RequestCard> {
         Map<String, dynamic>? userData = userSnapshot.data() as Map<String, dynamic>?;
 
         if (userData != null) {
+
+          GeoPoint location;
+
+          try {
+            location = userData['address'];
+          } catch (e) {
+            location = GeoPoint(0, 0);
+          }
+
           user = User(
             id: widget.request.key,
             name: userData['name'],
             email: userData['email'],
             profileUrl: userData['profilePictureUrl'],
             userType: userData['userType'],
-            location: userData['address'],
+            location: location,
           );
 
           setState(() {
@@ -378,6 +399,8 @@ class _RequestCardState extends State<RequestCard> {
                               backgroundColor: Colors.green,
                             ),
                           );
+
+                          refreshRequests.value++;
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -411,6 +434,8 @@ class _RequestCardState extends State<RequestCard> {
                               backgroundColor: Colors.red,
                             ),
                           );
+
+                          refreshRequests.value++;
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
