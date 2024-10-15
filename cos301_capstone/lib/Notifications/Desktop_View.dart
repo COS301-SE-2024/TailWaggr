@@ -186,101 +186,104 @@ class DesktopNotificationsState extends State<DesktopNotifications> {
                     key: Key('loading-notifications'),
                     child: CircularProgressIndicator(),
                   )
-                : notifications.isEmpty
-                    ? Center(
-                        child: Text(
-                          "No notifications",
-                          style: TextStyle(fontSize: subtitleTextSize - 2, color: themeSettings.primaryColor),
-                        ),
-                      )
-                    : Column(
-                        // Constrained by parent height
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Notifications",
-                            style: TextStyle(fontSize: subtitleTextSize - 2, color: themeSettings.primaryColor),
-                          ),
-                          Expanded(
-                            // Ensure TabBarView gets a constrained height
-                            child: DefaultTabController(
-                              initialIndex: 0,
-                              length: 2,
-                              child: Column(
-                                children: [
-                                  TabBar(
-                                    labelColor: themeSettings.secondaryColor,
-                                    indicatorColor: themeSettings.secondaryColor,
-                                    dividerColor: Colors.transparent,
-                                    tabs: [
-                                      Tab(
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.notifications),
-                                            SizedBox(width: 10),
-                                            Text("Notifications"),
-                                          ],
-                                        ),
-                                      ),
-                                      Tab(
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.add),
-                                            SizedBox(width: 10),
-                                            Text("Requests"),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Divider(),
-                                  Expanded(
-                                    // Constrain the TabBarView's height
-                                    child: TabBarView(
+                : Column(
+                    // Constrained by parent height
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Notifications",
+                        style: TextStyle(fontSize: subtitleTextSize - 2, color: themeSettings.primaryColor),
+                      ),
+                      Expanded(
+                        // Ensure TabBarView gets a constrained height
+                        child: DefaultTabController(
+                          initialIndex: 0,
+                          length: 2,
+                          child: Column(
+                            children: [
+                              TabBar(
+                                labelColor: themeSettings.secondaryColor,
+                                indicatorColor: themeSettings.secondaryColor,
+                                dividerColor: Colors.transparent,
+                                tabs: [
+                                  Tab(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        // Wrap notifications list in a scrollable view
-                                        SingleChildScrollView(
-                                          child: Column(
-                                            children: [
-                                              for (var notification in notifications)
-                                                NotificationCard(
-                                                  notification: notification,
-                                                  formatDate: formatDate,
-                                                  onMarkAsRead: _markAsRead,
-                                                ),
-                                            ],
-                                          ),
-                                        ),
-                                        // Second tab content
-                                        SingleChildScrollView(
-                                          child: Column(
-                                            children: [
-                                              if (profileDetails.requests.isEmpty)
-                                                Center(
-                                                  child: Text(
-                                                    "No friend requests",
-                                                    style: TextStyle(fontSize: subtitleTextSize - 2, color: themeSettings.primaryColor),
-                                                  ),
-                                                ),
-                                              for (var request in profileDetails.requests.entries)
-                                                RequestCard(
-                                                  request: request,
-                                                  profileService: profileService,
-                                                ),
-                                            ],
-                                          ),
-                                        ),
+                                        Icon(Icons.notifications),
+                                        SizedBox(width: 10),
+                                        Text("Notifications"),
                                       ],
                                     ),
                                   ),
+                                  Tab(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.add),
+                                        SizedBox(width: 10),
+                                        Text("Requests"),
+                                      ],
+                                    ),
+                                  )
                                 ],
                               ),
-                            ),
+                              Divider(),
+                              Expanded(
+                                // Constrain the TabBarView's height
+                                child: TabBarView(
+                                  children: [
+                                    // Wrap notifications list in a scrollable view
+                                    SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          if (notifications.isEmpty) ...{
+                                            Center(
+                                              child: Text(
+                                                "No notifications",
+                                                style: TextStyle(fontSize: subtitleTextSize - 2, color: themeSettings.primaryColor),
+                                              ),
+                                            ),
+                                          } else ...{
+                                            for (var notification in notifications) ...{
+                                              NotificationCard(
+                                                notification: notification,
+                                                formatDate: formatDate,
+                                                onMarkAsRead: _markAsRead,
+                                              ),
+                                            }
+                                          }
+                                        ],
+                                      ),
+                                    ),
+                                    // Second tab content
+                                    SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          if (profileDetails.requests.isEmpty)
+                                            Center(
+                                              child: Text(
+                                                "No friend requests",
+                                                style: TextStyle(fontSize: subtitleTextSize - 2, color: themeSettings.primaryColor),
+                                              ),
+                                            ),
+                                          for (var request in profileDetails.requests.entries)
+                                            RequestCard(
+                                              request: request,
+                                              profileService: profileService,
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
+                    ],
+                  ),
           ),
         ),
       ],
@@ -320,7 +323,6 @@ class _RequestCardState extends State<RequestCard> {
         Map<String, dynamic>? userData = userSnapshot.data() as Map<String, dynamic>?;
 
         if (userData != null) {
-
           GeoPoint location;
 
           try {
