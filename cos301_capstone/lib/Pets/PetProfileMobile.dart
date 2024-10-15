@@ -20,10 +20,10 @@ class PetProfileMobile extends StatefulWidget {
 
 class _PetProfileMobileState extends State<PetProfileMobile> {
   bool isDatePickerVisible = false;
-  String creatingNewPetText = 'Create Your Pets Profile';
+  String creatingNewPetText = "Create Your Pet's Profile";
   bool isCreateButtonDisabled = false;
 
-  String edittingPetText = 'Update Your Pets Profile';
+  String edittingPetText = "Update Your Pet's Profile";
   bool usingNewImage = false;
 
   String removePetText = 'Remove Pet Profile';
@@ -117,7 +117,7 @@ class _PetProfileMobileState extends State<PetProfileMobile> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  widget.creatingNewPet ? 'Create Your Pets Profile' : 'Update your pets profile',
+                  widget.creatingNewPet ? "Create Your Pet's Profile" : "Update Your Pet's Profile",
                   textAlign: TextAlign.center,
                   style: TextStyle(color: themeSettings.primaryColor, fontSize: subtitleTextSize),
                 ),
@@ -279,7 +279,7 @@ class _PetProfileMobileState extends State<PetProfileMobile> {
                       onPressed: () async {
                         try {
                           if (PetProfileVariables.nameController.text.isEmpty || PetProfileVariables.bioController.text.isEmpty || PetProfileVariables.birthdateController.text.isEmpty) {
-                            showCustomSnackBar(context, 'Please make sure all fields ae filled in', Colors.red);
+                            showCustomSnackBar(context, 'Please make sure all fields are filled in', Colors.red);
                             return;
                           }
 
@@ -313,14 +313,14 @@ class _PetProfileMobileState extends State<PetProfileMobile> {
                           });
                         } finally {
                           setState(() {
-                            creatingNewPetText = 'Create Your Pets Profile';
+                            creatingNewPetText = "Create Your Pet's Profile";
                           });
                         }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: themeSettings.primaryColor,
                       ),
-                      child: Text(creatingNewPetText, style: TextStyle(color: themeSettings.textColor)),
+                      child: Text(creatingNewPetText, style: TextStyle(color: Colors.white)),
                     ),
                   ),
                 ] else ...[
@@ -360,7 +360,7 @@ class _PetProfileMobileState extends State<PetProfileMobile> {
                         backgroundColor: WidgetStateProperty.all(themeSettings.cardColor),
                         side: WidgetStateProperty.all(BorderSide(color: themeSettings.secondaryColor)),
                       ),
-                      child: Text(removePetText, style: TextStyle(color: themeSettings.textColor)),
+                      child: Text(removePetText, style: TextStyle(color: Colors.white)),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -370,7 +370,7 @@ class _PetProfileMobileState extends State<PetProfileMobile> {
                       onPressed: () async {
                         try {
                           if (PetProfileVariables.nameController.text.isEmpty || PetProfileVariables.bioController.text.isEmpty || PetProfileVariables.birthdateController.text.isEmpty) {
-                            showCustomSnackBar(context, 'Please make sure all fields ae filled in', Colors.red);
+                            showCustomSnackBar(context, 'Please make sure all fields are filled in', Colors.red);
                             return;
                           }
 
@@ -396,14 +396,14 @@ class _PetProfileMobileState extends State<PetProfileMobile> {
                           showCustomSnackBar(context, 'Error creating pet profile', Colors.red);
                         } finally {
                           setState(() {
-                            edittingPetText = 'Update Your Pets Profile';
+                            edittingPetText = "Update Your Pet's Profile";
                           });
                         }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: themeSettings.primaryColor,
                       ),
-                      child: Text(edittingPetText, style: TextStyle(color: themeSettings.textColor)),
+                      child: Text(edittingPetText, style: TextStyle(color: Colors.white)),
                     ),
                   )
                 ],

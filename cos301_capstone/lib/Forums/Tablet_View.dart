@@ -488,7 +488,7 @@ class _MessageViewState extends State<MessageView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              userProfile?['userName'] ?? 'Unknown User',
+              userProfile?['name'] ?? 'Unknown User',
               style: TextStyle(
                   fontSize: 24, color: Colors.black, fontWeight: FontWeight.bold),
             ),
@@ -525,7 +525,7 @@ class _MessageViewState extends State<MessageView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          replyUserProfile?['userName'] ?? 'Unknown User',
+                          replyUserProfile?['name'] ?? 'Unknown User',
                           style: TextStyle(fontSize: 18, color: Colors.black),
                         ),
                         SizedBox(height: 5),

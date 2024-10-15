@@ -1,11 +1,10 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:cos301_capstone/services/Profile/profile_service.dart';
-import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
-import 'package:cos301_capstone/Navbar/Mobile_View.dart';
+import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:cos301_capstone/services/forum/forum.dart';
+import 'package:flutter/material.dart';
 
 class MobileForums extends StatefulWidget {
   const MobileForums({super.key});
@@ -1092,7 +1091,7 @@ class _MessageViewState extends State<MessageView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        userProfile?['userName'] ?? 'Unknown User',
+                        userProfile?['name'] ?? 'Unknown User',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -1172,7 +1171,7 @@ class _MessageViewState extends State<MessageView> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    replyUserProfile?['userName'] ?? 'Unknown User',
+                                    replyUserProfile?['name'] ?? 'Unknown User',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,

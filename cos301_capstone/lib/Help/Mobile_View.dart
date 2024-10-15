@@ -1,9 +1,8 @@
 // ignore_for_file: prefer__ructors, prefer__literals_to_create_immutables, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:cos301_capstone/Global_Variables.dart';
-import 'package:cos301_capstone/Navbar/Desktop_View.dart';
-import 'package:flutter/material.dart';
 import 'package:accordion/accordion.dart';
+import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MobileHelp extends StatefulWidget {

@@ -21,7 +21,7 @@ class _MessageViewState extends State<MessageView> {
 
   @override
   Widget build(BuildContext context) {
-    final postId = widget.post['messageId'];
+    // final postId = widget.post['messageId'];
     final userId = widget.post['message']['UserId'] as String;
     final userProfile = widget.userProfiles[userId];
     final replies = widget.post['replies'] ?? [];

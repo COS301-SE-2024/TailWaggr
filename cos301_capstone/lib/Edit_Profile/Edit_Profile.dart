@@ -2,10 +2,12 @@
 
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Edit_Profile/Desktop_View.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Edit_Profile/Mobile_View.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
+import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/imageApi/imageFilter.dart';
 import 'package:file_picker/file_picker.dart';
@@ -109,6 +111,7 @@ class EditProfileVariables {
                     
     }
     print("Birthdate: ${EditProfileVariables.birthdate}");
+    print("User Type: ${profileDetails.userType}");
 
     Map<String, dynamic> jsonData = {
       'name': profileDetails.name,
@@ -121,7 +124,12 @@ class EditProfileVariables {
         'phoneNumber': profileDetails.phone,
       },
       'profileVisibility': profileDetails.isPublic,
+      'userType': profileDetails.userType,
     };
+
+    if (profileDetails.userType == "PetSitter") {
+      jsonData['address'] = GeoPoint(LocationVAF.myLocation.target.latitude, LocationVAF.myLocation.target.longitude);
+    }
 
     if (EditProfileVariables.birthdate != null) {
       jsonData['birthDate'] = EditProfileVariables.birthdate;

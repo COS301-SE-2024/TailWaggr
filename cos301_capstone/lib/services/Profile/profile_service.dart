@@ -1,11 +1,13 @@
 // import 'dart:ffi';
-import 'dart:io';
+import 'dart:collection';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
-import 'package:cos301_capstone/services/general/general_service.dart';
 
 class ProfileService {
   late final FirebaseFirestore _db;
@@ -15,7 +17,7 @@ class ProfileService {
     _db = db ?? FirebaseFirestore.instance;
     _storage = storage ?? FirebaseStorage.instance;
   }
-  
+
   Future<Map<String, dynamic>?> getUserDetails(String userId) async {
     try {
       DocumentSnapshot doc = await _db.collection('users').doc(userId).get();
@@ -47,10 +49,9 @@ class ProfileService {
   }
 
   Future<List<Map<String, dynamic>>> getUserPets(String userId) async {
-    try{
+    try {
       return GeneralService().getUserPets(userId);
-    }
-    catch(e){
+    } catch (e) {
       print("Error fetching pets: $e");
       return [];
     }
@@ -89,7 +90,6 @@ class ProfileService {
 
       // Update profile image
       if (profileImage != null) {
-
         print("Profile image isnt null");
 
         String profilePhotoFileName = 'profile_images/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(profileImage.name)}';
@@ -105,14 +105,20 @@ class ProfileService {
         String? oldProfileImageUrl = await getUserDetails(userId).then((value) => value?['profilePictureUrl']);
         print("Old profile image url: $oldProfileImageUrl");
         if (oldProfileImageUrl != null && oldProfileImageUrl != "") {
-          await _storage.refFromURL(oldProfileImageUrl).delete();
+          try {
+            await _storage.refFromURL(oldProfileImageUrl).delete();
+          } on Exception catch (_) {}
         }
+
+        profileDetails.profilePicture = profileImgUrl;
 
         await _updateProfileData(userId, {'profilePictureUrl': profileImgUrl});
       }
 
       // Update sidebar image
       if (sidebarImage != null) {
+        print("Sidebar image isnt null");
+
         String sidebarPhotoFileName = 'sidebar_images/${userId}_${DateTime.now().millisecondsSinceEpoch}${path.extension(sidebarImage.name)}';
         Uint8List? sidebarFileBytes = sidebarImage.bytes;
         if (sidebarFileBytes == null) {
@@ -122,11 +128,15 @@ class ProfileService {
         TaskSnapshot sidebarUploadTask = await _storage.ref(sidebarPhotoFileName).putData(sidebarFileBytes, sidebarMetadata);
         String sidebarImgUrl = await sidebarUploadTask.ref.getDownloadURL();
 
+        print("Sidebar image url: $sidebarImgUrl");
+
         // Delete the old sidebar image
         String? oldSidebarImageUrl = await getUserDetails(userId).then((value) => value?['sidebarImage']);
-        if (oldSidebarImageUrl != null) {
+        if (oldSidebarImageUrl != null && oldSidebarImageUrl != "") {
           await _storage.refFromURL(oldSidebarImageUrl).delete();
         }
+
+        print("Sidebar image url: $sidebarImgUrl");
 
         await _updateProfileData(userId, {'sidebarImage': sidebarImgUrl});
       }
@@ -155,6 +165,7 @@ class ProfileService {
       return [];
     }
   }
+
   /// The following fields can be added to the pet profile:
   /// - bio: (string) A short biography of the pet.
   /// - birthDate: (timestamp) The pet's birth date.
@@ -183,6 +194,7 @@ class ProfileService {
       return false;
     }
   }
+
   Future<bool> deletePet(String ownerId, String petId) async {
     try {
       // Delete the pet profile image
@@ -208,6 +220,7 @@ class ProfileService {
       print("Error updating pet: $e");
     }
   }
+
   /// The following fields can be added to the pet profile:
   /// - bio: (string) A short biography of the pet.
   /// - birthDate: (timestamp) The pet's birth date.
@@ -239,6 +252,103 @@ class ProfileService {
       return true;
     } catch (e) {
       print("Error updating pet: $e");
+      return false;
+    }
+  }
+
+  Future<bool> followUser(String userId, String friendId, String type) async {
+    try {
+      profileDetails.friends[friendId] = type;
+
+      await _db.collection('users').doc(userId).update({'friends': profileDetails.friends});
+
+      if (type == "Requested") {
+        // Fetch the user's requests
+        DocumentSnapshot friendDoc = await _db.collection('users').doc(friendId).get();
+        Map<String, dynamic>? friendData = friendDoc.data() as Map<String, dynamic>?;
+
+        if (friendData != null) {
+          HashMap<String, dynamic> friendRequests = friendData['friendRequests'] != null ? HashMap.from(friendData['friendRequests']) : HashMap<String, String>();
+          friendRequests[userId] = 'Pending';
+
+          await _db.collection('users').doc(friendId).update({'friendRequests': friendRequests});
+        }
+      }
+
+      return true;
+    } catch (e) {
+      print("Error following user: $e");
+      return false;
+    }
+  }
+
+  Future<bool> unfollowUser(String userId, String friendId) async {
+    try {
+      profileDetails.friends.remove(friendId);
+
+      await _db.collection('users').doc(userId).update({'friends': profileDetails.friends});
+
+      // Fetch the user's requests
+      DocumentSnapshot friendDoc = await _db.collection('users').doc(friendId).get();
+      Map<String, dynamic>? friendData = friendDoc.data() as Map<String, dynamic>?;
+
+      if (friendData != null) {
+        HashMap<String, dynamic> friendRequests = friendData['friendRequests'] != null ? HashMap.from(friendData['friendRequests']) : HashMap<String, String>();
+        friendRequests.remove(userId);
+
+        await _db.collection('users').doc(friendId).update({'friendRequests': friendRequests});
+      }
+      return true;
+    } catch (e) {
+      print("Error unfollowing user: $e");
+      return false;
+    }
+  }
+
+  Future<bool> acceptFriendRequest(String userId, String friendId) async {
+    try {
+      profileDetails.requests.remove(friendId);
+
+      await _db.collection('users').doc(userId).update({'friendRequests': profileDetails.requests});
+
+      // Fetch the user's requests
+      DocumentSnapshot friendDoc = await _db.collection('users').doc(friendId).get();
+      Map<String, dynamic>? friendData = friendDoc.data() as Map<String, dynamic>?;
+
+      if (friendData != null) {
+        HashMap<String, dynamic> friendRequests = friendData['friends'] != null ? HashMap.from(friendData['friends']) : HashMap<String, String>();
+        friendRequests[userId] = 'Following';
+
+        await _db.collection('users').doc(friendId).update({'friends': friendRequests});
+      }
+
+      return true;
+    } catch (e) {
+      print("Error accepting friend request: $e");
+      return false;
+    }
+  }
+
+  Future<bool> declineFriendRequest(String userId, String friendId) async {
+    try {
+      profileDetails.requests.remove(friendId);
+
+      await _db.collection('users').doc(userId).update({'friendRequests': profileDetails.requests});
+
+      // Fetch the user's requests
+      DocumentSnapshot friendDoc = await _db.collection('users').doc(friendId).get();
+      Map<String, dynamic>? friendData = friendDoc.data() as Map<String, dynamic>?;
+
+      if (friendData != null) {
+        HashMap<String, dynamic> friendRequests = friendData['friends'] != null ? HashMap.from(friendData['friends']) : HashMap<String, String>();
+        friendRequests.remove(userId);
+
+        await _db.collection('users').doc(friendId).update({'friends': friendRequests});
+      }
+
+      return true;
+    } catch (e) {
+      print("Error declining friend request: $e");
       return false;
     }
   }

@@ -3,8 +3,6 @@
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
-import 'package:cos301_capstone/services/Profile/profile_service.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -126,12 +124,16 @@ class UpdatePersonalDetails extends StatefulWidget {
 class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
   bool isDatePickerVisible = false;
   bool isPhoneValid = true;
+  String saveChangesText = "Save Changes";
 
   ImagePicker imagePickerLocal = ImagePicker();
 
   @override
   void initState() {
     super.initState();
+
+    print("User type: ${profileDetails.userType}");
+
     imagePickerLocal.filesNotifier.addListener(() {
       setState(() {});
     });
@@ -394,19 +396,82 @@ class _UpdatePersonalDetailsState extends State<UpdatePersonalDetails> {
               ),
             ],
           ),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    color: themeSettings.textColor,
+                    height: 1,
+                    width: 200,
+                  ),
+                  Text("User Type", style: TextStyle(color: themeSettings.textColor, fontSize: 14)),
+                  Container(
+                    color: themeSettings.textColor,
+                    height: 1,
+                    width: 200,
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: ListTile(
+                      title: Text('Pet Enthusiast', style: TextStyle(color: themeSettings.textColor)),
+                      leading: Radio<String>(
+                        value: "pet_owner",
+                        fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                        groupValue: profileDetails.userType,
+                        onChanged: (String? value) {
+                          setState(() {
+                            profileDetails.userType = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListTile(
+                      title: Text('Pet Sitter', style: TextStyle(color: themeSettings.textColor)),
+                      leading: Radio<String>(
+                        value: "PetSitter",
+                        fillColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                        groupValue: profileDetails.userType,
+                        onChanged: (String? value) {
+                          setState(() {
+                            profileDetails.userType = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
           ElevatedButton(
             onPressed: !isPhoneValid
                 ? () {
                     print("Phone number is invalid");
                   }
                 : () async {
+
+                    setState(() {
+                      saveChangesText = "Saving...";
+                    });
+
                     await EditProfileVariables.updatePersonalDetails(context, imagePickerLocal);
+
+                    setState(() {
+                      saveChangesText = "Save Changes";
+                    });
                   },
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
             ),
             child: Text(
-              "Save Changes",
+              saveChangesText,
               style: TextStyle(
                 fontSize: bodyTextSize,
                 color: Colors.white,
@@ -660,7 +725,7 @@ class _UpdateThemeState extends State<UpdateTheme> {
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.circular(100),
-              // border: Border.all(color: Colors.white, width: 2),
+              border: Border.all(color: Colors.black, width: 1),
             ),
           ),
           SizedBox(width: 10),
@@ -893,7 +958,7 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
           children: [
             Container(
               width: 175,
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.symmetric(horizontal: 20),
               height: double.infinity,
               decoration: useImage
                   ? !useDefaultImage
@@ -905,21 +970,17 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 15,
-                        backgroundImage: NetworkImage(profileDetails.profilePicture),
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        profileDetails.name,
-                        style: TextStyle(color: navbarTextColor, fontSize: 14),
-                      ),
-                    ],
-                  ),
                   Column(
                     children: [
+                      Center(
+                        child: ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            themeSettings.navbarTextColour,
+                            BlendMode.srcIn,
+                          ),
+                          child: Image.asset(width: 100, 'assets/images/Logo_transparent.png'),
+                        ),
+                      ),
                       Row(
                         children: [
                           Icon(Icons.home, color: navbarTextColor),
@@ -933,14 +994,6 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                           Icon(Icons.notifications, color: navbarTextColor),
                           SizedBox(width: 10),
                           Text("Notifications", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Icon(Icons.search, color: navbarTextColor),
-                          SizedBox(width: 10),
-                          Text("Search", style: TextStyle(color: navbarTextColor, fontSize: 14)),
                         ],
                       ),
                       SizedBox(height: 10),
@@ -962,6 +1015,22 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                       SizedBox(height: 10),
                       Row(
                         children: [
+                          Icon(Icons.pets, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Lost and Found", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.search, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Friends", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
                           Icon(Icons.forum_outlined, color: navbarTextColor),
                           SizedBox(width: 10),
                           Text("Forums", style: TextStyle(color: navbarTextColor, fontSize: 14)),
@@ -975,20 +1044,29 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                           Text("Profile", style: TextStyle(color: navbarTextColor, fontSize: 14)),
                         ],
                       ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Icon(Icons.gamepad, color: navbarTextColor),
+                          SizedBox(width: 10),
+                          Text("Pet Runner", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
                     ],
                   ),
-                  Row(
+                  Column(
                     children: [
-                      Icon(Icons.logout, color: navbarTextColor),
-                      SizedBox(width: 10),
-                      Text("Logout", style: TextStyle(color: navbarTextColor, fontSize: 14)),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Icon(Icons.dark_mode, color: navbarTextColor),
-                      SizedBox(width: 10),
-                      Text("Toggle theme", style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            backgroundImage: NetworkImage(profileDetails.profilePicture),
+                          ),
+                          SizedBox(width: 10),
+                          Text(profileDetails.name, style: TextStyle(color: navbarTextColor, fontSize: 14)),
+                        ],
+                      ),
+                      SizedBox(height: 10),
                     ],
                   ),
                 ],
@@ -1090,7 +1168,9 @@ class _UpdateNavbarState extends State<UpdateNavbar> {
                             profileDetails.usingDefaultImage = useDefaultImage;
                             saveChangesText = "Saving...";
                           });
+
                           await EditProfileVariables.setNavbarPreferences(useImage, useDefaultImage);
+
                           setState(() {
                             saveChangesText = "Save Changes";
                           });

@@ -3,8 +3,8 @@
 import 'dart:math';
 
 import 'package:animations/animations.dart';
+import 'package:cos301_capstone/Dog_Runner/Game.dart';
 import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
-import 'package:cos301_capstone/Events/Events.dart';
 import 'package:cos301_capstone/Forums/Forums.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Help/Help.dart';
@@ -13,14 +13,13 @@ import 'package:cos301_capstone/Location/Desktop_View.dart';
 import 'package:cos301_capstone/LostAndFound/LostAndFound.dart';
 import 'package:cos301_capstone/Navbar/Navbar.dart';
 import 'package:cos301_capstone/Notifications/Notifications.dart';
-import 'package:cos301_capstone/User_Profile/Desktop_View.dart';
+import 'package:cos301_capstone/Search/Search.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:cos301_capstone/services/Notifications/notifications.dart';
 import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class DesktopNavbar extends StatefulWidget {
   const DesktopNavbar({super.key});
@@ -72,7 +71,7 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
     return Container(
       width: 250,
       height: double.infinity,
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(horizontal: 20),
       decoration: profileDetails.usingImage
           ? !profileDetails.usingDefaultImage
               ? imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty
@@ -106,17 +105,19 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
             // ),
 
             SizedBox(
-              height: max(MediaQuery.of(context).size.height - 250, 493),
+              height: max(MediaQuery.of(context).size.height - 250, 493 + 27),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ColorFiltered(
-                    colorFilter: ColorFilter.mode(
-                      themeSettings.navbarTextColour,
-                      BlendMode.srcIn,
+                  Center(
+                    child: ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                        themeSettings.navbarTextColour,
+                        BlendMode.srcIn,
+                      ),
+                      child: Image.asset(width: 100, 'assets/images/Logo_transparent.png'),
                     ),
-                    child: Image.asset(width: 200, 'assets/images/Logo_transparent.png'),
                   ),
                   Navbar_Icon(icon: Icons.home, text: "Home", page: Homepage()),
                   Navbar_Icon(
@@ -132,9 +133,11 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   ),
                   Navbar_Icon(icon: Icons.map_sharp, text: "Locate", page: LocationDesktop()),
                   Navbar_Icon(icon: Icons.pets, text: "Lost and Found", page: LostAndFound()),
+                  Navbar_Icon(icon: Icons.search, text: "Friends", page: Search()),
                   Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
                   Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile(userId: profileDetails.userID)),
                   Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),
+                  Navbar_Icon(icon: Icons.gamepad, text: "Pet Runner", page: Game()),
                 ],
               ),
             ),

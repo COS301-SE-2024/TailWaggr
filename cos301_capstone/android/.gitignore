@@ -12,8 +12,8 @@ key.properties
 **/*.keystore
 **/*.jks
 
-android-ndk-r27b/
-
 unityLibrary/
+
+android-ndk-r27b/
 
 unityLibrary.zip

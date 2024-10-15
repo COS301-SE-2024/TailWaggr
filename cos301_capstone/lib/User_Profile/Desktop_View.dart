@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/Pets/Pet_Profile.dart';
@@ -10,7 +10,6 @@ import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'package:animations/animations.dart';
 
 class ProfileDesktop extends StatefulWidget {
   const ProfileDesktop({super.key, required this.userId});
@@ -21,7 +20,6 @@ class ProfileDesktop extends StatefulWidget {
 }
 
 class _ProfileDesktopState extends State<ProfileDesktop> {
-
   ProfileDetails localProfileDetails = ProfileDetails();
 
   String formatDate(DateTime date) {
@@ -36,10 +34,12 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
       if (widget.userId != profileDetails.userID) {
         Map<String, dynamic>? tempDetails = await ProfileService().getUserDetails(widget.userId);
 
-        if (tempDetails != null && tempDetails['profileVisibility']) {
+        if ((tempDetails != null && tempDetails['profileVisibility']) || (profileDetails.friends.containsKey(widget.userId) && profileDetails.friends[widget.userId] == "Following")) {
+
           localProfileDetails.userID = widget.userId;
-          localProfileDetails.name = tempDetails['name'];
-          localProfileDetails.surname = tempDetails['surname'];
+          localProfileDetails.name = tempDetails!['name'];
+
+          localProfileDetails.surname = tempDetails['surname'] ?? "";
           localProfileDetails.email = tempDetails['email'];
           localProfileDetails.bio = tempDetails['bio'];
           localProfileDetails.profilePicture = tempDetails['profilePictureUrl'];
@@ -49,6 +49,7 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
           localProfileDetails.dialCode = tempDetails['phoneDetails']['dialCode'];
           localProfileDetails.birthdate = formatDate(tempDetails['birthDate'].toDate());
           localProfileDetails.userType = tempDetails['userType'];
+          localProfileDetails.isPublic = tempDetails['profileVisibility'];
 
           localProfileDetails.pets = await ProfileService().getUserPets(widget.userId);
           List<DocumentReference> localPosts = await ProfileService().getUserPosts(widget.userId);
@@ -60,12 +61,11 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
             Map<String, dynamic> postData = postSnapshot.data() as Map<String, dynamic>;
             postData['PostId'] = postSnapshot.id;
             localProfileDetails.myPosts.add(postData);
-            print("Post data: $postData");
           }
         } else {
           localProfileDetails.userID = widget.userId;
           localProfileDetails.name = tempDetails!['name'];
-          localProfileDetails.surname = tempDetails['surname'];
+          localProfileDetails.surname = tempDetails['surname'] ?? "";
           localProfileDetails.bio = tempDetails['bio'];
           localProfileDetails.profilePicture = tempDetails['profilePictureUrl'];
 
@@ -78,7 +78,7 @@ class _ProfileDesktopState extends State<ProfileDesktop> {
         }
 
         setState(() {
-          print("Profile details set successfully for: ${localProfileDetails.userID}");
+          // print("Profile details set successfully for: ${localProfileDetails.userID}");
         });
       } else {
         localProfileDetails = profileDetails;
@@ -274,6 +274,13 @@ class _ListOfPostsState extends State<ListOfPosts> {
                           setState(() {
                             profileDetails.myPosts.remove(post);
                           });
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Post deleted successfully'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -305,6 +312,8 @@ class AboutMeContainer extends StatefulWidget {
 }
 
 class _AboutMeContainerState extends State<AboutMeContainer> {
+  ProfileService profileService = ProfileService();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -330,6 +339,96 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
               children: [
                 Text("${widget.profileDetails.name} ${widget.profileDetails.surname}", style: TextStyle(fontSize: subHeadingTextSize)),
                 Text(widget.profileDetails.bio, style: TextStyle(fontSize: subBodyTextSize)),
+                if (widget.profileDetails.email != profileDetails.email) ...[
+                  SizedBox(height: 20),
+                  if (profileDetails.friends.containsKey(widget.profileDetails.userID) && profileDetails.friends[widget.profileDetails.userID] != "Requested") ...[
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                      ),
+                      onPressed: () async {
+                        bool success = await profileService.unfollowUser(profileDetails.userID, widget.profileDetails.userID);
+                        if (success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Unfollowed user'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to unfollow user'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+
+                        setState(() {});
+                      },
+                      child: Text("Unfollow", style: TextStyle(color: Colors.white)),
+                    ),
+                  ] else if (profileDetails.friends.containsKey(widget.profileDetails.userID) && profileDetails.friends[widget.profileDetails.userID] == "Requested") ...{
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                      ),
+                      onPressed: () async {
+                        bool success = await profileService.unfollowUser(profileDetails.userID, widget.profileDetails.userID);
+                        if (success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Follow request cancelled'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to cancel follow request'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+
+                        setState(() {});
+                      },
+                      child: Text("Cancel follow request", style: TextStyle(color: Colors.white)),
+                    ),
+                  } else ...[
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                      ),
+                      onPressed: () async {
+                        bool success = await profileService.followUser(
+                          profileDetails.userID,
+                          widget.profileDetails.userID,
+                          widget.profileDetails.isPublic ? "Following" : "Requested",
+                        );
+
+                        if (success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Follow request sent'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to send follow request'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+
+                        setState(() {});
+                      },
+                      child: Text(widget.profileDetails.isPublic ? "Follow" : "Request to follow", style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ],
                 SizedBox(height: 20),
                 Text("Profile Details", style: TextStyle(fontSize: bodyTextSize, color: themeSettings.primaryColor)),
                 Divider(),
@@ -435,7 +534,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                     ],
                   ),
                 ),
-                if (profileDetails.userType == "Veterinarian")
+                if (profileDetails.userType == "PetSitter")
                   Container(
                     padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -445,23 +544,7 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.medical_services, color: themeSettings.textColor.withOpacity(0.5)),
-                        SizedBox(width: 10),
-                        Text("Veterinarian", style: TextStyle(fontSize: subBodyTextSize)),
-                      ],
-                    ),
-                  ),
-                if (profileDetails.userType == "PetKeeper")
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: themeSettings.cardColor,
-                      borderRadius: BorderRadius.circular(10),
-                      // border: Border.all(color: themeSettings.primaryColor),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.medical_services, color: themeSettings.textColor.withOpacity(0.5)),
+                        Icon(Icons.home_filled, color: themeSettings.textColor.withOpacity(0.5)),
                         SizedBox(width: 10),
                         Text("Pet sitter", style: TextStyle(fontSize: subBodyTextSize)),
                       ],
