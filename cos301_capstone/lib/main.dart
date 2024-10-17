@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_key_in_widget_constructors
 
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/User_Auth/Auth_Gate.dart';
 import 'package:cos301_capstone/firebase_options.dart';
 import 'package:cos301_capstone/services/Notifications/pushNotifications.dart';
@@ -8,6 +9,7 @@ import 'package:cos301_capstone/services/Location/find_vets_service.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +20,9 @@ Future<void> main() async {
   
   // Fetch vets when the app starts
   // final vetService = VetService(firebaseFunctionUrl: 'https://us-central1-tailwaggr.cloudfunctions.net/getVets');
-  // await vetService.fetchAndStoreVets("-25.751065353022884, 28.24424206468121", 200000);
+  // LatLng myLocation = await LocationVAF.getCurrentLocation();
+  // String location = "${myLocation.latitude},${myLocation.longitude}";
+  // await vetService.fetchAndStoreVets(location, 50000);
   final homePageService = HomePageService();
 
   runApp(const MyApp());
