@@ -3,6 +3,7 @@
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
+import 'package:cos301_capstone/services/Location/find_vets_service.dart';
 import 'package:cos301_capstone/services/Location/location_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,8 +27,9 @@ class _LocationDesktopState extends State<LocationDesktop> {
 
     try {
       populateData() async {
-        await LocationVAF.getVets(LocationVAF.myLocation.target, 100);
-        await LocationVAF.getPetSitters(LocationVAF.myLocation.target, 100);
+        LatLng myLocation = await LocationVAF.getCurrentLocation();
+        await LocationVAF.getVets(myLocation, 100);
+        await LocationVAF.getPetSitters(myLocation, 100);
         setState(() {});
       }
 
