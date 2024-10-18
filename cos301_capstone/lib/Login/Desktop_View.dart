@@ -212,21 +212,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
                                     style: TextStyle(color: Colors.grey),
                                   ),
                                 ),
-                              ),
-                              Spacer(),
-                              Container(
-                                alignment: Alignment.centerRight,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    // Call signInWithGoogle() here
-                                    _authService.signInWithGoogle();
-                                  },
-                                  child: Text(
-                                    "Sign in with Google",
-                                    style: TextStyle(color: Colors.grey),
-                                  ),
-                                ),
-                              ),
+                              )
                             ],
                           ),
                           SizedBox(height: 20),
@@ -290,6 +276,7 @@ class _DesktopLoginState extends State<DesktopLogin> {
                           ),
                           SizedBox(height: 20),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text("Don't have an account?"),
                               TextButton(
@@ -308,6 +295,52 @@ class _DesktopLoginState extends State<DesktopLogin> {
                               ),
                             ],
                           ),
+                          Row(
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.09,
+                                height: 1,
+                                color: Colors.grey,
+                              ),
+                              Text("Or sign in with"),
+                              Container(
+                               width: MediaQuery.of(context).size.width * 0.09,
+                                height: 1,
+                                color: Colors.grey,
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          height: 50,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                                backgroundColor: WidgetStateProperty.all(themeSettings.cardColor),
+                                side: WidgetStateProperty.all(
+                                  BorderSide(color: themeSettings.primaryColor),
+                                ),
+                              ),
+                              onPressed: () async {
+                              _authService.signInWithGoogle();
+                              },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min, // Keeps the button size compact
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/images/icons8-google-48.png',
+                                  height: 30, // Adjust the height to fit the text
+                                ),
+                                const SizedBox(width: 12), // Add some spacing between image and text
+                                Text(
+                                  "Sign in with Google",
+                                  style: TextStyle(color: themeSettings.primaryColor, fontSize: bodyTextSize),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                         ],
                       ),
                     ],
