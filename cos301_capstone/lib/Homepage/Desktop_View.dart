@@ -4,6 +4,7 @@
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
+import 'package:cos301_capstone/Search/DesktopSearch.dart';
 import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
@@ -15,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final HomePageService homePageService = HomePageService();
+
 class DesktopHomepage extends StatefulWidget {
   const DesktopHomepage({super.key});
 
@@ -83,7 +85,8 @@ class _PostContainerState extends State<PostContainer> {
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('No more posts to load'),
+                backgroundColor: Colors.blue,
+                content: Center(child: Text('No more posts to load')),
               ),
             );
           }
@@ -165,7 +168,7 @@ class _PostContainerState extends State<PostContainer> {
                 },
                 child: Text(
                   'Search',
-                  style: TextStyle(color: themeSettings.textColor),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -237,6 +240,17 @@ class _PostState extends State<Post> {
     getViews();
     getCommentCount();
     checkIfLiked();
+    getUser();
+  }
+
+  void getUser() {
+    homePageService.getUserDetails(widget.postDetails['UserId']).then((value) {
+      if (!mounted) return; // Check if the widget is still mounted
+      setState(() {
+        widget.postDetails['name'] = value['name'] + ' ' + value['surname'];
+        widget.postDetails['pictureUrl'] = value['profilePictureUrl'];
+      });
+    });
   }
 
   void getLikes() async {
@@ -964,174 +978,226 @@ class _PostState extends State<Post> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      key: UniqueKey(),
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Stack(
       children: [
-        Container(
-          width: MediaQuery.of(context).size.width * 0.25,
-          padding: EdgeInsets.only(right: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        Row(
+          key: UniqueKey(),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.25,
+              padding: EdgeInsets.only(right: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: widget.postDetails["UserId"])));
-                    },
-                    child: CircleAvatar(
-                      radius: 20,
-                      backgroundImage: NetworkImage(widget.postDetails["pictureUrl"]),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
                     children: [
-                      Text(
-                        widget.postDetails["name"],
-                        style: TextStyle(
-                          color: themeSettings.textColor,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: widget.postDetails["UserId"])));
+                        },
+                        child: CircleAvatar(
+                          radius: 20,
+                          backgroundImage: NetworkImage(widget.postDetails["pictureUrl"]),
                         ),
                       ),
-                      Text(
-                        "Posted on ${formatDate()}",
-                        style: TextStyle(
-                          color: themeSettings.textColor.withOpacity(0.7),
-                        ),
+                      SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.postDetails["name"],
+                            style: TextStyle(
+                              color: themeSettings.textColor,
+                            ),
+                          ),
+                          Text(
+                            "Posted on ${formatDate()}",
+                            style: TextStyle(
+                              color: themeSettings.textColor.withOpacity(0.7),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
+                  SizedBox(height: 20),
+                  Text(
+                    widget.postDetails["Content"] ?? 'No content',
+                    style: TextStyle(
+                      color: themeSettings.textColor,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 4,
+                  ),
+                  SizedBox(height: 20),
+                  if (widget.postDetails['PetIds'] != null && widget.postDetails['PetIds'].length != 0) ...[
+                    Text(
+                      "Pets included in this post: ",
+                      style: TextStyle(
+                        color: themeSettings.textColor.withOpacity(0.7),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          for (var pet in widget.postDetails['PetIds']) ...[
+                            Container(
+                              margin: EdgeInsets.only(right: 10),
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 20,
+                                    backgroundImage: NetworkImage(pet["pictureUrl"] ?? profileDetails.profilePicture),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    pet["name"] ?? 'Unnamed pet',
+                                    style: TextStyle(color: themeSettings.textColor),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
-              SizedBox(height: 20),
-              Text(
-                widget.postDetails["Content"] ?? 'No content',
-                style: TextStyle(
-                  color: themeSettings.textColor,
+            ),
+            InkWell(
+              onTap: () {
+                showPostDetails(context);
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  widget.postDetails["ImgUrl"] ?? profileDetails.profilePicture,
+                  width: 300,
+                  height: 200,
+                  fit: BoxFit.cover,
                 ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 4,
               ),
-              SizedBox(height: 20),
-              if (widget.postDetails['PetIds'] != null && widget.postDetails['PetIds'].length != 0) ...[
-                Text(
-                  "Pets included in this post: ",
-                  style: TextStyle(
-                    color: themeSettings.textColor.withOpacity(0.7),
+            ),
+            SizedBox(width: 30),
+            Column(
+              children: [
+                Tooltip(
+                  message: "Like",
+                  child: IconButton(
+                    onPressed: () async {
+                      await homePageService.toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
+                      bool liked = await homePageService.checkIfUserLikedPost(widget.postDetails['PostId'], profileDetails.userID);
+                      int likesCount = await homePageService.getLikesCount(widget.postDetails['PostId']);
+                      setState(() {
+                        print("Liked: $liked");
+                        isLiked = liked;
+                        numLikes = likesCount.toString();
+                      });
+                    },
+                    icon: isLiked
+                        ? Icon(
+                            Icons.pets,
+                            color: Colors.red.withOpacity(0.7),
+                          )
+                        : SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: ColorFiltered(
+                              colorFilter: ColorFilter.mode(
+                                Colors.red.withOpacity(0.7),
+                                BlendMode.srcIn,
+                              ),
+                              child: Image.asset('assets/images/paw1.png'),
+                            ),
+                          ),
                   ),
                 ),
-                SizedBox(height: 5),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
+                Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                SizedBox(height: 20),
+                Tooltip(
+                  message: "Comment",
+                  child: IconButton(
+                    onPressed: () async {
+                      showDialogBox(context);
+                      // await getCommments();
+                      homePageService.getCommentsCount(widget.postDetails['PostId']).then((value) {
+                        setState(() {
+                          numComments = value.toString();
+                        });
+                      });
+                    },
+                    icon: Icon(
+                      Icons.comment,
+                      color: Colors.blue.withOpacity(0.7),
+                    ),
+                  ),
+                ),
+                Text(numComments, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+                SizedBox(height: 20),
+                Tooltip(
+                  message: "Views",
+                  child: Icon(
+                    Icons.remove_red_eye,
+                    color: Colors.green.withOpacity(0.7),
+                  ),
+                ),
+                Text(numViews, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
+              ],
+            ),
+          ],
+        ),
+        if (widget.postDetails['UserId'] == profileDetails.userID) ...{
+          Positioned(
+            top: 0,
+            right: 10,
+            child: PopupMenuButton<String>(
+              icon: Icon(Icons.more_vert, color: themeSettings.textColor),
+              color: themeSettings.backgroundColor,
+              onSelected: (String result) async {
+                if (result == 'delete') {
+                  // Add your delete post logic here
+                  bool deleted = await homePageService.deletePost(widget.postDetails['PostId']);
+                  if (deleted) {
+                    setState(() {
+                      profileDetails.posts.removeWhere((post) => post['PostId'] == widget.postDetails['PostId']);
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: Colors.green,
+                        content: Text('Post deleted successfully'),
+                      ),
+                    );
+
+                    homepageVAF.postPosted.value = !homepageVAF.postPosted.value;
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: Colors.red,
+                        content: Text('Failed to delete post'),
+                      ),
+                    );
+                  }
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                PopupMenuItem<String>(
+                  value: 'delete',
                   child: Row(
                     children: [
-                      for (var pet in widget.postDetails['PetIds']) ...[
-                        Container(
-                          margin: EdgeInsets.only(right: 10),
-                          child: Column(
-                            children: [
-                              CircleAvatar(
-                                radius: 20,
-                                backgroundImage: NetworkImage(pet["pictureUrl"] ?? profileDetails.profilePicture),
-                              ),
-                              SizedBox(height: 5),
-                              Text(
-                                pet["name"] ?? 'Unnamed pet',
-                                style: TextStyle(color: themeSettings.textColor),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      Icon(Icons.delete, color: Colors.red),
+                      SizedBox(width: 10),
+                      Text('Delete Post', style: TextStyle(color: themeSettings.textColor)),
                     ],
                   ),
                 ),
               ],
-            ],
-          ),
-        ),
-        InkWell(
-          onTap: () {
-            showPostDetails(context);
-          },
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.network(
-              widget.postDetails["ImgUrl"] ?? profileDetails.profilePicture,
-              width: 300,
-              height: 200,
-              fit: BoxFit.cover,
             ),
           ),
-        ),
-        SizedBox(width: 30),
-        Column(
-          children: [
-            Tooltip(
-              message: "Like",
-              child: IconButton(
-                onPressed: () async {
-                  await homePageService.toggleLikeOnPost(widget.postDetails['PostId'], profileDetails.userID);
-                  bool liked = await homePageService.checkIfUserLikedPost(widget.postDetails['PostId'], profileDetails.userID);
-                  int likesCount = await homePageService.getLikesCount(widget.postDetails['PostId']);
-                  setState(() {
-                    print("Liked: $liked");
-                    isLiked = liked;
-                    numLikes = likesCount.toString();
-                  });
-                },
-                icon: isLiked
-                    ? Icon(
-                        Icons.pets,
-                        color: Colors.red.withOpacity(0.7),
-                      )
-                    : SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: ColorFiltered(
-                          colorFilter: ColorFilter.mode(
-                            Colors.red.withOpacity(0.7),
-                            BlendMode.srcIn,
-                          ),
-                          child: Image.asset('assets/images/paw1.png'),
-                        ),
-                      ),
-              ),
-            ),
-            Text(numLikes, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
-            SizedBox(height: 20),
-            Tooltip(
-              message: "Comment",
-              child: IconButton(
-                onPressed: () async {
-                  showDialogBox(context);
-                  // await getCommments();
-                  homePageService.getCommentsCount(widget.postDetails['PostId']).then((value) {
-                    setState(() {
-                      numComments = value.toString();
-                    });
-                  });
-                },
-                icon: Icon(
-                  Icons.comment,
-                  color: Colors.blue.withOpacity(0.7),
-                ),
-              ),
-            ),
-            Text(numComments, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
-            SizedBox(height: 20),
-            Tooltip(
-              message: "Views",
-              child: Icon(
-                Icons.remove_red_eye,
-                color: Colors.green.withOpacity(0.7),
-              ),
-            ),
-            Text(numViews, style: TextStyle(color: themeSettings.textColor.withOpacity(0.7))),
-          ],
-        ),
+        },
       ],
     );
   }
@@ -1232,27 +1298,34 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                 ],
               ),
             ] else ...[
-              Container(
-                key: Key('add-photo-button'),
-                decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
                 child: GestureDetector(
                   onTap: () => imagePicker.pickFiles(),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add_a_photo,
-                            color: themeSettings.textColor.withOpacity(0.7),
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            "Add a photo",
-                            style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
-                          ),
-                        ],
+                  child: Container(
+                    key: Key('add-photo-button'),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      color: Colors.transparent,
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_a_photo,
+                              color: themeSettings.textColor.withOpacity(0.7),
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              "Add a photo",
+                              style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -1472,7 +1545,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "🔞 Warning!",  // Title
+                                "🔞 Warning!", // Title
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
@@ -1481,13 +1554,13 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                               ),
                               SizedBox(height: 8),
                               Text(
-                                moderationResult['message'],  // Full message
+                                moderationResult['message'], // Full message
                                 style: TextStyle(color: themeSettings.textColor), // Customize text color
                               ),
                             ],
                           ),
-                          duration: Duration(seconds: 20),  // Increase the duration if needed
-                          behavior: SnackBarBehavior.floating,  // Makes the snackbar floating
+                          duration: Duration(seconds: 20), // Increase the duration if needed
+                          behavior: SnackBarBehavior.floating, // Makes the snackbar floating
                         ),
                       );
                       //prevent the post from being uploaded

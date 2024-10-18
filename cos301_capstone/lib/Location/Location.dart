@@ -1,17 +1,16 @@
 import 'dart:math';
 
+import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Location/Desktop_View.dart';
 import 'package:cos301_capstone/Location/Mobile_View.dart';
 import 'package:cos301_capstone/Location/Tablet_View.dart';
 import 'package:cos301_capstone/Navbar/Mobile_View.dart';
 import 'package:cos301_capstone/services/Location/location_service.dart';
 import 'package:flutter/material.dart';
-import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:path/path.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LocationVAF {
@@ -84,21 +83,21 @@ class LocationVAF {
   }
 
   static void getDirections(LatLng destLocation) async {
-    PolylinePoints polylinePoints = PolylinePoints();
-    PointLatLng _origin = PointLatLng(myLocation.target.latitude, myLocation.target.longitude);
-    PointLatLng _destination = PointLatLng(destLocation.latitude, destLocation.longitude);
+    // PolylinePoints polylinePoints = PolylinePoints();
+    // PointLatLng _origin = PointLatLng(myLocation.target.latitude, myLocation.target.longitude);
+    // PointLatLng _destination = PointLatLng(destLocation.latitude, destLocation.longitude);
 
     print('Fetched location');
 
     try {
-      PolylineResult polylineResult = await polylinePoints.getRouteBetweenCoordinates(
-        googleApiKey: "AIzaSyAK92a9EH6D2_HL14GhePhna0B3ovYkyQA",
-        request: PolylineRequest(
-          origin: _origin,
-          destination: _destination,
-          mode: TravelMode.driving,
-        ),
-      );
+      // PolylineResult polylineResult = await polylinePoints.getRouteBetweenCoordinates(
+      //   googleApiKey: "AIzaSyAK92a9EH6D2_HL14GhePhna0B3ovYkyQA",
+      //   request: PolylineRequest(
+      //     origin: _origin,
+      //     destination: _destination,
+      //     mode: TravelMode.driving,
+      //   ),
+      // );
     } catch (e) {
       print("Error getting polyline: $e");
     }

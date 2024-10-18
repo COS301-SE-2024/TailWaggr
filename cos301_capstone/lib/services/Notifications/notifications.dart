@@ -342,19 +342,38 @@ Future<List<Map<String, dynamic>>?> getLikePostNotifications(String userId) asyn
     });
   }
   Future<int> countNewUnreadNotifs(String userId) async {
-    try {
-      QuerySnapshot<Map<String, dynamic>> snapshot = await _db
-          .collection('notifications')
-          .where('UserId', isEqualTo: userId)
-          .where('Read', isEqualTo: false)
-          .get();
+  try {
+    // Fetch unread notifications
+    QuerySnapshot<Map<String, dynamic>> snapshot = await _db
+        .collection('notifications')
+        .where('UserId', isEqualTo: userId)
+        .where('Read', isEqualTo: false)
+        .get();
 
-      return snapshot.docs.length;
-    } catch (e) {
-      print("Error counting unread notifications: $e");
-      return 0;
+    // Fetch the user's friend requests map
+    DocumentSnapshot<Map<String, dynamic>> userDoc = await _db
+        .collection('users')
+        .doc(userId)
+        .get();
+
+    // Count unread notifications
+    int unreadNotifsCount = snapshot.docs.length;
+
+    // Check and count the friend requests
+    int friendRequestsCount = 0;
+    if (userDoc.exists && userDoc.data()!['friendRequests'] != null) {
+      Map<String, dynamic> friendRequests = userDoc.data()!['friendRequests'];
+      friendRequestsCount = friendRequests.length;
     }
+
+    // Return total count
+    return unreadNotifsCount + friendRequestsCount;
+  } catch (e) {
+    print("Error counting unread notifications: $e");
+    return 0;
   }
+}
+
   Future<void> createLikePostNotification(String postId, String userId) async {
     try {
       DocumentSnapshot postDoc = await _db.collection('posts').doc(postId).get();

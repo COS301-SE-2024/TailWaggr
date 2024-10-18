@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -82,7 +80,7 @@ class LocationService {
 
   Future<List<User>> getPetKeepers(LatLng userLocation, double radius) async {
     GeoPoint geoPoint = GeoPoint(userLocation.latitude, userLocation.longitude);
-    return _getUsersByRoleWithinRadius(geoPoint, radius, 'pet_keeper');
+    return _getUsersByRoleWithinRadius(geoPoint, radius, 'PetSitter');
   }
 
   Future<List<User>> getPetKeepersByName(String name) async {
@@ -92,7 +90,7 @@ class LocationService {
         .collection('users')
         .where('name', isGreaterThanOrEqualTo: searchLowerBound)
         .where('name', isLessThanOrEqualTo: searchUpperBound)
-        .where('userType', isEqualTo: 'pet_keeper')
+        .where('userType', isEqualTo: 'PetSitter')
         .get();
     List<User> matchingPetKeepers = [];
 
@@ -117,7 +115,8 @@ class LocationService {
           id: doc.id,
           name: doc['name'],
           userType: doc['userType'],
-          location: doc['location'],
+          phone: doc['phoneDetails']['phoneNumber'],
+          location: doc['address'],
         );
         double distance = Geolocator.distanceBetween(
           userLocation.latitude,
@@ -169,8 +168,10 @@ class User {
   String email;
   String phone;
   double distance;
+  String profileUrl;
+  String bio;
 
-  User({required this.id, required this.name, required this.userType, required this.location, this.distance = 0.0, this.email = '', this.phone = ''});
+  User({required this.id, required this.name, required this.userType, required this.location, this.distance = 0.0, this.email = '', this.phone = '', this.profileUrl = '', this.bio = ''});
 
   factory User.fromFirestore(Map<String, dynamic> firestoreDoc) {
     return User(
@@ -190,6 +191,19 @@ class User {
 
   void addPhone(String inphone) {
     phone = inphone;
+  }
+
+  void addProfileUrl(String inprofileUrl) {
+    profileUrl = inprofileUrl;
+  }
+
+  void addBio(String inbio) {
+    bio = inbio;
+  }
+
+  @override
+  String toString() {
+    return 'User: {id: $id, name: $name, userType: $userType, location: $location, email: $email, phone: $phone, distance: $distance}';
   }
 }
 
