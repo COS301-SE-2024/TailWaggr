@@ -31,7 +31,8 @@ class DesktopNavbar extends StatefulWidget {
 class _DesktopNavbarState extends State<DesktopNavbar> {
   Color containerColor = Colors.transparent;
   Color themeColor = Colors.transparent;
-  Color helpColor = Colors.transparent;
+  Color profileColor = Colors.transparent;
+  Color settingsColor = Colors.transparent;
   List<String> users = [];
 
   TextEditingController searchController = TextEditingController();
@@ -84,28 +85,8 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // SizedBox(
-            //   height: 50,
-            //   child: Row(
-            //     children: [
-            //       CircleAvatar(
-            //         radius: 20,
-            //         backgroundImage: Image.asset("assets/images/Logo.png").image,
-            //       ),
-            //       SizedBox(width: 20),
-            //       Text(
-            //         "TailWaggr",
-            //         style: TextStyle(
-            //           fontSize: 20,
-            //           color: themeSettings.navbarTextColour,
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-
             SizedBox(
-              height: max(MediaQuery.of(context).size.height - 250, 493 + 27),
+              height: max(MediaQuery.of(context).size.height - 250, 493 + 27 - 50),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -135,14 +116,15 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   Navbar_Icon(icon: Icons.pets, text: "Lost and Found", page: LostAndFound()),
                   Navbar_Icon(icon: Icons.search, text: "Friends", page: Search()),
                   Navbar_Icon(icon: Icons.forum_outlined, text: "Forums", page: Forums()),
-                  Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile(userId: profileDetails.userID)),
-                  Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),
+                  // Navbar_Icon(icon: Icons.person_outline, text: "Profile", page: User_Profile(userId: profileDetails.userID)),
+                  // Navbar_Icon(icon: Icons.settings_outlined, text: "Settings", page: EditProfile()),
                   Navbar_Icon(icon: Icons.gamepad, text: "Pet Runner", page: Game()),
+                  Navbar_Icon(icon: Icons.help_outline, text: "Help", page: Help()),
                 ],
               ),
             ),
             SizedBox(
-              height: 190,
+              height: 240,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -150,6 +132,43 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                   if (isExtraMenuOpen) ...[
                     ThemeSelect(
                       initialSelection: themeSettings.themeMode,
+                    ).animate().moveY(begin: 100, end: 0, duration: Duration(milliseconds: 400), delay: Duration(milliseconds: 300)).fadeIn(),
+                    GestureDetector(
+                      onTap: () async {
+                        // final Uri url = Uri.parse('https://docs.google.com/document/d/1TiRA697HTTGuLCOzq20es4q_fotXlDpTnVuov_7zNP0/edit?usp=sharing ');
+                        // if (!await launchUrl(url)) {
+                        //   print('Could not launch $url');
+                        // }
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(userId: profileDetails.userID)));
+                      },
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        onEnter: (event) {
+                          setState(() {
+                            profileColor = Colors.black.withOpacity(0.1);
+                          });
+                        },
+                        onExit: (event) {
+                          setState(() {
+                            profileColor = Colors.transparent;
+                          });
+                        },
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 200),
+                          decoration: BoxDecoration(
+                            color: profileColor,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          padding: EdgeInsets.all(10),
+                          child: Row(
+                            children: [
+                              Icon(Icons.person_outline, color: themeSettings.navbarTextColour),
+                              SizedBox(width: 10),
+                              Text("Profile", style: TextStyle(color: themeSettings.navbarTextColour, fontSize: 20)),
+                            ],
+                          ),
+                        ),
+                      ),
                     ).animate().moveY(begin: 100, end: 0, duration: Duration(milliseconds: 300), delay: Duration(milliseconds: 200)).fadeIn(),
                     GestureDetector(
                       onTap: () async {
@@ -157,32 +176,32 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                         // if (!await launchUrl(url)) {
                         //   print('Could not launch $url');
                         // }
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => Help()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfile()));
                       },
                       child: MouseRegion(
                         cursor: SystemMouseCursors.click,
                         onEnter: (event) {
                           setState(() {
-                            helpColor = Colors.black.withOpacity(0.1);
+                            settingsColor = Colors.black.withOpacity(0.1);
                           });
                         },
                         onExit: (event) {
                           setState(() {
-                            helpColor = Colors.transparent;
+                            settingsColor = Colors.transparent;
                           });
                         },
                         child: AnimatedContainer(
                           duration: Duration(milliseconds: 200),
                           decoration: BoxDecoration(
-                            color: helpColor,
+                            color: settingsColor,
                             borderRadius: BorderRadius.circular(100),
                           ),
                           padding: EdgeInsets.all(10),
                           child: Row(
                             children: [
-                              Icon(Icons.help_outline, color: themeSettings.navbarTextColour),
+                              Icon(Icons.settings_outlined, color: themeSettings.navbarTextColour),
                               SizedBox(width: 10),
-                              Text("Help", style: TextStyle(color: themeSettings.navbarTextColour, fontSize: 20)),
+                              Text("Settings", style: TextStyle(color: themeSettings.navbarTextColour, fontSize: 20)),
                             ],
                           ),
                         ),
@@ -190,6 +209,9 @@ class _DesktopNavbarState extends State<DesktopNavbar> {
                     ).animate().moveY(begin: 100, end: 0, duration: Duration(milliseconds: 200), delay: Duration(milliseconds: 100)).fadeIn(),
                     GestureDetector(
                       onTap: () {
+                        profileDetails = ProfileDetails();
+                        themeSettings = ThemeSettingsObserver();
+                        themeSettings.toggleTheme("Light");
                         FirebaseAuth.instance.signOut();
                       },
                       child: MouseRegion(

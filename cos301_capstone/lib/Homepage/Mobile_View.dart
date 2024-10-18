@@ -1006,6 +1006,51 @@ class _PostState extends State<Post> {
                 ),
               ],
             ),
+            Spacer(),
+            if (widget.postDetails['UserId'] == profileDetails.userID) ...{
+              PopupMenuButton<String>(
+                icon: Icon(Icons.more_vert, color: themeSettings.textColor),
+                color: themeSettings.backgroundColor,
+                onSelected: (String result) async {
+                  if (result == 'delete') {
+                    // Add your delete post logic here
+                    bool deleted = await homePageService.deletePost(widget.postDetails['PostId']);
+                    if (deleted) {
+                      setState(() {
+                        profileDetails.posts.removeWhere((post) => post['PostId'] == widget.postDetails['PostId']);
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.green,
+                          content: Text('Post deleted successfully'),
+                        ),
+                      );
+
+                      homepageVAF.postPosted.value = !homepageVAF.postPosted.value;
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.red,
+                          content: Text('Failed to delete post'),
+                        ),
+                      );
+                    }
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete, color: Colors.red),
+                        SizedBox(width: 10),
+                        Text('Delete Post', style: TextStyle(color: themeSettings.textColor)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            },
           ],
         ),
         SizedBox(height: 10),
@@ -1541,6 +1586,15 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                   });
 
                   homepageVAF.postPosted.value = !homepageVAF.postPosted.value;
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.green,
+                      content: Text('Post added successfully'),
+                    ),
+                  );
+
+                  Navigator.pop(context);
                 } else {
                   setState(() {
                     errorText = "An error occurred while posting";
@@ -1555,7 +1609,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  "Post",
+                  postText,
                   style: TextStyle(color: Colors.white),
                 ),
               ),

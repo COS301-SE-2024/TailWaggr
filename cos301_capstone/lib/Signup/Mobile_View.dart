@@ -3,6 +3,7 @@
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Login/Login.dart';
 import 'package:cos301_capstone/Signup/Signup.dart';
+import 'package:cos301_capstone/User_Auth/Auth_Gate.dart';
 import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -286,6 +287,11 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                             signUpFirstNameController.text,
                             signUpLastNameController.text,
                           );
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => AuthGate()),
+                          );
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'weak-password') {
                             setState(() {
@@ -388,6 +394,11 @@ class _Mobile_SignupState extends State<Mobile_Signup> {
                     ),
                     onPressed: () {
                       AuthService().signInWithGoogle();
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AuthGate()),
+                      );
                     },
                     child: Text("Sign up with Google", style: TextStyle(color: themeSettings.primaryColor)),
                   ),
