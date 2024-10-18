@@ -400,9 +400,10 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                 ),
                 SizedBox(height: 10),
                 SizedBox(
-                  width: 600,
-                  child: ElevatedButton(
-                    style: ButtonStyle(
+                width: 600,
+                height:50,
+                child: ElevatedButton(
+                  style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(themeSettings.cardColor),
                       side: WidgetStateProperty.all(
                         BorderSide(color: themeSettings.primaryColor),
@@ -410,15 +411,28 @@ class _Desktop_SignupState extends State<Desktop_Signup> {
                     ),
                     onPressed: () async {
                       await AuthService().signInWithGoogle();
-
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => AuthGate()),
                       );
                     },
-                    child: Text("Sign up with Google", style: TextStyle(color: themeSettings.primaryColor)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min, // Keeps the button size compact
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/icons8-google-48.png',
+                        height: 30, // Adjust the height to fit the text
+                      ),
+                      const SizedBox(width: 12), // Add some spacing between image and text
+                      Text(
+                        "Sign up with Google",
+                        style: TextStyle(color: themeSettings.primaryColor, fontSize: bodyTextSize),
+                      ),
+                    ],
                   ),
                 ),
+              ),
               ],
             ),
           ),
