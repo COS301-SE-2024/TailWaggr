@@ -1,106 +1,83 @@
-# Argonauts
-# Tailwaggr
-[![Flutter](https://img.shields.io/badge/Flutter-Framework-blue?logo=flutter)](https://flutter.dev)
-[![Firebase](https://img.shields.io/badge/Firebase-Platform-yellow?logo=firebase)](https://firebase.google.com)
-<!-- [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=TailWaggr&metric=alert_status)](https://sonarcloud.io/dashboard?id=TailWaggr) -->
-[![Flutter Test](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Test/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions/workflows/testing.yaml)
-[![Flutter Lint](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Lint/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions/workflows/linting.yaml)
-<!-- [![Requirements Status](https://requires.io/github/COS301-SE-2024/TailWaggr/requirements.svg?branch=master)](https://requires.io/github/COS301-SE-2024/TailWaggr/requirements/?branch=master) -->
 
-[![GitHub issues](https://img.shields.io/github/issues/COS301-SE-2024/TailWaggr)](https://github.com/COS301-SE-2024/TailWaggr/issues)
-[![Code Coverage](https://codecov.io/gh/COS301-SE-2024/TailWaggr/branch/main/graph/badge.svg)](https://codecov.io/gh/COS301-SE-2024/TailWaggr)
-![Lighthouse Performance](https://img.shields.io/badge/Performance-95-brightgreen)
-![Lighthouse Accessibility](https://img.shields.io/badge/Accessibility-82-brightgreen)
-![Lighthouse Best Practices](https://img.shields.io/badge/Best_Practices-100-brightgreen)
-![Lighthouse SEO](https://img.shields.io/badge/SEO-100-brightgreen)
+<div align="center">
 
-Tailwaggr is a Flutter-based mobile application that aims to connect pet owners with veterinarians, pet keepers, and a supportive community of fellow pet enthusiasts. Our app provides a platform for creating profiles, finding professional pet care, engaging in discussions, and reuniting lost pets with their owners.
+<img src="assets/images/image-removebg-preview.png" alt="Argonauts Logo" width="400"><img src="assets/images/Argonautsogo.png" alt="Argonauts Logo" width="250">
 
-## Tailwaggr App
-The app can be viewed [Here](https://tailwaggr.web.app)
+---
+
+[![Flutter](https://img.shields.io/badge/Flutter-Framework-blue?logo=flutter)](https://flutter.dev) [![Firebase](https://img.shields.io/badge/Firebase-Platform-yellow?logo=firebase)](https://firebase.google.com) [![Flutter Test](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Test/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions/workflows/testing.yaml) [![Flutter Lint](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Lint/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions/workflows/linting.yaml) [![GitHub issues](https://img.shields.io/github/issues/COS301-SE-2024/TailWaggr)](https://github.com/COS301-SE-2024/TailWaggr/issues) [![Code Coverage](https://codecov.io/gh/COS301-SE-2024/TailWaggr/branch/main/graph/badge.svg)](https://codecov.io/gh/COS301-SE-2024/TailWaggr) ![Lighthouse Performance](https://img.shields.io/badge/Performance-95-brightgreen) ![Lighthouse Accessibility](https://img.shields.io/badge/Accessibility-82-brightgreen) ![Lighthouse Best Practices](https://img.shields.io/badge/Best_Practices-100-brightgreen) ![Lighthouse SEO](https://img.shields.io/badge/SEO-100-brightgreen)
+
+---
+
+</div>
+
+## Overview
+
+**Tailwaggr** is a Flutter-based mobile application that connects pet owners with veterinarians, pet keepers, and a supportive community of fellow pet enthusiasts. The app provides a platform for:
+- Creating profiles for pets and owners
+- Finding professional pet care
+- Engaging in discussions
+- Reuniting lost pets with their owners
+
+## App Demo
+
+You can view the app [here](https://tailwaggr.web.app).
 
 ## Project Board
-You can view our project board [Here](https://github.com/orgs/COS301-SE-2024/projects/99/views/1).
 
-## Tech Stack
-You can view our tech stack [Here](docs/TechStack.pdf)
+You can track our project progress on our [project board](https://github.com/orgs/COS301-SE-2024/projects/99/views/1).
 
-## Architecture
-You can view our architecture [Here](docs/architecture.pdf)
+## Documentation
 
-## User Manual
-You can view our user manual [Here](docs/UserGuide.pdf)
+- **[Tech Stack](docs/TechStack.pdf)**: Learn more about the technologies used in the project.
+- **[Architecture](docs/architecture.pdf)**: Detailed explanation of the app's architecture.
+- **[User Manual](docs/UserGuide.pdf)**: Guide for users on how to navigate the app.
+- **[Technical Installation Manual](docs/Technical_Installation.pdf)**: Technical guide for setting up the app.
+- **[Coding Standards](docs/CodingStandards.pdf)**: Guidelines for code quality and practices.
+- **[Software Requirements Specification](docs/srs.pdf)**: Detailed software requirements document.
 
-## Technical Installation Manual
-You can view our technical installation manual [Here](docs/Technical_Installation.pdf)
+---
 
-## Coding Standards
-You can view our coding standards [Here](docs/CodingStandards.pdf)
-
-## Software Requirements Specification
-You can view our SRS [Here](docs/srs.pdf)
-
-## The Team
-
-| Name             | Role            | Description                                                                                                | Photo                                       | LinkedIn                                                                                         |
-|------------------|-----------------|------------------------------------------------------------------------------------------------------------|---------------------------------------------|--------------------------------------------------------------------------------------------------|
-| Timothy Whitaker | Project Manager, Integration Engineer | A dedicated student and professional with a passion for computers and programming. Timothy is particularly interested in game development and enjoys a variety of activities including gym workouts, socializing, reading, and playing the guitar. | ![Timothy Whitaker](assets/team/Timothy_Whitaker.jpg) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/timothy-whitaker-34ab281bb/) |
-| Scott Bebington  | UI Engineer     | A final-year computer science student specializing in front-end development. Scott's hobbies include working out and socializing, reflecting his dynamic and engaging personality. | ![Scott Bebington](assets/team/Scott_Bebington.jpg) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/scott-bebington/) |
-| Ethan Groenendyk | Business Analyst | A passionate game developer who loves to gamify projects and create enjoyable experiences. Ethan's enthusiasm for game development drives his innovative approach to business analysis. | ![Ethan Groenendyk](assets/team/Ethan_Groenendyk.jpg) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/ethan-groenendyk-183620142/) |
-| Given Chauke     | Service Engineer | A lifelong learner who thrives on challenges and enjoys building useful software products. Given is also an avid gamer and board game enthusiast, always eager to explore new strategies and technologies. | ![Given Chauke](assets/team/Given_Chauke.jpg) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/given-chauke-10a6b927a/) |
-| Nicholas Harvey  | DevOps Engineer | Deeply interested in the future of technology and its potential impact on the world, especially the role of AI in enhancing productivity. Nicholas excels in backend development, driven by his passion for programming and data-oriented tasks. | ![Nicholas Harvey](assets/team/Nicholas_Harvey.png) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/nicholas-harvey-b11455144/) |
 ## Core Features
 
-1. **Pet and Pet Owner Profiles**
-   - Pet owners can create and manage profiles for themselves and their pets.
-   - Connect pet profiles with their respective owners.
-
-2. **Find a Veterinarian**
-   - Veterinarians can register on the platform.
-   - Pet owners can search for and contact veterinarians for their pets.
-
-3. **Find a Pet Keeper**
-   - Pet keepers can register on the platform.
-   - Pet owners can search for and hire pet keepers to look after their pets.
-
-4. **Forums**
-   - Discussion boards for users to engage in conversations about pets.
-   - Share resources, seek advice, and connect with other pet owners.
-
-5. **Lost and Found Database**
-   - Report lost pets and search for found pets in the area.
-   - Facilitate reunions between lost pets and their owners.
+1. **Pet and Pet Owner Profiles**: Manage profiles for pets and their owners.
+2. **Find a Veterinarian**: Search and contact registered veterinarians.
+3. **Find a Pet Keeper**: Hire registered pet keepers.
+4. **Forums**: Engage in discussions, share advice, and connect with other pet owners.
+5. **Lost and Found Database**: Report and search for lost pets in your area.
 
 ## Bonus Features
 
-1. **Image Recognition**
-   - Utilize advanced image recognition technology to identify pets and other objects in photos.
-   - Enhance user experience by providing automated tagging and categorization of images.
+1. **Image Recognition**: Identify pets and objects in photos using advanced image recognition.
+2. **Image Filtering**: Automatically detect and filter inappropriate images.
+3. **Mini Game - PetRunner**: Play as a dog and avoid obstacles to top the leaderboard.
 
-2. **Image Filtering**
-   - Filter out inappropriate or bad images to ensure a safe and positive user experience.
-   - Automatically detect and remove images that do not meet community guidelines before sharing.
-   - Replace inappropriate images with placeholders or warnings.
+---
 
-3. **Mini Game: PetRunner**
-   - An engaging mini game where users can play as a dog.
-   - Avoid obstacles and get to the top of the leaderboard.
-  
 ## Firebase Integration
 
-Tailwaggr uses Firebase for backend services. Here's a breakdown of how we utilize its different services:
+Tailwaggr leverages Firebase for backend services:
 
-- **Authentication**: Firebase Authentication provides a secure and reliable authentication system. We use it to manage user accounts and handle user sign-in and sign-up processes. It supports various authentication methods, including email and password, Google Sign-In, and Facebook Login.
+- **Authentication**: Secure authentication with email/password, Google, and Facebook login.
+- **Firestore Database**: Real-time sync of user and pet data, even when offline.
+- **Cloud Storage**: Secure storage for profile pictures and user-uploaded images.
+- **Cloud Functions**: Serverless backend logic for features like image recognition and vet search.
+- **Firebase Hosting**: Fast and secure hosting for the web app.
 
-- **Firestore Database**: We use Firebase's Cloud Firestore to store and sync data in real time. It allows us to store user profiles, pet information, and other relevant data. The data is synced across all clients in real time and remains available when the app goes offline.
+---
 
-- **Cloud Storage**: Firebase Cloud Storage is used to store images and other media. This includes profile pictures and any photos shared by users. It provides secure file uploads and downloads for our Firebase apps, regardless of network quality.
+## The Team - Argonauts
 
-- **Cloud Functions**: We use Firebase Cloud Functions to run backend code in response to events triggered by Firebase features and HTTPS requests. This serverless framework allows us to execute our code in a secure, managed environment.
+| Name              | Details                                            | Photo                                       |
+|-------------------|----------------------------------------------------|---------------------------------------------|
+| **Timothy Whitaker** | **Role:** Project Manager, Integration Engineer <br> **Description:** A dedicated student and professional with a passion for computers and programming. Timothy is particularly interested in game development and enjoys a variety of activities including gym workouts, socializing, reading, and playing the guitar. <br> <br> [![LinkedIn](https://img.shields.io/badge/-LinkedIn-blue?logo=linkedin)](https://www.linkedin.com/in/timothy-whitaker-34ab281bb/) [![GitHub](https://img.shields.io/badge/-GitHub-black?logo=github)](https://github.com/Timothy-333) | <img src="assets/team/Timothy_Whitaker.jpg" alt="Timothy Whitaker" width="175"> |
+| **Scott Bebington**  | **Role:** UI Engineer <br> **Description:** A final-year computer science student specializing in front-end development. Scott's hobbies include working out and socializing, reflecting his dynamic and engaging personality. <br> <br> [![LinkedIn](https://img.shields.io/badge/-LinkedIn-blue?logo=linkedin)](https://www.linkedin.com/in/scott-bebington/) [![GitHub](https://img.shields.io/badge/-GitHub-black?logo=github)](https://github.com/Scott-Bebington) | <img src="assets/team/Scott_Bebington.jpg" alt="Scott Bebington" width="175"> |
+| **Ethan Groenendyk** | **Role:** Business Analyst <br> **Description:** A passionate game developer who loves to gamify projects and create enjoyable experiences. Ethan's enthusiasm for game development drives his innovative approach to business analysis. <br> <br> [![LinkedIn](https://img.shields.io/badge/-LinkedIn-blue?logo=linkedin)](https://www.linkedin.com/in/ethan-groenendyk-183620142/) [![GitHub](https://img.shields.io/badge/-GitHub-black?logo=github)](https://github.com/EthanGroenendyk) | <img src="assets/team/Ethan_Groenendyk.jpg" alt="Ethan Groenendyk" width="175"> |
+| **Given Chauke**     | **Role:** Service Engineer <br> **Description:** A lifelong learner who thrives on challenges and enjoys building useful software products. Given is also an avid gamer and board game enthusiast, always eager to explore new strategies and technologies. <br> <br> [![LinkedIn](https://img.shields.io/badge/-LinkedIn-blue?logo=linkedin)](https://www.linkedin.com/in/given-chauke-10a6b927a/) [![GitHub](https://img.shields.io/badge/-GitHub-black?logo=github)](https://github.com/GivenChauke) | <img src="assets/team/Given_Chauke.jpg" alt="Given Chauke" width="175"> |
+| **Nicholas Harvey**  | **Role:** DevOps Engineer <br> **Description:** Deeply interested in the future of technology and its potential impact on the world, especially the role of AI in enhancing productivity. Nicholas excels in backend development, driven by his passion for programming and data-oriented tasks. <br> <br> [![LinkedIn](https://img.shields.io/badge/-LinkedIn-blue?logo=linkedin)](https://www.linkedin.com/in/nicholas-harvey-b11455144/) [![GitHub](https://img.shields.io/badge/-GitHub-black?logo=github)](https://github.com/u22522116) | <img src="assets/team/Nicholas_Harvey.png" alt="Nicholas Harvey" width="175"> |
 
-- **Firebase Hosting**: We use Firebase Hosting to serve our static and dynamic content. It provides fast and secure hosting for our web app, with a simple deployment process.
-
-By integrating Firebase, we can focus on creating a great user experience, knowing that Firebase's secure and scalable infrastructure is powering our backend.
+---
 
 ## Demo Video
-https://drive.google.com/file/d/1tC8j1FsY6oPOFMTz301LnhL8oH5_-M4U/view?usp=sharing
+
+Check out our demo video [here](https://drive.google.com/file/d/1tC8j1FsY6oPOFMTz301LnhL8oH5_-M4U/view?usp=sharing).
