@@ -52,7 +52,7 @@ You can track our project progress on our [project board](https://github.com/org
 - **[Testing Policy](docs/testingReport.pdf)**: Overview of the testing approach and tools used.
 - **[Tech Stack](docs/TechStack.pdf)**: Learn more about the technologies used in the project.
 - **[User Manual](docs/UserGuide.pdf)**: Guide for users on how to navigate the app.
-- **[Video Presentation](docs/VideoPresentation.pdf)**: Video presentation for the project.
+- **[Video Presentation](https://drive.google.com/file/d/1jGdLoS1i2pigIzMMHkzWIE3gSeIG99_u/view?usp=drive_link)**: Video presentation for the project.
 - **[Slideshow](docs/slideshow.pdf)**: Presentation slides for the project.
 - **[Video Advertisement](https://drive.google.com/file/d/1RXHLj2gZdAui5Fbfh5LRX5RYQakBtrKi/view?usp=drive_link)**: Video advertisement for the app.
 - **[Architecture](docs/architecture.pdf)**: Detailed explanation of the app's architecture.
