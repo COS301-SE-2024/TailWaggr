@@ -21,6 +21,9 @@
 
 #### CI/CD
 [![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/features/actions) [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com)
+
+#### Project Management
+[![GitHub Project Board](https://img.shields.io/badge/GitHub_Project_Board-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/orgs/COS301-SE-2024/projects/99/views/1) [![Discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com)
 ---
 
 </div>
