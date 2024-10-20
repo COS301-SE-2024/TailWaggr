@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -40,21 +43,21 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage/lcov.info
 
-  lighthouse:
+    lighthouse:
     runs-on: ubuntu-latest
-
+  
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
+  
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
         node-version: '14'
-
+  
     - name: Create Lighthouse Results Directory
       run: mkdir -p ./lighthouse-results
-
+  
     - name: Lighthouse Check
       uses: foo-software/lighthouse-check-action@v12.0.1
       with:
@@ -64,41 +67,116 @@ jobs:
         device: 'desktop'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+  
     - name: List Lighthouse Results Directory
       run: ls -la ./lighthouse-results
-
+  
     - name: Print results.json for Debugging
       run: cat ./lighthouse-results/results.json
-
-    - name: Extract Performance Score
-      id: extract_score
+  
+    - name: Extract Lighthouse Scores
+      id: extract_scores
       run: |
         REPORT_FILE=$(find ./lighthouse-results -name 'results.json' | head -n 1)
         if [ -z "$REPORT_FILE" ]; then
             echo "Error: Report file not found"
             exit 1
         fi
-
-        SCORE=$(jq '.[0].scores.performance // 0 * 100' "$REPORT_FILE")
-        if [ "$SCORE" = "null" ]; then
-            SCORE=0
+  
+        PERFORMANCE_SCORE=$(jq '.[0].scores.performance // 0 * 100' "$REPORT_FILE")
+        if [ "$PERFORMANCE_SCORE" = "null" ]; then
+            PERFORMANCE_SCORE=0
         fi
-        echo "PERFORMANCE_SCORE=${SCORE%.*}" >> $GITHUB_ENV
-
-    - name: Generate Lighthouse Badge URL
-      id: generate_lighthouse_badge
+        echo "PERFORMANCE_SCORE=${PERFORMANCE_SCORE%.*}" >> $GITHUB_ENV
+  
+        ACCESSIBILITY_SCORE=$(jq '.[0].scores.accessibility // 0 * 100' "$REPORT_FILE")
+        if [ "$ACCESSIBILITY_SCORE" = "null" ]; then
+            ACCESSIBILITY_SCORE=0
+        fi
+        echo "ACCESSIBILITY_SCORE=${ACCESSIBILITY_SCORE%.*}" >> $GITHUB_ENV
+  
+        BEST_PRACTICES_SCORE=$(jq '.[0].scores.best-practices // 0 * 100' "$REPORT_FILE")
+        if [ "$BEST_PRACTICES_SCORE" = "null" ]; then
+            BEST_PRACTICES_SCORE=0
+        fi
+        echo "BEST_PRACTICES_SCORE=${BEST_PRACTICES_SCORE%.*}" >> $GITHUB_ENV
+  
+        SEO_SCORE=$(jq '.[0].scores.seo // 0 * 100' "$REPORT_FILE")
+        if [ "$SEO_SCORE" = "null" ]; then
+            SEO_SCORE=0
+        fi
+        echo "SEO_SCORE=${SEO_SCORE%.*}" >> $GITHUB_ENV
+  
+    - name: Generate Lighthouse Badge URLs
+      id: generate_lighthouse_badges
       run: |
-        BADGE_URL="https://img.shields.io/badge/Performance-${{ env.PERFORMANCE_SCORE }}-brightgreen"
-        echo "BADGE_URL=${BADGE_URL}" >> $GITHUB_ENV
-        echo "Lighthouse Performance Badge URL: ${BADGE_URL}" >> badges.txt
-
-    # - name: Commit badge URLs file
-    #   run: |
-    #     git config --global user.name 'github-actions[bot]'
-    #     git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-    #     git add badges.txt
-    #     git commit -m "Update badge URLs"
-    #     git push
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PERFORMANCE_BADGE_URL="https://img.shields.io/badge/Performance-${{ env.PERFORMANCE_SCORE }}-brightgreen"
+        ACCESSIBILITY_BADGE_URL="https://img.shields.io/badge/Accessibility-${{ env.ACCESSIBILITY_SCORE }}-brightgreen"
+        BEST_PRACTICES_BADGE_URL="https://img.shields.io/badge/Best_Practices-${{ env.BEST_PRACTICES_SCORE }}-brightgreen"
+        SEO_BADGE_URL="https://img.shields.io/badge/SEO-${{ env.SEO_SCORE }}-brightgreen"
+  
+        echo "PERFORMANCE_BADGE_URL=${PERFORMANCE_BADGE_URL}" >> $GITHUB_ENV
+        echo "ACCESSIBILITY_BADGE_URL=${ACCESSIBILITY_BADGE_URL}" >> $GITHUB_ENV
+        echo "BEST_PRACTICES_BADGE_URL=${BEST_PRACTICES_BADGE_URL}" >> $GITHUB_ENV
+        echo "SEO_BADGE_URL=${SEO_BADGE_URL}" >> $GITHUB_ENV
+  
+        echo "${PERFORMANCE_BADGE_URL}" > badges.txt
+        echo "${ACCESSIBILITY_BADGE_URL}" >> badges.txt
+        echo "${BEST_PRACTICES_BADGE_URL}" >> badges.txt
+        echo "${SEO_BADGE_URL}" >> badges.txt
+  
+    - name: Commit badge URL file
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add badges.txt
+        git commit -m "Update Lighthouse badge URLs"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+    - name: Update README with Lighthouse Badges
+      run: |
+        PERFORMANCE_BADGE_URL=$(grep 'Performance' badges.txt)
+        ACCESSIBILITY_BADGE_URL=$(grep 'Accessibility' badges.txt)
+        BEST_PRACTICES_BADGE_URL=$(grep 'Best_Practices' badges.txt)
+        SEO_BADGE_URL=$(grep 'SEO' badges.txt)
+  
+        # Replace the Lighthouse badges in README.md
+        if grep -q '\[!\[Lighthouse Performance\](.*)\]' README.md; then
+          sed -i "s|\[!\[Lighthouse Performance\](.*)\]|[![Lighthouse Performance](${PERFORMANCE_BADGE_URL})]|g" README.md
+        else
+          # Add the badge at the top of the README if not found
+          echo "[![Lighthouse Performance](${PERFORMANCE_BADGE_URL})]" | cat - README.md > temp && mv temp README.md
+        fi
+  
+        if grep -q '\[!\[Lighthouse Accessibility\](.*)\]' README.md; then
+          sed -i "s|\[!\[Lighthouse Accessibility\](.*)\]|[![Lighthouse Accessibility](${ACCESSIBILITY_BADGE_URL})]|g" README.md
+        else
+          # Add the badge at the top of the README if not found
+          echo "[![Lighthouse Accessibility](${ACCESSIBILITY_BADGE_URL})]" | cat - README.md > temp && mv temp README.md
+        fi
+  
+        if grep -q '\[!\[Lighthouse Best Practices\](.*)\]' README.md; then
+          sed -i "s|\[!\[Lighthouse Best Practices\](.*)\]|[![Lighthouse Best Practices](${BEST_PRACTICES_BADGE_URL})]|g" README.md
+        else
+          # Add the badge at the top of the README if not found
+          echo "[![Lighthouse Best Practices](${BEST_PRACTICES_BADGE_URL})]" | cat - README.md > temp && mv temp README.md
+        fi
+  
+        if grep -q '\[!\[Lighthouse SEO\](.*)\]' README.md; then
+          sed -i "s|\[!\[Lighthouse SEO\](.*)\]|[![Lighthouse SEO](${SEO_BADGE_URL})]|g" README.md
+        else
+          # Add the badge at the top of the README if not found
+          echo "[![Lighthouse SEO](${SEO_BADGE_URL})]" | cat - README.md > temp && mv temp README.md
+        fi
+  
+    - name: Commit changes to README
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add README.md
+        git commit -m "Update Lighthouse badges"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
