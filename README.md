@@ -41,12 +41,11 @@ You can view our SRS [Here](docs/srs.pdf)
 
 | Name             | Role            | Description                                                                                                | Photo                                       | LinkedIn                                                                                         |
 |------------------|-----------------|------------------------------------------------------------------------------------------------------------|---------------------------------------------|--------------------------------------------------------------------------------------------------|
-| Timothy Whitaker| Project Manager, Integration Engineer | I am a student and employee who loves computers and programming. Many fields of computer science interest me especially game development and some of my other interests include gyming, socializing, reading and playing guitar.                                                                            | ![Timothy Whitaker](assets/team/Timothy_Whitaker.jpg) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/timothy-whitaker-34ab281bb/) |
-| Scott Bebington  |        UI Engineer         | I am a final year computer science student specializing in front end development. My other hobbies include working out and socializing.                                                                             | ![Scott Bebington](assets/team/Scott_Bebington.jpg)   | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/scott-bebington/) |
-| Ethan Groenendyk      |       Business Analyst          | I am a passionate game dev looking to gameify and make good fun out of my projects                                                                               | ![Ethan Groenendyk](assets/team/Ethan_Groenendyk.jpg)           | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/ethan-groenendyk-183620142/) |
-| Given Chauke  |        Service Engineer         | Life long learner who enjoys challenges and building useful software products. Interested in gaming 🎮 and board games ♟                                                                             | ![Given Chauke](assets/team/Given_Chauke.jpg)     | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/given-chauke-10a6b927a/) |
-| Nicholas Harvey    |        Dev Ops Engineer         | I have a lot of interest in the future of technology and how it might impact the world, especially the use of AI in a supportive capacity to assist people in their endeavours to enhance productivity more than using either AI or people could accomplish alone. This interest has led to me developing a passion for programming, especially the more mathematically and data-oriented side of things - and thus, I tend to work best in a backend capacity.                                                                           | ![Nicholas Harvey](assets/team/Nicholas_Harvey.png)       | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/nicholas-harvey-b11455144/) |
-
+| Timothy Whitaker | Project Manager, Integration Engineer | A dedicated student and professional with a passion for computers and programming. Timothy is particularly interested in game development and enjoys a variety of activities including gym workouts, socializing, reading, and playing the guitar. | ![Timothy Whitaker](assets/team/Timothy_Whitaker.jpg) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/timothy-whitaker-34ab281bb/) |
+| Scott Bebington  | UI Engineer     | A final-year computer science student specializing in front-end development. Scott's hobbies include working out and socializing, reflecting his dynamic and engaging personality. | ![Scott Bebington](assets/team/Scott_Bebington.jpg) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/scott-bebington/) |
+| Ethan Groenendyk | Business Analyst | A passionate game developer who loves to gamify projects and create enjoyable experiences. Ethan's enthusiasm for game development drives his innovative approach to business analysis. | ![Ethan Groenendyk](assets/team/Ethan_Groenendyk.jpg) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/ethan-groenendyk-183620142/) |
+| Given Chauke     | Service Engineer | A lifelong learner who thrives on challenges and enjoys building useful software products. Given is also an avid gamer and board game enthusiast, always eager to explore new strategies and technologies. | ![Given Chauke](assets/team/Given_Chauke.jpg) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/given-chauke-10a6b927a/) |
+| Nicholas Harvey  | DevOps Engineer | Deeply interested in the future of technology and its potential impact on the world, especially the role of AI in enhancing productivity. Nicholas excels in backend development, driven by his passion for programming and data-oriented tasks. | ![Nicholas Harvey](assets/team/Nicholas_Harvey.png) | [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/nicholas-harvey-b11455144/) |
 ## Core Features
 
 1. **Pet and Pet Owner Profiles**
@@ -68,6 +67,21 @@ You can view our SRS [Here](docs/srs.pdf)
 5. **Lost and Found Database**
    - Report lost pets and search for found pets in the area.
    - Facilitate reunions between lost pets and their owners.
+
+## Bonus Features
+
+1. **Image Recognition**
+   - Utilize advanced image recognition technology to identify pets and other objects in photos.
+   - Enhance user experience by providing automated tagging and categorization of images.
+
+2. **Image Filtering**
+   - Filter out inappropriate or bad images to ensure a safe and positive user experience.
+   - Automatically detect and remove images that do not meet community guidelines before sharing.
+   - Replace inappropriate images with placeholders or warnings.
+
+3. **Mini Game: PetRunner**
+   - An engaging mini game where users can play as a dog.
+   - Avoid obstacles and get to the top of the leaderboard.
   
 ## Firebase Integration
 
@@ -84,28 +98,6 @@ Tailwaggr uses Firebase for backend services. Here's a breakdown of how we utili
 - **Firebase Hosting**: We use Firebase Hosting to serve our static and dynamic content. It provides fast and secure hosting for our web app, with a simple deployment process.
 
 By integrating Firebase, we can focus on creating a great user experience, knowing that Firebase's secure and scalable infrastructure is powering our backend.
-
-## Getting Started
-
-### Prerequisites
-
-- Flutter SDK
-- Dart SDK
-
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/COS301-SE-2024/TailWaggr.git 
-   cd cos301_capstone
-
-2. **Install Dependencies:**
-   ```bash
-   flutter pub get
-
-3. **Run The App:**
-   ```bash
-   flutter run
 
 ## Demo Video
 https://drive.google.com/file/d/1tC8j1FsY6oPOFMTz301LnhL8oH5_-M4U/view?usp=sharing
