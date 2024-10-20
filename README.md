@@ -46,42 +46,23 @@ You can track our project progress on our [project board](https://github.com/org
 
 ## Documentation
 
-- **[Tech Stack](docs/TechStack.pdf)**: Learn more about the technologies used in the project.
-- **[Architecture](docs/architecture.pdf)**: Detailed explanation of the app's architecture.
-- **[User Manual](docs/UserGuide.pdf)**: Guide for users on how to navigate the app.
-- **[Technical Installation Manual](docs/Technical_Installation.pdf)**: Technical guide for setting up the app.
-- **[Coding Standards](docs/CodingStandards.pdf)**: Guidelines for code quality and practices.
 - **[Software Requirements Specification](docs/srs.pdf)**: Detailed software requirements document.
-
+- **[Coding Standards](docs/CodingStandards.pdf)**: Guidelines for code quality and practices.
+- **[Testing Policy](docs/TestingReport.pdf)**: Overview of the testing approach and tools used.
+- **[Tech Stack](docs/TechStack.pdf)**: Learn more about the technologies used in the project.
+- **[User Manual](docs/UserGuide.pdf)**: Guide for users on how to navigate the app.
+- **[Video Presentation](docs/VideoPresentation.pdf)**: Video presentation for the project.
+- **[Slideshow](docs/slideshow.pdf)**: Presentation slides for the project.
+- **[Video Advertisement](https://drive.google.com/file/d/1RXHLj2gZdAui5Fbfh5LRX5RYQakBtrKi/view?usp=drive_link)**: Video advertisement for the app.
+- **[Architecture](docs/architecture.pdf)**: Detailed explanation of the app's architecture.
+- **[Technical Installation Manual](docs/Technical_Installation.pdf)**: Technical guide for setting up and installing the app for development.
 ---
-
-## Core Features
-
-1. **Pet and Pet Owner Profiles**: Manage profiles for pets and their owners.
-2. **Find a Veterinarian**: Search and contact registered veterinarians.
-3. **Find a Pet Keeper**: Hire registered pet keepers.
-4. **Forums**: Engage in discussions, share advice, and connect with other pet owners.
-5. **Lost and Found Database**: Report and search for lost pets in your area.
-
-## Bonus Features
-
-1. **Image Recognition**: Identify pets and objects in photos using advanced image recognition.
-2. **Image Filtering**: Automatically detect and filter inappropriate images.
-3. **Mini Game - PetRunner**: Play as a dog and avoid obstacles to top the leaderboard.
-
----
-
-## Firebase Integration
-
-Tailwaggr leverages Firebase for backend services:
-
-- **Authentication**: Secure authentication with email/password, Google, and Facebook login.
-- **Firestore Database**: Real-time sync of user and pet data, even when offline.
-- **Cloud Storage**: Secure storage for profile pictures and user-uploaded images.
-- **Cloud Functions**: Serverless backend logic for features like image recognition and vet search.
-- **Firebase Hosting**: Fast and secure hosting for the web app.
-
----
+## Using the App
+You can use the app in chrome, for mobile you can download a version of the app using the following steps:
+1. Open the app in chrome
+2. Click on the three dots on the top right corner of the browser
+3. Click on "Install TailWaggr"
+4. The app will be installed on your device
 
 ## Team - Argonauts
 
@@ -165,6 +146,48 @@ Tailwaggr leverages Firebase for backend services:
 
 ---
 
-## Demo Video
+## Research and Contributions
 
-Check out our demo video [here](https://drive.google.com/file/d/1tC8j1FsY6oPOFMTz301LnhL8oH5_-M4U/view?usp=sharing).
+### Research Conducted
+
+1. **User Needs Analysis**
+   - Surveys and interviews with pet owners to identify key features like finding veterinarians, pet keepers, and a lost and found database.
+
+2. **Technology Research**
+   - Evaluated technologies and chose Flutter for cross-platform capabilities and Firebase for backend services.
+
+3. **Image Recognition and Filtering**
+   - Researched and implemented Google Cloud Vision API for pet identification and content filtering.
+
+4. **Gamification**
+   - Studied gamification techniques and developed the PetRunner mini-game to enhance user engagement.
+
+### Research Contributions
+
+1. **Innovative Features**
+   - Integrated services for pet owners, including advanced image recognition and filtering.
+
+2. **User-Centric Design**
+   - Designed an intuitive interface based on user feedback and usability testing.
+
+3. **Gamification in Pet Care**
+   - Introduced gamification elements to enhance user engagement and retention.
+
+4. **Advanced Technology Integration**
+   - Successfully integrated Google Cloud Vision API and Firebase, demonstrating their potential in creating impactful applications.
+
+## Core Features
+
+1. **Pet and Pet Owner Profiles**: Manage profiles for pets and their owners.
+2. **Find a Veterinarian**: Search and contact registered veterinarians.
+3. **Find a Pet Keeper**: Hire registered pet keepers.
+4. **Forums**: Engage in discussions, share advice, and connect with other pet owners.
+5. **Lost and Found Database**: Report and search for lost pets in your area.
+
+## Bonus Features
+
+1. **Image Recognition**: Identify pets and objects in photos using advanced image recognition.
+2. **Image Filtering**: Automatically detect and filter inappropriate images.
+3. **Mini Game - PetRunner**: Play as a dog and avoid obstacles to top the leaderboard.
+
+---
