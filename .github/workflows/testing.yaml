@@ -43,7 +43,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage/lcov.info
 
-  lighthouse:
+    lighthouse:
     runs-on: ubuntu-latest
   
     steps:
@@ -95,7 +95,7 @@ jobs:
         fi
         echo "ACCESSIBILITY_SCORE=${ACCESSIBILITY_SCORE%.*}" >> $GITHUB_ENV
   
-        BEST_PRACTICES_SCORE=$(jq '.[0].scores.best-practices // 0 * 100' "$REPORT_FILE")
+        BEST_PRACTICES_SCORE=$(jq '.[0].scores.bestPractices // 0 * 100' "$REPORT_FILE")
         if [ "$BEST_PRACTICES_SCORE" = "null" ]; then
             BEST_PRACTICES_SCORE=0
         fi
