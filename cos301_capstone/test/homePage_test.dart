@@ -293,7 +293,7 @@ void main() {
   });
 
   group('Testing the post container for Tablet', () {
-    testWidgets('Check post container for Desktop', (WidgetTester tester) async {
+    testWidgets('Check post container for Tablet', (WidgetTester tester) async {
       final oldOnError = FlutterError.onError;
       FlutterError.onError = (FlutterErrorDetails details) {
         if (!details.exceptionAsString().contains('A RenderFlex overflowed by') && !details.exceptionAsString().contains('firebase_storage/no-bucket')) {
