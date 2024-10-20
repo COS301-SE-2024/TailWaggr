@@ -5,8 +5,22 @@
 
 ---
 
-[![Flutter](https://img.shields.io/badge/Flutter-Framework-blue?logo=flutter)](https://flutter.dev) [![Firebase](https://img.shields.io/badge/Firebase-Platform-yellow?logo=firebase)](https://firebase.google.com) [![Flutter Test](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Test/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions/workflows/testing.yaml) [![Flutter Lint](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Lint/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions/workflows/linting.yaml) [![GitHub issues](https://img.shields.io/github/issues/COS301-SE-2024/TailWaggr)](https://github.com/COS301-SE-2024/TailWaggr/issues) [![Code Coverage](https://codecov.io/gh/COS301-SE-2024/TailWaggr/branch/main/graph/badge.svg)](https://codecov.io/gh/COS301-SE-2024/TailWaggr) ![Lighthouse Performance](https://img.shields.io/badge/Performance-95-brightgreen) ![Lighthouse Accessibility](https://img.shields.io/badge/Accessibility-82-brightgreen) ![Lighthouse Best Practices](https://img.shields.io/badge/Best_Practices-100-brightgreen) ![Lighthouse SEO](https://img.shields.io/badge/SEO-100-brightgreen)
+[![Flutter Test](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Test/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions/workflows/testing.yaml) [![Flutter Lint](https://github.com/COS301-SE-2024/TailWaggr/workflows/Flutter%20Lint/badge.svg)](https://github.com/COS301-SE-2024/TailWaggr/actions/workflows/linting.yaml) [![GitHub issues](https://img.shields.io/github/issues/COS301-SE-2024/TailWaggr)](https://github.com/COS301-SE-2024/TailWaggr/issues) [![Code Coverage](https://codecov.io/gh/COS301-SE-2024/TailWaggr/branch/main/graph/badge.svg)](https://codecov.io/gh/COS301-SE-2024/TailWaggr) ![Lighthouse Performance](https://img.shields.io/badge/Performance-95-brightgreen) ![Lighthouse Accessibility](https://img.shields.io/badge/Accessibility-82-brightgreen) ![Lighthouse Best Practices](https://img.shields.io/badge/Best_Practices-100-brightgreen) ![Lighthouse SEO](https://img.shields.io/badge/SEO-100-brightgreen)
 
+---
+## Tech Stack
+
+#### Frontend
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev) [![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
+
+#### Backend
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com) [![Firestore](https://img.shields.io/badge/Firestore-FF6F00?style=for-the-badge&logo=firebase&logoColor=white)](https://firebase.google.com/products/firestore) [![Cloud Functions](https://img.shields.io/badge/Cloud%20Functions-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://firebase.google.com/products/functions) [![Cloud Storage](https://img.shields.io/badge/Cloud%20Storage-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://firebase.google.com/products/storage) [![Firebase Hosting](https://img.shields.io/badge/Firebase%20Hosting-FF6F00?style=for-the-badge&logo=firebase&logoColor=white)](https://firebase.google.com/products/hosting)
+
+#### Testing
+[![Codecov](https://img.shields.io/badge/Codecov-F01F7A?style=for-the-badge&logo=codecov&logoColor=white)](https://codecov.io) [![Lighthouse](https://img.shields.io/badge/Lighthouse-F44B21?style=for-the-badge&logo=lighthouse&logoColor=white)](https://developers.google.com/web/tools/lighthouse) [![Flutter Testing](https://img.shields.io/badge/Flutter%20Testing-00BFFF?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/docs/testing) [![Flutter Lint](https://img.shields.io/badge/Flutter%20Lint-00BFFF?style=for-the-badge&logo=flutter&logoColor=white)](https://dart.dev/guides/language/analysis-options)
+
+#### CI/CD
+[![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/features/actions) [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com)
 ---
 
 </div>
@@ -19,7 +33,7 @@
 - Engaging in discussions
 - Reuniting lost pets with their owners
 
-## App Demo
+## App
 
 You can view the app [here](https://tailwaggr.web.app).
 
@@ -66,15 +80,85 @@ Tailwaggr leverages Firebase for backend services:
 
 ---
 
-## The Team - Argonauts
+## Team - Argonauts
 
-| Name              | Details                                            | Photo                                       |
-|-------------------|----------------------------------------------------|---------------------------------------------|
-| **Timothy Whitaker** | **Role:** Project Manager, Integration Engineer <br> **Description:** A dedicated student and professional with a passion for computers and programming. Timothy is particularly interested in game development and enjoys a variety of activities including gym workouts, socializing, reading, and playing the guitar. <br> <br> [![LinkedIn](https://img.shields.io/badge/-LinkedIn-blue?logo=linkedin)](https://www.linkedin.com/in/timothy-whitaker-34ab281bb/) [![GitHub](https://img.shields.io/badge/-GitHub-black?logo=github)](https://github.com/Timothy-333) | <img src="assets/team/Timothy_Whitaker.jpg" alt="Timothy Whitaker" width="175"> |
-| **Scott Bebington**  | **Role:** UI Engineer <br> **Description:** A final-year computer science student specializing in front-end development. Scott's hobbies include working out and socializing, reflecting his dynamic and engaging personality. <br> <br> [![LinkedIn](https://img.shields.io/badge/-LinkedIn-blue?logo=linkedin)](https://www.linkedin.com/in/scott-bebington/) [![GitHub](https://img.shields.io/badge/-GitHub-black?logo=github)](https://github.com/Scott-Bebington) | <img src="assets/team/Scott_Bebington.jpg" alt="Scott Bebington" width="175"> |
-| **Ethan Groenendyk** | **Role:** Business Analyst <br> **Description:** A passionate game developer who loves to gamify projects and create enjoyable experiences. Ethan's enthusiasm for game development drives his innovative approach to business analysis. <br> <br> [![LinkedIn](https://img.shields.io/badge/-LinkedIn-blue?logo=linkedin)](https://www.linkedin.com/in/ethan-groenendyk-183620142/) [![GitHub](https://img.shields.io/badge/-GitHub-black?logo=github)](https://github.com/EthanGroenendyk) | <img src="assets/team/Ethan_Groenendyk.jpg" alt="Ethan Groenendyk" width="175"> |
-| **Given Chauke**     | **Role:** Service Engineer <br> **Description:** A lifelong learner who thrives on challenges and enjoys building useful software products. Given is also an avid gamer and board game enthusiast, always eager to explore new strategies and technologies. <br> <br> [![LinkedIn](https://img.shields.io/badge/-LinkedIn-blue?logo=linkedin)](https://www.linkedin.com/in/given-chauke-10a6b927a/) [![GitHub](https://img.shields.io/badge/-GitHub-black?logo=github)](https://github.com/GivenChauke) | <img src="assets/team/Given_Chauke.jpg" alt="Given Chauke" width="175"> |
-| **Nicholas Harvey**  | **Role:** DevOps Engineer <br> **Description:** Deeply interested in the future of technology and its potential impact on the world, especially the role of AI in enhancing productivity. Nicholas excels in backend development, driven by his passion for programming and data-oriented tasks. <br> <br> [![LinkedIn](https://img.shields.io/badge/-LinkedIn-blue?logo=linkedin)](https://www.linkedin.com/in/nicholas-harvey-b11455144/) [![GitHub](https://img.shields.io/badge/-GitHub-black?logo=github)](https://github.com/u22522116) | <img src="assets/team/Nicholas_Harvey.png" alt="Nicholas Harvey" width="175"> |
+<table style="border: 1px solid #ccc; width: 100%; font-family: Arial, sans-serif; border-collapse: collapse;">
+  <!-- Timothy Whitaker -->
+  <tr style="border-bottom: 1px solid #ccc;">
+    <td style="vertical-align: top; width: 30%; padding: 20px; text-align: center;">
+      <img src="assets/team/Timothy_Whitaker.jpg" width="175" height="auto" >
+    </td>
+    <td style="vertical-align: top; width: 70%; padding: 20px;">
+      <h2 style="font-size: 24px; margin: 0 0 10px; color: #EEE;"><b>Timothy Whitaker</b></h2>
+      <b style="font-size: 18px; color: #CCC;">Project Manager, Integration Engineer</b>
+      <p style="font-size: 16px; color: #CCC; line-height: 1.5;">
+        A dedicated student and professional with a passion for computers and programming. Timothy is particularly interested in game development and enjoys a variety of activities including gym workouts, socializing, reading, and playing the guitar.
+      </p>
+      <a href="https://www.linkedin.com/in/timothy-whitaker-34ab281bb/"><img src="https://img.shields.io/badge/LinkedIn-0077b5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
+      <a href="https://github.com/Timothy-333"><img src="https://img.shields.io/badge/GitHub-333?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
+    </td>
+  </tr>
+  <!-- Scott Bebington -->
+  <tr style="border-bottom: 1px solid #ccc;">
+    <td style="vertical-align: top; width: 30%; padding: 20px; text-align: center;">
+      <img src="assets/team/Scott_Bebington.jpg" width="175" height="auto" >
+    </td>
+    <td style="vertical-align: top; width: 70%; padding: 20px;">
+      <h2 style="font-size: 24px; margin: 0 0 10px; color: #EEE;"><b>Scott Bebington</b></h2>
+      <b style="font-size: 18px; color: #CCC;">UI Engineer</b>
+      <p style="font-size: 16px; color: #CCC; line-height: 1.5;">
+        A final-year computer science student specializing in front-end development. Scott's hobbies include working out and socializing, reflecting his dynamic and engaging personality.
+      </p>
+      <a href="https://www.linkedin.com/in/scott-bebington/"><img src="https://img.shields.io/badge/LinkedIn-0077b5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
+      <a href="https://github.com/Scott-Bebington"><img src="https://img.shields.io/badge/GitHub-333?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
+    </td>
+  </tr>
+  <!-- Ethan Groenendyk -->
+  <tr style="border-bottom: 1px solid #ccc;">
+    <td style="vertical-align: top; width: 30%; padding: 20px; text-align: center;">
+      <img src="assets/team/Ethan_Groenendyk.jpg" width="175" height="auto" >
+    </td>
+    <td style="vertical-align: top; width: 70%; padding: 20px;">
+      <h2 style="font-size: 24px; margin: 0 0 10px; color: #EEE;"><b>Ethan Groenendyk</b></h2>
+      <b style="font-size: 18px; color: #CCC;">Business Analyst, Game Developer</b>
+      <p style="font-size: 16px; color: #CCC; line-height: 1.5;">
+        A passionate game developer who loves to gamify projects and create enjoyable experiences. Ethan's enthusiasm for game development drives his innovative approach to business analysis.
+      </p>
+      <a href="https://www.linkedin.com/in/ethan-groenendyk-183620142/"><img src="https://img.shields.io/badge/LinkedIn-0077b5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
+      <a href="https://github.com/EthanGroenendyk"><img src="https://img.shields.io/badge/GitHub-333?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
+    </td>
+  </tr>
+  <!-- Given Chauke -->
+  <tr style="border-bottom: 1px solid #ccc;">
+    <td style="vertical-align: top; width: 30%; padding: 20px; text-align: center;">
+      <img src="assets/team/Given_Chauke.jpg" width="175" height="auto" >
+    </td>
+    <td style="vertical-align: top; width: 70%; padding: 20px;">
+      <h2 style="font-size: 24px; margin: 0 0 10px; color: #EEE;"><b>Given Chauke</b></h2>
+      <b style="font-size: 18px; color: #CCC;">Service Engineer</b>
+      <p style="font-size: 16px; color: #CCC; line-height: 1.5;">
+        A lifelong learner who thrives on challenges and enjoys building useful software products. Given is also an avid gamer and board game enthusiast, always eager to explore new strategies and technologies.
+      </p>
+      <a href="https://www.linkedin.com/in/given-chauke-10a6b927a/"><img src="https://img.shields.io/badge/LinkedIn-0077b5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
+      <a href="https://github.com/GivenChauke"><img src="https://img.shields.io/badge/GitHub-333?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
+    </td>
+  </tr>
+  <!-- Nicholas Harvey -->
+  <tr>
+    <td style="vertical-align: top; width: 30%; padding: 20px; text-align: center;">
+      <img src="assets/team/Nicholas_Harvey.png" width="175" height="auto" >
+    </td>
+    <td style="vertical-align: top; width: 70%; padding: 20px;">
+      <h2 style="font-size: 24px; margin: 0 0 10px; color: #EEE;"><b>Nicholas Harvey</b></h2>
+      <b style="font-size: 18px; color: #CCC;">DevOps Engineer</b>
+      <p style="font-size: 16px; color: #CCC; line-height: 1.5;">
+        Deeply interested in the future of technology and its potential impact on the world, especially the role of AI in enhancing productivity. Nicholas excels in backend development, driven by his passion for programming and data-oriented tasks.
+      </p>
+      <a href="https://www.linkedin.com/in/nicholas-harvey-b11455144/"><img src="https://img.shields.io/badge/LinkedIn-0077b5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
+      <a href="https://github.com/u22522116"><img src="https://img.shields.io/badge/GitHub-333?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
+    </td>
+  </tr>
+</table>
 
 ---
 
