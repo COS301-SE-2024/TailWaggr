@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:path/path.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -38,6 +37,7 @@ class AuthService {
           'name': name,
           'surname': surname,
           'email': email,
+          'profileVisibility': false,
           'bio': '',
           'birthDate': DateTime.now(),
           'location': '',
@@ -142,6 +142,7 @@ class AuthService {
             'name': name,
             'surname': surname,
             'email': user.email,
+            'profileVisibility': false,
             'bio': '',
             'birthDate': DateTime.now(),
             'location': '',

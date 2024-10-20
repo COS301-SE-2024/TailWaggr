@@ -1,16 +1,15 @@
-import 'dart:io';
+import 'dart:collection';
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/services/Notifications/notifications.dart';
+import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
-import 'package:cos301_capstone/services/general/general_service.dart';
-
-import 'package:cos301_capstone/services/Notifications/notifications.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 class HomePageService {
   late final FirebaseFirestore _db;
@@ -135,16 +134,37 @@ class HomePageService {
         print("Resetting _lastDocument");
       }
 
-      // Build the base query
+      // Fetch the user's requests
+      DocumentSnapshot friendDoc = await _db.collection('users').doc(profileDetails.userID).get();
+      Map<String, dynamic>? Data = friendDoc.data() as Map<String, dynamic>?;
+      HashMap<String, dynamic> friends = Data?['friends'] != null ? HashMap.from(Data?['friends']) : HashMap<String, String>();
+
+      // Filter friends to include only those with the value "Following"
+      friends.removeWhere((key, value) => value != "Following");
+
+      friends[profileDetails.userID] = "Following";
+
+      List<String> followedUserIDs = friends.keys.toList();
+
+      if (followedUserIDs.isEmpty) {
+        print("No friends to fetch posts from.");
+        return [];
+      }
+
+      log("Followed User IDs: $followedUserIDs");
+
       Query query = _db
           .collection('posts')
+          .where('UserId', whereIn: followedUserIDs) // Filter by user IDs
           .orderBy('CreatedAt', descending: true)
           .limit(limit);
+
+      // Build the base query
+      // Query query = _db.collection('posts').orderBy('CreatedAt', descending: true).limit(limit);
 
       // Apply pagination if loading more
       if (isLoadMore && _lastDocument != null) {
         query = query.startAfterDocument(_lastDocument!);
-        print("Applying pagination with _lastDocument: ${_lastDocument!.id}");
       }
 
       // Execute the query
@@ -153,7 +173,6 @@ class HomePageService {
       // Update _lastDocument for pagination
       if (querySnapshot.docs.isNotEmpty) {
         _lastDocument = querySnapshot.docs.last;
-        print("Updated _lastDocument: ${_lastDocument!.id}");
       } else {
         print("No more documents to fetch.");
       }
@@ -165,7 +184,6 @@ class HomePageService {
 
       // Return unfiltered posts if no filter is applied
       if (words == null || words.isEmpty) {
-        print("Fetched ${posts.length} posts.");
         return posts;
       }
 
@@ -176,10 +194,8 @@ class HomePageService {
         final labels = post['labels'] as List<dynamic>?;
         if (labels == null) return false;
 
-        final lowerCaseLabels =
-            labels.map((label) => label.toString().toLowerCase()).toList();
-        return wordList.any(
-            (word) => lowerCaseLabels.any((label) => label.contains(word)));
+        final lowerCaseLabels = labels.map((label) => label.toString().toLowerCase()).toList();
+        return wordList.any((word) => lowerCaseLabels.any((label) => label.contains(word)));
       }).toList();
 
       print("Fetched ${filteredPosts.length} filtered posts.");

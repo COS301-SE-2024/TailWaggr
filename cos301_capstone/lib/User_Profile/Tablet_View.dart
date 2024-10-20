@@ -2,7 +2,6 @@
 
 import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cos301_capstone/Edit_Profile/Edit_Profile.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/Pets/Pet_Profile.dart';
@@ -35,9 +34,9 @@ class _ProfileTabletState extends State<ProfileTablet> {
       if (widget.userId != profileDetails.userID) {
         Map<String, dynamic>? tempDetails = await ProfileService().getUserDetails(widget.userId);
 
-        if (tempDetails != null && tempDetails['profileVisibility']) {
+        if ((tempDetails != null && tempDetails['profileVisibility']) || (profileDetails.friends.containsKey(widget.userId) && profileDetails.friends[widget.userId] == "Following")) {
           localProfileDetails.userID = widget.userId;
-          localProfileDetails.name = tempDetails['name'];
+          localProfileDetails.name = tempDetails!['name'];
           localProfileDetails.surname = tempDetails['surname'];
           localProfileDetails.email = tempDetails['email'];
           localProfileDetails.bio = tempDetails['bio'];
@@ -149,6 +148,9 @@ class AboutMeContainer extends StatefulWidget {
 }
 
 class _AboutMeContainerState extends State<AboutMeContainer> {
+
+  ProfileService profileService = ProfileService();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -183,6 +185,96 @@ class _AboutMeContainerState extends State<AboutMeContainer> {
                 ),
                 Text(widget.profileDetails.bio, style: TextStyle(fontSize: subBodyTextSize)),
                 SizedBox(height: 10),
+                if (widget.profileDetails.email != profileDetails.email) ...[
+                  SizedBox(height: 20),
+                  if (profileDetails.friends.containsKey(widget.profileDetails.userID) && profileDetails.friends[widget.profileDetails.userID] != "Requested") ...[
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                      ),
+                      onPressed: () async {
+                        bool success = await profileService.unfollowUser(profileDetails.userID, widget.profileDetails.userID);
+                        if (success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Unfollowed user'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to unfollow user'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+
+                        setState(() {});
+                      },
+                      child: Text("Unfollow", style: TextStyle(color: Colors.white)),
+                    ),
+                  ] else if (profileDetails.friends.containsKey(widget.profileDetails.userID) && profileDetails.friends[widget.profileDetails.userID] == "Requested") ... {
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                      ),
+                      onPressed: () async {
+                        bool success = await profileService.unfollowUser(profileDetails.userID, widget.profileDetails.userID);
+                        if (success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Follow request cancelled'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to cancel follow request'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+
+                        setState(() {});
+                      },
+                      child: Text("Cancel follow request", style: TextStyle(color: Colors.white)),
+                    ),
+                  } else ...[
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                      ),
+                      onPressed: () async {
+                        bool success = await profileService.followUser(
+                          profileDetails.userID,
+                          widget.profileDetails.userID,
+                          widget.profileDetails.isPublic ? "Following" : "Requested",
+                        );
+
+                        if (success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Follow request sent'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to send follow request'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+
+                        setState(() {});
+                      },
+                      child: Text(widget.profileDetails.isPublic ? "Follow" : "Request to follow", style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ],
               ],
             ),
           ),

@@ -1,9 +1,8 @@
 // ignore_for_file: camel_case_types, prefer_const_literals_to_create_immutables, prefer_const_constructors, prefer_final_fields, must_be_immutable
 
 import 'package:cos301_capstone/Global_Variables.dart';
-import 'package:cos301_capstone/services/Profile/profile_service.dart';
-import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/material.dart';
 
 NavbarIndexObserver navbarIndexObserver = NavbarIndexObserver();
 

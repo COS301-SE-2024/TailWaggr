@@ -1,4 +1,3 @@
-
 import 'package:cos301_capstone/Login/Desktop_View.dart';
 import 'package:cos301_capstone/Login/Mobile_View.dart';
 import 'package:cos301_capstone/Login/Tablet_View.dart';
@@ -10,9 +9,7 @@ import './mockUIFirebaseApp.dart'; // from: https://github.com/FirebaseExtended/
 /// Tests for the Login page
 /// clear && flutter test test/login_test.dart
 
-
 void main() {
-
   setupFirebaseAuthMocks();
 
   setUpAll(() async {
@@ -26,7 +23,6 @@ void main() {
   }
 
   testWidgets('Renders DesktopLogin and UI components', (WidgetTester tester) async {
-
     final oldOnError = FlutterError.onError;
     FlutterError.onError = (FlutterErrorDetails details) {
       if (!details.exceptionAsString().contains('A RenderFlex overflowed by')) {
@@ -44,7 +40,6 @@ void main() {
   });
 
   testWidgets('Toggles password visibility Desktop', (WidgetTester tester) async {
-
     final oldOnError = FlutterError.onError;
     FlutterError.onError = (FlutterErrorDetails details) {
       if (!details.exceptionAsString().contains('A RenderFlex overflowed by')) {
@@ -82,28 +77,46 @@ void main() {
     // Restore the original error handler
     FlutterError.onError = oldOnError;
   });
+
   testWidgets('Mobile_View widget test', (WidgetTester tester) async {
-      final oldOnError = FlutterError.onError;
-      FlutterError.onError = (FlutterErrorDetails details) {
-        if (!details.exceptionAsString().contains('A RenderFlex overflowed by')) {
-          oldOnError!(details);
-        }
-      };
-      // Build the Mobile_View widget.
-      await tester.pumpWidget(MaterialApp(
-        home: Scaffold( // Add this
-          body: Mobile_View(),
-        ),
-      ));
+    final oldOnError = FlutterError.onError;
+    FlutterError.onError = (FlutterErrorDetails details) {
+      if (!details.exceptionAsString().contains('A RenderFlex overflowed by')) {
+        oldOnError!(details);
+      }
+    };
+    // Build the Mobile_View widget.
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        // Add this
+        body: Mobile_View(),
+      ),
+    ));
 
-      // Verify that the Mobile_View widget is displayed.
-      expect(find.byType(Mobile_View), findsOneWidget);
+    // Verify that the Mobile_View widget is displayed.
+    expect(find.byType(Mobile_View), findsOneWidget);
 
-      // Verify that the "Welcome!" text is displayed.
-      expect(find.text('Welcome!'), findsOneWidget);
+    // Verify that the "Welcome!" text is displayed.
+    expect(find.text('Welcome!'), findsOneWidget);
 
-      // Restore the original error handler
-      FlutterError.onError = oldOnError;
+    // Restore the original error handler
+    FlutterError.onError = oldOnError;
   });
 
+  testWidgets('Renders MobileLogin and UI components', (WidgetTester tester) async {
+    final oldOnError = FlutterError.onError;
+    FlutterError.onError = (FlutterErrorDetails details) {
+      if (!details.exceptionAsString().contains('A RenderFlex overflowed by') && !details.exceptionAsString().contains('No Firebase App')) {
+        oldOnError!(details);
+      }
+    };
+
+    await tester.pumpWidget(createWidgetForTesting(child: const Mobile_View()));
+
+    // Verify the presence of essential UI components
+    expect(find.text('Login'), findsOneWidget);
+
+    // Restore the original error handler
+    FlutterError.onError = oldOnError;
+  });
 }

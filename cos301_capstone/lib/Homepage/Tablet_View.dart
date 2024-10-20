@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:animations/animations.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
+import 'package:cos301_capstone/Homepage/Desktop_View.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
@@ -8,7 +9,6 @@ import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:cos301_capstone/services/imageApi/imageFilter.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +16,6 @@ ValueNotifier<bool> uploadPostContainerOpen = ValueNotifier(true);
 
 class TabletHomepage extends StatefulWidget {
   const TabletHomepage({super.key});
-
 
   @override
   State<TabletHomepage> createState() => _TabletHomepageState();
@@ -158,6 +157,17 @@ class _PostState extends State<Post> {
     getLikes();
     getViews();
     getCommentCount();
+    getUser();
+  }
+
+  void getUser() {
+    homePageService.getUserDetails(widget.postDetails['UserId']).then((value) {
+      if (!mounted) return; // Check if the widget is still mounted
+      setState(() {
+        widget.postDetails['name'] = value['name'] + ' ' + value['surname'];
+        widget.postDetails['pictureUrl'] = value['profilePictureUrl'];
+      });
+    });
   }
 
   void getLikes() async {
@@ -457,6 +467,51 @@ class _PostState extends State<Post> {
                     ),
                   ],
                 ),
+                Spacer(),
+                if (widget.postDetails['UserId'] == profileDetails.userID) ...{
+                  PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert, color: themeSettings.textColor),
+                    color: themeSettings.backgroundColor,
+                    onSelected: (String result) async {
+                      if (result == 'delete') {
+                        // Add your delete post logic here
+                        bool deleted = await homePageService.deletePost(widget.postDetails['PostId']);
+                        if (deleted) {
+                          setState(() {
+                            profileDetails.posts.removeWhere((post) => post['PostId'] == widget.postDetails['PostId']);
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: Colors.green,
+                              content: Text('Post deleted successfully'),
+                            ),
+                          );
+
+                          homepageVAF.postPosted.value = !homepageVAF.postPosted.value;
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: Colors.red,
+                              content: Text('Failed to delete post'),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      PopupMenuItem<String>(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.red),
+                            SizedBox(width: 10),
+                            Text('Delete Post', style: TextStyle(color: themeSettings.textColor)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                },
               ],
             ),
             SizedBox(height: 20),
@@ -587,7 +642,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
   bool selectingPet = false;
   List<bool> removePet = [];
   ImageFilter imageFilter = ImageFilter();
-  
+
   @override
   void initState() {
     super.initState();
@@ -670,27 +725,30 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                 ],
               ),
             ] else ...[
-              Container(
-                key: Key('add-photo-button'),
-                decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
                 child: GestureDetector(
                   onTap: () => imagePicker.pickFiles(),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add_a_photo,
-                            color: themeSettings.textColor.withOpacity(0.7),
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            "Add a photo",
-                            style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
-                          ),
-                        ],
+                  child: Container(
+                    key: Key('add-photo-button'),
+                    decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_a_photo,
+                              color: themeSettings.textColor.withOpacity(0.7),
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              "Add a photo",
+                              style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -909,7 +967,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     Map<String, dynamic> moderationResult = await imageFilter.moderateImage(imagePicker.filesNotifier.value![0]);
                     print("Moderation result: $moderationResult");
                     //create dialog box for moderation
-                      if (moderationResult['status'] == 'fail') {
+                    if (moderationResult['status'] == 'fail') {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: Colors.redAccent, // Customize color if needed
@@ -917,7 +975,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "🔞 Warning!",  // Title
+                                "🔞 Warning!", // Title
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
@@ -926,13 +984,13 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                               ),
                               SizedBox(height: 8),
                               Text(
-                                moderationResult['message'],  // Full message
+                                moderationResult['message'], // Full message
                                 style: TextStyle(color: themeSettings.textColor), // Customize text color
                               ),
                             ],
                           ),
-                          duration: Duration(seconds: 20),  // Increase the duration if needed
-                          behavior: SnackBarBehavior.floating,  // Makes the snackbar floating
+                          duration: Duration(seconds: 20), // Increase the duration if needed
+                          behavior: SnackBarBehavior.floating, // Makes the snackbar floating
                         ),
                       );
                       //prevent the post from being uploaded
@@ -963,7 +1021,6 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     });
                   }
 
-
                   List<Map<String, dynamic>> petIds = [];
 
                   if (petIncludeCounter > 0) {
@@ -991,6 +1048,15 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                     });
 
                     homepageVAF.postPosted.value = !homepageVAF.postPosted.value;
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: Colors.green,
+                        content: Text('Post uploaded successfully'),
+                      ),
+                    );
+
+                    Navigator.pop(context);
                   } else {
                     setState(() {
                       errorText = "An error occurred while posting";
@@ -1005,7 +1071,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "Post",
+                    postText,
                     style: TextStyle(color: Colors.white),
                   ),
                 ),

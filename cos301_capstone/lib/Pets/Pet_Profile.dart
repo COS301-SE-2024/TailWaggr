@@ -7,10 +7,7 @@ import 'package:cos301_capstone/Pets/PetProfileDesktop.dart';
 import 'package:cos301_capstone/Pets/PetProfileMobile.dart';
 import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class PetProfileVariables {
   static TextEditingController nameController = TextEditingController();

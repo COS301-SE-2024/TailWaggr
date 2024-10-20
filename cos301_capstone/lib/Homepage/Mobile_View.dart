@@ -1,19 +1,16 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-import 'dart:math';
-
 import 'package:animations/animations.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
+import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 import 'package:cos301_capstone/services/HomePage/home_page_service.dart';
 import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
 import 'package:cos301_capstone/services/imageApi/imageFilter.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:cos301_capstone/User_Profile/User_Profile.dart';
 
 final HomePageService homePageService = HomePageService();
 
@@ -61,7 +58,8 @@ class _MobileHomepageState extends State<MobileHomepage> {
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('No more posts to load'),
+                backgroundColor: Colors.blue,
+                content: Center(child: Text('No more posts to load')),
               ),
             );
           }
@@ -151,7 +149,7 @@ class _MobileHomepageState extends State<MobileHomepage> {
                         },
                         child: Text(
                           'Search',
-                          style: TextStyle(color: themeSettings.textColor),
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
@@ -274,6 +272,17 @@ class _PostState extends State<Post> {
     getViews();
     getCommentCount();
     checkIfLiked();
+    getUser();
+  }
+
+  void getUser() {
+    homePageService.getUserDetails(widget.postDetails['UserId']).then((value) {
+      if (!mounted) return; // Check if the widget is still mounted
+      setState(() {
+        widget.postDetails['name'] = value['name'] + ' ' + value['surname'];
+        widget.postDetails['pictureUrl'] = value['profilePictureUrl'];
+      });
+    });
   }
 
   void getLikes() async {
@@ -722,7 +731,7 @@ class _PostState extends State<Post> {
                         ],
                       ),
                     ),
-                   ],
+                  ],
                 ),
               ),
             ),
@@ -997,6 +1006,51 @@ class _PostState extends State<Post> {
                 ),
               ],
             ),
+            Spacer(),
+            if (widget.postDetails['UserId'] == profileDetails.userID) ...{
+              PopupMenuButton<String>(
+                icon: Icon(Icons.more_vert, color: themeSettings.textColor),
+                color: themeSettings.backgroundColor,
+                onSelected: (String result) async {
+                  if (result == 'delete') {
+                    // Add your delete post logic here
+                    bool deleted = await homePageService.deletePost(widget.postDetails['PostId']);
+                    if (deleted) {
+                      setState(() {
+                        profileDetails.posts.removeWhere((post) => post['PostId'] == widget.postDetails['PostId']);
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.green,
+                          content: Text('Post deleted successfully'),
+                        ),
+                      );
+
+                      homepageVAF.postPosted.value = !homepageVAF.postPosted.value;
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.red,
+                          content: Text('Failed to delete post'),
+                        ),
+                      );
+                    }
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete, color: Colors.red),
+                        SizedBox(width: 10),
+                        Text('Delete Post', style: TextStyle(color: themeSettings.textColor)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            },
           ],
         ),
         SizedBox(height: 10),
@@ -1211,27 +1265,30 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
               ],
             ),
           ] else ...[
-            Container(
-              key: Key('add-photo-button'),
-              decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: () => imagePicker.pickFiles(),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.add_a_photo,
-                          color: themeSettings.textColor.withOpacity(0.7),
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "Add a photo",
-                          style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
-                        ),
-                      ],
+                child: Container(
+                  key: Key('add-photo-button'),
+                  decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.transparent),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.add_a_photo,
+                            color: themeSettings.textColor.withOpacity(0.7),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Add a photo",
+                            style: TextStyle(color: themeSettings.textColor.withOpacity(0.7)),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -1439,69 +1496,68 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                   return;
                 }
 
-                  // Check if image is selected and moderate image
-                  // Check if image is selected and moderate image
-                  if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
-                    print("Image: ${imagePicker.filesNotifier.value![0].name}");
-                    print("Image details: ${imagePicker.filesNotifier.value![0]}");
-                    print("calling image filter");
-                    Map<String, dynamic> moderationResult = await imageFilter.moderateImage(imagePicker.filesNotifier.value![0]);
-                    print("Moderation result: $moderationResult");
-                    //create dialog box for moderation
-                      if (moderationResult['status'] == 'fail') {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.redAccent, // Customize color if needed
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                "🔞 Warning!",  // Title
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: themeSettings.textColor, // Customize text color
-                                ),
+                // Check if image is selected and moderate image
+                // Check if image is selected and moderate image
+                if (imagePicker.filesNotifier.value != null && imagePicker.filesNotifier.value!.isNotEmpty) {
+                  print("Image: ${imagePicker.filesNotifier.value![0].name}");
+                  print("Image details: ${imagePicker.filesNotifier.value![0]}");
+                  print("calling image filter");
+                  Map<String, dynamic> moderationResult = await imageFilter.moderateImage(imagePicker.filesNotifier.value![0]);
+                  print("Moderation result: $moderationResult");
+                  //create dialog box for moderation
+                  if (moderationResult['status'] == 'fail') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: Colors.redAccent, // Customize color if needed
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "🔞 Warning!", // Title
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: themeSettings.textColor, // Customize text color
                               ),
-                              SizedBox(height: 8),
-                              Text(
-                                moderationResult['message'],  // Full message
-                                style: TextStyle(color: themeSettings.textColor), // Customize text color
-                              ),
-                            ],
-                          ),
-                          duration: Duration(seconds: 20),  // Increase the duration if needed
-                          behavior: SnackBarBehavior.floating,  // Makes the snackbar floating
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              moderationResult['message'], // Full message
+                              style: TextStyle(color: themeSettings.textColor), // Customize text color
+                            ),
+                          ],
                         ),
-                      );
-                      //prevent the post from being uploaded
-                      setState(() {
-                        errorText = "Inappropriate content detected";
-                        errorVisible = true;
-                        postText = "Post";
-                        postController.clear();
-                        imagePicker.clearCachedFiles();
-                        petIncludeCounter = 0;
-                        petList.clear();
-                        petAdded.clear();
-                        removePet.clear();
-                        postText = "Post";
-                      });
-                      //stop image from being uploaded
-                      return;
-                    } else {
-                      // Image is clean, proceed with uploading
-                      // Proceed with uploading the image
-                      print("Proceeding to upload image...");
-                    }
-                  } else {
-                    print("No image selected");
+                        duration: Duration(seconds: 20), // Increase the duration if needed
+                        behavior: SnackBarBehavior.floating, // Makes the snackbar floating
+                      ),
+                    );
+                    //prevent the post from being uploaded
                     setState(() {
-                      errorText = "No image selected";
+                      errorText = "Inappropriate content detected";
                       errorVisible = true;
+                      postText = "Post";
+                      postController.clear();
+                      imagePicker.clearCachedFiles();
+                      petIncludeCounter = 0;
+                      petList.clear();
+                      petAdded.clear();
+                      removePet.clear();
+                      postText = "Post";
                     });
+                    //stop image from being uploaded
+                    return;
+                  } else {
+                    // Image is clean, proceed with uploading
+                    // Proceed with uploading the image
+                    print("Proceeding to upload image...");
                   }
-
+                } else {
+                  print("No image selected");
+                  setState(() {
+                    errorText = "No image selected";
+                    errorVisible = true;
+                  });
+                }
 
                 List<Map<String, dynamic>> petIds = [];
 
@@ -1530,6 +1586,15 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
                   });
 
                   homepageVAF.postPosted.value = !homepageVAF.postPosted.value;
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.green,
+                      content: Text('Post added successfully'),
+                    ),
+                  );
+
+                  Navigator.pop(context);
                 } else {
                   setState(() {
                     errorText = "An error occurred while posting";
@@ -1544,7 +1609,7 @@ class _UploadPostContainerState extends State<UploadPostContainer> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  "Post",
+                  postText,
                   style: TextStyle(color: Colors.white),
                 ),
               ),

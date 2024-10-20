@@ -1,24 +1,19 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'dart:collection';
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cos301_capstone/Forgot_Password/Forgot_Password.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Homepage.dart';
 import 'package:cos301_capstone/Location/Location.dart';
-// import 'package:cos301_capstone/Location/Desktop_View.dart';
-// import 'package:cos301_capstone/Location/Location.dart';
 import 'package:cos301_capstone/Login/Login.dart';
-import 'package:cos301_capstone/LostAndFound/LostAndFound.dart';
-import 'package:cos301_capstone/User_Profile/User_Profile.dart';
+import 'package:cos301_capstone/NotVerified.dart';
+import 'package:cos301_capstone/PP_ToS.dart';
+import 'package:cos301_capstone/services/Profile/profile_service.dart';
 import 'package:cos301_capstone/services/general/general_service.dart';
-// import 'package:cos301_capstone/Navbar/Navbar.dart';
-// import 'package:cos301_capstone/Notifications/Notifications.dart';
-// import 'package:cos301_capstone/User_Profile/Desktop_View.dart';
-// import 'package:cos301_capstone/User_Profile/User_Profile.dart';
-// import 'package:cos301_capstone/Signup/Signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cos301_capstone/services/Profile/profile_service.dart';
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -38,7 +33,13 @@ class _AuthGateState extends State<AuthGate> {
       profileDetails.profilePicture = value['profilePictureUrl'];
       profileDetails.location = value['location'];
       profileDetails.themeMode = value['preferences']['themeMode'];
+
+      if (value['score'] != null) {
+        profileDetails.score = value['score'];
+      }
+
       profileDetails.userType = value['userType'];
+
       profileDetails.isPublic = value['profileVisibility'];
 
       profileDetails.phone = value['phoneDetails']['phoneNumber'];
@@ -60,6 +61,31 @@ class _AuthGateState extends State<AuthGate> {
         "CardColour": value['preferences']['Colours']['CardColour'],
         "NavbarTextColour": value['preferences']['Colours']['NavbarTextColour'],
       });
+
+      try {
+        // Assuming profileDetails.friends is of type Map<String, String>
+        var friendsMap = Map<String, String>.from(value['friends']);
+        profileDetails.friends = HashMap<String, String>.from(friendsMap);
+        // print("Friends found: " + profileDetails.friends.toString());
+      } catch (e) {
+        print("No friends found for the user");
+        log(e.toString());
+      }
+
+      try {
+        // Assuming profileDetails.requests is of type Map<String, String>
+        var requestsMap = Map<String, String>.from(value['friendRequests']);
+        profileDetails.requests = HashMap<String, String>.from(requestsMap);
+        // print("Requests found: " + profileDetails.requests.toString());
+      } catch (e) {
+        print("No requests found for the user");
+        log(e.toString());
+      }
+
+      // set the email to true if the user has verified their email
+      if (FirebaseAuth.instance.currentUser!.emailVerified) {
+        FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({'emailVerified': true});
+      }
     });
 
     await LocationVAF.initializeLocation();
@@ -85,7 +111,13 @@ class _AuthGateState extends State<AuthGate> {
           populateUserData();
           populateUserPets();
 
-          return Homepage();
+          if (FirebaseAuth.instance.currentUser!.emailVerified) {
+            return Homepage();
+            // print("Email Verified");
+          } else {
+            print("Email not verified");
+            return NotVerified();
+          }
         }
         return Login();
       },

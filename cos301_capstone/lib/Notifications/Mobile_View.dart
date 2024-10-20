@@ -1,10 +1,16 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Homepage/Mobile_View.dart';
-import 'package:cos301_capstone/services/auth/auth.dart';
+import 'package:cos301_capstone/services/Location/location_service.dart';
 import 'package:cos301_capstone/services/Notifications/notifications.dart';
+import 'package:cos301_capstone/services/Profile/profile_service.dart';
+// import 'package:cos301_capstone/services/auth/auth.dart';
 import 'package:cos301_capstone/services/forum/forum.dart';
 import 'package:flutter/material.dart';
+
+ValueNotifier<int> refreshRequests = ValueNotifier<int>(0);
 
 class MobileNotifications extends StatefulWidget {
   const MobileNotifications({super.key});
@@ -15,45 +21,89 @@ class MobileNotifications extends StatefulWidget {
 
 class _MobileNotificationsState extends State<MobileNotifications> {
   List<Map<String, dynamic>> notifications = [];
+  final ProfileService profileService = ProfileService();
   bool hasNewNotifications = false;
   bool _isLoading = true;
-  final AuthService _authService = AuthService();
+  // final AuthService _authService = AuthService();
   final NotificationsServices _notificationsServices = NotificationsServices();
 
   @override
   void initState() {
     super.initState();
     _fetchNotifications();
+
+    refreshRequests.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    refreshRequests.removeListener(() {
+      setState(() {});
+    });
+    super.dispose();
   }
 
   void _fetchNotifications() async {
     try {
-      String? userId = await _authService.getCurrentUserId();
+      // String? userId = await _authService.getCurrentUserId();
+      String? userId = profileDetails.userID;
 
-      if (userId != null) {
-        List<Map<String, dynamic>> likes = await _notificationsServices.getLikesNotifications(userId) ?? [];
-        List<Map<String, dynamic>> replies = await _notificationsServices.getReplyNotifications(userId) ?? [];
-        //List<Map<String, dynamic>> events = await _notificationsServices.getEventsNotifications(userId) ?? [];
-        Map<String, dynamic>? follow = await _notificationsServices.getFollowNotifications(userId);
-        List<Map<String, dynamic>> events = [];
-        List<Map<String, dynamic>> allNotifications = [...likes, ...replies, ...events];
-        if (follow != null) {
-          allNotifications.add(follow);
-        }
+      // Fetch notifications
+      // List<Map<String, dynamic>> likes = await _notificationsServices.getLikesNotifications(userId) ?? [];
+      // List<Map<String, dynamic>> replies = await _notificationsServices.getReplyNotifications(userId) ?? [];
+      // //List<Map<String, dynamic>> events = await _notificationsServices.getEventsNotifications(userId) ?? [];
+      // List<Map<String, dynamic>> likePosts = await _notificationsServices.getLikePostNotifications(userId) ?? [];
+      // List<Map<String, dynamic>> comments = await _notificationsServices.getCommentPostNotifications(userId) ?? [];
+      // Map<String, dynamic>? follow = await _notificationsServices.getFollowNotifications(userId);
 
-        allNotifications.sort((a, b) {
-          Timestamp aTimestamp = a['CreatedAt'];
-          Timestamp bTimestamp = b['CreatedAt'];
-          return bTimestamp.compareTo(aTimestamp);
-        });
+      final db = FirebaseFirestore.instance;
 
-        setState(() {
-          notifications = allNotifications;
-          hasNewNotifications = notifications.any((notification) => !notification['Read']);
-          _isLoading = false;
-        });
+      final likes = await db
+          .collection('notifications')
+          .where('UserId', isEqualTo: userId)
+          // .orderBy('CreatedAt', descending: true)
+          .get();
 
-        FirebaseFirestore.instance.collection('notifications').where('UserId', isEqualTo: userId).snapshots().listen((snapshot) {
+      for (var like in likes.docs) {
+        notifications.add(like.data());
+        // print(like.data());
+      }
+
+      notifications.sort((a, b) {
+        Timestamp aTimestamp = a['CreatedAt'];
+        Timestamp bTimestamp = b['CreatedAt'];
+        return bTimestamp.compareTo(aTimestamp);
+      });
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      // List<Map<String, dynamic>> events = [];
+      // List<Map<String, dynamic>> allNotifications = [...likes, ...replies, ...likePosts, ...comments, ...events];
+      // if (follow != null) {
+      //   allNotifications.add(follow);
+      // }
+      //print(allNotifications);
+
+      // Sort notifications by 'CreatedAt' timestamp in descending order
+      // allNotifications.sort((a, b) {
+      //   Timestamp aTimestamp = a['CreatedAt'];
+      //   Timestamp bTimestamp = b['CreatedAt'];
+      //   return bTimestamp.compareTo(aTimestamp);
+      // });
+
+      // setState(() {
+      //   // notifications = allNotifications;
+      //   hasNewNotifications = notifications.any((notification) => !notification['Read']);
+      //   _isLoading = false;
+      // });
+
+      // Set up onSnapshot to listen for real-time updates
+      FirebaseFirestore.instance.collection('notifications').where('UserId', isEqualTo: userId).snapshots().listen(
+        (snapshot) {
           List<Map<String, dynamic>> newNotifications = snapshot.docs.map((doc) {
             return {
               'id': doc.id,
@@ -61,6 +111,7 @@ class _MobileNotificationsState extends State<MobileNotifications> {
             };
           }).toList();
 
+          // Sort new notifications by 'CreatedAt' timestamp in descending order
           newNotifications.sort((a, b) {
             Timestamp aTimestamp = a['CreatedAt'];
             Timestamp bTimestamp = b['CreatedAt'];
@@ -71,8 +122,8 @@ class _MobileNotificationsState extends State<MobileNotifications> {
             notifications = newNotifications;
             hasNewNotifications = notifications.any((notification) => !notification['Read']);
           });
-        });
-      }
+        },
+      );
     } catch (e) {
       print("Error fetching notifications: $e");
     }
@@ -127,26 +178,268 @@ class _MobileNotificationsState extends State<MobileNotifications> {
       padding: EdgeInsets.all(20),
       child: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : notifications.isEmpty
-              ? Center(
-                  child: Text(
-                    "No notifications",
-                    style: TextStyle(fontSize: subtitleTextSize, color: themeSettings.primaryColor),
-                  ),
-                )
-              : SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      for (var notification in notifications)
-                        NotificationCard(
-                          notification: notification,
-                          formatDate: formatDate,
-                          onMarkAsRead: _markAsRead,
+          : Column(
+              // Constrained by parent height
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Notifications",
+                  style: TextStyle(fontSize: subtitleTextSize - 2, color: themeSettings.primaryColor),
+                ),
+                Expanded(
+                  // Ensure TabBarView gets a constrained height
+                  child: DefaultTabController(
+                    initialIndex: 0,
+                    length: 2,
+                    child: Column(
+                      children: [
+                        TabBar(
+                          labelColor: themeSettings.secondaryColor,
+                          indicatorColor: themeSettings.secondaryColor,
+                          dividerColor: Colors.transparent,
+                          tabs: [
+                            Tab(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.notifications),
+                                  SizedBox(width: 10),
+                                  Text("Notifications"),
+                                ],
+                              ),
+                            ),
+                            Tab(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.add),
+                                  SizedBox(width: 10),
+                                  Text("Requests"),
+                                ],
+                              ),
+                            )
+                          ],
                         ),
-                    ],
+                        Divider(),
+                        Expanded(
+                          // Constrain the TabBarView's height
+                          child: TabBarView(
+                            children: [
+                              // Wrap notifications list in a scrollable view
+                              SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    if (notifications.isEmpty) ...{
+                                      Center(
+                                        child: Text(
+                                          "No notifications",
+                                          style: TextStyle(fontSize: subtitleTextSize - 2, color: themeSettings.primaryColor),
+                                        ),
+                                      ),
+                                    } else ...{
+                                      for (var notification in notifications) ...{
+                                        NotificationCard(
+                                          notification: notification,
+                                          formatDate: formatDate,
+                                          onMarkAsRead: _markAsRead,
+                                        ),
+                                      }
+                                    }
+                                  ],
+                                ),
+                              ),
+                              // Second tab content
+                              SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    if (profileDetails.requests.isEmpty)
+                                      Center(
+                                        child: Text(
+                                          "No friend requests",
+                                          style: TextStyle(fontSize: subtitleTextSize - 2, color: themeSettings.primaryColor),
+                                        ),
+                                      ),
+                                    for (var request in profileDetails.requests.entries)
+                                      RequestCard(
+                                        request: request,
+                                        profileService: profileService,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
+              ],
+            ),
+    );
+  }
+}
+
+class RequestCard extends StatefulWidget {
+  const RequestCard({super.key, required this.request, required this.profileService});
+
+  final MapEntry<String, dynamic> request;
+  final ProfileService profileService;
+
+  @override
+  State<RequestCard> createState() => _RequestCardState();
+}
+
+class _RequestCardState extends State<RequestCard> {
+  bool loaded = false;
+
+  late User user;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // print('Request: ${widget.request.key}');
+    _fetchUserDetails();
+  }
+
+  void _fetchUserDetails() async {
+    try {
+      print('Request: ${widget.request.key}');
+
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(widget.request.key).get();
+      if (userSnapshot.exists) {
+        Map<String, dynamic>? userData = userSnapshot.data() as Map<String, dynamic>?;
+
+        if (userData != null) {
+          user = User(
+            id: widget.request.key,
+            name: userData['name'],
+            email: userData['email'],
+            profileUrl: userData['profilePictureUrl'],
+            userType: userData['userType'],
+            location: userData['address'],
+          );
+
+          setState(() {
+            loaded = true;
+          });
+        }
+      }
+    } catch (e) {
+      print("Error fetching profile picture: $e");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: themeSettings.cardColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: !loaded
+          ? CircularProgressIndicator()
+          : Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage: NetworkImage(user.profileUrl),
+                  radius: 30,
+                ),
+                SizedBox(width: 20),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.name,
+                      style: TextStyle(fontSize: bodyTextSize - 2, color: themeSettings.textColor),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "Has requested to be your friend",
+                      style: TextStyle(fontSize: bodyTextSize - 4, color: themeSettings.textColor),
+                    ),
+                    SizedBox(height: 10),
+                  ],
+                ),
+                Spacer(),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        bool success = await widget.profileService.acceptFriendRequest(profileDetails.userID, user.id);
+
+                        if (success) {
+                          setState(() {
+                            profileDetails.requests.remove(user.id);
+                          });
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Friend request accepted'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+
+                          refreshRequests.value++;
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('An error occurred while accepting the friend request'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
+                      ),
+                      child: Text(
+                        "Accept",
+                        style: TextStyle(fontSize: subBodyTextSize - 2, color: Colors.white),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () async {
+                        bool success = await widget.profileService.declineFriendRequest(profileDetails.userID, user.id);
+
+                        if (success) {
+                          setState(() {
+                            profileDetails.requests.remove(user.id);
+                          });
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Friend request declined'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+
+                          refreshRequests.value++;
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('An error occurred while declining the friend request'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(Colors.red),
+                      ),
+                      child: Text(
+                        "Decline",
+                        style: TextStyle(fontSize: subBodyTextSize - 2, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
     );
   }
 }
@@ -664,7 +957,7 @@ class NotificationCard extends StatelessWidget {
     Timestamp createdAt = notification['CreatedAt'];
     String formattedDate = formatDate(createdAt);
     String userId = notification['AvatarUrlId'] ?? '';
-    bool read = notification['Read'] ?? false;
+    // bool read = notification['Read'] ?? false;
 
     return FutureBuilder<String>(
       future: _fetchProfilePicture(userId),

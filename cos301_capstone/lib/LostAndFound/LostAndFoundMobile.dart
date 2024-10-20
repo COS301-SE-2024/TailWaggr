@@ -1,15 +1,12 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, must_be_immutable
 
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Location/Location.dart';
-import 'package:cos301_capstone/Navbar/Desktop_View.dart';
 import 'package:cos301_capstone/services/lostAndFound/lostAndFound.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+ValueNotifier<int> refreshListOfPets = ValueNotifier<int>(0);
 class LostAndFoundMobile extends StatefulWidget {
   const LostAndFoundMobile({super.key});
 
@@ -96,6 +93,10 @@ class _LostAndFoundMobileState extends State<LostAndFoundMobile> {
         selectedLostPet.add(false);
       }
     });
+
+    refreshListOfPets.addListener(() {
+      getPetsAndSetMarkers(double.parse(searchDistanceController.text));
+    });
   }
 
   void setMarkers(int index) {
@@ -180,6 +181,7 @@ class _LostAndFoundMobileState extends State<LostAndFoundMobile> {
     } catch (e) {
       // print("Error disposing Google Map Controller: $e");
     } finally {
+      refreshListOfPets.removeListener(() {});
       searchDistanceController.dispose();
       super.dispose();
     }
@@ -711,6 +713,8 @@ class _ListOfPetsState extends State<ListOfPets> {
                                             backgroundColor: Colors.green,
                                           ),
                                         );
+
+                                        refreshListOfPets.value++;
                                       },
                                       child: Text("Report Found", style: TextStyle(color: Colors.white)),
                                     ),

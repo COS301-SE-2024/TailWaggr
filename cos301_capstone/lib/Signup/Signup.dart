@@ -1,5 +1,6 @@
 // ignore_for_file: file_names, non_constant_identifier_names
 
+import 'package:cos301_capstone/Global_Variables.dart';
 import 'package:cos301_capstone/Signup/Desktop_View.dart';
 import 'package:cos301_capstone/Signup/Mobile_View.dart';
 import 'package:flutter/material.dart';
@@ -66,11 +67,13 @@ class _SignupState extends State<Signup> {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth > 800) {
-          return const Scaffold(
+          return Scaffold(
+            backgroundColor: themeSettings.backgroundColor,
             body: Desktop_Signup(),
           );
         } else {
-          return const Scaffold(
+          return Scaffold(
+            backgroundColor: themeSettings.backgroundColor,
             body: Mobile_Signup(),
           );
         }

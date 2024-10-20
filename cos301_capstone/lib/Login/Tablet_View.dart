@@ -101,180 +101,184 @@ class _TabletLoginState extends State<TabletLogin> {
                         ),
                       ),
                       SizedBox(width: 50),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.35,
-                            child: TextField(
-                              controller: signInEmailController,
-                              decoration: InputDecoration(
-                                labelText: "Email",
-                                labelStyle: TextStyle(
-                                  color: themeSettings.primaryColor,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
+                      AutofillGroup(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.35,
+                              child: TextField(
+                                controller: signInEmailController,
+                                autofillHints: [AutofillHints.email],
+                                decoration: InputDecoration(
+                                  labelText: "Email",
+                                  labelStyle: TextStyle(
                                     color: themeSettings.primaryColor,
                                   ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: themeSettings.primaryColor,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: themeSettings.primaryColor,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: themeSettings.primaryColor,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 20),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.35,
-                            child: TextField(
-                              controller: signInPasswordController,
-                              obscureText: !Password_Visible,
-                              obscuringCharacter: "*",
-                              decoration: InputDecoration(
-                                labelText: "Password",
-                                labelStyle: TextStyle(
-                                  color: themeSettings.primaryColor,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
+                            SizedBox(height: 20),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.35,
+                              child: TextField(
+                                controller: signInPasswordController,
+                                autofillHints: [AutofillHints.password],
+                                obscureText: !Password_Visible,
+                                obscuringCharacter: "*",
+                                decoration: InputDecoration(
+                                  labelText: "Password",
+                                  labelStyle: TextStyle(
                                     color: themeSettings.primaryColor,
                                   ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: themeSettings.primaryColor,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: themeSettings.primaryColor,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: themeSettings.primaryColor,
+                                    ),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      Password_Visible ? Icons.visibility : Icons.visibility_off,
+                                      color: themeSettings.primaryColor,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        Password_Visible = !Password_Visible;
+                                      });
+                                    },
                                   ),
                                 ),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    Password_Visible ? Icons.visibility : Icons.visibility_off,
-                                    color: themeSettings.primaryColor,
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => ForgotPassword()),
+                                      );
+                                    },
+                                    child: Text(
+                                      "Forgot Password?",
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
                                   ),
-                                  onPressed: () {
+                                ),
+                                Spacer(),
+                                Container(
+                                  alignment: Alignment.centerRight,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      // Call signInWithGoogle() here
+                                      _authService.signInWithGoogle();
+                                    },
+                                    child: Text(
+                                      "Sign in with Google",
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.35,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  try {
+                                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                                      email: signInEmailController.text,
+                                      password: signInPasswordController.text,
+                                    );
+                                  } on Exception catch (e) {
+                                    print(e);
                                     setState(() {
-                                      Password_Visible = !Password_Visible;
+                                      ErrorTextVisible = true;
+                                      if (e.toString().contains('[firebase_auth/channel-error] Unable to establish connection on channel.')) {
+                                        errorText = 'Please make sure your Email and Password fields are filled in';
+                                      } else if (e.toString().contains('[firebase_auth/invalid-email] The email address is badly formatted.')) {
+                                        errorText = 'Please make sure Email is correct';
+                                      } else if (e.toString().contains('[firebase_auth/invalid-credential] The supplied auth credential is incorrect, malformed or has expired.')) {
+                                        errorText = 'Your Email or Password is incorrect';
+                                      } else if (e.toString().contains('[firebase_auth/network-request-failed]')) {
+                                        errorText = 'Please make sure you are connected to the internet';
+                                      } else {
+                                        errorText = e.toString();
+                                      }
                                     });
-                                  },
+                                  }
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(themeSettings.primaryColor),
+                                ),
+                                child: Text(
+                                  "Login",
+                                  style: TextStyle(
+                                    fontSize: bodyTextSize,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                alignment: Alignment.centerLeft,
-                                child: GestureDetector(
-                                  onTap: () {
+                            // Error text
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.35,
+                              child: Visibility(
+                                visible: ErrorTextVisible,
+                                child: Text(
+                                  errorText,
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              children: [
+                                Text("Don't have an account?"),
+                                TextButton(
+                                  onPressed: () {
+                                    print("Navigating to Sign Up");
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => ForgotPassword()),
+                                      MaterialPageRoute(builder: (context) => Signup()),
                                     );
                                   },
                                   child: Text(
-                                    "Forgot Password?",
-                                    style: TextStyle(color: Colors.grey),
+                                    "Sign Up",
+                                    style: TextStyle(
+                                      color: themeSettings.primaryColor,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Spacer(),
-                              Container(
-                                alignment: Alignment.centerRight,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    // Call signInWithGoogle() here
-                                    _authService.signInWithGoogle();
-                                  },
-                                  child: Text(
-                                    "Sign in with Google",
-                                    style: TextStyle(color: Colors.grey),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.35,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                try {
-                                  await FirebaseAuth.instance.signInWithEmailAndPassword(
-                                    email: signInEmailController.text,
-                                    password: signInPasswordController.text,
-                                  );
-                                } on Exception catch (e) {
-                                  print(e);
-                                  setState(() {
-                                    ErrorTextVisible = true;
-                                    if (e.toString().contains('[firebase_auth/channel-error] Unable to establish connection on channel.')) {
-                                      errorText = 'Please make sure your Email and Password fields are filled in';
-                                    } else if (e.toString().contains('[firebase_auth/invalid-email] The email address is badly formatted.')) {
-                                      errorText = 'Please make sure Email is correct';
-                                    } else if (e.toString().contains('[firebase_auth/invalid-credential] The supplied auth credential is incorrect, malformed or has expired.')) {
-                                      errorText = 'Your Email or Password is incorrect';
-                                    } else if (e.toString().contains('[firebase_auth/network-request-failed]')) {
-                                      errorText = 'Please make sure you are connected to the internet';
-                                    } else {
-                                      errorText = e.toString();
-                                    }
-                                  });
-                                }
-                              },
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(themeSettings.primaryColor),
-                              ),
-                              child: Text(
-                                "Login",
-                                style: TextStyle(
-                                  fontSize: bodyTextSize,
-                                  color: Colors.white,
-                                ),
-                              ),
+                              ],
                             ),
-                          ),
-                          // Error text
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.35,
-                            child: Visibility(
-                              visible: ErrorTextVisible,
-                              child: Text(
-                                errorText,
-                                style: TextStyle(
-                                  color: Colors.red,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          Row(
-                            children: [
-                              Text("Don't have an account?"),
-                              TextButton(
-                                onPressed: () {
-                                  print("Navigating to Sign Up");
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => Signup()),
-                                  );
-                                },
-                                child: Text(
-                                  "Sign Up",
-                                  style: TextStyle(
-                                    color: themeSettings.primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
