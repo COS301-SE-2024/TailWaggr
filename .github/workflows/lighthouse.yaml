@@ -58,7 +58,7 @@ jobs:
         echo "BADGE_URL=${BADGE_URL}" >> $GITHUB_ENV
         echo "Lighthouse Performance Badge URL: ${BADGE_URL}" >> badges.txt
 
-        - name: Update README with Lighthouse Badge
+    - name: Update README with Lighthouse Badge
       run: |
         # Replace the Lighthouse badge in README.md
         if grep -q '\[!\[Lighthouse Performance\](.*)\]' README.md; then
