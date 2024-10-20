@@ -89,6 +89,7 @@ Pet Caretaker User:
 3. As a user, I want to comment on a forum post so that I can participate in the discussion.
 4. As a user, I want to reply to messages within a forum post to have discussion with others.
 5. As a user, I want to be able to like messages within a forum to show appreciation for them.
+6. As a user, I want to be able to unwanted forums.
 
 ### Notifications Subsystem
 1. As a user, I want to receive notifications for new comments on my forum posts so that I can stay updated.
