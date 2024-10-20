@@ -62,7 +62,7 @@ Pet Caretaker User:
 11. As a user, I want my pet profile to be deleted from the database so that the information is removed.
 12. As a user, I want to edit my pet's details so that the profile information is up-to-date.
 13. As a user, I want to edit my pet's profile photo so that it is personalised.
-14. As a pet caretaker, I want to add my details so that pet owners can find and contact me
+14. As a pet caretaker, I want to be able to label my profile appropriately
 15. As a user, I want to be able to search for other users
 
 ### Location Subsystem
@@ -146,11 +146,11 @@ Pet Caretaker User:
         3. Users must be able to comment on a post
         4. Users must be able to delete their posts
 5. Notifications subsystem:
-    1. Users must be able to receive notifications from their forum posts
-		1. Users must receive notifications if they receive a like on their forum posts
-		2. User must receive notifications if they receive a comment on their forum posts
-    2. Users must be able to receive notifications from followed forums
-        1. Users must be able to receive notifications about new messages on forums they follow
+    1. Users must be able to receive notifications from their posts
+        1. Users must receive notifications if they receive a like on their posts
+        2. User must receive notifications if they receive a comment on their posts  	
+    3. Users must be able to receive notifications from their forums
+        1. Users must be able to receive notifications about new messages on forums they have created
         2. Users must be able to receive notifications for replies on their messages on forums
 
 ## Use Case diagrams:
