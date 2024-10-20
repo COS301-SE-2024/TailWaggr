@@ -49,7 +49,7 @@ You can track our project progress on our [project board](https://github.com/org
 
 - **[Software Requirements Specification](docs/srs.pdf)**: Detailed software requirements document.
 - **[Coding Standards](docs/CodingStandards.pdf)**: Guidelines for code quality and practices.
-- **[Testing Policy](docs/TestingReport.pdf)**: Overview of the testing approach and tools used.
+- **[Testing Policy](docs/testingReport.pdf)**: Overview of the testing approach and tools used.
 - **[Tech Stack](docs/TechStack.pdf)**: Learn more about the technologies used in the project.
 - **[User Manual](docs/UserGuide.pdf)**: Guide for users on how to navigate the app.
 - **[Video Presentation](docs/VideoPresentation.pdf)**: Video presentation for the project.
