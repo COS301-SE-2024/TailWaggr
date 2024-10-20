@@ -54,6 +54,7 @@ class _Mobile_ViewState extends State<Mobile_View> {
           child: AutofillGroup(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 50),
                 Text(
@@ -64,8 +65,7 @@ class _Mobile_ViewState extends State<Mobile_View> {
                     color: themeSettings.primaryColor,
                   ),
                 ),
-                //
-                Spacer(),
+                SizedBox(height: 20),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.75,
                   child: TextField(
@@ -148,23 +148,11 @@ class _Mobile_ViewState extends State<Mobile_View> {
                         ),
                       ),
                     ),
-                    Container(
-                      padding: EdgeInsets.only(right: 30),
-                      child: GestureDetector(
-                        onTap: () {
-                          // Call signInWithGoogle() here
-                          _authService.signInWithGoogle();
-                        },
-                        child: Text(
-                          "Sign in with Google",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      ),
-                    ),
+                    
                   ],
                 ),
                 SizedBox(height: 20),
-            
+
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.75,
                   height: 50,
@@ -175,7 +163,7 @@ class _Mobile_ViewState extends State<Mobile_View> {
                           email: signInEmailController.text,
                           password: signInPasswordController.text,
                         );
-            
+
                         // If the user is signed in, go to the home page
                         Navigator.push(
                           context,
@@ -240,97 +228,14 @@ class _Mobile_ViewState extends State<Mobile_View> {
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-      
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.75,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    try {
-                      await FirebaseAuth.instance.signInWithEmailAndPassword(
-                        email: signInEmailController.text,
-                        password: signInPasswordController.text,
-                      );
-                    } on Exception catch (e) {
-                      print(e);
-                      setState(() {
-                        ErrorTextVisible = true;
-                        if (e.toString().contains('[firebase_auth/channel-error] Unable to establish connection on channel.')) {
-                          errorText = 'Please make sure your Email and Password fields are filled in';
-                        } else if (e.toString().contains('[firebase_auth/invalid-email] The email address is badly formatted.')) {
-                          errorText = 'Please make sure Email is correct';
-                        } else if (e.toString().contains('[firebase_auth/invalid-credential] The supplied auth credential is incorrect, malformed or has expired.')) {
-                          errorText = 'Your Email or Password is incorrect';
-                        } else if (e.toString().contains('[firebase_auth/network-request-failed]')) {
-                          errorText = 'Please make sure you are connected to the internet';
-                        } else {
-                          errorText = e.toString();
-                        }
-                      });
-                    }
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(themeSettings.primaryColor),
-                  ),
-                  child: Text(
-                    "Login",
-                    style: TextStyle(
-                      fontSize: bodyTextSize,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              // Error text
-              Visibility(
-                visible: ErrorTextVisible,
-                child: Text(
-                  errorText,
-                  style: TextStyle(
-                    color: Colors.red,
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Don't have an account?"),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Signup()),
-                      );
-                    },
-                    child: Text(
-                      "Sign Up",
-                      style: TextStyle(
-                        color: themeSettings.primaryColor,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: 200,
-                      height: 1,
-                      color: Colors.grey,
-                    ),
-                    Text("Or sign in with"),
-                    Container(
-                      width: 200,
-                      height: 1,
-                      color: Colors.grey,
-                    ),
                   ],
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Or",
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
                 ),
                 SizedBox(height: 10),
                 SizedBox(
@@ -347,23 +252,24 @@ class _Mobile_ViewState extends State<Mobile_View> {
                       AuthService().signInWithGoogle();
                     },
                     child: Row(
-                    mainAxisSize: MainAxisSize.min, // Keeps the button size compact
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/icons8-google-48.png',
-                        height: 30, // Adjust the height to fit the text
-                      ),
-                      const SizedBox(width: 12), // Add some spacing between image and text
-                      Text(
-                        "Sign in with Google",
-                        style: TextStyle(color: themeSettings.primaryColor, fontSize: bodyTextSize),
-                      ),
-                    ],
+                      mainAxisSize: MainAxisSize.min, // Keeps the button size compact
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/images/icons8-google-48.png',
+                          height: 30, // Adjust the height to fit the text
+                        ),
+                        const SizedBox(width: 12), // Add some spacing between image and text
+                        Text(
+                          "Sign in with Google",
+                          style: TextStyle(color: themeSettings.primaryColor, fontSize: bodyTextSize),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
                 )
-            ],
+              ],
+            ),
           ),
         ),
       ),
