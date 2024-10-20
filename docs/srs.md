@@ -147,9 +147,9 @@ Pet Caretaker User:
         4. Users must be able to delete their posts
 5. Notifications subsystem:
     1. Users must be able to receive notifications from their posts
-   	1. Users must receive notifications if they receive a like on their posts
-	2. User must receive notifications if they receive a comment on their posts
-    2. Users must be able to receive notifications from their forums
+        1. Users must receive notifications if they receive a like on their posts
+        2. User must receive notifications if they receive a comment on their posts  	
+    3. Users must be able to receive notifications from their forums
         1. Users must be able to receive notifications about new messages on forums they have created
         2. Users must be able to receive notifications for replies on their messages on forums
 
