@@ -4,6 +4,9 @@ on:
   push:
     branches: feat/friendsList
 
+permissions:
+  contents: write
+
 jobs:
   lighthouse:
     runs-on: ubuntu-latest
