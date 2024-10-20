@@ -34,7 +34,6 @@ Normal User:
 Pet Caretaker User:
 * Has regular user characteristics
 * Has contact details listed
-* Has pet specialities listed
 * Has location listed
 
 ## User Stories for TailWagger
