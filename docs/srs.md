@@ -206,6 +206,3 @@ Pet Caretaker User:
    - Utilize Firebase's pay-as-you-go model to manage costs effectively, scaling expenses with usage.
    - Optimize cloud function deployments to minimize execution time and reduce costs.
    - Use shared components and services in Flutter to reduce development and maintenance costs.
-
-## Projected Burndown Chart
-![Burndown Chart](doc_images/burndownChart.png)
