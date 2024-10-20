@@ -154,12 +154,11 @@ Pet Caretaker User:
         2. Users must be able to receive notifications for replies on their messages on forums
 
 ## Use Case diagrams:
-![Use Case Diagram](doc_images/UCDiagrams.jpg)
-![Account Diagram](doc_images/Account.png)
-![Profile Diagram](doc_images/Profile.png)
-![Location Diagram](doc_images/Location.png)
-![Forums Diagram](doc_images/Forums.png)
-![Notifications Diagram](doc_images/Notifications.png)
+![Account Diagram](use-case-diagrams/Account.png)
+![Profile Diagram](use-case-diagrams/Profile.png)
+![Location Diagram](use-case-diagrams/Location.png)
+![Forums Diagram](use-case-diagrams/Content.png)
+![Notifications Diagram](use-case-diagrams/Notifications.png)
 
 ## Quality Attributes and Architecture Strategies
 
