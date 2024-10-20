@@ -69,34 +69,31 @@ Pet Caretaker User:
 11. As a user, I want my pet profile to be deleted from the database so that the information is removed.
 12. As a user, I want to edit my pet's details so that the profile information is up-to-date.
 13. As a user, I want to edit my pet's profile photo so that it is personalised.
-14. As a vet, I want to edit my profile to include my vet clinic’s details
-15. As a pet caretaker, I want to add my details so that pet owners can find and contact me
-16. As a user, I want to be able to search for other users
+14. As a pet caretaker, I want to add my details so that pet owners can find and contact me
+15. As a user, I want to be able to search for other users
 
 ### Location Subsystem
 1. As a user, I want to search for found pets so that I can find my lost pet.
-2. As a user, I want to enter a pet name during the search so that I can find specific pets.
+2. As a user, I want to enter a pet name during the search so that I can find specific lost pets.
 3. As a user, I want to view search results so that I can see the found pets' information.
 4. As a user, I want to find veterinarians around my area so that I can get medical care for my pet.
 5. As a user, I want to see the location of the vet clinic so that I can visit it.
 6. As a user, I want to see the vet's details so that I can contact them for an appointment.
 7. As a user, I want to find pet caretaker details so that I can find someone to take care of my pet.
+8. As a user, I want to register my pet as a lost pet so that people can help locate it.
+9. As a user, I want to record my sightings of lost pets.
 
 ### Forums Subsystem
 1. As a user, I  want to create forums so that I can initiate discussions on relevant topics about pets.
 2. As a user, I want to like a forum post so that I can show my appreciation for the content.
-3. As a user, I want to share a forum post so that I can spread useful information.
-4. As a user, I want to comment on a forum post so that I can participate in the discussion.
-5. As a user, I want to create forum posts about lost pets.
-6. As a vet, I want to post news and events about my clinic.
-7. As a vet, I want to create forums about taking care of pets and my clinic.
+3. As a user, I want to comment on a forum post so that I can participate in the discussion.
+4. As a user, I want to reply to messages within a forum post to have discussion with others.
+5. As a user, I want to be able to like messages within a forum to show appreciation for them.
 
 ### Notifications Subsystem
 1. As a user, I want to receive notifications for new comments on my forum posts so that I can stay updated.
 2. As a user, I want to receive notifications for new likes on my forum posts so that I know when others appreciate my content.
-3. As a user, I want to receive notifications for new forum posts in categories I'm interested in so that I can stay informed.
-4. As a pet caretaker , I want to receive notifications for upcoming appointments with pet owners so that I don't miss them.
-5. As a user, I want to edit my notification settings so that I can control what notifications I receive.
+3. As a user, I want to receive notifications about requests to follow me
 
 ## Functional requirements
 1. User Accounts subsystem:
