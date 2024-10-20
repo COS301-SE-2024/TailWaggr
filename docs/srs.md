@@ -20,12 +20,6 @@ The initial scope of Tailwaggr focuses on core functionalities:
 * Pet forums: Establish a dedicated forum section where pet owners can ask questions, share experiences, and build relationships.
 * Lost & Found Pets: Create a database to reunite lost pets with their worried owners and facilitate faster reunions.
 
-Future iterations may consider expanding the scope to include features like:
-* Appointment scheduling with veterinarians and pet sitters.
-* Telehealth consultations with veterinarians.
-* Online pet stores or marketplaces.
-* Integration with wearable pet trackers.
-
 ## Class diagram
 ![Use Case Diagram](doc_images/CDiagrams.png)
 
@@ -36,17 +30,10 @@ Normal User:
 * Loves their pet
 * Looks after their pet
 * Makes posts
-
-Vet User:
-* Has regular user characteristics
-* Has contact details listed
-* Has qualifications listed
-* Has clinic location listed
  
 Pet Caretaker User:
 * Has regular user characteristics
 * Has contact details listed
-* Has pet specialities listed
 * Has location listed
 
 ## User Stories for TailWagger
@@ -75,34 +62,34 @@ Pet Caretaker User:
 11. As a user, I want my pet profile to be deleted from the database so that the information is removed.
 12. As a user, I want to edit my pet's details so that the profile information is up-to-date.
 13. As a user, I want to edit my pet's profile photo so that it is personalised.
-14. As a vet, I want to edit my profile to include my vet clinic’s details
-15. As a pet caretaker, I want to add my details so that pet owners can find and contact me
-16. As a user, I want to be able to search for other users
+14. As a pet caretaker, I want to be able to label my profile appropriately
+15. As a user, I want to be able to search for other users
 
 ### Location Subsystem
 1. As a user, I want to search for found pets so that I can find my lost pet.
-2. As a user, I want to enter a pet name during the search so that I can find specific pets.
+2. As a user, I want to enter a pet name during the search so that I can find specific lost pets.
 3. As a user, I want to view search results so that I can see the found pets' information.
 4. As a user, I want to find veterinarians around my area so that I can get medical care for my pet.
 5. As a user, I want to see the location of the vet clinic so that I can visit it.
 6. As a user, I want to see the vet's details so that I can contact them for an appointment.
 7. As a user, I want to find pet caretaker details so that I can find someone to take care of my pet.
+8. As a user, I want to register my pet as a lost pet so that people can help locate it.
+9. As a user, I want to record my sightings of lost pets.
 
-### Forums Subsystem
+### Content Subsystem
 1. As a user, I  want to create forums so that I can initiate discussions on relevant topics about pets.
 2. As a user, I want to like a forum post so that I can show my appreciation for the content.
-3. As a user, I want to share a forum post so that I can spread useful information.
-4. As a user, I want to comment on a forum post so that I can participate in the discussion.
-5. As a user, I want to create forum posts about lost pets.
-6. As a vet, I want to post news and events about my clinic.
-7. As a vet, I want to create forums about taking care of pets and my clinic.
+3. As a user, I want to comment on a forum post so that I can participate in the discussion.
+4. As a user, I want to reply to messages within a forum post to have discussion with others.
+5. As a user, I want to be able to like messages within a forum to show appreciation for them.
+6. As a user, I want to be able to delete unwanted forums.
+7. As a user, I want to be able to create and delete my posts
+8. As a user, I want to be able to like and comment on other user's posts
 
 ### Notifications Subsystem
-1. As a user, I want to receive notifications for new comments on my forum posts so that I can stay updated.
-2. As a user, I want to receive notifications for new likes on my forum posts so that I know when others appreciate my content.
-3. As a user, I want to receive notifications for new forum posts in categories I'm interested in so that I can stay informed.
-4. As a pet caretaker , I want to receive notifications for upcoming appointments with pet owners so that I don't miss them.
-5. As a user, I want to edit my notification settings so that I can control what notifications I receive.
+1. As a user, I want to receive notifications for new comments and likes on my posts so that I can stay updated.
+2. As a user, I want to receive notifications for new likes on my forum messages and repplies to them so that I know when others appreciate my content.
+3. As a user, I want to receive notifications about requests to follow me.
 
 ## Functional requirements
 1. User Accounts subsystem:
@@ -120,26 +107,23 @@ Pet Caretaker User:
         2. User must be able to edit their personal details
     2.  User must be able to add a pet profile:
         1. User must be able to add pet details
-        2. User must be able to upload pet photos to gallery
+        2. User must be able to upload pet profile photo
     3.  User must be able to delete their profile:
         1. User must be prompted to confirm profile deletion
         2. User should be deleted from the database
     4.  User must be able to delete a pet profile
         1. User must be prompted to confirm profile deletion
-        2. User should be deleted from the database
+        2. Pet should be deleted from the database
     5.  User must be able to edit a pet profile:
         1. User must be able to edit pet details
         2. User must be able to edit pet gallery
-	6. Vet must be able to become registered
-		1. Vet must be able to upload proof of qualification
-		2. Vet must be able to provide contact details
-		3. Vet must be able to share clinic location
-    7. Pet Caretaker must be able to become registered
+    6. User must be able to become Pet Caretaker
 		1. Caretaker must be able to provide contact details
-		2. Caretaker must be able to share location
-    8. User must be able to search for other users
+    7. User must be able to search for other users
         1. User must be able to enter other user's name
-        2. User must be able to view matching user search results   
+        2. User must be able to view matching user search results
+    8. User must be able to change profile between public and private
+    9. User must be able to follow and be followed by other users    
 3. Location subsystem:
     1.  User must be able to search for found pets:
         1. User must be able to enter a pet name
@@ -150,34 +134,31 @@ Pet Caretaker User:
     3.  Users must be able to find a pet caretaker:
         1. Users must be see pet caretaker details
         2. User must be able to see the pet caretaker location
-4. Forums subsystem:
+4. Content subsystem:
     1.  Users must be able to create forum
         1. Users must be able to create forums
         2. Users must be able to create forum posts
-        3. Users must be able to select or create relevant tags to categorise the forum
+        3. Users must be able to delete their forums
+        4. Users must be able to delete their messages
     2.  Users must be able to interact with posts
         1. Users must be able to like a post
         2. Users must be able to share a post
         3. Users must be able to comment on a post
+        4. Users must be able to delete their posts
 5. Notifications subsystem:
-	1. Users must be able to receive notifications from their forum posts
-		1. Users must receive notifications if they receive a like on their forum posts
-		2. User must receive notifications if they receive a comment on their forum posts
-		3. Users must receive notifications if their forum post is shared
-    2. Users must be able to receive notifications from followed forums
-        1. Users must be able to receive notifications about new comments on forums they follow
-        2. Users must be able to receive notifications for replies on their comments on forums
-    3. Pet caretakers must receive notifications of users interested in their services
-    	1.  Pet caretakers must receive notifications of users requesting their service
-    	2.  Pet caretakers must receive notifications of upcoming appointments for their pets
+    1. Users must be able to receive notifications from their posts
+        1. Users must receive notifications if they receive a like on their posts
+        2. User must receive notifications if they receive a comment on their posts  	
+    3. Users must be able to receive notifications from their forums
+        1. Users must be able to receive notifications about new messages on forums they have created
+        2. Users must be able to receive notifications for replies on their messages on forums
 
 ## Use Case diagrams:
-![Use Case Diagram](doc_images/UCDiagrams.jpg)
-![Account Diagram](doc_images/Account.png)
-![Profile Diagram](doc_images/Profile.png)
-![Location Diagram](doc_images/Location.png)
-![Forums Diagram](doc_images/Forums.png)
-![Notifications Diagram](doc_images/Notifications.png)
+![Account Diagram](use-case-diagrams/Account.png)
+![Profile Diagram](use-case-diagrams/Profile.png)
+![Location Diagram](use-case-diagrams/Location.png)
+![Forums Diagram](use-case-diagrams/Content.png)
+![Notifications Diagram](use-case-diagrams/Notifications.png)
 
 ## Quality Attributes and Architecture Strategies
 
@@ -225,6 +206,3 @@ Pet Caretaker User:
    - Utilize Firebase's pay-as-you-go model to manage costs effectively, scaling expenses with usage.
    - Optimize cloud function deployments to minimize execution time and reduce costs.
    - Use shared components and services in Flutter to reduce development and maintenance costs.
-
-## Projected Burndown Chart
-![Burndown Chart](doc_images/burndownChart.png)
