@@ -62,7 +62,7 @@ Pet Caretaker User:
 11. As a user, I want my pet profile to be deleted from the database so that the information is removed.
 12. As a user, I want to edit my pet's details so that the profile information is up-to-date.
 13. As a user, I want to edit my pet's profile photo so that it is personalised.
-14. As a pet caretaker, I want to add my details so that pet owners can find and contact me
+14. As a pet caretaker, I want to be able to label my profile appropriately
 15. As a user, I want to be able to search for other users
 
 ### Location Subsystem
