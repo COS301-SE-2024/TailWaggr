@@ -43,7 +43,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage/lcov.info
 
-    lighthouse:
+  lighthouse:
     runs-on: ubuntu-latest
   
     steps:
