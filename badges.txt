@@ -1,0 +1,4 @@
+https://img.shields.io/badge/Performance-95-brightgreen
+https://img.shields.io/badge/Accessibility-82-brightgreen
+https://img.shields.io/badge/Best_Practices-100-brightgreen
+https://img.shields.io/badge/SEO-100-brightgreen
