@@ -20,12 +20,6 @@ The initial scope of Tailwaggr focuses on core functionalities:
 * Pet forums: Establish a dedicated forum section where pet owners can ask questions, share experiences, and build relationships.
 * Lost & Found Pets: Create a database to reunite lost pets with their worried owners and facilitate faster reunions.
 
-Future iterations may consider expanding the scope to include features like:
-* Appointment scheduling with veterinarians and pet sitters.
-* Telehealth consultations with veterinarians.
-* Online pet stores or marketplaces.
-* Integration with wearable pet trackers.
-
 ## Class diagram
 ![Use Case Diagram](doc_images/CDiagrams.png)
 
