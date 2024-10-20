@@ -76,13 +76,15 @@ Pet Caretaker User:
 8. As a user, I want to register my pet as a lost pet so that people can help locate it.
 9. As a user, I want to record my sightings of lost pets.
 
-### Forums Subsystem
+### Content Subsystem
 1. As a user, I  want to create forums so that I can initiate discussions on relevant topics about pets.
 2. As a user, I want to like a forum post so that I can show my appreciation for the content.
 3. As a user, I want to comment on a forum post so that I can participate in the discussion.
 4. As a user, I want to reply to messages within a forum post to have discussion with others.
 5. As a user, I want to be able to like messages within a forum to show appreciation for them.
 6. As a user, I want to be able to delete unwanted forums.
+7. As a user, I want to be able to create and delete my posts
+8. As a user, I want to be able to like and comment on other user's posts
 
 ### Notifications Subsystem
 1. As a user, I want to receive notifications for new comments and likes on my posts so that I can stay updated.
@@ -105,26 +107,23 @@ Pet Caretaker User:
         2. User must be able to edit their personal details
     2.  User must be able to add a pet profile:
         1. User must be able to add pet details
-        2. User must be able to upload pet photos to gallery
+        2. User must be able to upload pet profile photo
     3.  User must be able to delete their profile:
         1. User must be prompted to confirm profile deletion
         2. User should be deleted from the database
     4.  User must be able to delete a pet profile
         1. User must be prompted to confirm profile deletion
-        2. User should be deleted from the database
+        2. Pet should be deleted from the database
     5.  User must be able to edit a pet profile:
         1. User must be able to edit pet details
         2. User must be able to edit pet gallery
-	6. Vet must be able to become registered
-		1. Vet must be able to upload proof of qualification
-		2. Vet must be able to provide contact details
-		3. Vet must be able to share clinic location
-    7. Pet Caretaker must be able to become registered
+    6. User must be able to become Pet Caretaker
 		1. Caretaker must be able to provide contact details
-		2. Caretaker must be able to share location
-    8. User must be able to search for other users
+    7. User must be able to search for other users
         1. User must be able to enter other user's name
-        2. User must be able to view matching user search results   
+        2. User must be able to view matching user search results
+    8. User must be able to change profile between public and private
+    9. User must be able to follow and be followed by other users    
 3. Location subsystem:
     1.  User must be able to search for found pets:
         1. User must be able to enter a pet name
@@ -135,26 +134,24 @@ Pet Caretaker User:
     3.  Users must be able to find a pet caretaker:
         1. Users must be see pet caretaker details
         2. User must be able to see the pet caretaker location
-4. Forums subsystem:
+4. Content subsystem:
     1.  Users must be able to create forum
         1. Users must be able to create forums
         2. Users must be able to create forum posts
-        3. Users must be able to select or create relevant tags to categorise the forum
+        3. Users must be able to delete their forums
+        4. Users must be able to delete their messages
     2.  Users must be able to interact with posts
         1. Users must be able to like a post
         2. Users must be able to share a post
         3. Users must be able to comment on a post
+        4. Users must be able to delete their posts
 5. Notifications subsystem:
-	1. Users must be able to receive notifications from their forum posts
+    1. Users must be able to receive notifications from their forum posts
 		1. Users must receive notifications if they receive a like on their forum posts
 		2. User must receive notifications if they receive a comment on their forum posts
-		3. Users must receive notifications if their forum post is shared
     2. Users must be able to receive notifications from followed forums
-        1. Users must be able to receive notifications about new comments on forums they follow
-        2. Users must be able to receive notifications for replies on their comments on forums
-    3. Pet caretakers must receive notifications of users interested in their services
-    	1.  Pet caretakers must receive notifications of users requesting their service
-    	2.  Pet caretakers must receive notifications of upcoming appointments for their pets
+        1. Users must be able to receive notifications about new messages on forums they follow
+        2. Users must be able to receive notifications for replies on their messages on forums
 
 ## Use Case diagrams:
 ![Use Case Diagram](doc_images/UCDiagrams.jpg)
